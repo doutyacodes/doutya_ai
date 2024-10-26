@@ -1,4 +1,4 @@
-"use client"; // Ensure this is at the top for client components
+"use client";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; // Ensure the path is correct
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import Navbar from "./_components/Navbar";
 import GlobalApi from "./api/_services/GlobalApi";
@@ -101,7 +101,7 @@ export default function Home() {
 
           <div className="w-full text-center mb-4">
             <h2 className="text-lg font-semibold mb-2">Language</h2>
-            <Select onValueChange={setLanguage}>
+            <Select onValueChange={setLanguage} value={language}>
               <SelectTrigger className="w-full border focus-visible:ring-transparent border-gray-300 rounded-lg p-2">
                 <SelectValue placeholder="English" />
               </SelectTrigger>
@@ -115,7 +115,7 @@ export default function Home() {
 
           <div className="w-full text-center mb-4">
             <h2 className="text-lg font-semibold mb-2">Difficulty</h2>
-            <Select onValueChange={setDifficulty}>
+            <Select onValueChange={setDifficulty} value={difficulty}>
               <SelectTrigger className="w-full border focus-visible:ring-transparent border-gray-300 rounded-lg p-2">
                 <SelectValue placeholder="Basic" />
               </SelectTrigger>
@@ -132,26 +132,46 @@ export default function Home() {
             type="submit"
             className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all w-full"
           >
-            Submit
+            Search
           </button>
         </form>
 
         {error && <p className="text-red-500">{error}</p>}
 
         {latestCourse && (
-          <div className="mt-6 w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(latestCourse.chapterContent).map(([title, content]) => (
-              <motion.div
-                key={title}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="bg-gradient-to-br from-[#40cb9f] to-[#1e5f9f] p-4 rounded-lg shadow-lg text-white"
-              >
-                <h3 className="text-lg font-semibold mb-2">{title.replace(/_/g, " ")}</h3>
-                <p className="text-gray-100">{content}</p>
-              </motion.div>
-            ))}
+          <div className="mt-6 w-full text-left">
+            <h3 className="text-lg font-semibold mb-2">Latest Course Details:</h3>
+            <p className="text-gray-700">
+              <strong>Course Name:</strong> {latestCourse.courseName} <br />
+              <strong>Language:</strong> {latestCourse.language} <br />
+              <strong>Difficulty:</strong> {latestCourse.difficulty} <br />
+            </p>
+
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {latestCourse.chapterContent?.overview && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-gradient-to-br from-[#40cb9f] to-[#1e5f9f] p-4 rounded-lg shadow-lg text-white"
+                >
+                  <h3 className="text-lg font-semibold mb-2">Overview</h3>
+                  <p>{latestCourse.chapterContent.overview}</p>
+                </motion.div>
+              )}
+              {latestCourse.chapterContent?.key_concepts && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-gradient-to-br from-[#40cb9f] to-[#1e5f9f] p-4 rounded-lg shadow-lg text-white"
+                >
+                  <h3 className="text-lg font-semibold mb-2">Key Concepts</h3>
+                  <p>{latestCourse.chapterContent.key_concepts}</p>
+                </motion.div>
+              )}
+              {/* Repeat similar blocks for other content sections as needed */}
+            </div>
           </div>
         )}
       </motion.div>
