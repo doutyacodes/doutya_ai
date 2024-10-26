@@ -29,20 +29,22 @@ export async function POST(request) {
 
     let chatGptResponse;
     try {
-      chatGptResponse = await axios.post(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          model: "gpt-4o-mini",
-          messages: [{ role: "user", content: prompt }],
-          max_tokens: 5000,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+        chatGptResponse = await axios.post(
+            "https://api.openai.com/v1/chat/completions",
+            {
+              model: "gpt-4o-mini",
+              messages: [{ role: "user", content: prompt }],
+              max_tokens: 15000,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                "Content-Type": "application/json",
+              },
+              timeout: 10000 // Timeout in milliseconds (10 seconds)
+            }
+          );
+          
     } catch (apiError) {
       console.error("API Request Error:", apiError);
       return NextResponse.json(
@@ -137,22 +139,51 @@ export async function POST(request) {
 }
 
 function generatePrompt(courseName, language, difficulty) {
-  return `
-    Generate a JSON object for a course chapter on the topic of "${courseName}", written in "${language}" at a "${difficulty}" level of difficulty.
-    The JSON object should include the following structure:
-    { 
-      "courseName": "${courseName}",
-      "language": "${language}",
-      "difficulty": "${difficulty}",
-      "chapterContent": {
-        "overview": "A brief introduction highlighting the significance of the topic.",
-        "key_concepts": "Essential ideas and principles relevant to the topic.",
-        "detailed_concepts": "Detailed breakdown of the topic in subtopics, from simpler to complex.",
-        "practical_applications": "Examples or case studies illustrating the concepts.",
-        "conclusion": "Summary of main points and further study suggestions.",
-        "references_and_resources": "List of recommended readings or resources."
-      },
-      "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5", "keyword6", "keyword7", "keyword8", "keyword9", "keyword10"]
-    }
-  `;
-}
+    return `
+      Generate a detailed and comprehensive chapter on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level. 
+      The JSON object should contain a chapter structured with multiple sections that reflect the scope, relevance, and complexity of the topic. Each section must have dynamically generated subheadings based on the depth and nuances of the topic, arranged in a readable and logical order.
+      The JSON structure should include:
+      { 
+        "courseName": "${courseName}",
+        "language": "${language}",
+        "difficulty": "${difficulty}",
+        "chapterContent": {
+          "introduction": {
+            "summary": "An introduction providing a brief overview and significance of the topic.",
+            "historical_background": "Optional background information to give context on the topic's development."
+          },
+          "main_sections": [
+            {
+              "section_title": "Primary Section Title",
+              "content": "Comprehensive content covering this section, with relevant explanations and examples.",
+              "subtopics": [
+                {
+                  "title": "Dynamic Subtopic Title",
+                  "description": "Detailed content for the subtopic, addressing specific aspects or examples.",
+                  "examples": ["Example 1", "Example 2"]
+                }
+              ]
+            }
+          ],
+          "practical_applications": [
+            {
+              "application_title": "Application Section Title",
+              "description": "Real-world applications of the topic, including examples and case studies."
+            }
+          ],
+          "conclusion": {
+            "summary": "Concise summary of the main points covered in the chapter.",
+            "further_study": "Suggestions for further reading or exploration of the topic."
+          },
+          "references_and_resources": [
+            "Reference 1",
+            "Reference 2",
+            "Reference 3"
+          ]
+        },
+        "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5", "keyword6", "keyword7", "keyword8", "keyword9", "keyword10"]
+      }
+      Ensure that the chapter reaches a minimum of 14500 characters, with well-researched, informative content that provides a thorough understanding of the subject. Do not proceed if the character count cannot be guaranteed.
+    `;
+  }
+  
