@@ -4,6 +4,10 @@ import { COURSES, KEYWORDS, COURSES_KEYWORDS } from "@/utils/schema";
 import { db } from "@/utils";
 import { eq } from "drizzle-orm"; // Ensure eq is imported
 
+
+export const maxDuration = 60; // This function can run for a maximum of 5 seconds
+export const dynamic = 'force-dynamic';
+
 export async function POST(request) {
   try {
     const { courseName, language, difficulty } = await request.json();
