@@ -34,7 +34,7 @@ export async function POST(request) {
             {
               model: "gpt-4o-mini",
               messages: [{ role: "user", content: prompt }],
-              max_tokens: 15000,
+              max_tokens: 6250,
             },
             {
               headers: {
@@ -183,7 +183,7 @@ function generatePrompt(courseName, language, difficulty) {
         },
         "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5", "keyword6", "keyword7", "keyword8", "keyword9", "keyword10"]
       }
-      Ensure that the chapter reaches a minimum of 14500 characters, with well-researched, informative content that provides a thorough understanding of the subject. Do not proceed if the character count cannot be guaranteed.
+      Ensure that the chapter reaches a minimum of 6,000 characters, with well-researched, informative content that provides a thorough understanding of the subject. Do not proceed if the character count cannot be guaranteed.
     `;
   }
   
