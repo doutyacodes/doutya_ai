@@ -4,47 +4,59 @@ import { COURSES, KEYWORDS, COURSES_KEYWORDS } from "@/utils/schema";
 import { db } from "@/utils";
 import { eq } from "drizzle-orm";
 
-export const maxDuration = 60; // This function can run for a maximum of 5 seconds
+export const maxDuration = 60; 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
   try {
     const { courseName, language, difficulty } = await request.json();
 
-    // Validate input
-    if (!courseName || !language || !difficulty) {
+    if (!courseName?.trim() || !language?.trim() || !difficulty?.trim()) {
       return NextResponse.json(
-        { message: "All fields are required." },
+        { message: "All fields are required and must not be empty." },
         { status: 400 }
       );
     }
 
-    // Generate the prompt dynamically
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { message: "API Key is missing in environment variables." },
+        { status: 500 }
+      );
+    }
+
     const prompt = generatePrompt(courseName, language, difficulty);
 
-    // Call the ChatGPT API
-    const chatGptResponse = await axios.post(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 5000,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
+    let chatGptResponse;
+    try {
+      chatGptResponse = await axios.post(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          model: "gpt-4o-mini",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 5000,
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (apiError) {
+      console.error("API Request Error:", apiError);
+      return NextResponse.json(
+        { message: "Error with OpenAI API request", error: apiError.message },
+        { status: 500 }
+      );
+    }
 
-    // Extract and parse JSON content from the response
     let responseText = chatGptResponse.data.choices[0].message.content.trim();
     responseText = responseText.replace(/```json|```/g, "").trim();
 
     let parsedData;
     try {
-      parsedData = JSON.parse(responseText); // Parse JSON data
+      parsedData = JSON.parse(responseText);
     } catch (jsonError) {
       console.error("JSON Parsing Error:", jsonError);
       return NextResponse.json(
@@ -55,14 +67,13 @@ export async function POST(request) {
 
     const { chapterContent, keywords } = parsedData;
 
-    // Insert course details (as JSON) into the database
     let courseId;
     try {
       const courseInsert = await db.insert(COURSES).values({
         name: courseName,
         language,
         difficulty,
-        chapter_content: JSON.stringify(chapterContent), // Store chapter content as JSON
+        chapter_content: JSON.stringify(chapterContent),
       });
       courseId = courseInsert[0].insertId;
     } catch (dbError) {
@@ -73,8 +84,8 @@ export async function POST(request) {
       );
     }
 
-    // Insert keywords and establish relationships
-    for (const keyword of keywords) {
+    const keywordIds = [];
+    for (const keyword of new Set(keywords)) {
       let keywordId;
       try {
         const existingKeyword = await db
@@ -89,11 +100,7 @@ export async function POST(request) {
           keywordId = keywordInsert[0].insertId;
         }
 
-        // Insert relationship into COURSES_KEYWORDS table
-        await db.insert(COURSES_KEYWORDS).values({
-          course_id: courseId,
-          keyword_id: keywordId,
-        });
+        keywordIds.push(keywordId);
       } catch (dbKeywordError) {
         console.error("Keyword Insertion Error:", dbKeywordError);
         return NextResponse.json(
@@ -103,14 +110,23 @@ export async function POST(request) {
       }
     }
 
-    // Return a success response
-    const responseData = {
-      message: "Course created successfully!",
-      chapterContent,
-      keywords,
-    };
+    try {
+      await db.insert(COURSES_KEYWORDS).values(
+        keywordIds.map(keywordId => ({ course_id: courseId, keyword_id: keywordId }))
+      );
+    } catch (dbKeywordRelError) {
+      console.error("Keyword-Course Relationship Insertion Error:", dbKeywordRelError);
+      return NextResponse.json(
+        { message: "Error creating keyword relationships", error: dbKeywordRelError.message },
+        { status: 500 }
+      );
+    }
 
-    return NextResponse.json(responseData, { status: 201 });
+    return NextResponse.json({
+      message: "Course created successfully!",
+      parsedData,
+      keywords,
+    }, { status: 201 });
   } catch (error) {
     console.error("Error in /api/search:", error);
     return NextResponse.json(
@@ -120,7 +136,6 @@ export async function POST(request) {
   }
 }
 
-// Function to generate the prompt based on course details
 function generatePrompt(courseName, language, difficulty) {
   return `
     Generate a JSON object for a course chapter on the topic of "${courseName}", written in "${language}" at a "${difficulty}" level of difficulty.

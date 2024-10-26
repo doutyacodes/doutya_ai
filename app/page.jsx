@@ -24,38 +24,54 @@ export default function Home() {
   const [latestCourse, setLatestCourse] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-
+  const validateForm = () => {
     if (!courseName) {
       setError("Course name is required.");
       toast.error("Course name is required.");
-      return;
+      return false;
     }
-
     setError("");
-    setLoading(true);
+    return true;
+  };
 
+  const handleSearch = async (e) => {
+    e.preventDefault();
+  
+    if (!validateForm()) return;
+  
+    setLoading(true);
+  
     try {
       const response = await GlobalApi.SearchUser({
         courseName,
         language,
         difficulty,
       });
-
-      const newCourse = response.data;
-      setLatestCourse(newCourse);
-      toast.success("Course created successfully!");
-
+  
+      console.log("API Response:", response.data); // Log API response to verify its structure
+  
+      // Check if response contains the necessary data and update latestCourse
+      const newCourse = response?.data || {}; // Use fallback empty object if data is undefined
+      setLatestCourse(newCourse.parsedData);
+  
+      if (newCourse) {
+        toast.success("Course created successfully!");
+      } else {
+        toast.error("No course data found.");
+      }
+  
+      // Reset form inputs
       setCourseName("");
       setLanguage("english");
       setDifficulty("basic");
     } catch (err) {
-      toast.error("Error: " + err.message);
+      console.error("Error fetching course:", err); // Log the error for debugging
+      toast.error("Error: " + (err?.message || "An unexpected error occurred."));
     } finally {
       setLoading(false);
     }
   };
+  
 
   if (loading) {
     return <LoadingSpinner />;
@@ -139,41 +155,42 @@ export default function Home() {
         {error && <p className="text-red-500">{error}</p>}
 
         {latestCourse && (
-          <div className="mt-6 w-full text-left">
-            <h3 className="text-lg font-semibold mb-2">Latest Course Details:</h3>
-            <p className="text-gray-700">
-              <strong>Course Name:</strong> {latestCourse.courseName} <br />
-              <strong>Language:</strong> {latestCourse.language} <br />
-              <strong>Difficulty:</strong> {latestCourse.difficulty} <br />
-            </p>
+  <div className="mt-6 w-full text-left">
+    <h3 className="text-lg font-semibold mb-2">Latest Course Details:</h3>
+    <p className="text-gray-700">
+      <strong>Course Name:</strong> {latestCourse?.courseName || "N/A"} <br />
+      <strong>Language:</strong> {latestCourse?.language || "N/A"} <br />
+      <strong>Difficulty:</strong> {latestCourse?.difficulty || "N/A"} <br />
+    </p>
 
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {latestCourse.chapterContent?.overview && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                  className="bg-gradient-to-br from-[#40cb9f] to-[#1e5f9f] p-4 rounded-lg shadow-lg text-white"
-                >
-                  <h3 className="text-lg font-semibold mb-2">Overview</h3>
-                  <p>{latestCourse.chapterContent.overview}</p>
-                </motion.div>
-              )}
-              {latestCourse.chapterContent?.key_concepts && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                  className="bg-gradient-to-br from-[#40cb9f] to-[#1e5f9f] p-4 rounded-lg shadow-lg text-white"
-                >
-                  <h3 className="text-lg font-semibold mb-2">Key Concepts</h3>
-                  <p>{latestCourse.chapterContent.key_concepts}</p>
-                </motion.div>
-              )}
-              {/* Repeat similar blocks for other content sections as needed */}
-            </div>
-          </div>
-        )}
+    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      {latestCourse?.chapterContent?.overview && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="bg-gradient-to-br from-[#40cb9f] to-[#1e5f9f] p-4 rounded-lg shadow-lg text-white"
+        >
+          <h3 className="text-lg font-semibold mb-2">Overview</h3>
+          <p>{latestCourse.chapterContent.overview}</p>
+        </motion.div>
+      )}
+      {latestCourse?.chapterContent?.key_concepts && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="bg-gradient-to-br from-[#40cb9f] to-[#1e5f9f] p-4 rounded-lg shadow-lg text-white"
+        >
+          <h3 className="text-lg font-semibold mb-2">Key Concepts</h3>
+          <p>{latestCourse.chapterContent.key_concepts}</p>
+        </motion.div>
+      )}
+      {/* Add similar blocks for other sections like detailed_concepts, practical_applications, etc., if they exist */}
+    </div>
+  </div>
+)}
+
       </motion.div>
     </div>
   );
