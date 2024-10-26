@@ -160,13 +160,13 @@ export default function Home() {
           </motion.div>
         </>
       )}
-      {latestCourse && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6"
-        >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+        className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6"
+      >
+        {latestCourse && (
           <div className="mt-6 w-full text-left">
             <h3 className="text-2xl font-semibold mb-4">
               Latest Course Details
@@ -245,8 +245,8 @@ export default function Home() {
               </div>
             )}
           </div>
-        </motion.div>
-      )}
+        )}
+      </motion.div>
     </div>
   );
 }
