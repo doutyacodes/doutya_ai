@@ -15,7 +15,7 @@ export async function POST(request) {
     // Validate input
     if (!courseName || !language || !difficulty) {
       return NextResponse.json(
-        { message: "All fields are required." },
+        { message: "All fields are required. " },
         { status: 400 }
       );
     }
