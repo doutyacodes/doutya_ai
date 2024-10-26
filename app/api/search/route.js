@@ -29,7 +29,7 @@ export async function POST(request) {
       {
         model: "gpt-4o-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 5000,
+        max_tokens: 4500,
       },
       {
         headers: {
