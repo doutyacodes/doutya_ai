@@ -3,15 +3,15 @@ import axios from "axios";
 import { COURSES } from "@/utils/schema";
 import { db } from "@/utils";
 
-export const maxDuration = 60; 
+export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
   try {
-    const { courseName, language, difficulty } = await request.json();
+    const { courseName, language, difficulty, age } = await request.json();
 
     // Input validation
-    if (!courseName?.trim() || !language?.trim() || !difficulty?.trim()) {
+    if (![courseName, language, difficulty, age].every(field => field?.toString().trim())) {
       return NextResponse.json(
         { message: "All fields are required and must not be empty." },
         { status: 400 }
@@ -25,7 +25,7 @@ export async function POST(request) {
       );
     }
 
-    const prompt = generatePrompt(courseName, language, difficulty);
+    const prompt = generatePrompt(courseName, language, difficulty, age);
 
     // Making API request to OpenAI
     let chatGptResponse;
@@ -33,7 +33,7 @@ export async function POST(request) {
       chatGptResponse = await axios.post(
         "https://api.openai.com/v1/chat/completions",
         {
-          model: "gpt-4o-mini", // Valid model name
+          model: "gpt-4o-mini", 
           messages: [{ role: "user", content: prompt }],
           max_tokens: 5000,
         },
@@ -51,9 +51,9 @@ export async function POST(request) {
         { status: 500 }
       );
     }
-    
-    const responseChoice = chatGptResponse.data.choices?.[0]?.message?.content.trim();
-    if (!responseChoice) {
+
+    const responseContent = chatGptResponse.data.choices?.[0]?.message?.content.trim();
+    if (!responseContent) {
       return NextResponse.json(
         { message: "No response content from OpenAI API." },
         { status: 500 }
@@ -62,17 +62,15 @@ export async function POST(request) {
 
     let parsedData;
     try {
-      parsedData = JSON.parse(responseChoice.replace(/```json|```/g, "").trim());
+      parsedData = JSON.parse(responseContent.replace(/```json|```/g, "").trim());
     } catch (jsonError) {
       console.error("JSON Parsing Error:", jsonError);
-      console.error("Partial JSON Response:", responseChoice.slice(0, 500)); // Print first 500 characters
+      console.error("Partial JSON Response:", responseContent.slice(0, 500));
       return NextResponse.json(
         { message: "Error parsing API response as JSON", error: jsonError.message },
         { status: 500 }
       );
     }
-
-    const { chapterContent } = parsedData;
 
     // Insert course into the database
     let courseId;
@@ -81,7 +79,8 @@ export async function POST(request) {
         name: courseName,
         language,
         difficulty,
-        chapter_content: JSON.stringify(chapterContent),
+        age,
+        chapter_content: JSON.stringify(parsedData),
       });
       courseId = courseInsert[0].insertId;
       if (!courseId) throw new Error("Course insertion did not return an insertId");
@@ -93,10 +92,10 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json({
-      message: "Course created successfully!",
-      parsedData,
-    }, { status: 201 });
+    return NextResponse.json(
+      { message: "Course created successfully!", content: parsedData },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error in /api/search:", error);
     return NextResponse.json(
@@ -106,50 +105,40 @@ export async function POST(request) {
   }
 }
 
-function generatePrompt(courseName, language, difficulty) {
+function generatePrompt(courseName, language, difficulty, age) {
   return `
-    Generate a JSON object for a course chapter on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level. 
-    The JSON object should contain a chapter structured with multiple sections that reflect the scope, relevance, and complexity of the topic. Each section must have dynamically generated subheadings based on the depth and nuances of the topic, arranged in a readable and logical order.
-    Ensure all fields and structures are in valid JSON format, and avoid any additional text outside the JSON block.
+    Generate a detailed and comprehensive JSON object for an essay on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader around ${age} years old, making it age-appropriate and kid-friendly.
+    The essay should dynamically generate topics and subtopics relevant to "${courseName}", with each section and subsection tailored to provide a clear and engaging understanding of the subject. 
+    Structure the essay in JSON format with an "introduction," a "body" containing "sections" and dynamically generated "subtopics" based on the topic's depth, and a "conclusion" to summarize key points. 
+    Each section should have a minimum of 1500 characters, and the entire essay must reach at least 7500 characters. Adjust content in each section as needed to meet this requirement, ensuring the content remains informative and accessible.
     
     JSON Structure Example:
     {
       "courseName": "${courseName}",
       "language": "${language}",
       "difficulty": "${difficulty}",
-      "chapterContent": {
+      "age": ${age},
+      "essayContent": {
         "introduction": {
-          "summary": "An introduction providing a brief overview and significance of the topic.",
-          "historical_background": "Optional background information to give context on the topic's development."
+          "content": "A brief, age-appropriate introduction to the topic."
         },
-        "main_sections": [
-          {
-            "section_title": "Primary Section Title",
-            "content": "Comprehensive content covering this section, with relevant explanations and examples.",
-            "subtopics": [
-              {
-                "title": "Dynamic Subtopic Title",
-                "description": "Detailed content for the subtopic, addressing specific aspects or examples.",
-                "examples": ["Example 1", "Example 2"]
-              }
-            ]
-          }
-        ],
-        "practical_applications": [
-          {
-            "application_title": "Application Section Title",
-            "description": "Real-world applications of the topic, including examples and case studies."
-          }
-        ],
+        "body": {
+          "sections": [
+            {
+              "title": "Dynamic Section Title",
+              "content": "Content for the section, meeting character and age-appropriateness requirements.",
+              "subtopics": [
+                {
+                  "title": "Dynamic Subtopic Title",
+                  "content": "Detailed content for the subtopic, focusing on specific aspects with examples for easier understanding."
+                }
+              ]
+            }
+          ]
+        },
         "conclusion": {
-          "summary": "Concise summary of the main points covered in the chapter.",
-          "further_study": "Suggestions for further reading or exploration of the topic."
-        },
-        "references_and_resources": [
-          "Reference 1",
-          "Reference 2",
-          "Reference 3"
-        ]
+          "content": "A concise summary of the main points covered in the essay."
+        }
       }
     }
   `;

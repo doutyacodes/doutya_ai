@@ -34,8 +34,9 @@ import {
     name: varchar('name', { length: 255 }).notNull(), // Course name
     language: varchar('language', { length: 100 }).notNull(), // Language of the course
     difficulty: varchar('difficulty', { length: 50 }).notNull(), // Difficulty level
-    chapter_content: text('chapter_content').notNull(), // Detailed chapter content
+    chapter_content: text('chapter_content').notNull().default(''), // Provide a default empty string
     created_at: timestamp('created_at').defaultNow(), // Timestamp for when the course was created
+    age: int('age').notNull()
   });
   
   // Keywords Table

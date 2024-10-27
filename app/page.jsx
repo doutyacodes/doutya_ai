@@ -21,14 +21,15 @@ export default function Home() {
   const [courseName, setCourseName] = useState("");
   const [language, setLanguage] = useState("english");
   const [difficulty, setDifficulty] = useState("basic");
+  const [age, setAge] = useState("");  // New state for age input
   const [error, setError] = useState("");
   const [latestCourse, setLatestCourse] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const validateForm = () => {
-    if (!courseName) {
-      setError("Course name is required.");
-      toast.error("Course name is required.");
+    if (!courseName || !age) {
+      setError("Course name and age are required.");
+      toast.error("Course name and age are required.");
       return false;
     }
     setError("");
@@ -47,12 +48,12 @@ export default function Home() {
         courseName,
         language,
         difficulty,
+        age,
       });
 
-      console.log("API Response:", response.data.parsedData.chapterContent); // Log API response to verify its structure
+      console.log("API Response:", response.data.content); // Updated to match new JSON structure
 
-      // Check if response contains the necessary data and update latestCourse
-      const newCourse = response?.data?.parsedData || {}; // Use fallback empty object if data is undefined
+      const newCourse = response?.data?.content || {};
       setLatestCourse(newCourse);
 
       if (newCourse && Object.keys(newCourse).length > 0) {
@@ -61,15 +62,13 @@ export default function Home() {
         toast.error("No course data found.");
       }
 
-      // Reset form inputs
       setCourseName("");
       setLanguage("english");
       setDifficulty("basic");
+      setAge("");
     } catch (err) {
-      console.error("Error fetching course:", err); // Log the error for debugging
-      toast.error(
-        "Error: " + (err?.message || "An unexpected error occurred.")
-      );
+      console.error("Error fetching course:", err);
+      toast.error("Error: " + (err?.message || "An unexpected error occurred."));
     } finally {
       setLoading(false);
     }
@@ -122,6 +121,17 @@ export default function Home() {
               </div>
 
               <div className="w-full text-center mb-4">
+                <h2 className="text-lg font-semibold mb-2">Age</h2>
+                <Input
+                  type="number"
+                  placeholder="Enter your age"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                  className="w-full p-2 focus-visible:ring-transparent border border-gray-300 rounded-lg"
+                />
+              </div>
+
+              <div className="w-full text-center mb-4">
                 <h2 className="text-lg font-semibold mb-2">Language</h2>
                 <Select onValueChange={setLanguage} value={language}>
                   <SelectTrigger className="w-full border focus-visible:ring-transparent border-gray-300 rounded-lg p-2">
@@ -169,13 +179,11 @@ export default function Home() {
           transition={{ duration: 1 }}
           className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6"
         >
-          <button onClick={()=>setLatestCourse(null)} className="text-orange-400 w-full flex gap-4 items-center">
-          <IoChevronBackOutline /> Back
+          <button onClick={() => setLatestCourse(null)} className="text-orange-400 w-full flex gap-4 items-center">
+            <IoChevronBackOutline /> Back
           </button>
           <div className="mt-6 w-full text-left">
-            <h3 className="text-2xl font-semibold mb-4">
-              Latest Course Details
-            </h3>
+            <h3 className="text-2xl font-semibold mb-4">Latest Course Details</h3>
 
             <div className="mb-4">
               <p>
@@ -187,95 +195,30 @@ export default function Home() {
               <p>
                 <strong>Difficulty:</strong> {latestCourse.difficulty || "N/A"}
               </p>
+              <p>
+                <strong>Age:</strong> {latestCourse.age || "N/A"}
+              </p>
             </div>
 
-            <div className="bg-white shadow-md rounded-lg p-8 max-w-3xl mx-auto my-10">
-              {/* <div className="mb-6">
-                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                  Overview
-                </h2>
-                <p className="text-gray-700">
-                  {latestCourse.chapterContent &&
-                  latestCourse.chapterContent.overview
-                    ? latestCourse.chapterContent.overview
-                    : "Overview data is currently unavailable."}{" "}
-                </p>
+            <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">Introduction</h2>
+            <p className="text-gray-700 mb-8">{latestCourse.essayContent?.introduction?.content || "Introduction data is unavailable."}</p>
+
+            <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">Main Sections</h2>
+            {latestCourse.essayContent?.body?.sections?.map((section, index) => (
+              <div key={index} className="mb-8 p-4 bg-gray-100 rounded-md">
+                <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">{section.title}</h4>
+                <p className="text-gray-700 mb-4">{section.content}</p>
+                {section.subtopics?.map((subtopic, subIndex) => (
+                  <div key={subIndex} className="ml-4 mb-2">
+                    <h5 className="text-lg font-semibold text-gray-800">{subtopic.title}</h5>
+                    <p className="text-gray-700">{subtopic.content}</p>
+                  </div>
+                ))}
               </div>
+            ))}
 
-              <div className="mb-6">
-                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                  Key Concepts
-                </h2>
-                <p className="text-gray-700">
-                  {latestCourse.chapterContent &&
-                  latestCourse.chapterContent.key_concepts
-                    ? latestCourse.chapterContent.key_concepts
-                    : "Key concepts data is currently unavailable."}
-                </p>
-              </div> */}
-              <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                Introduction
-              </h2>
-              <p className="text-gray-700 mb-4">
-                <span className="font-semibold">Summary:</span>{" "}
-                {latestCourse.chapterContent.introduction.summary}
-              </p>
-              <p className="text-gray-700 mb-8">
-                <span className="font-semibold">Historical Background:</span>{" "}
-                {latestCourse.chapterContent.introduction.historical_background}
-              </p>
-
-              <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                Main Sections
-              </h2>
-              {latestCourse.chapterContent.main_sections.map(
-                (section, index) => (
-                  <div key={index} className="mb-8 p-4 bg-gray-100 rounded-md">
-                    <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
-                      {section.title}
-                    </h4>
-                    <p className="text-gray-700">{section.content}</p>
-                  </div>
-                )
-              )}
-
-              <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                Practical Applications
-              </h2>
-              {latestCourse.chapterContent.practical_applications.map(
-                (application, index) => (
-                  <div key={index} className="mb-8 p-4 bg-gray-100 rounded-md">
-                    <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
-                      {application.title}
-                    </h4>
-                    <p className="text-gray-700">{application.description}</p>
-                  </div>
-                )
-              )}
-
-              <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                Conclusion
-              </h2>
-              <p className="text-gray-700 mb-4">
-                <span className="font-semibold">Summary:</span>{" "}
-                {latestCourse.chapterContent.conclusion.summary}
-              </p>
-              <p className="text-gray-700 mb-8">
-                <span className="font-semibold">Further Study:</span>{" "}
-                {latestCourse.chapterContent.conclusion.further_study}
-              </p>
-
-              <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                References and Resources
-              </h2>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                {latestCourse.chapterContent.references_and_resources.map(
-                  (reference, index) => (
-                    <li key={index}>{reference}</li>
-                  )
-                )}
-              </ul>
-            </div>
+            <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">Conclusion</h2>
+            <p className="text-gray-700">{latestCourse.essayContent?.conclusion?.content || "Conclusion data is unavailable."}</p>
           </div>
         </motion.div>
       )}
