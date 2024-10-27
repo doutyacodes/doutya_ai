@@ -1,4 +1,5 @@
 "use client"
+import Link from 'next/link';
 import React, { useState } from 'react'
 
 const Navbar = () => {
@@ -21,6 +22,9 @@ const Navbar = () => {
                 <a href="#about" className="text-gray-700 hover:text-orange-600">
                   About
                 </a>
+                <Link href="/testing" className="text-gray-700 hover:text-orange-600">
+                  Test Voice
+                </Link>
               </div>
               <div className="md:hidden">
                 <button
@@ -68,6 +72,12 @@ const Navbar = () => {
                 >
                   About
                 </a>
+                <Link
+                  href="/testing"
+                  className="block px-4 py-2 text-gray-700 hover:text-orange-600"
+                >
+                  Test Voice
+                </Link>
               </div>
             )}
           </div>
