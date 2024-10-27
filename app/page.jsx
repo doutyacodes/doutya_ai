@@ -78,6 +78,21 @@ export default function Home() {
       setLoading(false);
     }
   };
+  const playContent = () => {
+    // Implement the logic to play the content based on course type
+    const content = latestCourse.type === "poem"
+      ? latestCourse.verses.map(verse => verse.line).join(' ')
+      : latestCourse.body?.map(paragraph => paragraph.content).join(' ') || '';
+
+    if (content) {
+      const speech = new SpeechSynthesisUtterance();
+      speech.text = content;
+      speech.lang = 'en-US';
+      speech.rate = 1;
+      speech.pitch = 1.2;
+      window.speechSynthesis.speak(speech);
+    }
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -214,7 +229,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6"
+          className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative"
         >
           <button
             onClick={() => setLatestCourse(null)}
@@ -301,6 +316,16 @@ export default function Home() {
                 "Conclusion data is unavailable."}
             </p>
               </>
+            )}
+            {(latestCourse.type === "story" || latestCourse.type === "bedtime story" || latestCourse.type === "poem") && (
+              <div className="text-center mt-4 absolute right-5 top-5">
+                <button
+                  onClick={playContent}
+                  className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all"
+                >
+                  Play
+                </button>
+              </div>
             )}
           </div>
         </motion.div>
