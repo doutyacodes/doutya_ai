@@ -16,7 +16,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html>
-      <body className={`${poppins.className} bg-[#1f1f1f] bg-cover bg-center bg-no-repeat min-h-screen`}>
+      <body className={`${poppins.className} min-h-screen`}>
       <Toaster/>
           {children}
       </body>
