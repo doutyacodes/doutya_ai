@@ -33,6 +33,7 @@ import {
     id: int('id').primaryKey().autoincrement(), // Unique identifier for each course
     name: varchar('name', { length: 255 }).notNull(), // Course name
     language: varchar('language', { length: 100 }).notNull(), // Language of the course
+    type: varchar('type', { length: 100 }).notNull().default("story"), // Language of the course
     difficulty: varchar('difficulty', { length: 50 }).notNull(), // Difficulty level
     chapter_content: text('chapter_content').notNull().default(''), // Provide a default empty string
     created_at: timestamp('created_at').defaultNow(), // Timestamp for when the course was created

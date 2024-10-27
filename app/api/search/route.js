@@ -4,14 +4,19 @@ import { COURSES } from "@/utils/schema";
 import { db } from "@/utils";
 
 export const maxDuration = 60;
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function POST(request) {
   try {
-    const { courseName, language, difficulty, age } = await request.json();
+    const { courseName, language, difficulty, age, type } =
+      await request.json();
 
     // Input validation
-    if (![courseName, language, difficulty, age].every(field => field?.toString().trim())) {
+    if (
+      ![courseName, language, difficulty, age].every((field) =>
+        field?.toString().trim()
+      )
+    ) {
       return NextResponse.json(
         { message: "All fields are required and must not be empty." },
         { status: 400 }
@@ -25,7 +30,7 @@ export async function POST(request) {
       );
     }
 
-    const prompt = generatePrompt(courseName, language, difficulty, age);
+    const prompt = generatePrompt(courseName, language, difficulty, age, type);
 
     // Making API request to OpenAI
     let chatGptResponse;
@@ -33,7 +38,7 @@ export async function POST(request) {
       chatGptResponse = await axios.post(
         "https://api.openai.com/v1/chat/completions",
         {
-          model: "gpt-4o-mini", 
+          model: "gpt-4o-mini",
           messages: [{ role: "user", content: prompt }],
           max_tokens: 5000,
         },
@@ -45,14 +50,18 @@ export async function POST(request) {
         }
       );
     } catch (apiError) {
-      console.error("API Request Error:", apiError.response ? apiError.response.data : apiError.message);
+      console.error(
+        "API Request Error:",
+        apiError.response ? apiError.response.data : apiError.message
+      );
       return NextResponse.json(
         { message: "Error with OpenAI API request", error: apiError.message },
         { status: 500 }
       );
     }
 
-    const responseContent = chatGptResponse.data.choices?.[0]?.message?.content.trim();
+    const responseContent =
+      chatGptResponse.data.choices?.[0]?.message?.content.trim();
     if (!responseContent) {
       return NextResponse.json(
         { message: "No response content from OpenAI API." },
@@ -62,12 +71,17 @@ export async function POST(request) {
 
     let parsedData;
     try {
-      parsedData = JSON.parse(responseContent.replace(/```json|```/g, "").trim());
+      parsedData = JSON.parse(
+        responseContent.replace(/```json|```/g, "").trim()
+      );
     } catch (jsonError) {
       console.error("JSON Parsing Error:", jsonError);
       console.error("Partial JSON Response:", responseContent.slice(0, 500));
       return NextResponse.json(
-        { message: "Error parsing API response as JSON", error: jsonError.message },
+        {
+          message: "Error parsing API response as JSON",
+          error: jsonError.message,
+        },
         { status: 500 }
       );
     }
@@ -80,14 +94,19 @@ export async function POST(request) {
         language,
         difficulty,
         age,
+        type,
         chapter_content: JSON.stringify(parsedData),
       });
       courseId = courseInsert[0].insertId;
-      if (!courseId) throw new Error("Course insertion did not return an insertId");
+      if (!courseId)
+        throw new Error("Course insertion did not return an insertId");
     } catch (dbError) {
       console.error("Database Insertion Error:", dbError);
       return NextResponse.json(
-        { message: "Error inserting course into database", error: dbError.message },
+        {
+          message: "Error inserting course into database",
+          error: dbError.message,
+        },
         { status: 500 }
       );
     }
@@ -105,12 +124,22 @@ export async function POST(request) {
   }
 }
 
-function generatePrompt(courseName, language, difficulty, age) {
+function generatePrompt(courseName, language, difficulty, age, type) {
   return `
-    Generate a detailed and comprehensive JSON object for an essay on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader around ${age} years old, making the tone age-appropriate and ${age <= 8 ? "playful and fun, often using exclamations or questions" : age <= 12 ? "encouraging and informative; can include humor or wit": age <= 17 ? " reflective and sometimes critical; may address real-world issues": "serious, persuasive, or analytical, depending on the subject matter"}.
-    The essay should dynamically generate topics and subtopics relevant to "${courseName}", with each section and subsection tailored to provide a clear and engaging understanding of the subject. 
-    Structure the essay in JSON format with an "introduction," a "body" containing "sections" and dynamically generated "subtopics" based on the topic's depth, and a "conclusion" to summarize key points. 
-    Each section should have a minimum of 1500 characters, and the entire essay must reach at least 7500 characters. Adjust content in each section as needed to meet this requirement, ensuring the content remains informative and accessible.
+    Generate a detailed and comprehensive JSON object for ${
+      type == "essay" ? "an " + type : "a " + type
+    } on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader around ${age} years old, making the tone age-appropriate and ${
+    age <= 8
+      ? "playful and fun, often using exclamations or questions"
+      : age <= 12
+      ? "encouraging and informative; can include humor or wit"
+      : age <= 17
+      ? " reflective and sometimes critical; may address real-world issues"
+      : "serious, persuasive, or analytical, depending on the subject matter"
+  }.
+    The ${type} should dynamically generate topics and subtopics relevant to "${courseName}", with each section and subsection tailored to provide a clear and engaging understanding of the subject. 
+    Structure the ${type} in JSON format with an "introduction," a "body" containing "sections" and dynamically generated "subtopics" based on the topic's depth, and a "conclusion" to summarize key points. 
+    Each section should have a minimum of 1500 characters, and the entire ${type} must reach at least 7500 characters. Adjust content in each section as needed to meet this requirement, ensuring the content remains informative and accessible.
     
     JSON Structure Example:
     {
@@ -118,6 +147,7 @@ function generatePrompt(courseName, language, difficulty, age) {
       "language": "${language}",
       "difficulty": "${difficulty}",
       "age": ${age},
+      "type": ${type},
       "essayContent": {
         "introduction": {
           "content": "A brief, age-appropriate introduction to the topic."

@@ -21,7 +21,8 @@ export default function Home() {
   const [courseName, setCourseName] = useState("");
   const [language, setLanguage] = useState("english");
   const [difficulty, setDifficulty] = useState("basic");
-  const [age, setAge] = useState("");  // New state for age input
+  const [type, setType] = useState("story");
+  const [age, setAge] = useState(""); // New state for age input
   const [error, setError] = useState("");
   const [latestCourse, setLatestCourse] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -49,6 +50,7 @@ export default function Home() {
         language,
         difficulty,
         age,
+        type
       });
 
       console.log("API Response:", response.data.content); // Updated to match new JSON structure
@@ -65,10 +67,13 @@ export default function Home() {
       setCourseName("");
       setLanguage("english");
       setDifficulty("basic");
+      setType("story")
       setAge("");
     } catch (err) {
       console.error("Error fetching course:", err);
-      toast.error("Error: " + (err?.message || "An unexpected error occurred."));
+      toast.error(
+        "Error: " + (err?.message || "An unexpected error occurred.")
+      );
     } finally {
       setLoading(false);
     }
@@ -145,20 +150,52 @@ export default function Home() {
                 </Select>
               </div>
 
-              <div className="w-full text-center mb-4">
-                <h2 className="text-lg font-semibold mb-2">Difficulty</h2>
-                <Select onValueChange={setDifficulty} value={difficulty}>
-                  <SelectTrigger className="w-full border focus-visible:ring-transparent border-gray-300 rounded-lg p-2">
-                    <SelectValue placeholder="Basic" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="basic">Basic</SelectItem>
-                      <SelectItem value="advanced">Advanced</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
+              {age > 13 && (
+                <div className="w-full text-center mb-4">
+                  <h2 className="text-lg font-semibold mb-2">Difficulty</h2>
+                  <Select onValueChange={setDifficulty} value={difficulty}>
+                    <SelectTrigger className="w-full border focus-visible:ring-transparent border-gray-300 rounded-lg p-2">
+                      <SelectValue placeholder="Basic" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="basic">Basic</SelectItem>
+                        <SelectItem value="advanced">Advanced</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              {
+                <div className="w-full text-center mb-4">
+                  <h2 className="text-lg font-semibold mb-2">Type</h2>
+                  <Select onValueChange={setType} value={type}>
+                    <SelectTrigger className="w-full border focus-visible:ring-transparent border-gray-300 rounded-lg p-2">
+                      <SelectValue placeholder="Story" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="story">Story</SelectItem>
+                        {age!="" && age < 14 && (
+                          <SelectItem value="Bedtime story">
+                            Bedtime Story
+                          </SelectItem>
+                        )}
+                        <SelectItem value="study material">
+                          Study Material
+                        </SelectItem>
+                        <SelectItem value="essay">Essay</SelectItem>
+                        <SelectItem value="poem">Poem</SelectItem>
+                        {age!="" && age > 13 && (
+                          <SelectItem value="presentation">
+                            Presentation
+                          </SelectItem>
+                        )}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              }
 
               <button
                 type="submit"
@@ -179,11 +216,16 @@ export default function Home() {
           transition={{ duration: 1 }}
           className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6"
         >
-          <button onClick={() => setLatestCourse(null)} className="text-orange-400 w-full flex gap-4 items-center">
+          <button
+            onClick={() => setLatestCourse(null)}
+            className="text-orange-400 w-full flex gap-4 items-center"
+          >
             <IoChevronBackOutline /> Back
           </button>
           <div className="mt-6 w-full text-left">
-            <h3 className="text-2xl font-semibold mb-4">Latest Course Details</h3>
+            <h3 className="text-2xl font-semibold mb-4">
+              Latest Course Details
+            </h3>
 
             <div className="mb-4">
               <p>
@@ -198,27 +240,48 @@ export default function Home() {
               <p>
                 <strong>Age:</strong> {latestCourse.age || "N/A"}
               </p>
+              <p>
+                <strong>Type:</strong> {latestCourse.type || "N/A"}
+              </p>
             </div>
 
-            <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">Introduction</h2>
-            <p className="text-gray-700 mb-8">{latestCourse.essayContent?.introduction?.content || "Introduction data is unavailable."}</p>
+            <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+              Introduction
+            </h2>
+            <p className="text-gray-700 mb-8">
+              {latestCourse.essayContent?.introduction?.content ||
+                "Introduction data is unavailable."}
+            </p>
 
-            <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">Main Sections</h2>
-            {latestCourse.essayContent?.body?.sections?.map((section, index) => (
-              <div key={index} className="mb-8 p-4 bg-gray-100 rounded-md">
-                <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">{section.title}</h4>
-                <p className="text-gray-700 mb-4">{section.content}</p>
-                {section.subtopics?.map((subtopic, subIndex) => (
-                  <div key={subIndex} className="ml-4 mb-2">
-                    <h5 className="text-lg font-semibold text-gray-800">{subtopic.title}</h5>
-                    <p className="text-gray-700">{subtopic.content}</p>
-                  </div>
-                ))}
-              </div>
-            ))}
+            <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+              Main Sections
+            </h2>
+            {latestCourse.essayContent?.body?.sections?.map(
+              (section, index) => (
+                <div key={index} className="mb-8 p-4 bg-gray-100 rounded-md">
+                  <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
+                    {section.title}
+                  </h4>
+                  <p className="text-gray-700 mb-4">{section.content}</p>
+                  {section.subtopics?.map((subtopic, subIndex) => (
+                    <div key={subIndex} className="ml-4 mb-2">
+                      <h5 className="text-lg font-semibold text-gray-800">
+                        {subtopic.title}
+                      </h5>
+                      <p className="text-gray-700">{subtopic.content}</p>
+                    </div>
+                  ))}
+                </div>
+              )
+            )}
 
-            <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">Conclusion</h2>
-            <p className="text-gray-700">{latestCourse.essayContent?.conclusion?.content || "Conclusion data is unavailable."}</p>
+            <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+              Conclusion
+            </h2>
+            <p className="text-gray-700">
+              {latestCourse.essayContent?.conclusion?.content ||
+                "Conclusion data is unavailable."}
+            </p>
           </div>
         </motion.div>
       )}
