@@ -107,7 +107,7 @@ export async function POST(request) {
 
 function generatePrompt(courseName, language, difficulty, age) {
   return `
-    Generate a detailed and comprehensive JSON object for an essay on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader around ${age} years old, making it age-appropriate and kid-friendly.
+    Generate a detailed and comprehensive JSON object for an essay on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader around ${age} years old, making the tone age-appropriate and ${age <= 8 ? "Playful and fun, often using exclamations or questions" : age <= 12 ? "Encouraging and informative; can include humor or wit": age <= 17 ? " Reflective and sometimes critical; may address real-world issues": "Serious, persuasive, or analytical, depending on the subject matter"}.
     The essay should dynamically generate topics and subtopics relevant to "${courseName}", with each section and subsection tailored to provide a clear and engaging understanding of the subject. 
     Structure the essay in JSON format with an "introduction," a "body" containing "sections" and dynamically generated "subtopics" based on the topic's depth, and a "conclusion" to summarize key points. 
     Each section should have a minimum of 1500 characters, and the entire essay must reach at least 7500 characters. Adjust content in each section as needed to meet this requirement, ensuring the content remains informative and accessible.
