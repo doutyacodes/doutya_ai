@@ -8,31 +8,18 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request) {
   try {
-    const { courseName, language, difficulty, age, type } =
-      await request.json();
+    const { courseName, language, difficulty, age, type } = await request.json();
 
-    // Input validation
-    if (
-      ![courseName, language, difficulty, age].every((field) =>
-        field?.toString().trim()
-      )
-    ) {
-      return NextResponse.json(
-        { message: "All fields are required and must not be empty." },
-        { status: 400 }
-      );
+    if (![courseName, language, difficulty, age].every((field) => field?.toString().trim())) {
+      return NextResponse.json({ message: "All fields are required and must not be empty." }, { status: 400 });
     }
 
     if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json(
-        { message: "API Key is missing in environment variables." },
-        { status: 500 }
-      );
+      return NextResponse.json({ message: "API Key is missing in environment variables." }, { status: 500 });
     }
 
     const prompt = generatePrompt(courseName, language, difficulty, age, type);
 
-    // Making API request to OpenAI
     let chatGptResponse;
     try {
       chatGptResponse = await axios.post(
@@ -50,18 +37,14 @@ export async function POST(request) {
         }
       );
     } catch (apiError) {
-      console.error(
-        "API Request Error:",
-        apiError.response ? apiError.response.data : apiError.message
-      );
+      console.error("API Request Error:", apiError.response ? apiError.response.data : apiError.message);
       return NextResponse.json(
         { message: "Error with OpenAI API request", error: apiError.message },
         { status: 500 }
       );
     }
 
-    const responseContent =
-      chatGptResponse.data.choices?.[0]?.message?.content.trim();
+    const responseContent = chatGptResponse.data.choices?.[0]?.message?.content.trim();
     if (!responseContent) {
       return NextResponse.json(
         { message: "No response content from OpenAI API." },
@@ -71,22 +54,16 @@ export async function POST(request) {
 
     let parsedData;
     try {
-      parsedData = JSON.parse(
-        responseContent.replace(/```json|```/g, "").trim()
-      );
+      parsedData = JSON.parse(responseContent.replace(/```json|```/g, "").trim());
     } catch (jsonError) {
       console.error("JSON Parsing Error:", jsonError);
       console.error("Partial JSON Response:", responseContent.slice(0, 500));
       return NextResponse.json(
-        {
-          message: "Error parsing API response as JSON",
-          error: jsonError.message,
-        },
+        { message: "Error parsing API response as JSON", error: jsonError.message },
         { status: 500 }
       );
     }
 
-    // Insert course into the database
     let courseId;
     try {
       const courseInsert = await db.insert(COURSES).values({
@@ -98,15 +75,11 @@ export async function POST(request) {
         chapter_content: JSON.stringify(parsedData),
       });
       courseId = courseInsert[0].insertId;
-      if (!courseId)
-        throw new Error("Course insertion did not return an insertId");
+      if (!courseId) throw new Error("Course insertion did not return an insertId");
     } catch (dbError) {
       console.error("Database Insertion Error:", dbError);
       return NextResponse.json(
-        {
-          message: "Error inserting course into database",
-          error: dbError.message,
-        },
+        { message: "Error inserting course into database", error: dbError.message },
         { status: 500 }
       );
     }
@@ -125,6 +98,49 @@ export async function POST(request) {
 }
 
 function generatePrompt(courseName, language, difficulty, age, type) {
+  if (["story", "Bedtime story", "poem"].includes(type)) {
+    return `
+      Create a JSON object for a ${type === "poem" ? "poem" : "story"} on the theme of "${courseName}" in "${language}" and at a "${difficulty}" level for readers around ${age} years old.
+      The ${type} should be engaging and age-appropriate, using tone and language suitable for the age group.
+      
+      Structure:
+      - If it’s a "story" or "bedtime story":
+        {"courseName": "${courseName}",
+      "language": "${language}",
+      "difficulty": "${difficulty}",
+      "age": ${age},
+      "type": ${type},
+          "title": "Story Title",
+          "introduction": {
+            "content": "Introduction to set the scene or introduce main characters."
+          },
+          "body": [
+            {
+              "content": "Each main paragraph of the story in sequence."
+            }
+          ],
+          "conclusion": {
+            "content": "Ending or moral of the story."
+          }
+        }
+
+      - If it’s a "poem":
+        {
+      "courseName": "${courseName}",
+      "language": "${language}",
+      "difficulty": "${difficulty}",
+      "age": ${age},
+      "type": ${type},
+          "title": "Poem Title",
+          "verses": [
+            {
+              "line": "Each line of the poem."
+            }
+          ]
+        }
+    `;
+  }
+
   return `
     Generate a detailed and comprehensive JSON object for ${
       type == "essay" ? "an " + type : "a " + type

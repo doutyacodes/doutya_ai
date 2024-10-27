@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 const TextToSpeech = () => {
   const [text, setText] = useState('');
   const [voices, setVoices] = useState([]);
-  const [audioUrl, setAudioUrl] = useState('');
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   useEffect(() => {
@@ -25,32 +24,16 @@ const TextToSpeech = () => {
     speech.lang = 'en-US';
     speech.rate = 1; // Adjust the speech rate (1 is normal speed)
     speech.pitch = 1.2; // Adjust pitch for a more human-like sound
-    speech.voice = voices.find(voice => voice.name === 'Google US English') || null; // Change this to any voice you prefer
+    speech.voice = voices.find(voice => voice.name === 'Google US English') || voices[0] || null; // Use fallback voice
 
-    // Use MediaRecorder to record the audio
-    const stream = window.speechSynthesis.speak(speech);
-    setIsSpeaking(true);
-
-    speech.onend = () => {
+    speech.onstart = () => setIsSpeaking(true);
+    speech.onend = () => setIsSpeaking(false);
+    speech.onerror = (event) => {
+      console.error('Speech synthesis error:', event.error);
       setIsSpeaking(false);
-      // Create a Blob from the audio data and create a URL for downloading
-      const blob = new Blob([stream], { type: 'audio/wav' });
-      const url = URL.createObjectURL(blob);
-      setAudioUrl(url);
     };
 
     window.speechSynthesis.speak(speech);
-  };
-
-  const downloadAudio = () => {
-    if (!audioUrl) return; // Prevent downloading if there is no audio
-
-    const link = document.createElement('a');
-    link.href = audioUrl;
-    link.download = 'speech.wav'; // Set the file name
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   return (
@@ -71,7 +54,6 @@ const TextToSpeech = () => {
         >
           {isSpeaking ? 'Speaking...' : 'Speak'}
         </button>
-        
       </div>
     </div>
   );

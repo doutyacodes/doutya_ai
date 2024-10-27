@@ -244,7 +244,25 @@ export default function Home() {
                 <strong>Type:</strong> {latestCourse.type || "N/A"}
               </p>
             </div>
-
+            {latestCourse.type== "story" || latestCourse.type== "bedtime story" ? (
+              <>
+                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">{latestCourse.title}</h2>
+                <p className="text-gray-700 mb-8">{latestCourse.introduction?.content || "Introduction data is unavailable."}</p>
+                {latestCourse.body?.map((paragraph, index) => (
+                  <p key={index} className="text-gray-700 mb-4">{paragraph.content}</p>
+                ))}
+                <p className="text-gray-700">{latestCourse.conclusion?.content || "Conclusion data is unavailable."}</p>
+              </>
+            ) : latestCourse.type== "poem" ? (
+              <>
+                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">{latestCourse.title}</h2>
+                {latestCourse.verses?.map((verse, index) => (
+                  <p key={index} className="text-gray-700 mb-2">{verse.line}</p>
+                ))}
+              </>
+            ) : (
+              <>
+              
             <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
               Introduction
             </h2>
@@ -282,6 +300,8 @@ export default function Home() {
               {latestCourse.essayContent?.conclusion?.content ||
                 "Conclusion data is unavailable."}
             </p>
+              </>
+            )}
           </div>
         </motion.div>
       )}
