@@ -15,6 +15,7 @@ import Navbar from "./_components/Navbar";
 import GlobalApi from "./api/_services/GlobalApi";
 import { Toaster, toast } from "react-hot-toast";
 import LoadingSpinner from "./_components/LoadingSpinner";
+import { IoChevronBackOutline } from "react-icons/io5";
 
 export default function Home() {
   const [courseName, setCourseName] = useState("");
@@ -48,13 +49,13 @@ export default function Home() {
         difficulty,
       });
 
-      console.log("API Response:", response.data); // Log API response to verify its structure
+      console.log("API Response:", response.data.parsedData.chapterContent); // Log API response to verify its structure
 
       // Check if response contains the necessary data and update latestCourse
       const newCourse = response?.data?.parsedData || {}; // Use fallback empty object if data is undefined
       setLatestCourse(newCourse);
 
-      if (newCourse) {
+      if (newCourse && Object.keys(newCourse).length > 0) {
         toast.success("Course created successfully!");
       } else {
         toast.error("No course data found.");
@@ -160,13 +161,17 @@ export default function Home() {
           </motion.div>
         </>
       )}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-        className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6"
-      >
-        {latestCourse && (
+
+      {latestCourse && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6"
+        >
+          <button onClick={()=>setLatestCourse(null)} className="text-orange-400">
+          <IoChevronBackOutline /> Back
+          </button>
           <div className="mt-6 w-full text-left">
             <h3 className="text-2xl font-semibold mb-4">
               Latest Course Details
@@ -184,69 +189,96 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="mb-6">
-              <h4 className="text-xl font-semibold mb-2">Overview</h4>
-              <p className="text-gray-700">
-                {latestCourse.chapterContent?.overview || "N/A"}
-              </p>
-            </div>
+            <div className="bg-white shadow-md rounded-lg p-8 max-w-3xl mx-auto my-10">
+              {/* <div className="mb-6">
+                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                  Overview
+                </h2>
+                <p className="text-gray-700">
+                  {latestCourse.chapterContent &&
+                  latestCourse.chapterContent.overview
+                    ? latestCourse.chapterContent.overview
+                    : "Overview data is currently unavailable."}{" "}
+                </p>
+              </div>
 
-            <div className="mb-6">
-              <h4 className="text-xl font-semibold mb-2">Key Concepts</h4>
-              <p className="text-gray-700">
-                {latestCourse.chapterContent?.key_concepts || "N/A"}
-              </p>
-            </div>
-
-            {latestCourse.chapterContent?.detailed_concepts && (
               <div className="mb-6">
-                <h4 className="text-xl font-semibold mb-2">
-                  Detailed Concepts
-                </h4>
-                {Object.values(
-                  latestCourse.chapterContent.detailed_concepts
-                ).map((concept, index) => (
-                  <div key={index} className="ml-4 mb-2">
-                    <h5 className="text-lg font-semibold">{concept.title}</h5>
-                    <p className="text-gray-700">{concept.description}</p>
+                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                  Key Concepts
+                </h2>
+                <p className="text-gray-700">
+                  {latestCourse.chapterContent &&
+                  latestCourse.chapterContent.key_concepts
+                    ? latestCourse.chapterContent.key_concepts
+                    : "Key concepts data is currently unavailable."}
+                </p>
+              </div> */}
+              <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                Introduction
+              </h2>
+              <p className="text-gray-700 mb-4">
+                <span className="font-semibold">Summary:</span>{" "}
+                {latestCourse.chapterContent.introduction.summary}
+              </p>
+              <p className="text-gray-700 mb-8">
+                <span className="font-semibold">Historical Background:</span>{" "}
+                {latestCourse.chapterContent.introduction.historical_background}
+              </p>
+
+              <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                Main Sections
+              </h2>
+              {latestCourse.chapterContent.main_sections.map(
+                (section, index) => (
+                  <div key={index} className="mb-8 p-4 bg-gray-100 rounded-md">
+                    <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
+                      {section.title}
+                    </h4>
+                    <p className="text-gray-700">{section.content}</p>
                   </div>
-                ))}
-              </div>
-            )}
+                )
+              )}
 
-            <div className="mb-6">
-              <h4 className="text-xl font-semibold mb-2">
+              <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
                 Practical Applications
-              </h4>
-              <p className="text-gray-700">
-                {latestCourse.chapterContent?.practical_applications || "N/A"}
-              </p>
-            </div>
+              </h2>
+              {latestCourse.chapterContent.practical_applications.map(
+                (application, index) => (
+                  <div key={index} className="mb-8 p-4 bg-gray-100 rounded-md">
+                    <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
+                      {application.title}
+                    </h4>
+                    <p className="text-gray-700">{application.description}</p>
+                  </div>
+                )
+              )}
 
-            <div className="mb-6">
-              <h4 className="text-xl font-semibold mb-2">Conclusion</h4>
-              <p className="text-gray-700">
-                {latestCourse.chapterContent?.conclusion || "N/A"}
+              <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                Conclusion
+              </h2>
+              <p className="text-gray-700 mb-4">
+                <span className="font-semibold">Summary:</span>{" "}
+                {latestCourse.chapterContent.conclusion.summary}
               </p>
-            </div>
+              <p className="text-gray-700 mb-8">
+                <span className="font-semibold">Further Study:</span>{" "}
+                {latestCourse.chapterContent.conclusion.further_study}
+              </p>
 
-            {latestCourse.chapterContent?.references_and_resources && (
-              <div>
-                <h4 className="text-xl font-semibold mb-2">
-                  References and Resources
-                </h4>
-                <ul className="list-disc list-inside text-gray-700">
-                  {latestCourse.chapterContent.references_and_resources.map(
-                    (reference, index) => (
-                      <li key={index}>{reference}</li>
-                    )
-                  )}
-                </ul>
-              </div>
-            )}
+              <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                References and Resources
+              </h2>
+              <ul className="list-disc list-inside text-gray-700 space-y-2">
+                {latestCourse.chapterContent.references_and_resources.map(
+                  (reference, index) => (
+                    <li key={index}>{reference}</li>
+                  )
+                )}
+              </ul>
+            </div>
           </div>
-        )}
-      </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }
