@@ -169,7 +169,7 @@ export default function Home() {
           transition={{ duration: 1 }}
           className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6"
         >
-          <button onClick={()=>setLatestCourse(null)} className="text-orange-400">
+          <button onClick={()=>setLatestCourse(null)} className="text-orange-400 w-full flex gap-4 items-center">
           <IoChevronBackOutline /> Back
           </button>
           <div className="mt-6 w-full text-left">
