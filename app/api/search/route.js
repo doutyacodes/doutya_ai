@@ -125,7 +125,7 @@ function generatePrompt(courseName, language, difficulty, age, type) {
     return `
       Create a JSON object for a ${
         type === "poem" ? "poem" : type
-      } on the theme of "${courseName}" in "${language}" for readers ${age} years old.
+      } on the topic of "${courseName}" in "${language}" for readers ${age} years old.
       The ${type} should be engaging and age-appropriate${type=="informative story" && " with the history and relevant facts"}.
       
       Structure:
@@ -167,7 +167,7 @@ function generatePrompt(courseName, language, difficulty, age, type) {
   }
   if (["explanation"].includes(type)) {
     return `
-      Create a JSON object for an explanation on the theme of "${courseName}" in "${language}" for readers ${age} years old.
+      Create a JSON object for an explanation on the topic of "${courseName}" in "${language}" for readers ${age} years old.
       The ${type} should be engaging and age-appropriate.
       
       Structure:
