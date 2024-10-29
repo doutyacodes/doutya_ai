@@ -125,8 +125,8 @@ function generatePrompt(courseName, language, difficulty, age, type) {
     return `
       Create a JSON object for a ${
         type === "poem" ? "poem" : type
-      } on the theme of "${courseName}" in "${language}" and at a "${difficulty}" level for readers around ${age} years old.
-      The ${type} should be engaging and age-appropriate, using tone and language suitable for the age group.
+      } on the theme of "${courseName}" in "${language}" for readers around ${age} years old.
+      The ${type} should be engaging and age-appropriate${type=="informative story" && " with the history and relevant facts"}.
       
       Structure:
       - If it’s a "story" or "bedtime story" or "informative story":

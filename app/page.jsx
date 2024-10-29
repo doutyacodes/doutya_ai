@@ -138,7 +138,7 @@ export default function Home() {
                 <h2 className="text-lg font-semibold mb-2 gap-2 items-center justify-center flex flex-wrap text-white">
                   I want{" "}
                   <Select onValueChange={setType} value={type} className="bg-transparent ring-transparent border border-transparent">
-                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent text-lg rounded-full p-2 text-white">
+                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent text-2xl underline rounded-full p-2 text-white">
                       <SelectValue placeholder="Story" className="text-black" />
                     </SelectTrigger>
                     <SelectContent>
