@@ -121,21 +121,21 @@ export async function POST(request) {
 }
 
 function generatePrompt(courseName, language, difficulty, age, type) {
-  if (["story", "Bedtime story", "poem", "informative story"].includes(type)) {
+  if (["story", "Bedtime story", "poem", "informative story","podcast"].includes(type)) {
     return `
       Create a JSON object for a ${
-        type === "poem" ? "poem" : type
+        type === "poem" ? "poem" : type=="podcast"?"transcript":type
       } on the topic of "${courseName}" in "${language}" for readers ${age} years old.
-      The ${type} should be engaging and age-appropriate${type=="informative story" && " with the history and relevant facts"}.
+      The ${type} should be engaging and age-appropriate${type=="informative story" && " with the history and relevant facts about the topic"}.
       
       Structure:
-      - If it’s a "story" or "bedtime story" or "informative story":
+      - If it’s a "story" or "bedtime story" or "informative story" or "podcast":
         {"courseName": "${courseName}",
       "language": "${language}",
       "difficulty": "${difficulty}",
       "age": ${age},
       "type": ${type},
-          "title": "Story Title",
+          "title": "${type} Title",
           "introduction": {
             "content": "Introduction to set the scene or introduce main characters."
           },

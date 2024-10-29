@@ -15,7 +15,7 @@ import Navbar from "./_components/Navbar";
 import GlobalApi from "./api/_services/GlobalApi";
 import { Toaster, toast } from "react-hot-toast";
 import LoadingSpinner from "./_components/LoadingSpinner";
-import { IoChevronBackOutline } from "react-icons/io5";
+import { IoChevronBackOutline, IoPlayCircle } from "react-icons/io5";
 import Link from "next/link";
 
 export default function Home() {
@@ -27,7 +27,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [latestCourse, setLatestCourse] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
   // const validateForm = () => {
   //   if (!courseName || !age) {
   //     setError("Course name and age are required.");
@@ -88,7 +88,7 @@ export default function Home() {
     const content =
       latestCourse.type === "poem"
         ? latestCourse.verses.map((verse) => verse.line).join(" ")
-        : latestCourse.body?.map((paragraph) => paragraph.content).join(" ") ||
+        : latestCourse.introduction?.content+latestCourse.body?.map((paragraph) => paragraph.content).join(" ") ||
           "";
 
     if (content) {
@@ -144,7 +144,7 @@ export default function Home() {
                     <SelectContent>
                       <SelectGroup>
                         <SelectItem value="story">a Story</SelectItem>
-                        <SelectItem value="Bedtime story">
+                        <SelectItem value="bedtime story">
                           a Bedtime Story
                         </SelectItem>
                         <SelectItem value="explanation">
@@ -155,6 +155,9 @@ export default function Home() {
                         {/* <SelectItem value="essay">an Essay</SelectItem> */}
                         <SelectItem value="informative story">
                           a Informative Story
+                        </SelectItem>
+                        <SelectItem value="podcast">
+                          a Podcast
                         </SelectItem>
                         <SelectItem value="poem">a Poem</SelectItem>
                         {/* {age != "" && age > 13 && (
@@ -292,6 +295,44 @@ export default function Home() {
                   {latestCourse.conclusion?.content ||
                     "Conclusion data is unavailable."}
                 </p>
+              </>
+            ):latestCourse.type == "podcast" ? (
+              <>
+              <div className="flex flex-col items-center justify-center mt-4">
+              <button
+                onClick={playContent}
+                className="text-white bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
+              >
+                <IoPlayCircle className="text-3xl" />
+                <span>Play Podcast</span>
+              </button>
+
+              <button
+                onClick={() => setShowTranscript(!showTranscript)}
+                className="mt-4 text-[#1e5f9f] hover:underline text-lg font-semibold"
+              >
+                {showTranscript ? "Hide Transcript" : "Show Transcript"}
+              </button>
+
+              {showTranscript && (
+                <div className="text-left mt-6 p-4 bg-gray-50 rounded-lg">
+                  <p className="text-gray-700">
+                    {latestCourse.introduction?.content ||
+                      "Introduction data is unavailable."}
+                  </p>
+                  {latestCourse.body?.map((paragraph, index) => (
+                    <p key={index} className="text-gray-700 mb-4">
+                      {paragraph.content}
+                    </p>
+                  ))}
+                  <p className="text-gray-700">
+                    {latestCourse.conclusion?.content ||
+                      "Conclusion data is unavailable."}
+                  </p>
+                </div>
+              )}
+            </div>
+          
               </>
             ) : latestCourse.type == "poem" ? (
               <>
