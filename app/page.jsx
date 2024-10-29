@@ -64,9 +64,9 @@ export default function Home() {
       setLatestCourse(newCourse);
 
       if (newCourse && Object.keys(newCourse).length > 0) {
-        toast.success("Course created successfully!");
+        toast.success("Topic created successfully!");
       } else {
-        toast.error("No course data found.");
+        toast.error("No data found.");
       }
 
       setCourseName("");
@@ -75,7 +75,7 @@ export default function Home() {
       setType("story");
       setAge("");
     } catch (err) {
-      console.error("Error fetching course:", err);
+      console.error("Error fetching data:", err);
       toast.error(
         "Error: " + (err?.message || "An unexpected error occurred.")
       );
@@ -172,7 +172,7 @@ export default function Home() {
                 </h2>
                 <Input
                   type="text"
-                  placeholder="Type the course name here"
+                  placeholder="Type the topic name here"
                   value={courseName}
                   onChange={(e) => setCourseName(e.target.value)}
                   className="w-full p-2 focus-visible:ring-transparent border border-gray-300 rounded-full"
