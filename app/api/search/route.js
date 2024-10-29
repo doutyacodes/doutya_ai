@@ -167,8 +167,8 @@ function generatePrompt(courseName, language, difficulty, age, type) {
   }
   if (["explanation"].includes(type)) {
     return `
-      Create a JSON object for an explanation on the theme of "${courseName}" in "${language}" and at a "${difficulty}" level for readers around ${age} years old.
-      The ${type} should be engaging and age-appropriate, using tone and language suitable for the age group.
+      Create a JSON object for an explanation on the theme of "${courseName}" in "${language}" for readers around ${age} years old.
+      The ${type} should be engaging and age-appropriate.
       
       Structure:
         {"courseName": "${courseName}",
