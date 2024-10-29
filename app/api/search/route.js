@@ -129,7 +129,7 @@ function generatePrompt(courseName, language, difficulty, age, type) {
       The ${type} should be engaging and age-appropriate, using tone and language suitable for the age group.
       
       Structure:
-      - If it’s a "story" or "bedtime story":
+      - If it’s a "story" or "bedtime story" or "informative story":
         {"courseName": "${courseName}",
       "language": "${language}",
       "difficulty": "${difficulty}",
