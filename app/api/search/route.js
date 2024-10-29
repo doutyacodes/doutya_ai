@@ -113,7 +113,7 @@ export async function POST(request) {
     //   }
     // }
 
-    // return NextResponse.json({ message: "Course created successfully!", content: parsedData }, { status: 201 });
+    return NextResponse.json({ message: "Course created successfully!", content: parsedData }, { status: 201 });
   } catch (error) {
     console.error("Error in /api/search:", error);
     return NextResponse.json({ message: "Error processing your request", error: error.message }, { status: 500 });
