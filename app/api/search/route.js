@@ -121,7 +121,7 @@ export async function POST(request) {
 }
 
 function generatePrompt(courseName, language, difficulty, age, type) {
-  if (["story", "Bedtime story", "poem", "informative story","podcast"].includes(type)) {
+  if (["story", "bedtime story", "poem", "informative story","podcast"].includes(type)) {
     return `
       Create a JSON object for a ${
         type === "poem" ? "poem" : type=="podcast"?"transcript":type

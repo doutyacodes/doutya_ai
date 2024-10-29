@@ -118,13 +118,13 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="text-center mb-10"
           >
-            <h1 className="text-5xl font-bold text-white mb-4">
+            {/* <h1 className="text-5xl font-bold text-white mb-4">
               Learn Anything, Anytime, Your Way
             </h1>
             <p className="text-lg text-gray-200 max-w-lg mx-auto">
               Customized courses, adaptive learning, and flexible schedules
               crafted by you for your unique journey.
-            </p>
+            </p> */}
           </motion.div>
 
           <motion.div
