@@ -137,8 +137,8 @@ export default function Home() {
               <div className="w-full text-center mb-4">
                 <h2 className="text-lg font-semibold mb-2 gap-2 items-center justify-center flex flex-wrap text-white">
                   I want{" "}
-                  <Select onValueChange={setType} value={type}>
-                    <SelectTrigger className="w-fit border focus-visible:ring-transparent border-gray-300 rounded-full p-2 text-black">
+                  <Select onValueChange={setType} value={type} className="bg-transparent ring-transparent border border-transparent">
+                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent text-lg rounded-full p-2 text-white">
                       <SelectValue placeholder="Story" className="text-black" />
                     </SelectTrigger>
                     <SelectContent>
@@ -146,6 +146,9 @@ export default function Home() {
                         <SelectItem value="story">a Story</SelectItem>
                         <SelectItem value="Bedtime story">
                           a Bedtime Story
+                        </SelectItem>
+                        <SelectItem value="explanation">
+                          an Explanation
                         </SelectItem>
                         {/* <SelectItem value="course">a Course</SelectItem> */}
 
@@ -247,7 +250,7 @@ export default function Home() {
             <IoChevronBackOutline /> Back
           </button>
           <div className="mt-6 w-full text-left">
-            <h3 className="text-2xl font-semibold mb-4">
+            {/* <h3 className="text-2xl font-semibold mb-4">
               Latest Course Details
             </h3>
 
@@ -267,8 +270,9 @@ export default function Home() {
               <p>
                 <strong>Type:</strong> {latestCourse.type || "N/A"}
               </p>
-            </div>
+            </div> */}
             {latestCourse.type == "story" ||
+            latestCourse.type == "explanation" ||
             latestCourse.type == "bedtime story" ||
             latestCourse.type == "informative story" ? (
               <>
@@ -428,6 +432,7 @@ export default function Home() {
             )}
             {(latestCourse.type === "story" ||
               latestCourse.type === "bedtime story" ||
+              latestCourse.type === "explanation" ||
               latestCourse.type === "informative story" ||
               latestCourse.type === "poem") && (
               <div className="text-center mt-4 absolute right-5 top-5">

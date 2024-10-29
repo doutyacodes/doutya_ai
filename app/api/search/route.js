@@ -124,7 +124,7 @@ function generatePrompt(courseName, language, difficulty, age, type) {
   if (["story", "Bedtime story", "poem", "informative story"].includes(type)) {
     return `
       Create a JSON object for a ${
-        type === "poem" ? "poem" : "story"
+        type === "poem" ? "poem" : type
       } on the theme of "${courseName}" in "${language}" and at a "${difficulty}" level for readers around ${age} years old.
       The ${type} should be engaging and age-appropriate, using tone and language suitable for the age group.
       
@@ -163,6 +163,34 @@ function generatePrompt(courseName, language, difficulty, age, type) {
             }
           ]
         }
+    `;
+  }
+  if (["explanation"].includes(type)) {
+    return `
+      Create a JSON object for an explanation on the theme of "${courseName}" in "${language}" and at a "${difficulty}" level for readers around ${age} years old.
+      The ${type} should be engaging and age-appropriate, using tone and language suitable for the age group.
+      
+      Structure:
+        {"courseName": "${courseName}",
+      "language": "${language}",
+      "difficulty": "${difficulty}",
+      "age": ${age},
+      "type": ${type},
+          "title": "Story Title",
+          "introduction": {
+            "content": "Introduction to set the scene or introduce main characters."
+          },
+          "body": [
+            {
+              "content": "Each main paragraph of the story in sequence."
+            }
+          ],
+          "conclusion": {
+            "content": "Ending or moral of the story."
+          }
+        }
+
+      
     `;
   }
 
