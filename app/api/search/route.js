@@ -125,7 +125,7 @@ function generatePrompt(courseName, language, difficulty, age, type) {
     return `
       Create a JSON object for a ${
         type === "poem" ? "poem" : type
-      } on the theme of "${courseName}" in "${language}" for readers around ${age} years old.
+      } on the theme of "${courseName}" in "${language}" for readers ${age} years old.
       The ${type} should be engaging and age-appropriate${type=="informative story" && " with the history and relevant facts"}.
       
       Structure:
@@ -167,7 +167,7 @@ function generatePrompt(courseName, language, difficulty, age, type) {
   }
   if (["explanation"].includes(type)) {
     return `
-      Create a JSON object for an explanation on the theme of "${courseName}" in "${language}" for readers around ${age} years old.
+      Create a JSON object for an explanation on the theme of "${courseName}" in "${language}" for readers ${age} years old.
       The ${type} should be engaging and age-appropriate.
       
       Structure:
@@ -196,7 +196,7 @@ function generatePrompt(courseName, language, difficulty, age, type) {
 
   if (type == "presentation") {
     return `
-      Generate a detailed and comprehensive JSON object for a presentation on the topic of "${courseName}", written in "${language}" and tailored to a "${difficulty}" level for a reader around ${age} years old.
+      Generate a detailed and comprehensive JSON object for a presentation on the topic of "${courseName}", written in "${language}" and tailored to a "${difficulty}" level for a reader ${age} years old.
       The presentation should dynamically generate slides relevant to "${courseName}", with each slide tailored to provide a clear and engaging understanding of the subject. The presentation should contain at least 12 slides. Include relevant image suggestions and supporting materials wherever applicable.
   
       JSON Structure Example:
@@ -229,7 +229,7 @@ function generatePrompt(courseName, language, difficulty, age, type) {
 
   if (type == "course") {
     return `
-     Generate a detailed and comprehensive JSON object for a course on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader around ${age} years old.
+     Generate a detailed and comprehensive JSON object for a course on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader ${age} years old.
     The ${type} should dynamically generate modules and subtopics relevant to "${courseName}", with each modules and subtopics tailored to provide a clear and engaging understanding of the subject. 
     Structure the ${type} in JSON format with an "introduction," a "body" containing "sections" and dynamically generated "subtopics" based on the modules's depth, and a "conclusion" to summarize key points.Ensure that the number of subtopics generated is not fixed for each module content. 
     
@@ -269,7 +269,7 @@ function generatePrompt(courseName, language, difficulty, age, type) {
   return `
     Generate a detailed and comprehensive JSON object for ${
       type == "essay" ? "an " + type : "a " + type
-    } on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader around ${age} years old, making the tone age-appropriate and ${
+    } on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader ${age} years old, making the tone age-appropriate and ${
     age <= 8
       ? "playful and fun, often using exclamations or questions"
       : age <= 12
