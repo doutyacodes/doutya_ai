@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { COURSES } from "@/utils/schema";
+import { COURSES, MODULES, SUBTOPICS } from "@/utils/schema";
 import { db } from "@/utils";
+import { generateUniqueSlug } from "@/lib/utils";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
@@ -10,6 +11,7 @@ export async function POST(request) {
   try {
     const { courseName, language, difficulty, age, type } = await request.json();
 
+    // Basic validation
     if (![courseName, language, difficulty, age].every((field) => field?.toString().trim())) {
       return NextResponse.json({ message: "All fields are required and must not be empty." }, { status: 400 });
     }
@@ -38,18 +40,12 @@ export async function POST(request) {
       );
     } catch (apiError) {
       console.error("API Request Error:", apiError.response ? apiError.response.data : apiError.message);
-      return NextResponse.json(
-        { message: "Error with OpenAI API request", error: apiError.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ message: "Error with OpenAI API request", error: apiError.message }, { status: 500 });
     }
 
     const responseContent = chatGptResponse.data.choices?.[0]?.message?.content.trim();
     if (!responseContent) {
-      return NextResponse.json(
-        { message: "No response content from OpenAI API." },
-        { status: 500 }
-      );
+      return NextResponse.json({ message: "No response content from OpenAI API." }, { status: 500 });
     }
 
     let parsedData;
@@ -57,11 +53,7 @@ export async function POST(request) {
       parsedData = JSON.parse(responseContent.replace(/```json|```/g, "").trim());
     } catch (jsonError) {
       console.error("JSON Parsing Error:", jsonError);
-      console.error("Partial JSON Response:", responseContent.slice(0, 500));
-      return NextResponse.json(
-        { message: "Error parsing API response as JSON", error: jsonError.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ message: "Error parsing API response as JSON", error: jsonError.message }, { status: 500 });
     }
 
     let courseId;
@@ -78,29 +70,62 @@ export async function POST(request) {
       if (!courseId) throw new Error("Course insertion did not return an insertId");
     } catch (dbError) {
       console.error("Database Insertion Error:", dbError);
-      return NextResponse.json(
-        { message: "Error inserting course into database", error: dbError.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ message: "Error inserting course into database", error: dbError.message }, { status: 500 });
     }
 
-    return NextResponse.json(
-      { message: "Course created successfully!", content: parsedData },
-      { status: 201 }
-    );
+    // Insert Modules and Subtopics if type is "course"
+    if (type === "course" && parsedData.courseContent?.body?.modules) {
+      for (const module of parsedData.courseContent.body.modules) {
+        let moduleId;
+        try {
+          const moduleInsert = await db.insert(MODULES).values({
+            course_id: courseId,
+            module_number: module.module_number,
+            title: module.title,
+            content: JSON.stringify(module.content || ''),
+          });
+          moduleId = moduleInsert[0].insertId;
+          module.module_id = moduleId; // Add module_id to parsedData
+        } catch (dbError) {
+          console.error("Module Insertion Error:", dbError);
+          return NextResponse.json({ message: "Error inserting module into database", error: dbError.message }, { status: 500 });
+        }
+
+        if (module.subtopics && module.subtopics.length > 0) {
+          for (const subtopic of module.subtopics) {
+            try {
+              const slug_value=generateUniqueSlug()
+              const subtopicInsert = await db.insert(SUBTOPICS).values({
+                module_id: moduleId,
+                title: subtopic.title,
+                slug:slug_value,
+                content: JSON.stringify(subtopic.content || ''),
+              });
+              const subtopicId = subtopicInsert[0].insertId;
+              subtopic.subtopic_id = subtopicId; // Add subtopic_id to parsedData
+              subtopic.subtopic_slug = slug_value; // Add subtopic_id to parsedData
+            } catch (dbError) {
+              console.error("Subtopic Insertion Error:", dbError);
+              return NextResponse.json({ message: "Error inserting subtopic into database", error: dbError.message }, { status: 500 });
+            }
+          }
+        }
+      }
+    }
+
+    return NextResponse.json({ message: "Course created successfully!", content: parsedData }, { status: 201 });
   } catch (error) {
     console.error("Error in /api/search:", error);
-    return NextResponse.json(
-      { message: "Error processing your request", error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Error processing your request", error: error.message }, { status: 500 });
   }
 }
 
 function generatePrompt(courseName, language, difficulty, age, type) {
-  if (["story", "Bedtime story", "poem"].includes(type)) {
+  if (["story", "Bedtime story", "poem", "informative story"].includes(type)) {
     return `
-      Create a JSON object for a ${type === "poem" ? "poem" : "story"} on the theme of "${courseName}" in "${language}" and at a "${difficulty}" level for readers around ${age} years old.
+      Create a JSON object for a ${
+        type === "poem" ? "poem" : "story"
+      } on the theme of "${courseName}" in "${language}" and at a "${difficulty}" level for readers around ${age} years old.
       The ${type} should be engaging and age-appropriate, using tone and language suitable for the age group.
       
       Structure:
@@ -140,6 +165,78 @@ function generatePrompt(courseName, language, difficulty, age, type) {
         }
     `;
   }
+
+  if (type == "presentation") {
+    return `
+      Generate a detailed and comprehensive JSON object for a presentation on the topic of "${courseName}", written in "${language}" and tailored to a "${difficulty}" level for a reader around ${age} years old.
+      The presentation should dynamically generate slides relevant to "${courseName}", with each slide tailored to provide a clear and engaging understanding of the subject. The presentation should contain at least 12 slides. Include relevant image suggestions and supporting materials wherever applicable.
+  
+      JSON Structure Example:
+      {
+        "courseName": "${courseName}",
+        "language": "${language}",
+        "difficulty": "${difficulty}",
+        "age": ${age},
+        "type": "${type}",
+        "presentation": {
+          "title": "Appropriate title for the presentation",
+          "slides": [
+            {
+              "slide_number": "Slide number",
+              "content": [
+                {
+                  "content": "Detailed content related to the slide.",
+                  "image_suggestion": "Image URL or description",
+                  "additional_resources": "Links or references for further reading"
+                }
+                // More content objects if needed
+              ]
+            }
+            // More slides as needed
+          ]
+        }
+      }
+    `;
+  }
+
+  if (type == "course") {
+    return `
+     Generate a detailed and comprehensive JSON object for a course on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader around ${age} years old.
+    The ${type} should dynamically generate modules and subtopics relevant to "${courseName}", with each modules and subtopics tailored to provide a clear and engaging understanding of the subject. 
+    Structure the ${type} in JSON format with an "introduction," a "body" containing "sections" and dynamically generated "subtopics" based on the modules's depth, and a "conclusion" to summarize key points.Ensure that the number of subtopics generated is not fixed for each module content. 
+    
+    JSON Structure Example:
+    {
+      "courseName": "${courseName}",
+      "language": "${language}",
+      "difficulty": "${difficulty}",
+      "age": ${age},
+      "type": ${type},
+      "courseContent": {
+        "introduction": {
+          "content": "A brief, age-appropriate introduction to the topic."
+        },
+        "body": {
+          "modules": [
+            {
+          "module_number":" module number",
+              "title": "Dynamic Section Title",
+              "subtopics": [
+                {
+                  "title": "Dynamic Subtopic Title",
+                }
+              ]
+            }
+          ]
+        },
+        "conclusion": {
+          "content": "A concise summary of the main points covered in the course."
+        }
+      }
+    }
+    `;
+  }
+  
 
   return `
     Generate a detailed and comprehensive JSON object for ${
