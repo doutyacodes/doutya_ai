@@ -74,46 +74,46 @@ export async function POST(request) {
     }
 
     // Insert Modules and Subtopics if type is "course"
-    if (type === "course" && parsedData.courseContent?.body?.modules) {
-      for (const module of parsedData.courseContent.body.modules) {
-        let moduleId;
-        try {
-          const moduleInsert = await db.insert(MODULES).values({
-            course_id: courseId,
-            module_number: module.module_number,
-            title: module.title,
-            content: JSON.stringify(module.content || ''),
-          });
-          moduleId = moduleInsert[0].insertId;
-          module.module_id = moduleId; // Add module_id to parsedData
-        } catch (dbError) {
-          console.error("Module Insertion Error:", dbError);
-          return NextResponse.json({ message: "Error inserting module into database", error: dbError.message }, { status: 500 });
-        }
+    // if (type === "course" && parsedData.courseContent?.body?.modules) {
+    //   for (const module of parsedData.courseContent.body.modules) {
+    //     let moduleId;
+    //     try {
+    //       const moduleInsert = await db.insert(MODULES).values({
+    //         course_id: courseId,
+    //         module_number: module.module_number,
+    //         title: module.title,
+    //         content: JSON.stringify(module.content || ''),
+    //       });
+    //       moduleId = moduleInsert[0].insertId;
+    //       module.module_id = moduleId; // Add module_id to parsedData
+    //     } catch (dbError) {
+    //       console.error("Module Insertion Error:", dbError);
+    //       return NextResponse.json({ message: "Error inserting module into database", error: dbError.message }, { status: 500 });
+    //     }
 
-        if (module.subtopics && module.subtopics.length > 0) {
-          for (const subtopic of module.subtopics) {
-            try {
-              const slug_value=generateUniqueSlug()
-              const subtopicInsert = await db.insert(SUBTOPICS).values({
-                module_id: moduleId,
-                title: subtopic.title,
-                slug:slug_value,
-                content: JSON.stringify(subtopic.content || ''),
-              });
-              const subtopicId = subtopicInsert[0].insertId;
-              subtopic.subtopic_id = subtopicId; // Add subtopic_id to parsedData
-              subtopic.subtopic_slug = slug_value; // Add subtopic_id to parsedData
-            } catch (dbError) {
-              console.error("Subtopic Insertion Error:", dbError);
-              return NextResponse.json({ message: "Error inserting subtopic into database", error: dbError.message }, { status: 500 });
-            }
-          }
-        }
-      }
-    }
+    //     if (module.subtopics && module.subtopics.length > 0) {
+    //       for (const subtopic of module.subtopics) {
+    //         try {
+    //           const slug_value=generateUniqueSlug()
+    //           const subtopicInsert = await db.insert(SUBTOPICS).values({
+    //             module_id: moduleId,
+    //             title: subtopic.title,
+    //             slug:slug_value,
+    //             content: JSON.stringify(subtopic.content || ''),
+    //           });
+    //           const subtopicId = subtopicInsert[0].insertId;
+    //           subtopic.subtopic_id = subtopicId; // Add subtopic_id to parsedData
+    //           subtopic.subtopic_slug = slug_value; // Add subtopic_id to parsedData
+    //         } catch (dbError) {
+    //           console.error("Subtopic Insertion Error:", dbError);
+    //           return NextResponse.json({ message: "Error inserting subtopic into database", error: dbError.message }, { status: 500 });
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
-    return NextResponse.json({ message: "Course created successfully!", content: parsedData }, { status: 201 });
+    // return NextResponse.json({ message: "Course created successfully!", content: parsedData }, { status: 201 });
   } catch (error) {
     console.error("Error in /api/search:", error);
     return NextResponse.json({ message: "Error processing your request", error: error.message }, { status: 500 });
