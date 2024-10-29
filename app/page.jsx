@@ -28,6 +28,7 @@ export default function Home() {
   const [latestCourse, setLatestCourse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
+  const [isPlaying, setIsPlaying] = useState(false); // State to manage play/pause
   // const validateForm = () => {
   //   if (!courseName || !age) {
   //     setError("Course name and age are required.");
@@ -84,20 +85,33 @@ export default function Home() {
     }
   };
   const playContent = () => {
-    // Implement the logic to play the content based on course type
-    const content =
-      latestCourse.type === "poem"
-        ? latestCourse.verses.map((verse) => verse.line).join(" ")
-        : latestCourse.introduction?.content+latestCourse.body?.map((paragraph) => paragraph.content).join(" ") ||
-          "";
+    // Check if the speech synthesis is already playing
+    if (isPlaying) {
+      speechSynthesisInstance?.pause(); // Pause if already playing
+      setIsPlaying(false);
+    } else {
+      // Implement the logic to play the content based on course type
+      const content =
+        latestCourse.type === "poem"
+          ? latestCourse.verses.map((verse) => verse.line).join(" ")
+          : latestCourse.introduction?.content + latestCourse.body?.map((paragraph) => paragraph.content).join(" ") || "";
 
-    if (content) {
-      const speech = new SpeechSynthesisUtterance();
-      speech.text = content;
-      speech.lang = "en-US";
-      speech.rate = 1;
-      speech.pitch = 1.2;
-      window.speechSynthesis.speak(speech);
+      if (content) {
+        const speech = new SpeechSynthesisUtterance();
+        speech.text = content;
+        speech.lang = "en-US";
+        speech.rate = 1;
+        speech.pitch = 1.2;
+        speechSynthesisInstance = window.speechSynthesis;
+        
+        speech.onend = () => {
+          setIsPlaying(false); // Set isPlaying to false when speech ends
+        };
+
+        speechSynthesisInstance.speak(speech);
+        setIsPlaying(true); // Set isPlaying to true when playback starts
+        setSpeechSynthesisInstance(speechSynthesisInstance); // Store the speech instance
+      }
     }
   };
 
@@ -304,7 +318,7 @@ export default function Home() {
                 className="text-white bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
               >
                 <IoPlayCircle className="text-3xl" />
-                <span>Play Podcast</span>
+                <span>{isPlaying ? "Pause" : "Play"} Podcast</span>
               </button>
 
               <button
