@@ -25,7 +25,9 @@ const Navbar = () => {
       try {
         setUserLoading(true);
         if (isAuthenticated && childrenData.length === 0) {
-          const response = await GlobalApi.GetUserChildren();
+          const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+          const response = await GlobalApi.GetUserChildren(token);
           updateChildrenData(response.data.data); // Update context with fetched children
           if (response.data.data.length > 0) {
             selectChild(response.data.data[0].id); // Automatically select the first child

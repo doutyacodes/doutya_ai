@@ -12,8 +12,7 @@ const SignUpUser = (data) => axios.post("/api/signup", data);
 const LoginUser = (data) => axios.post("/api/login", data);
 
 // New functions to fetch and add children
-const GetUserChildren = async () => {
-  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+const GetUserChildren = async (token) => {
   return axios.get("/api/children", {
     headers: {
       Authorization: `Bearer ${token}`, // Include the token in the Authorization header
