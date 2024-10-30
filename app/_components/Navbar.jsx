@@ -76,10 +76,10 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="w-full md:bg-transparent bg-white max-md:shadow-md fixed top-0 left-0 z-10 md:pt-10">
+    <nav className="w-full md:bg-transparent  md:fixed top-0 left-0 z-10 md:pt-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
+        <div className="flex items-center md:justify-between justify-center">
+          <div className="flex items-center max-md:justify-center max-md:mt-4">
             <Image src={"/images/logo.png"} width={150} height={150} alt="logo" />
           </div>
           <div className="hidden md:flex items-center space-x-6">
@@ -91,18 +91,18 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link href="/about-us" className="block px-4 py-2 text-white hover:text-orange-600">About Us</Link>
+                {/* <Link href="/about-us" className="block px-4 py-2 text-white hover:text-orange-600">About Us</Link> */}
                 <Link href="/our-story" className="block px-4 py-2 text-white hover:text-orange-600">Our Story</Link>
-                <Link href="/contact-us" className="block px-4 py-2 text-white hover:text-orange-600">Contact Us</Link>
+                {/* <Link href="/contact-us" className="block px-4 py-2 text-white hover:text-orange-600">Contact Us</Link> */}
               </>
             )}
-            {isAuthenticated ? (
+            {/* {isAuthenticated ? (
               <button onClick={logout} className="block px-4 py-2 text-white hover:text-orange-600">Logout</button>
             ) : (
               <Link href="/login" className="block px-4 py-2 text-white hover:text-orange-600">Login</Link>
-            )}
+            )} */}
           </div>
-          <div className="md:hidden">
+          <div className="hidden">
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-700 hover:text-orange-600 focus:outline-none">
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />

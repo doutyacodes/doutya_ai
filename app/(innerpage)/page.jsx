@@ -55,12 +55,11 @@ const Home = () => {
       const token =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-        if (age > 10 || age < 2) {
-            toast.error("Age must be between 2 and 10.");
-            setIsLoading(false);
-            return; // Early return if age is out of bounds
-        }
-        
+      if (age > 10 || age < 2) {
+        toast.error("Age must be between 2 and 10.");
+        setIsLoading(false);
+        return; // Early return if age is out of bounds
+      }
 
       const response = await GlobalApi.SearchUser(token, {
         courseName,
@@ -149,14 +148,14 @@ const Home = () => {
           >
             <form onSubmit={handleSearch} className="w-full ">
               <div className="w-full text-center mb-4">
-                <h2 className="text-lg font-semibold mb-2 gap-2 items-center justify-center flex flex-wrap text-white">
-                  I want{" "}
+                <h2 className="text-lg font-semibold mb-2 items-center justify-center flex md:flex-wrap max-md:flex-col gap-3 text-white">
+                  <div>I want </div>
                   <Select
                     onValueChange={setType}
                     value={type}
                     className="bg-transparent ring-transparent border border-transparent"
                   >
-                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent text-3xl uppercase underline rounded-full p-2 text-white">
+                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-3xl uppercase underline rounded-full p-2 text-white">
                       <SelectValue placeholder="Story" className="text-black" />
                     </SelectTrigger>
                     <SelectContent>
@@ -184,21 +183,23 @@ const Home = () => {
                       </SelectGroup>
                     </SelectContent>
                   </Select>{" "}
-                  about
+                  <div>about</div>
                 </h2>
                 <Input
                   type="text"
                   placeholder="Type the topic name here"
                   value={courseName}
                   onChange={(e) => setCourseName(e.target.value)}
-                  className="w-full p-2 py-5 text-xl placeholder:text-lg focus-visible:ring-transparent border border-gray-300 rounded-full placeholder:text-center"
+                  className="w-full p-2 max-md:py-12 py-5 text-xl placeholder:text-lg focus-visible:ring-transparent border border-gray-300 rounded-xl md:rounded-full placeholder:text-center"
                 />
               </div>
 
               <div
                 className={cn(
                   "grid gap-2",
-                  isAuthenticated ? "grid-cols-1" : "grid-cols-2"
+                  isAuthenticated
+                    ? "grid-cols-1"
+                    : "grid-cols-2 max-md:grid-cols-1"
                 )}
               >
                 {!isAuthenticated && (
@@ -222,7 +223,10 @@ const Home = () => {
                   </h2>
                   <Select onValueChange={setLanguage} value={language}>
                     <SelectTrigger className="w-full border text-center focus-visible:ring-transparent border-gray-300 rounded-full p-2">
-                      <SelectValue className="w-full text-center" placeholder="English" />
+                      <SelectValue
+                        className="w-full text-center"
+                        placeholder="English"
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -251,34 +255,38 @@ const Home = () => {
                   </Select>
                 </div>
               )} */}
-<div className="w-full flex justify-center items-center">
-
-              <button
-                type="submit"
-                className="bg-[#ffbd59] uppercase font-bold py-2 px-4 rounded-lg transition-all max-md:w-full md:min-w-36"
-              >
-                Submit
-              </button>
-</div>
+              <div className="w-full flex justify-center items-center mt-5">
+                <button
+                  type="submit"
+                  className="bg-[#ffbd59] uppercase font-bold py-2 px-4 rounded-lg transition-all max-md:w-full md:min-w-36"
+                >
+                  Submit
+                </button>
+              </div>
             </form>
             {error && <p className="text-red-500">{error}</p>}
           </motion.div>
         </>
       )}
-
+      {latestCourse && (
+        <>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="flex flex-col gap-3 items-center bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative mt-6 font-bold text-xl"
+          >
+            <div className="uppercase">{latestCourse?.type}</div>
+          </motion.div>
+        </>
+      )}
       {latestCourse && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative"
+          className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative mt-6"
         >
-          <button
-            onClick={() => setLatestCourse(null)}
-            className="text-orange-400 w-full flex gap-4 items-center"
-          >
-            <IoChevronBackOutline /> Back
-          </button>
           <div className="mt-6 w-full text-left">
             {/* <h3 className="text-2xl font-semibold mb-4">
               Latest Course Details
@@ -496,6 +504,19 @@ const Home = () => {
                     "Conclusion data is unavailable."}
                 </p>
               </>
+            )}
+            {latestCourse && (
+              <div className="flex justify-center items-center">
+                <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1 }}
+                className="flex flex-col items-center space-y-4 bg-orange-400 text-white font-bold shadow-lg rounded-lg max-md:w-full w-72 max-w-4xl p-3 text-xl relative mt-6"
+                onClick={() => setLatestCourse(null)}
+              >
+                Back to Search
+              </motion.div>
+              </div>
             )}
             {(latestCourse.type === "story" ||
               latestCourse.type === "bedtime story" ||
