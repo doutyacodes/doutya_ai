@@ -155,7 +155,7 @@ const Home = () => {
                     value={type}
                     className="bg-transparent ring-transparent border border-transparent"
                   >
-                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-3xl uppercase underline rounded-full p-2 text-white">
+                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-xl uppercase underline rounded-full p-2 text-white">
                       <SelectValue placeholder="Story" className="text-black" />
                     </SelectTrigger>
                     <SelectContent>
