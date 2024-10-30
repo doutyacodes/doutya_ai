@@ -258,7 +258,7 @@ const Home = () => {
               <div className="w-full flex justify-center items-center mt-5">
                 <button
                   type="submit"
-                  className="bg-[#ffbd59] uppercase font-bold py-2 px-4 rounded-lg transition-all max-md:w-full md:min-w-36"
+                  className="bg-[#ffbd59] uppercase font-bold py-4 md:py-2 text-lg px-4 rounded-lg transition-all max-md:w-full md:min-w-52"
                 >
                   Submit
                 </button>
