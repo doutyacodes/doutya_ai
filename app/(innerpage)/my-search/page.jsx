@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
 import Navbar from "@/app/_components/Navbar";
@@ -18,7 +18,7 @@ const CourseList = () => {
   const { selectedChildId } = useChildren();
   const router = useRouter();
 
-  const fetchCourse = async () => {
+  const fetchCourse = useCallback(async () => {
     if (selectedChildId) {
       setLoading(true);
       try {
@@ -39,12 +39,11 @@ const CourseList = () => {
         setLoading(false);
       }
     }
-  };
+  }, [selectedChildId, page, type, sortBy]); // Include dependencies here
 
   useEffect(() => {
     fetchCourse();
-  }, [page, type, sortBy, selectedChildId]);
-
+  }, [fetchCourse]);
   return (
     <div className="w-full h-full p-6 min-h-screen">
       <h1 className="text-3xl font-bold mb-4">Courses</h1>

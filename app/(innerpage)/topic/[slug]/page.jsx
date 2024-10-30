@@ -12,7 +12,6 @@ import Link from "next/link";
 
 const Chapter = () => {
   const { slug } = useParams();
-  const [subtopic, setSubtopic] = useState(null);
   const [latestCourse, setLatestCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
