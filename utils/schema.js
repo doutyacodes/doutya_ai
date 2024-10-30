@@ -38,9 +38,10 @@ export const COURSES = mysqlTable('courses', {
   chapter_content: text('chapter_content').notNull().default(''),
   created_at: timestamp('created_at').defaultNow(),
   age: int('age').notNull(),
-  user_id: int('user_id').references(() => USER_DETAILS.id), // Add this line
+  slug: text('slug').notNull().default(''),
+  user_id: int('user_id').references(() => USER_DETAILS.id), // Foreign key referencing the user
+  child_id: int('child_id').references(() => CHILDREN.id), // Foreign key referencing the child
 });
-
 
 // Modules Table
 export const MODULES = mysqlTable('modules', {
@@ -70,4 +71,15 @@ export const KEYWORDS = mysqlTable('keywords', {
 export const COURSES_KEYWORDS = mysqlTable('courses_keywords', {
   course_id: int('course_id').notNull(),
   keyword_id: int('keyword_id').notNull(),
+});
+
+// Children Table
+export const CHILDREN = mysqlTable('children', {
+  id: int('id').primaryKey().autoincrement(),
+  user_id: int('user_id').references(() => USER_DETAILS.id), // Foreign key referencing the user
+  name: varchar('name', { length: 255 }).notNull(),
+  gender: mysqlEnum('gender', ['male', 'female', 'other']).notNull(), // Enum for gender
+  age: int('age').notNull(),
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow().onUpdateNow(),
 });

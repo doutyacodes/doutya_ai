@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { hash } from "bcryptjs";
-import { USER_DETAILS } from "@/utils/schema";
+import { USER_DETAILS, CHILDREN } from "@/utils/schema"; // Assuming CHILDREN schema is defined
 import { db } from "@/utils";
 import { NextResponse } from "next/server";
 import { eq, or } from "drizzle-orm";
@@ -8,9 +8,13 @@ import jwt from "jsonwebtoken"; // Import jwt
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key'; // Replace with your actual secret key
 
+
+
 export async function POST(req) {
   try {
-    const { name, username, birth_date, password, gender, mobile } = await req.json();
+    const { name, username, password, mobile, children } = await req.json();
+
+    // Validate the input
 
     // Check if username or mobile already exists in the database
     const existingUser = await db
@@ -18,7 +22,7 @@ export async function POST(req) {
       .from(USER_DETAILS)
       .where(
         or(
-          eq(USER_DETAILS.username, username), 
+          eq(USER_DETAILS.username, username),
           eq(USER_DETAILS.mobile, mobile)
         )
       )
@@ -37,16 +41,26 @@ export async function POST(req) {
 
     // Create new user record in the database
     const newUser = await db.insert(USER_DETAILS).values({
-      name,
-      username,
+      name: name,
+      username: username,
       password: hashedPassword,
-      mobile,
+      mobile: mobile,
     });
+
+    // Insert children into the database
+    for (const child of children) {
+      await db.insert(CHILDREN).values({
+        user_id: newUser[0].insertId, // Assuming CHILDREN has a user_id foreign key
+        name: child.name,
+        gender: child.gender,
+        age: child.age,
+      });
+    }
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: newUser.insertId, username: newUser.username }, // Include relevant user info in token
-      process.env.JWT_SECRET,
+      { id: newUser[0].insertId, username: newUser.username }, // Include relevant user info in token
+      JWT_SECRET,
       //{ expiresIn: '1h' } // Token expiration time
     );
 

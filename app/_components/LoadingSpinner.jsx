@@ -4,7 +4,7 @@ import React from 'react';
 
 const LoadingSpinner = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-orange-100 via-white to-orange-50">
+    <div className="flex items-center justify-center min-h-screen ">
       <div className="loader"></div>
       <style jsx>{`
         .loader {

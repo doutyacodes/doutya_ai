@@ -3,21 +3,41 @@ import axios from "axios";
 import { COURSES, MODULES, SUBTOPICS } from "@/utils/schema";
 import { db } from "@/utils";
 import { generateUniqueSlug } from "@/lib/utils";
+import { authenticate } from "@/lib/jwtMiddleware";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
 export async function POST(request) {
   try {
-    const { courseName, language, difficulty, age, type } = await request.json();
+    const authResult = await authenticate(request);
+    if (!authResult.authenticated) {
+      return authResult.response; // Return the response if authentication fails
+    }
+
+    const userId = authResult.decoded_Data.id;
+    // console.log("userId",userId)
+
+    const { courseName, language, difficulty, age, type, childId } =
+      await request.json();
 
     // Basic validation
-    if (![courseName, language, difficulty, age].every((field) => field?.toString().trim())) {
-      return NextResponse.json({ message: "All fields are required and must not be empty." }, { status: 400 });
+    if (
+      ![courseName, language, difficulty, age].every((field) =>
+        field?.toString().trim()
+      )
+    ) {
+      return NextResponse.json(
+        { message: "All fields are required and must not be empty." },
+        { status: 400 }
+      );
     }
 
     if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json({ message: "API Key is missing in environment variables." }, { status: 500 });
+      return NextResponse.json(
+        { message: "API Key is missing in environment variables." },
+        { status: 500 }
+      );
     }
 
     const prompt = generatePrompt(courseName, language, difficulty, age, type);
@@ -39,21 +59,39 @@ export async function POST(request) {
         }
       );
     } catch (apiError) {
-      console.error("API Request Error:", apiError.response ? apiError.response.data : apiError.message);
-      return NextResponse.json({ message: "Error with OpenAI API request", error: apiError.message }, { status: 500 });
+      console.error(
+        "API Request Error:",
+        apiError.response ? apiError.response.data : apiError.message
+      );
+      return NextResponse.json(
+        { message: "Error with OpenAI API request", error: apiError.message },
+        { status: 500 }
+      );
     }
 
-    const responseContent = chatGptResponse.data.choices?.[0]?.message?.content.trim();
+    const responseContent =
+      chatGptResponse.data.choices?.[0]?.message?.content.trim();
     if (!responseContent) {
-      return NextResponse.json({ message: "No response content from OpenAI API." }, { status: 500 });
+      return NextResponse.json(
+        { message: "No response content from OpenAI API." },
+        { status: 500 }
+      );
     }
 
     let parsedData;
     try {
-      parsedData = JSON.parse(responseContent.replace(/```json|```/g, "").trim());
+      parsedData = JSON.parse(
+        responseContent.replace(/```json|```/g, "").trim()
+      );
     } catch (jsonError) {
       console.error("JSON Parsing Error:", jsonError);
-      return NextResponse.json({ message: "Error parsing API response as JSON", error: jsonError.message }, { status: 500 });
+      return NextResponse.json(
+        {
+          message: "Error parsing API response as JSON",
+          error: jsonError.message,
+        },
+        { status: 500 }
+      );
     }
 
     let courseId;
@@ -63,70 +101,53 @@ export async function POST(request) {
         language,
         difficulty,
         age,
+        slug:generateUniqueSlug(),
         type,
         chapter_content: JSON.stringify(parsedData),
+        user_id: userId,
+        child_id: childId, // Pass selected child ID
       });
       courseId = courseInsert[0].insertId;
-      if (!courseId) throw new Error("Course insertion did not return an insertId");
+      if (!courseId)
+        throw new Error("Course insertion did not return an insertId");
     } catch (dbError) {
       console.error("Database Insertion Error:", dbError);
-      return NextResponse.json({ message: "Error inserting course into database", error: dbError.message }, { status: 500 });
+      return NextResponse.json(
+        {
+          message: "Error inserting course into database",
+          error: dbError.message,
+        },
+        { status: 500 }
+      );
     }
 
-    // Insert Modules and Subtopics if type is "course"
-    // if (type === "course" && parsedData.courseContent?.body?.modules) {
-    //   for (const module of parsedData.courseContent.body.modules) {
-    //     let moduleId;
-    //     try {
-    //       const moduleInsert = await db.insert(MODULES).values({
-    //         course_id: courseId,
-    //         module_number: module.module_number,
-    //         title: module.title,
-    //         content: JSON.stringify(module.content || ''),
-    //       });
-    //       moduleId = moduleInsert[0].insertId;
-    //       module.module_id = moduleId; // Add module_id to parsedData
-    //     } catch (dbError) {
-    //       console.error("Module Insertion Error:", dbError);
-    //       return NextResponse.json({ message: "Error inserting module into database", error: dbError.message }, { status: 500 });
-    //     }
-
-    //     if (module.subtopics && module.subtopics.length > 0) {
-    //       for (const subtopic of module.subtopics) {
-    //         try {
-    //           const slug_value=generateUniqueSlug()
-    //           const subtopicInsert = await db.insert(SUBTOPICS).values({
-    //             module_id: moduleId,
-    //             title: subtopic.title,
-    //             slug:slug_value,
-    //             content: JSON.stringify(subtopic.content || ''),
-    //           });
-    //           const subtopicId = subtopicInsert[0].insertId;
-    //           subtopic.subtopic_id = subtopicId; // Add subtopic_id to parsedData
-    //           subtopic.subtopic_slug = slug_value; // Add subtopic_id to parsedData
-    //         } catch (dbError) {
-    //           console.error("Subtopic Insertion Error:", dbError);
-    //           return NextResponse.json({ message: "Error inserting subtopic into database", error: dbError.message }, { status: 500 });
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-
-    return NextResponse.json({ message: "Course created successfully!", content: parsedData }, { status: 201 });
+    return NextResponse.json(
+      { message: "Course created successfully!", content: parsedData },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error in /api/search:", error);
-    return NextResponse.json({ message: "Error processing your request", error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { message: "Error processing your request", error: error.message },
+      { status: 500 }
+    );
   }
 }
 
 function generatePrompt(courseName, language, difficulty, age, type) {
-  if (["story", "bedtime story", "poem", "informative story","podcast"].includes(type)) {
+  if (
+    ["story", "bedtime story", "poem", "informative story", "podcast"].includes(
+      type
+    )
+  ) {
     return `
       Create a JSON object for a ${
-        type === "poem" ? "poem" : type=="podcast"?"transcript":type
+        type === "poem" ? "poem" : type == "podcast" ? "transcript" : type
       } on the topic of "${courseName}" in "${language}" for readers ${age} years old.
-      The ${type} should be engaging and age-appropriate${type=="informative story" && " with the history and relevant facts about the topic"}.
+      The ${type} should be engaging and age-appropriate${
+      type == "informative story" &&
+      " with the history and relevant facts about the topic"
+    }.
       
       Structure:
       - If it’s a "story" or "bedtime story" or "informative story" or "podcast":
@@ -264,7 +285,6 @@ function generatePrompt(courseName, language, difficulty, age, type) {
     }
     `;
   }
-  
 
   return `
     Generate a detailed and comprehensive JSON object for ${

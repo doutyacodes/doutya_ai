@@ -1,18 +1,57 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
+import GlobalApi from "@/app/api/_services/GlobalApi";
+import { useChildren } from "@/context/CreateContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated, loading, logout } = useAuth(); // Assuming logout is part of your useAuth hook
+  const [showModal, setShowModal] = useState(false);
+  const [newChildName, setNewChildName] = useState("");
+  const [newChildGender, setNewChildGender] = useState("");
+  const [newChildAge, setNewChildAge] = useState("");
+  const { isAuthenticated, loading, logout } = useAuth();
+  const { childrenData, updateChildrenData, selectedChildId, selectChild,selectChildAge } = useChildren(); // Access context
+
+  useEffect(() => {
+    const fetchChildren = async () => {
+      if (isAuthenticated && childrenData.length === 0) {
+        const response = await GlobalApi.GetUserChildren();
+        updateChildrenData(response.data.data); // Update context with fetched children
+        if (response.data.data.length > 0) {
+          selectChild(response.data.data[0].id); // Automatically select the first child
+          selectChildAge(response.data.data[0].age); // Automatically select the first child
+        }
+      }
+    };
+
+    fetchChildren();
+  }, [isAuthenticated, childrenData, updateChildrenData, selectChild]);
+
+  const handleAddChild = async () => {
+    try {
+      await GlobalApi.AddChild({ name: newChildName, gender: newChildGender, age: newChildAge });
+      setShowModal(false);
+      setNewChildName("");
+      setNewChildGender("");
+      setNewChildAge("");
+
+      const response = await GlobalApi.GetUserChildren();
+      updateChildrenData(response.data.data); // Update context with new child data
+      selectChild(response.data.data[0].id); // Automatically select the newly added child
+      selectChildAge(response.data.data[0].age); // Automatically select the newly added child
+    } catch (error) {
+      console.error("Failed to add child", error);
+    }
+  };
 
   if (loading) {
     return (
       <p className="w-full bg-white shadow-md fixed top-0 left-0 z-10 h-10">
         Loading...
       </p>
-    ); // or a spinner component
+    );
   }
 
   return (
@@ -23,20 +62,27 @@ const Navbar = () => {
             <h1 className="text-2xl font-bold text-orange-600">Doutya Ai</h1>
           </div>
           <div className="hidden md:flex items-center space-x-6">
-            <a href="#products" className="text-white max-md:text-gray-700 hover:text-orange-600">
-              Products
-            </a>
-            <a href="#faq" className="text-white max-md:text-gray-700 hover:text-orange-600">
-              FAQ
-            </a>
-            <a href="#about" className="text-white max-md:text-gray-700 hover:text-orange-600">
-              About
-            </a>
-            <Link href="/testing" className="text-white max-md:text-gray-700 hover:text-orange-600">
-              Test Voice
+          <Link href="/my-search" className="block px-4 py-2 text-white hover:text-orange-600">
+              Search History
             </Link>
-
-            {/* {isAuthenticated ? (
+            <select
+              value={selectedChildId ? selectedChildId : ""}
+              onChange={(e) => selectChild(e.target.value)}
+              className="bg-white border rounded-md px-3 py-2"
+            >
+              {childrenData.map((child) => (
+                <option key={child.id} value={child.id}>
+                  {child.name}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => setShowModal(true)}
+              className="text-white bg-blue-600 py-3 px-7 rounded-md font-bold"
+            >
+              Add Child
+            </button>
+            {isAuthenticated ? (
               <button
                 onClick={logout}
                 className="text-white bg-red-600 py-3 px-7 rounded-md font-bold"
@@ -44,13 +90,10 @@ const Navbar = () => {
                 Logout
               </button>
             ) : (
-              <Link
-                href="/signup"
-                className="text-white bg-orange-600 py-3 px-7 rounded-md font-bold"
-              >
+              <Link href="/signup" className="text-white bg-orange-600 py-3 px-7 rounded-md font-bold">
                 Get Started
               </Link>
-            )} */}
+            )}
           </div>
 
           <div className="md:hidden">
@@ -69,11 +112,7 @@ const Navbar = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
-                  d={
-                    isMenuOpen
-                      ? "M6 18L18 6M6 6l12 12"
-                      : "M4 6h16M4 12h16M4 18h16"
-                  }
+                  d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
                 />
               </svg>
             </button>
@@ -82,39 +121,101 @@ const Navbar = () => {
 
         {isMenuOpen && (
           <div className="md:hidden">
-            <a href="#products" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
+            <select
+              value={selectedChildId ? selectedChildId : ""}
+              onChange={(e) => selectChild(e.target.value)}
+              className="bg-white border rounded-md px-3 py-2 mb-2 w-full"
+            >
+              {childrenData.map((child) => (
+                <option key={child.id} value={child.id}>
+                  {child.name} (Age: {child.age})
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => setShowModal(true)}
+              className="block w-full text-white bg-blue-600 rounded-md py-3 mb-2 font-bold"
+            >
+              Add Child
+            </button>
+            <Link href="#products" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
               Products
-            </a>
-            <a href="#faq" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
+            </Link>
+            <Link href="#faq" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
               FAQ
-            </a>
-            <a href="#about" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
+            </Link>
+            <Link href="#about" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
               About
-            </a>
+            </Link>
             <Link href="/testing" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
               Test Voice
             </Link>
-            
-            {/* {isAuthenticated ? (
-              <button
-                onClick={logout}
-                className="block px-4 py-2 text-white bg-red-600 rounded-md font-bold"
-              >
+            {isAuthenticated ? (
+              <button onClick={logout} className="block px-4 py-2 text-white bg-red-600 rounded-md font-bold">
                 Logout
               </button>
             ) : (
-              <Link
-                href="/signup"
-                className="block px-4 py-2 text-white bg-orange-600 rounded-md font-bold"
-              >
+              <Link href="/signup" className="block px-4 py-2 text-white bg-orange-600 rounded-md font-bold">
                 Get Started
               </Link>
-            )} */}
+            )}
           </div>
         )}
       </div>
+
+      {/* Modal for Adding a New Child */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <h2 className="text-lg font-bold mb-4">Add New Child</h2>
+            <div>
+              <label className="block mb-2">Name:</label>
+              <input
+                type="text"
+                value={newChildName}
+                onChange={(e) => setNewChildName(e.target.value)}
+                className="border rounded-md p-2 w-full mb-4"
+                required
+              />
+              <label className="block mb-2">Gender:</label>
+              <select
+                value={newChildGender}
+                onChange={(e) => setNewChildGender(e.target.value)}
+                className="border rounded-md p-2 w-full mb-4"
+              >
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+              <label className="block mb-2">Age:</label>
+              <input
+                type="number"
+                value={newChildAge}
+                onChange={(e) => setNewChildAge(e.target.value)}
+                className="border rounded-md p-2 w-full mb-4"
+                required
+              />
+            </div>
+            <div className="flex justify-between">
+              <button
+                onClick={() => setShowModal(false)}
+                className="bg-gray-300 rounded-md px-4 py-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddChild}
+                className="bg-blue-600 text-white rounded-md px-4 py-2"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
 
 export default Navbar;
+
