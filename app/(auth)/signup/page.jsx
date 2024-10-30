@@ -16,7 +16,7 @@ import jwt from "jsonwebtoken"; // Import jwt
 const childSchema = z.object({
   name: z.string().min(1, { message: "Child's name is required." }),
   gender: z.enum(['male', 'female', 'other'], { message: "Select a gender." }),
-  age: z.number()
+  age: z.any()
     .min(2, { message: "Age must be at least 2." })
     .max(10, { message: "Age must be at most 10." }), // Age must be between 2 and 10
 });
