@@ -55,11 +55,11 @@ const Home = () => {
       const token =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-      if (age > 12 || age < 2) {
-        toast.error("Age must be between 2 and 12.");
-        setIsLoading(false);
-        return; // Early return if age is out of bounds
-      }
+    //   if (age > 12 || age < 2) {
+    //     toast.error("Age must be between 2 and 12.");
+    //     setIsLoading(false);
+    //     return; // Early return if age is out of bounds
+    //   }
 
       const response = await GlobalApi.SearchUser(token, {
         courseName,
