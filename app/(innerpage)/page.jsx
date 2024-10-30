@@ -120,7 +120,7 @@ const Home = () => {
   }
 
   return (
-    <div className="md:min-h-screen flex flex-col items-center justify-center  text-gray-800 p-5 pt-20">
+    <div className="md:min-h-screen flex flex-col items-center justify-center  text-gray-800 p-5 md:pt-20 pt-1">
       <Toaster />
 
       {!latestCourse && (
@@ -148,7 +148,7 @@ const Home = () => {
           >
             <form onSubmit={handleSearch} className="w-full ">
               <div className="w-full text-center mb-4">
-                <h2 className="text-lg font-semibold mb-2 items-center justify-center flex md:flex-wrap max-md:flex-col gap-3 text-white">
+                <h2 className="text-lg font-semibold mb-8 items-center justify-center flex md:flex-wrap max-md:flex-col gap-3 text-white">
                   <div>I want </div>
                   <Select
                     onValueChange={setType}
@@ -190,13 +190,13 @@ const Home = () => {
                   placeholder="Type the topic name here"
                   value={courseName}
                   onChange={(e) => setCourseName(e.target.value)}
-                  className="w-full p-2 max-md:py-12 py-5 text-xl placeholder:text-lg focus-visible:ring-transparent border border-gray-300 rounded-xl md:rounded-full placeholder:text-center"
+                  className="w-full p-2 max-md:py-12 py-6 text-xl placeholder:text-lg focus-visible:ring-transparent border border-gray-300 rounded-xl md:rounded-full placeholder:text-center md:mb-16"
                 />
               </div>
 
               <div
                 className={cn(
-                  "grid gap-2",
+                  "grid gap-2 md:gap-8",
                   isAuthenticated
                     ? "grid-cols-1"
                     : "grid-cols-2 max-md:grid-cols-1"

@@ -10,7 +10,7 @@ export default function OurStory() {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="text-5xl font-bold text-center mb-8 text-white"
+        className="text-5xl font-bold text-center mb-8 mt-14 text-white"
       >
         Our Story
       </motion.h1>
