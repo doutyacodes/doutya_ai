@@ -251,13 +251,15 @@ const Home = () => {
                   </Select>
                 </div>
               )} */}
+<div className="w-full flex justify-center items-center">
 
               <button
                 type="submit"
-                className="bg-[#ffbd59] font-bold py-2 px-4 rounded-lg transition-all w-full"
+                className="bg-[#ffbd59] font-bold py-2 px-4 rounded-lg transition-all max-md:w-full md:min-w-36"
               >
                 Submit
               </button>
+</div>
             </form>
             {error && <p className="text-red-500">{error}</p>}
           </motion.div>
