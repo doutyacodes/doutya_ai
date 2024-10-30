@@ -76,7 +76,7 @@ const Home = () => {
       setLatestCourse(newCourse);
 
       if (newCourse && Object.keys(newCourse).length > 0) {
-        toast.success("Topic created successfully!");
+        // toast.success("Topic created successfully!");
       } else {
         toast.error("No data found.");
       }

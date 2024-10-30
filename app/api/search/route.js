@@ -24,7 +24,7 @@ export async function POST(request) {
     let userId = null;
     if (token) {
       try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify the token
+        const decoded = jwt.verify(token, "doutyajWtsecRet"); // Verify the token
         // console.log("decoded",decoded)
         userId = decoded.id;
       } catch (error) {
