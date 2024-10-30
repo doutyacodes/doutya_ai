@@ -1,37 +1,53 @@
 import axios from "axios";
 
-const getToken = () => localStorage.getItem("token");
-
-const SearchUser = (token, data) => axios.post("/api/search", { data, token });
+const SearchUser = (token, data) => {
+  const payload ={
+    data,
+    token
+  }
+  return axios.post("/api/search", payload);
+};
 
 const SignUpUser = (data) => axios.post("/api/signup", data);
 const LoginUser = (data) => axios.post("/api/login", data);
 
-const GetUserChildren = async () => {
-  if (!getToken()) throw new Error("Authentication token missing");
+// New functions to fetch and add children
+const GetUserChildren = async (token) => {
   return axios.get("/api/children", {
-    headers: { Authorization: `Bearer ${getToken()}` },
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
   });
 };
 
 const AddChild = async (data) => {
-  if (!getToken()) throw new Error("Authentication token missing");
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
   return axios.post("/api/children/add", data, {
-    headers: { Authorization: `Bearer ${getToken()}` },
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
   });
 };
 
-const GetCourses = async (data) => {
-  if (!getToken()) throw new Error("Authentication token missing");
-  return axios.post("/api/fetchcourse", data, {
-    headers: { Authorization: `Bearer ${getToken()}` },
+// New function to fetch courses
+const FetchCourses = async (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+  
+  return axios.post(`/api/fetchcourse`,data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
   });
 };
 
-const GetSubtopics = async (data) => {
-  if (!getToken()) throw new Error("Authentication token missing");
-  return axios.post("/api/subtopics", data, {
-    headers: { Authorization: `Bearer ${getToken()}` },
+// New function to fetch courses
+const FetchSubtopics = async (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+  
+  return axios.post(`/api/subtopics`,data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
   });
 };
 
@@ -39,8 +55,8 @@ export default {
   SearchUser,
   SignUpUser,
   LoginUser,
-  GetUserChildren,
-  AddChild,
-  GetCourses,
-  GetSubtopics,
+  GetUserChildren, // Export the new function
+  AddChild,        // Export the new function
+  FetchCourses,    // Export the new function
+  FetchSubtopics
 };
