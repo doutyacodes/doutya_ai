@@ -191,7 +191,7 @@ const Home = () => {
                   placeholder="Type the topic name here"
                   value={courseName}
                   onChange={(e) => setCourseName(e.target.value)}
-                  className="w-full p-2 focus-visible:ring-transparent border border-gray-300 rounded-full"
+                  className="w-full p-2 py-5 text-xl placeholder:text-lg focus-visible:ring-transparent border border-gray-300 rounded-full placeholder:text-center"
                 />
               </div>
 
