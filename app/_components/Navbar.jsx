@@ -91,16 +91,16 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                {/* <Link href="/about-us" className="block px-4 py-2 text-white hover:text-orange-600">About Us</Link> */}
+                <Link href="/about-us" className="block px-4 py-2 text-white hover:text-orange-600">About Us</Link>
                 <Link href="/our-story" className="block px-4 py-2 text-white hover:text-orange-600">Our Story</Link>
-                {/* <Link href="/contact-us" className="block px-4 py-2 text-white hover:text-orange-600">Contact Us</Link> */}
+                <Link href="/contact-us" className="block px-4 py-2 text-white hover:text-orange-600">Contact Us</Link>
               </>
             )}
-            {/* {isAuthenticated ? (
+            {isAuthenticated ? (
               <button onClick={logout} className="block px-4 py-2 text-white hover:text-orange-600">Logout</button>
             ) : (
               <Link href="/login" className="block px-4 py-2 text-white hover:text-orange-600">Login</Link>
-            )} */}
+            )}
           </div>
           <div className="hidden">
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-700 hover:text-orange-600 focus:outline-none">

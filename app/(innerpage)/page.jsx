@@ -55,8 +55,8 @@ const Home = () => {
       const token =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-      if (age > 10 || age < 2) {
-        toast.error("Age must be between 2 and 10.");
+      if (age > 12 || age < 2) {
+        toast.error("Age must be between 2 and 12.");
         setIsLoading(false);
         return; // Early return if age is out of bounds
       }
