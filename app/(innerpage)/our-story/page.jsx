@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 export default function OurStory() {
   return (
-    <div className="container mx-auto py-12">
+    <div className="container mx-auto py-12 px-4">
       <motion.h1
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
