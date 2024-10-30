@@ -12,17 +12,30 @@ const Navbar = () => {
   const [newChildGender, setNewChildGender] = useState("");
   const [newChildAge, setNewChildAge] = useState("");
   const { isAuthenticated, loading, logout } = useAuth();
-  const { childrenData, updateChildrenData, selectedChildId, selectChild,selectChildAge } = useChildren(); // Access context
-
+  const {
+    childrenData,
+    updateChildrenData,
+    selectedChildId,
+    selectChild,
+    selectChildAge,
+  } = useChildren(); // Access context
+  const [userLoading, setUserLoading] = useState(false);
   useEffect(() => {
     const fetchChildren = async () => {
-      if (isAuthenticated && childrenData.length === 0) {
-        const response = await GlobalApi.GetUserChildren();
-        updateChildrenData(response.data.data); // Update context with fetched children
-        if (response.data.data.length > 0) {
-          selectChild(response.data.data[0].id); // Automatically select the first child
-          selectChildAge(response.data.data[0].age); // Automatically select the first child
+      try {
+        setUserLoading(true);
+        if (isAuthenticated && childrenData.length === 0) {
+          const response = await GlobalApi.GetUserChildren();
+          updateChildrenData(response.data.data); // Update context with fetched children
+          if (response.data.data.length > 0) {
+            selectChild(response.data.data[0].id); // Automatically select the first child
+            selectChildAge(response.data.data[0].age); // Automatically select the first child
+          }
         }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setUserLoading(false);
       }
     };
 
@@ -31,7 +44,11 @@ const Navbar = () => {
 
   const handleAddChild = async () => {
     try {
-      await GlobalApi.AddChild({ name: newChildName, gender: newChildGender, age: newChildAge });
+      await GlobalApi.AddChild({
+        name: newChildName,
+        gender: newChildGender,
+        age: newChildAge,
+      });
       setShowModal(false);
       setNewChildName("");
       setNewChildGender("");
@@ -62,10 +79,15 @@ const Navbar = () => {
             <h1 className="text-2xl font-bold text-orange-600">Doutya Ai</h1>
           </div>
           <div className="hidden md:flex items-center space-x-6">
-          <Link href="/my-search" className="block px-4 py-2 text-white hover:text-orange-600">
+            <Link
+              href="/my-search"
+              className="block px-4 py-2 text-white hover:text-orange-600"
+            >
               Search History
             </Link>
-            <select
+            {
+              !userLoading && (
+                <select
               value={selectedChildId ? selectedChildId : ""}
               onChange={(e) => selectChild(e.target.value)}
               className="bg-white border rounded-md px-3 py-2"
@@ -76,6 +98,8 @@ const Navbar = () => {
                 </option>
               ))}
             </select>
+              )
+            }
             <button
               onClick={() => setShowModal(true)}
               className="text-white bg-blue-600 py-3 px-7 rounded-md font-bold"
@@ -90,7 +114,10 @@ const Navbar = () => {
                 Logout
               </button>
             ) : (
-              <Link href="/signup" className="text-white bg-orange-600 py-3 px-7 rounded-md font-bold">
+              <Link
+                href="/signup"
+                className="text-white bg-orange-600 py-3 px-7 rounded-md font-bold"
+              >
                 Get Started
               </Link>
             )}
@@ -112,7 +139,11 @@ const Navbar = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
-                  d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
+                  d={
+                    isMenuOpen
+                      ? "M6 18L18 6M6 6l12 12"
+                      : "M4 6h16M4 12h16M4 18h16"
+                  }
                 />
               </svg>
             </button>
@@ -121,7 +152,9 @@ const Navbar = () => {
 
         {isMenuOpen && (
           <div className="md:hidden">
-            <select
+            {
+              !userLoading && (
+                <select
               value={selectedChildId ? selectedChildId : ""}
               onChange={(e) => selectChild(e.target.value)}
               className="bg-white border rounded-md px-3 py-2 mb-2 w-full"
@@ -132,22 +165,33 @@ const Navbar = () => {
                 </option>
               ))}
             </select>
+              )
+            }
             <button
               onClick={() => setShowModal(true)}
               className="block w-full text-white bg-blue-600 rounded-md py-3 mb-2 font-bold"
             >
               Add Child
             </button>
-            <Link href="/my-search" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
+            <Link
+              href="/my-search"
+              className="block px-4 py-2 text-gray-700 hover:text-orange-600"
+            >
               Search History
             </Link>
-            
+
             {isAuthenticated ? (
-              <button onClick={logout} className="block px-4 py-2 text-white bg-red-600 rounded-md font-bold">
+              <button
+                onClick={logout}
+                className="block px-4 py-2 text-white bg-red-600 rounded-md font-bold"
+              >
                 Logout
               </button>
             ) : (
-              <Link href="/signup" className="block px-4 py-2 text-white bg-orange-600 rounded-md font-bold">
+              <Link
+                href="/signup"
+                className="block px-4 py-2 text-white bg-orange-600 rounded-md font-bold"
+              >
                 Get Started
               </Link>
             )}
@@ -210,4 +254,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
