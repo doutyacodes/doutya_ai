@@ -7,7 +7,7 @@ const ProtectLayout = ({ children }) => {
   return (
     <ProtectedRoute allowedRoutes={["/"]}>
       <ChildrenProvider>
-        <div className="relative min-h-screen pt-20 overflow-hidden">
+        <div className="relative min-h-screen pt-30 overflow-hidden">
           {/* Video Background */}
           <video
             autoPlay

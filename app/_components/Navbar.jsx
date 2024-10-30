@@ -76,7 +76,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="w-full md:bg-transparent bg-white max-md:shadow-md fixed top-0 left-0 z-10 pt-3">
+    <nav className="w-full md:bg-transparent bg-white max-md:shadow-md fixed top-0 left-0 z-10 md:pt-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
@@ -84,7 +84,7 @@ const Navbar = () => {
             <Image
               src={"/images/logo.png"}
               width={150}
-              height={100}
+              height={150}
               alt="logo"
             />
           </div>
