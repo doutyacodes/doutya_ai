@@ -151,7 +151,7 @@ export function Signup() {
                 <div key={field.id} className="mb-4">
                   <FormField control={form.control} name={`children.${index}.name`} render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Child's Name</FormLabel>
+                      <FormLabel>Child&apos;s Name</FormLabel>
                       <FormControl>
                         <Input placeholder="Child's Name" {...field} />
                       </FormControl>
