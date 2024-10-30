@@ -254,7 +254,7 @@ const Home = () => {
 
               <button
                 type="submit"
-                className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all w-full"
+                className="bg-[#ffbd59] font-bold py-2 px-4 rounded-lg transition-all w-full"
               >
                 Submit
               </button>
