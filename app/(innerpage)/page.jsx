@@ -34,6 +34,7 @@ const Home = () => {
   const { selectedChildId, selectedAge } = useChildren(); // Accessing selected child ID from context
   const { isAuthenticated, loading, logout } = useAuth();
 
+  
   // const validateForm = () => {
   //   if (!courseName || !age) {
   //     setError("Course name and age are required.");
@@ -55,6 +56,7 @@ const Home = () => {
       const token =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
+        // console.log(token)
     //   if (age > 12 || age < 2) {
     //     toast.error("Age must be between 2 and 12.");
     //     setIsLoading(false);
