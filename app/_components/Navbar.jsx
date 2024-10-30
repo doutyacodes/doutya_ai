@@ -19,20 +19,21 @@ const Navbar = () => {
     selectedChildId,
     selectChild,
     selectChildAge,
-  } = useChildren(); // Access context
+  } = useChildren();
   const [userLoading, setUserLoading] = useState(false);
+
   useEffect(() => {
     const fetchChildren = async () => {
       try {
         setUserLoading(true);
         if (isAuthenticated && childrenData.length === 0) {
           const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  
+
           const response = await GlobalApi.GetUserChildren(token);
-          updateChildrenData(response.data.data); // Update context with fetched children
+          updateChildrenData(response.data.data);
           if (response.data.data.length > 0) {
-            selectChild(response.data.data[0].id); // Automatically select the first child
-            selectChildAge(response.data.data[0].age); // Automatically select the first child's age
+            selectChild(response.data.data[0].id);
+            selectChildAge(response.data.data[0].age);
           }
         }
       } catch (error) {
@@ -41,10 +42,9 @@ const Navbar = () => {
         setUserLoading(false);
       }
     };
-  
+
     fetchChildren();
-  }, [isAuthenticated, childrenData, updateChildrenData, selectChild, selectChildAge]); // Added selectChildAge
-  
+  }, [isAuthenticated, childrenData, updateChildrenData, selectChild, selectChildAge]);
 
   const handleAddChild = async () => {
     try {
@@ -59,9 +59,9 @@ const Navbar = () => {
       setNewChildAge("");
 
       const response = await GlobalApi.GetUserChildren();
-      updateChildrenData(response.data.data); // Update context with new child data
-      selectChild(response.data.data[0].id); // Automatically select the newly added child
-      selectChildAge(response.data.data[0].age); // Automatically select the newly added child
+      updateChildrenData(response.data.data);
+      selectChild(response.data.data[0].id);
+      selectChildAge(response.data.data[0].age);
     } catch (error) {
       console.error("Failed to add child", error);
     }
@@ -80,198 +80,86 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            {/* <h1 className="text-2xl font-bold text-orange-600">Doutya Ai</h1> */}
-            <Image
-              src={"/images/logo.png"}
-              width={150}
-              height={150}
-              alt="logo"
-            />
+            <Image src={"/images/logo.png"} width={150} height={150} alt="logo" />
           </div>
           <div className="hidden md:flex items-center space-x-6">
-           {
-            isAuthenticated ? (
-              <>
-               <Link
-              href="/"
-              className="block px-4 py-2 text-white hover:text-orange-600"
-            >
-              Home
-            </Link>
-            <Link
-              href="/my-search"
-              className="block px-4 py-2 text-white hover:text-orange-600"
-            >
-              Search History
-            </Link>
-            <Link
-              href="/add-child"
-              className="block px-4 py-2 text-white hover:text-orange-600"
-            >
-              Add Child
-            </Link>
-              </>
-            ):(
-              <>
-               <Link
-              href="/about-us"
-              className="block px-4 py-2 text-white hover:text-orange-600"
-            >
-              About Us
-            </Link>
-            <Link
-              href="/our-story"
-              className="block px-4 py-2 text-white hover:text-orange-600"
-            >
-              Our Story
-            </Link>
-            <Link
-              href="/contact-us"
-              className="block px-4 py-2 text-white hover:text-orange-600"
-            >
-              Contact Us{" "}
-            </Link>
-              </>
-            )
-           }
-            
             {isAuthenticated ? (
-              <button
-                onClick={logout}
-                className="block px-4 py-2 text-white hover:text-orange-600"
-              >
-                Logout
-              </button>
+              <>
+                <Link href="/" className="block px-4 py-2 text-white hover:text-orange-600">Home</Link>
+                <Link href="/my-search" className="block px-4 py-2 text-white hover:text-orange-600">Search History</Link>
+                <Link href="/add-child" className="block px-4 py-2 text-white hover:text-orange-600">Add Child</Link>
+              </>
             ) : (
-              <Link
-                href="/login"
-                className="block px-4 py-2 text-white hover:text-orange-600"
-              >
-                Login
-              </Link>
+              <>
+                <Link href="/about-us" className="block px-4 py-2 text-white hover:text-orange-600">About Us</Link>
+                <Link href="/our-story" className="block px-4 py-2 text-white hover:text-orange-600">Our Story</Link>
+                <Link href="/contact-us" className="block px-4 py-2 text-white hover:text-orange-600">Contact Us</Link>
+              </>
+            )}
+            {isAuthenticated ? (
+              <button onClick={logout} className="block px-4 py-2 text-white hover:text-orange-600">Logout</button>
+            ) : (
+              <Link href="/login" className="block px-4 py-2 text-white hover:text-orange-600">Login</Link>
             )}
           </div>
-
           <div className="md:hidden">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-orange-600 focus:outline-none"
-            >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d={
-                    isMenuOpen
-                      ? "M6 18L18 6M6 6l12 12"
-                      : "M4 6h16M4 12h16M4 18h16"
-                  }
-                />
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-700 hover:text-orange-600 focus:outline-none">
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
               </svg>
             </button>
           </div>
         </div>
+      </div>
 
-        {isMenuOpen && (
-          <div className="md:hidden">
+      {/* Sidebar for Mobile */}
+      <div className={`md:hidden fixed inset-y-0 left-0 bg-white w-64 transform ${isMenuOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out z-20`}>
+        <div className="p-6">
+          <button onClick={() => setIsMenuOpen(false)} className="text-gray-700 hover:text-orange-600 focus:outline-none">
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <div className="mt-6">
             {!userLoading && (
-              <select
-                value={selectedChildId ? selectedChildId : ""}
-                onChange={(e) => selectChild(e.target.value)}
-                className="bg-white border rounded-md px-3 py-2 mb-2 w-full"
-              >
+              <select value={selectedChildId ? selectedChildId : ""} onChange={(e) => selectChild(e.target.value)} className="bg-white border rounded-md px-3 py-2 mb-2 w-full">
                 {childrenData.map((child) => (
-                  <option key={child.id} value={child.id}>
-                    {child.name} (Age: {child.age})
-                  </option>
+                  <option key={child.id} value={child.id}>{child.name} (Age: {child.age})</option>
                 ))}
               </select>
             )}
-            <button
-              onClick={() => setShowModal(true)}
-              className="block w-full text-white bg-blue-600 rounded-md py-3 mb-2 font-bold"
-            >
-              Add Child
-            </button>
-            <Link
-              href="/my-search"
-              className="block px-4 py-2 text-gray-700 hover:text-orange-600"
-            >
-              Search History
-            </Link>
+            <button onClick={() => setShowModal(true)} className="block w-full text-white bg-blue-600 rounded-md py-3 mb-2 font-bold">Add Child</button>
+            <Link href="/my-search" className="block px-4 py-2 text-gray-700 hover:text-orange-600">Search History</Link>
 
             {isAuthenticated ? (
-              <button
-                onClick={logout}
-                className="block px-4 py-2 text-white bg-red-600 rounded-md font-bold"
-              >
-                Logout
-              </button>
+              <button onClick={logout} className="block px-4 py-2 text-white bg-red-600 rounded-md font-bold">Logout</button>
             ) : (
-              <Link
-                href="/signup"
-                className="block px-4 py-2 text-white bg-orange-600 rounded-md font-bold"
-              >
-                Get Started
-              </Link>
+              <Link href="/signup" className="block px-4 py-2 text-white bg-orange-600 rounded-md font-bold">Get Started</Link>
             )}
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Modal for Adding a New Child */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-80">
             <h2 className="text-lg font-bold mb-4">Add New Child</h2>
             <div>
               <label className="block mb-2">Name:</label>
-              <input
-                type="text"
-                value={newChildName}
-                onChange={(e) => setNewChildName(e.target.value)}
-                className="border rounded-md p-2 w-full mb-4"
-                required
-              />
+              <input type="text" value={newChildName} onChange={(e) => setNewChildName(e.target.value)} className="border rounded-md p-2 w-full mb-4" required />
               <label className="block mb-2">Gender:</label>
-              <select
-                value={newChildGender}
-                onChange={(e) => setNewChildGender(e.target.value)}
-                className="border rounded-md p-2 w-full mb-4"
-              >
+              <select value={newChildGender} onChange={(e) => setNewChildGender(e.target.value)} className="border rounded-md p-2 w-full mb-4">
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
               </select>
               <label className="block mb-2">Age:</label>
-              <input
-                type="number"
-                value={newChildAge}
-                onChange={(e) => setNewChildAge(e.target.value)}
-                className="border rounded-md p-2 w-full mb-4"
-                required
-              />
+              <input type="number" value={newChildAge} onChange={(e) => setNewChildAge(e.target.value)} className="border rounded-md p-2 w-full mb-4" required />
             </div>
             <div className="flex justify-between">
-              <button
-                onClick={() => setShowModal(false)}
-                className="bg-gray-300 rounded-md px-4 py-2"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAddChild}
-                className="bg-blue-600 text-white rounded-md px-4 py-2"
-              >
-                Add
-              </button>
+              <button onClick={() => setShowModal(false)} className="bg-gray-300 rounded-md px-4 py-2">Cancel</button>
+              <button onClick={handleAddChild} className="bg-blue-600 text-white rounded-md px-4 py-2">Add</button>
             </div>
           </div>
         </div>
