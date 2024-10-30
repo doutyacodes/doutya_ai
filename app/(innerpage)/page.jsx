@@ -277,6 +277,7 @@ const Home = () => {
             className="flex flex-col gap-3 items-center bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative mt-6 font-bold text-xl"
           >
             <div className="uppercase">{latestCourse?.type}</div>
+            <div className="uppercase">Age: {latestCourse?.age}</div>
           </motion.div>
         </>
       )}
