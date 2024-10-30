@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
+import Image from "next/image";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,7 +26,10 @@ const Navbar = () => {
       try {
         setUserLoading(true);
         if (isAuthenticated && childrenData.length === 0) {
-          const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+          const token =
+            typeof window !== "undefined"
+              ? localStorage.getItem("token")
+              : null;
 
           const response = await GlobalApi.GetUserChildren(token);
           updateChildrenData(response.data.data); // Update context with fetched children
@@ -74,53 +78,78 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="w-full md:bg-transparent bg-white max-md:shadow-md fixed top-0 left-0 z-10">
+    <nav className="w-full md:bg-transparent bg-white max-md:shadow-md fixed top-0 left-0 z-10 pt-3">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-orange-600">Doutya Ai</h1>
+            {/* <h1 className="text-2xl font-bold text-orange-600">Doutya Ai</h1> */}
+            <Image
+              src={"/images/logo.png"}
+              width={150}
+              height={100}
+              alt="logo"
+            />
           </div>
           <div className="hidden md:flex items-center space-x-6">
+           {
+            isAuthenticated ? (
+              <>
+               <Link
+              href="/"
+              className="block px-4 py-2 text-white hover:text-orange-600"
+            >
+              Home
+            </Link>
             <Link
               href="/my-search"
               className="block px-4 py-2 text-white hover:text-orange-600"
             >
               Search History
             </Link>
-            {
-              !userLoading && (
-                <select
-              value={selectedChildId ? selectedChildId : ""}
-              onChange={(e) => selectChild(e.target.value)}
-              className="bg-white border rounded-md px-3 py-2"
-            >
-              {childrenData.map((child) => (
-                <option key={child.id} value={child.id}>
-                  {child.name}
-                </option>
-              ))}
-            </select>
-              )
-            }
-            <button
-              onClick={() => setShowModal(true)}
-              className="text-white bg-blue-600 py-3 px-7 rounded-md font-bold"
+            <Link
+              href="/add-child"
+              className="block px-4 py-2 text-white hover:text-orange-600"
             >
               Add Child
-            </button>
+            </Link>
+              </>
+            ):(
+              <>
+               <Link
+              href="/about-us"
+              className="block px-4 py-2 text-white hover:text-orange-600"
+            >
+              About Us
+            </Link>
+            <Link
+              href="/our-story"
+              className="block px-4 py-2 text-white hover:text-orange-600"
+            >
+              Our Story
+            </Link>
+            <Link
+              href="/contact-us"
+              className="block px-4 py-2 text-white hover:text-orange-600"
+            >
+              Contact Us{" "}
+            </Link>
+              </>
+            )
+           }
+            
             {isAuthenticated ? (
               <button
                 onClick={logout}
-                className="text-white bg-red-600 py-3 px-7 rounded-md font-bold"
+                className="block px-4 py-2 text-white hover:text-orange-600"
               >
                 Logout
               </button>
             ) : (
               <Link
-                href="/signup"
-                className="text-white bg-orange-600 py-3 px-7 rounded-md font-bold"
+                href="/login"
+                className="block px-4 py-2 text-white hover:text-orange-600"
               >
-                Get Started
+                Login
               </Link>
             )}
           </div>
@@ -154,21 +183,19 @@ const Navbar = () => {
 
         {isMenuOpen && (
           <div className="md:hidden">
-            {
-              !userLoading && (
-                <select
-              value={selectedChildId ? selectedChildId : ""}
-              onChange={(e) => selectChild(e.target.value)}
-              className="bg-white border rounded-md px-3 py-2 mb-2 w-full"
-            >
-              {childrenData.map((child) => (
-                <option key={child.id} value={child.id}>
-                  {child.name} (Age: {child.age})
-                </option>
-              ))}
-            </select>
-              )
-            }
+            {!userLoading && (
+              <select
+                value={selectedChildId ? selectedChildId : ""}
+                onChange={(e) => selectChild(e.target.value)}
+                className="bg-white border rounded-md px-3 py-2 mb-2 w-full"
+              >
+                {childrenData.map((child) => (
+                  <option key={child.id} value={child.id}>
+                    {child.name} (Age: {child.age})
+                  </option>
+                ))}
+              </select>
+            )}
             <button
               onClick={() => setShowModal(true)}
               className="block w-full text-white bg-blue-600 rounded-md py-3 mb-2 font-bold"

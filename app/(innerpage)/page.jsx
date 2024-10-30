@@ -18,6 +18,8 @@ import Link from "next/link";
 import Navbar from "../_components/Navbar";
 import GlobalApi from "../api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
+import useAuth from "../hooks/useAuth";
+import { cn } from "@/lib/utils";
 
 const Home = () => {
   const [courseName, setCourseName] = useState("");
@@ -27,9 +29,11 @@ const Home = () => {
   const [age, setAge] = useState(""); // New state for age input
   const [error, setError] = useState("");
   const [latestCourse, setLatestCourse] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
-  const { selectedChildId,selectedAge } = useChildren(); // Accessing selected child ID from context
+  const { selectedChildId, selectedAge } = useChildren(); // Accessing selected child ID from context
+  const { isAuthenticated, loading, logout } = useAuth();
+
   // const validateForm = () => {
   //   if (!courseName || !age) {
   //     setError("Course name and age are required.");
@@ -45,31 +49,26 @@ const Home = () => {
 
     // if (!validateForm()) return;
 
-
     try {
-        setLoading(true);
+      setIsLoading(true);
 
-        const token =
+      const token =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      
-      if (!token) {
-        toast.success("You must be logged in to perform this action.");
-        setLoading(false);
-        return; // Early return if no token
-      }
-      
-      const response = await GlobalApi.SearchUser(
-        token,
-        {
-          courseName,
-          language,
-          difficulty,
-          age:selectedAge,
-          type,
-          childId: selectedChildId, // Pass selected child ID
-        }
-        
-      );
+
+    //   if (!token) {
+    //     toast.success("You must be logged in to perform this action.");
+    //     setIsLoading(false);
+    //     return; // Early return if no token
+    //   }
+
+      const response = await GlobalApi.SearchUser(token, {
+        courseName,
+        language,
+        difficulty,
+        age: isAuthenticated ? selectedAge : age,
+        type,
+        childId: isAuthenticated ? selectedChildId : null, // Pass selected child ID
+      });
 
       console.log("API Response:", response.data.content); // Updated to match new JSON structure
 
@@ -93,7 +92,7 @@ const Home = () => {
         "Error: " + (err?.message || "An unexpected error occurred.")
       );
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
   const playContent = () => {
@@ -116,7 +115,7 @@ const Home = () => {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingSpinner />;
   }
 
@@ -196,17 +195,26 @@ const Home = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 gap-2">
-                {/* <div className="w-full text-center mb-4">
-                  <h2 className="text-lg font-semibold mb-2 text-white">Age</h2>
-                  <Input
-                    type="number"
-                    placeholder="Enter your age"
-                    value={age}
-                    onChange={(e) => setAge(e.target.value)}
-                    className="w-full p-2 focus-visible:ring-transparent border border-gray-300 rounded-full"
-                  />
-                </div> */}
+              <div
+                className={cn(
+                  "grid gap-2",
+                  isAuthenticated ? "grid-cols-1" : "grid-cols-2"
+                )}
+              >
+                {!isAuthenticated && (
+                  <div className="w-full text-center mb-4">
+                    <h2 className="text-lg font-semibold mb-2 text-white">
+                      Age
+                    </h2>
+                    <Input
+                      type="number"
+                      placeholder="Enter your age"
+                      value={age}
+                      onChange={(e) => setAge(e.target.value)}
+                      className="w-full p-2 focus-visible:ring-transparent border border-gray-300 rounded-full"
+                    />
+                  </div>
+                )}
 
                 <div className="w-full text-center mb-4">
                   <h2 className="text-lg font-semibold mb-2 text-white">

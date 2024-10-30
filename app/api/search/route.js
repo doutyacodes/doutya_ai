@@ -4,23 +4,33 @@ import { COURSES, MODULES, SUBTOPICS } from "@/utils/schema";
 import { db } from "@/utils";
 import { generateUniqueSlug } from "@/lib/utils";
 import { authenticate } from "@/lib/jwtMiddleware";
+import jwt from "jsonwebtoken";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
 export async function POST(request) {
   try {
-    const authResult = await authenticate(request);
-    if (!authResult.authenticated) {
-      return authResult.response; // Return the response if authentication fails
-    }
+    // const authResult = await authenticate(request);
+    // if (!authResult.authenticated) {
+    //   return authResult.response; // Return the response if authentication fails
+    // }
 
-    const userId = authResult.decoded_Data.id;
+    // const userId = authResult.decoded_Data.id;
     // console.log("userId",userId)
 
-    const { courseName, language, difficulty, age, type, childId } =
-      await request.json();
-
+    const { data, token } = await request.json();
+    const { courseName, language, difficulty, age, type, childId } = data;
+    let userId = null;
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify the token
+        // console.log("decoded",decoded)
+        userId = decoded.id;
+      } catch (error) {
+        userId = null;
+      }
+    }
     // Basic validation
     if (
       ![courseName, language, difficulty, age].every((field) =>
@@ -101,7 +111,7 @@ export async function POST(request) {
         language,
         difficulty,
         age,
-        slug:generateUniqueSlug(),
+        slug: generateUniqueSlug(),
         type,
         chapter_content: JSON.stringify(parsedData),
         user_id: userId,
