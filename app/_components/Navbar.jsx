@@ -138,18 +138,10 @@ const Navbar = () => {
             >
               Add Child
             </button>
-            <Link href="#products" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
-              Products
+            <Link href="/my-search" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
+              Search History
             </Link>
-            <Link href="#faq" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
-              FAQ
-            </Link>
-            <Link href="#about" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
-              About
-            </Link>
-            <Link href="/testing" className="block px-4 py-2 text-gray-700 hover:text-orange-600">
-              Test Voice
-            </Link>
+            
             {isAuthenticated ? (
               <button onClick={logout} className="block px-4 py-2 text-white bg-red-600 rounded-md font-bold">
                 Logout
