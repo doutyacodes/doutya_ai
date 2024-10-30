@@ -18,29 +18,31 @@ const CourseList = () => {
   const { selectedChildId } = useChildren();
   const router = useRouter();
 
-  const fetchCourses = async () => {
-    setLoading(true);
-    try {
-      const response = await GlobalApi.FetchCourses({
-        childId: selectedChildId,
-        page,
-        limit: 12,
-        type,
-        sortBy,
-      });
-      setCourses(response.data.courses);
-      setTotalPages(response.data.totalPages);
-      // toast.success("Courses loaded successfully!");
-    } catch (error) {
-      console.error("Error fetching topics:", error);
-      toast.error("Failed to load topics.");
-    } finally {
-      setLoading(false);
+  const fetchCourse = async () => {
+    if (selectedChildId) {
+      setLoading(true);
+      try {
+        const response = await GlobalApi.FetchCourses({
+          childId: selectedChildId,
+          page,
+          limit: 12,
+          type,
+          sortBy,
+        });
+        setCourses(response.data.courses);
+        setTotalPages(response.data.totalPages);
+        // toast.success("Courses loaded successfully!");
+      } catch (error) {
+        console.error("Error fetching topics:", error);
+        toast.error("Failed to load topics.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchCourses();
+    fetchCourse();
   }, [page, type, sortBy, selectedChildId]);
 
   return (
