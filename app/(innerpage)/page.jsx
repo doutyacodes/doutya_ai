@@ -55,11 +55,12 @@ const Home = () => {
       const token =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-    //   if (!token) {
-    //     toast.success("You must be logged in to perform this action.");
-    //     setIsLoading(false);
-    //     return; // Early return if no token
-    //   }
+        if (age > 10 || age < 2) {
+            toast.error("Age must be between 2 and 10.");
+            setIsLoading(false);
+            return; // Early return if age is out of bounds
+        }
+        
 
       const response = await GlobalApi.SearchUser(token, {
         courseName,
@@ -120,8 +121,7 @@ const Home = () => {
   }
 
   return (
-    <div className="md:min-h-screen flex flex-col items-center justify-center  text-gray-800 p-5">
-      <Navbar />
+    <div className="md:min-h-screen flex flex-col items-center justify-center  text-gray-800 p-5 pt-20">
       <Toaster />
 
       {!latestCourse && (
@@ -156,7 +156,7 @@ const Home = () => {
                     value={type}
                     className="bg-transparent ring-transparent border border-transparent"
                   >
-                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent text-2xl underline rounded-full p-2 text-white">
+                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent text-3xl uppercase underline rounded-full p-2 text-white">
                       <SelectValue placeholder="Story" className="text-black" />
                     </SelectTrigger>
                     <SelectContent>
@@ -184,7 +184,7 @@ const Home = () => {
                       </SelectGroup>
                     </SelectContent>
                   </Select>{" "}
-                  on
+                  about
                 </h2>
                 <Input
                   type="text"
@@ -211,7 +211,7 @@ const Home = () => {
                       placeholder="Enter your age"
                       value={age}
                       onChange={(e) => setAge(e.target.value)}
-                      className="w-full p-2 focus-visible:ring-transparent border border-gray-300 rounded-full"
+                      className="w-full p-2 placeholder:text-center focus-visible:ring-transparent border border-gray-300 rounded-full"
                     />
                   </div>
                 )}
@@ -221,8 +221,8 @@ const Home = () => {
                     Language
                   </h2>
                   <Select onValueChange={setLanguage} value={language}>
-                    <SelectTrigger className="w-full border focus-visible:ring-transparent border-gray-300 rounded-full p-2">
-                      <SelectValue placeholder="English" />
+                    <SelectTrigger className="w-full border text-center focus-visible:ring-transparent border-gray-300 rounded-full p-2">
+                      <SelectValue className="w-full text-center" placeholder="English" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
