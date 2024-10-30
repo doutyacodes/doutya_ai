@@ -26,16 +26,13 @@ const Navbar = () => {
       try {
         setUserLoading(true);
         if (isAuthenticated && childrenData.length === 0) {
-          const token =
-            typeof window !== "undefined"
-              ? localStorage.getItem("token")
-              : null;
-
+          const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  
           const response = await GlobalApi.GetUserChildren(token);
           updateChildrenData(response.data.data); // Update context with fetched children
           if (response.data.data.length > 0) {
             selectChild(response.data.data[0].id); // Automatically select the first child
-            selectChildAge(response.data.data[0].age); // Automatically select the first child
+            selectChildAge(response.data.data[0].age); // Automatically select the first child's age
           }
         }
       } catch (error) {
@@ -44,9 +41,10 @@ const Navbar = () => {
         setUserLoading(false);
       }
     };
-
+  
     fetchChildren();
-  }, [isAuthenticated, childrenData, updateChildrenData, selectChild]);
+  }, [isAuthenticated, childrenData, updateChildrenData, selectChild, selectChildAge]); // Added selectChildAge
+  
 
   const handleAddChild = async () => {
     try {
