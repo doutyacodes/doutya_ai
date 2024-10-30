@@ -121,7 +121,7 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center  text-gray-800 p-5">
+    <div className="md:min-h-screen flex flex-col items-center justify-center  text-gray-800 p-5">
       <Navbar />
       <Toaster />
 
