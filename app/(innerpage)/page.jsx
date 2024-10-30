@@ -314,7 +314,7 @@ const Home = () => {
             latestCourse.type == "bedtime story" ||
             latestCourse.type == "informative story" ? (
               <>
-                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                <h2 className="text-3xl font-bold mb-6 mt-9 text-center text-[#1e5f9f]">
                   {latestCourse.title}
                 </h2>
                 <p className="text-gray-700 mb-8">
@@ -528,7 +528,7 @@ const Home = () => {
                   onClick={playContent}
                   className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all"
                 >
-                  Play
+                  Play As Audio
                 </button>
               </div>
             )}
