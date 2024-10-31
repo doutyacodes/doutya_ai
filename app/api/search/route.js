@@ -4,20 +4,19 @@ import { COURSES, MODULES, SUBTOPICS } from "@/utils/schema";
 import { db } from "@/utils";
 import { generateUniqueSlug } from "@/lib/utils";
 import { authenticate } from "@/lib/jwtMiddleware";
+import { and, eq } from "drizzle-orm";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
 export async function POST(request) {
   try {
-    const authResult = await authenticate(request,true);
+    const authResult = await authenticate(request, true);
     if (!authResult.authenticated) {
       return authResult.response; // Return the response if authentication fails
     }
 
     const userId = authResult.decoded_Data.id;
-    // console.log("userId",userId)
-
     const { courseName, language, difficulty, age, type, childId } =
       await request.json();
 
@@ -33,6 +32,117 @@ export async function POST(request) {
       );
     }
 
+    // Check for existing course
+    const existingCourse = await db
+      .select()
+      .from(COURSES)
+      .where(
+        and(
+          eq(COURSES.name, courseName),
+          eq(COURSES.age, age),
+          eq(COURSES.language, language)
+        )
+      );
+
+      if (existingCourse.length > 0) {
+        const course = existingCourse[0];
+        const courseData = JSON.parse(course.chapter_content);
+  
+        // Structure response based on course type
+        let structuredResponse;
+        if (["story", "bedtime story", "informative story", "podcast"].includes(type)) {
+          structuredResponse = {
+            courseName,
+            language,
+            difficulty,
+            age,
+            type,
+            title: courseData.title,
+            introduction: { content: courseData.introduction.content },
+            body: courseData.body.map(paragraph => ({ content: paragraph.content })),
+            conclusion: { content: courseData.conclusion.content },
+          };
+        } else if (type === "poem") {
+          structuredResponse = {
+            courseName,
+            language,
+            difficulty,
+            age,
+            type,
+            title: courseData.title,
+            verses: courseData.verses.map(verse => ({ line: verse.line })),
+          };
+        } else if (type === "presentation") {
+          structuredResponse = {
+            courseName,
+            language,
+            difficulty,
+            age,
+            type,
+            presentation: {
+              title: courseData.presentation.title,
+              slides: courseData.presentation.slides.map(slide => ({
+                slide_number: slide.slide_number,
+                content: slide.content.map(item => ({
+                  content: item.content,
+                  image_suggestion: item.image_suggestion,
+                  additional_resources: item.additional_resources,
+                })),
+              })),
+            },
+          };
+        } else if (type === "course") {
+          structuredResponse = {
+            courseName,
+            language,
+            difficulty,
+            age,
+            type,
+            courseContent: {
+              introduction: { content: courseData.introduction.content },
+              body: {
+                modules: courseData.body.modules.map(module => ({
+                  module_number: module.module_number,
+                  title: module.title,
+                  subtopics: module.subtopics.map(subtopic => ({
+                    title: subtopic.title,
+                  })),
+                })),
+              },
+              conclusion: { content: courseData.conclusion.content },
+            },
+          };
+        } else {
+          structuredResponse = {
+            courseName,
+            language,
+            difficulty,
+            age,
+            type,
+            essayContent: {
+              introduction: { content: courseData.introduction.content },
+              body: {
+                sections: courseData.body.sections.map(section => ({
+                  title: section.title,
+                  content: section.content,
+                  subtopics: section.subtopics.map(subtopic => ({
+                    title: subtopic.title,
+                    content: subtopic.content,
+                  })),
+                })),
+              },
+              conclusion: { content: courseData.conclusion.content },
+            },
+          };
+        }
+  
+        return NextResponse.json(
+          { message: "Course already exists for this user", content: structuredResponse },
+          { status: 200 }
+        );
+      }
+
+    // If no course exists, call the OpenAI API
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
         { message: "API Key is missing in environment variables." },
@@ -41,8 +151,8 @@ export async function POST(request) {
     }
 
     const prompt = generatePrompt(courseName, language, difficulty, age, type);
-
     let chatGptResponse;
+
     try {
       chatGptResponse = await axios.post(
         "https://api.openai.com/v1/chat/completions",
@@ -94,32 +204,22 @@ export async function POST(request) {
       );
     }
 
-    let courseId;
-    try {
-      const courseInsert = await db.insert(COURSES).values({
-        name: courseName,
-        language,
-        difficulty,
-        age,
-        slug:generateUniqueSlug(),
-        type,
-        chapter_content: JSON.stringify(parsedData),
-        user_id: userId,
-        child_id: childId, // Pass selected child ID
-      });
-      courseId = courseInsert[0].insertId;
-      if (!courseId)
-        throw new Error("Course insertion did not return an insertId");
-    } catch (dbError) {
-      console.error("Database Insertion Error:", dbError);
-      return NextResponse.json(
-        {
-          message: "Error inserting course into database",
-          error: dbError.message,
-        },
-        { status: 500 }
-      );
-    }
+    // Insert the new course into the database
+    const courseInsert = await db.insert(COURSES).values({
+      name: courseName,
+      language,
+      difficulty,
+      age,
+      slug: generateUniqueSlug(),
+      type,
+      chapter_content: JSON.stringify(parsedData),
+      user_id: userId,
+      child_id: childId, // Pass selected child ID
+    });
+
+    const courseId = courseInsert[0].insertId;
+    if (!courseId)
+      throw new Error("Course insertion did not return an insertId");
 
     return NextResponse.json(
       { message: "Course created successfully!", content: parsedData },

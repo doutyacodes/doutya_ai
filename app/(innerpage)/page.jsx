@@ -236,9 +236,27 @@ const Home = () => {
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="english">English</SelectItem>
-                      </SelectGroup>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="english">English</SelectItem>
+                          <SelectItem value="spanish">Spanish</SelectItem>
+                          <SelectItem value="french">French</SelectItem>
+                          <SelectItem value="german">German</SelectItem>
+                          <SelectItem value="italian">Italian</SelectItem>
+                          <SelectItem value="portuguese">Portuguese</SelectItem>
+                          <SelectItem value="dutch">Dutch</SelectItem>
+                          <SelectItem value="russian">Russian</SelectItem>
+                          <SelectItem value="chinese_simplified">
+                            Chinese (Simplified)
+                          </SelectItem>
+                          <SelectItem value="chinese_traditional">
+                            Chinese (Traditional)
+                          </SelectItem>
+                          <SelectItem value="japanese">Japanese</SelectItem>
+                          <SelectItem value="korean">Korean</SelectItem>
+                          <SelectItem value="arabic">Arabic</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
                     </SelectContent>
                   </Select>
                 </div>
