@@ -162,8 +162,8 @@ const Home = () => {
                     value={type}
                     className="bg-transparent ring-transparent border focus:ring-0 focus-visible:ring-0 border-transparent underline decoration-2  max-md:w-full" // Thicker underline with offset
                   >
-                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-[33px] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0 text-white underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
-                      <SelectValue placeholder="Story" className="text-black" />
+                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-[30px] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0 text-white underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
+                      <SelectValue placeholder="Story" className="text-black w-full" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
