@@ -40,7 +40,8 @@ export async function POST(request) {
         and(
           eq(COURSES.name, courseName),
           eq(COURSES.age, age),
-          eq(COURSES.language, language)
+          eq(COURSES.language, language),
+          eq(COURSES.type, type)
         )
       );
 

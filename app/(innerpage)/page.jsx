@@ -295,7 +295,7 @@ const Home = () => {
           >
             <div className="uppercase">{latestCourse?.type}</div>
             <div className="uppercase">Topic: {latestCourse?.courseName}</div>
-            <div className="flex gap-3 items-center">
+            <div className="flex gap-5 items-center">
               <div className="uppercase font-normal">
                 Age: {latestCourse?.age}
               </div>
