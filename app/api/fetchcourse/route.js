@@ -27,13 +27,11 @@ export async function POST(req) {
     let query = db
       .select()
       .from(COURSES)
-      .where(and(eq(COURSES.user_id, userId), eq(COURSES.child_id, childId)))
+      .where(and(eq(COURSES.user_id, userId), eq(COURSES.child_id, childId),eq(COURSES.type, type)))
       .limit(limit)
       .offset(offset);
 
-    if (type) {
-      query = query.where(eq(COURSES.type, type));
-    }
+   
 
     if (sortBy === "latest") {
       query = query.orderBy(desc(COURSES.created_at));
@@ -46,7 +44,7 @@ export async function POST(req) {
     const [{ count: totalCount }] = await db
       .select({ count: count(COURSES.child_id) }) // Counts only non-NULL child_id
       .from(COURSES)
-      .where(and(eq(COURSES.user_id, userId), eq(COURSES.child_id, childId)))
+      .where(and(eq(COURSES.user_id, userId), eq(COURSES.child_id, childId),eq(COURSES.type, type)))
       .execute();
 
     return NextResponse.json({

@@ -20,6 +20,7 @@ import GlobalApi from "../api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
 import useAuth from "../hooks/useAuth";
 import { cn } from "@/lib/utils";
+import ChildSelector from "../_components/ChildSelecter";
 
 const Home = () => {
   const [courseName, setCourseName] = useState("");
@@ -34,7 +35,6 @@ const Home = () => {
   const { selectedChildId, selectedAge } = useChildren(); // Accessing selected child ID from context
   const { isAuthenticated, loading, logout } = useAuth();
 
-  
   // const validateForm = () => {
   //   if (!courseName || !age) {
   //     setError("Course name and age are required.");
@@ -56,12 +56,14 @@ const Home = () => {
       const token =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-        // console.log(token)
-    //   if (age > 12 || age < 2) {
-    //     toast.error("Age must be between 2 and 12.");
-    //     setIsLoading(false);
-    //     return; // Early return if age is out of bounds
-    //   }
+      // console.log(token)
+      if (!token) {
+        if (age > 12 || age < 2) {
+          toast.error("Age must be between 2 and 12.");
+          setIsLoading(false);
+          return; // Early return if age is out of bounds
+        }
+      }
 
       const response = await GlobalApi.SearchUser(token, {
         courseName,
@@ -148,6 +150,9 @@ const Home = () => {
             transition={{ duration: 1 }}
             className="flex flex-col items-center space-y-4 rounded-lg w-full max-w-4xl p-6"
           >
+            <div className="w-full flex justify-end items-center">
+              <ChildSelector />
+            </div>
             <form onSubmit={handleSearch} className="w-full ">
               <div className="w-full text-center mb-4">
                 <h2 className="text-lg font-semibold mb-8 items-center justify-center flex md:flex-wrap max-md:flex-col gap-3 text-white">
@@ -279,6 +284,7 @@ const Home = () => {
             className="flex flex-col gap-3 items-center bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative mt-6 font-bold text-xl"
           >
             <div className="uppercase">{latestCourse?.type}</div>
+            <div className="uppercase">Topic: {latestCourse?.courseName}</div>
             <div className="uppercase">Age: {latestCourse?.age}</div>
           </motion.div>
         </>
@@ -511,14 +517,14 @@ const Home = () => {
             {latestCourse && (
               <div className="flex justify-center items-center">
                 <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1 }}
-                className="flex flex-col items-center space-y-4 bg-orange-400 text-white font-bold shadow-lg rounded-lg max-md:w-full w-72 max-w-4xl p-3 text-xl relative mt-6"
-                onClick={() => setLatestCourse(null)}
-              >
-                Back to Search
-              </motion.div>
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1 }}
+                  className="flex flex-col items-center space-y-4 bg-orange-400 text-white font-bold shadow-lg rounded-lg max-md:w-full w-72 max-w-4xl p-3 text-xl relative mt-6"
+                  onClick={() => setLatestCourse(null)}
+                >
+                  Back to Search
+                </motion.div>
               </div>
             )}
             {(latestCourse.type === "story" ||

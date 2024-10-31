@@ -60,22 +60,56 @@ const Chapter = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex flex-col justify-center items-center md:pt-20 pb-4">
+      {latestCourse && (
+        <>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="flex flex-col gap-3 items-center bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative mt-6 font-bold text-xl"
+          >
+            <div className="uppercase">{latestCourse?.type}</div>
+            <div className="uppercase">Topic: {latestCourse?.courseName}</div>
+            <div className="uppercase">Age: {latestCourse?.age}</div>
+          </motion.div>
+        </>
+      )}
       {latestCourse && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative"
+          className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative mt-6"
         >
-          
           <div className="mt-6 w-full text-left">
+            {/* <h3 className="text-2xl font-semibold mb-4">
+              Latest Course Details
+            </h3>
+
+            <div className="mb-4">
+              <p>
+                <strong>Course Name:</strong> {latestCourse.courseName || "N/A"}
+              </p>
+              <p>
+                <strong>Language:</strong> {latestCourse.language || "N/A"}
+              </p>
+              <p>
+                <strong>Difficulty:</strong> {latestCourse.difficulty || "N/A"}
+              </p>
+              <p>
+                <strong>Age:</strong> {latestCourse.age || "N/A"}
+              </p>
+              <p>
+                <strong>Type:</strong> {latestCourse.type || "N/A"}
+              </p>
+            </div> */}
             {latestCourse.type == "story" ||
             latestCourse.type == "explanation" ||
             latestCourse.type == "bedtime story" ||
             latestCourse.type == "informative story" ? (
               <>
-                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                <h2 className="text-3xl font-bold mb-6 mt-9 text-center text-[#1e5f9f]">
                   {latestCourse.title}
                 </h2>
                 <p className="text-gray-700 mb-8">
@@ -266,6 +300,7 @@ const Chapter = () => {
                 </p>
               </>
             )}
+           
             {(latestCourse.type === "story" ||
               latestCourse.type === "bedtime story" ||
               latestCourse.type === "explanation" ||
@@ -276,7 +311,7 @@ const Chapter = () => {
                   onClick={playContent}
                   className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all"
                 >
-                  Play
+                  Play As Audio
                 </button>
               </div>
             )}

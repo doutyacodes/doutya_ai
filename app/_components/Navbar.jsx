@@ -19,6 +19,7 @@ const Navbar = () => {
     selectedChildId,
     selectChild,
     selectChildAge,
+    selectChildGender
   } = useChildren();
   const [userLoading, setUserLoading] = useState(false);
 
@@ -34,6 +35,7 @@ const Navbar = () => {
           if (response.data.data.length > 0) {
             selectChild(response.data.data[0].id);
             selectChildAge(response.data.data[0].age);
+            selectChildGender(response.data.data[0].gender);
           }
         }
       } catch (error) {
@@ -102,8 +104,8 @@ const Navbar = () => {
               <Link href="/login" className="block px-4 py-2 text-white hover:text-orange-600">Login</Link>
             )}
           </div>
-          <div className="md:hidden">
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-700 hover:text-orange-600 focus:outline-none">
+          <div className="md:hidden ml-auto">
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-white hover:text-orange-600 focus:outline-none">
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
               </svg>
@@ -113,33 +115,55 @@ const Navbar = () => {
       </div>
 
       {/* Sidebar for Mobile */}
-      <div className={`md:hidden fixed inset-y-0 left-0 bg-white w-64 transform ${isMenuOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out z-20`}>
-        <div className="p-6">
-          <button onClick={() => setIsMenuOpen(false)} className="text-gray-700 hover:text-orange-600 focus:outline-none">
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+<div>
+  {/* Overlay for Sidebar */}
+  <div
+    className={`fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 ${
+      isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+    } z-10`}
+    onClick={() => setIsMenuOpen(false)}
+  ></div>
 
-          <div className="mt-6">
-            {!userLoading && (
-              <select value={selectedChildId ? selectedChildId : ""} onChange={(e) => selectChild(e.target.value)} className="bg-white border rounded-md px-3 py-2 mb-2 w-full">
-                {childrenData.map((child) => (
-                  <option key={child.id} value={child.id}>{child.name} (Age: {child.age})</option>
-                ))}
-              </select>
-            )}
-            <button onClick={() => setShowModal(true)} className="block w-full text-white bg-blue-600 rounded-md py-3 mb-2 font-bold">Add Child</button>
-            <Link href="/my-search" className="block px-4 py-2 text-gray-700 hover:text-orange-600">Search History</Link>
-
-            {isAuthenticated ? (
-              <button onClick={logout} className="block px-4 py-2 text-white bg-red-600 rounded-md font-bold">Logout</button>
-            ) : (
-              <Link href="/signup" className="block px-4 py-2 text-white bg-orange-600 rounded-md font-bold">Get Started</Link>
-            )}
-          </div>
-        </div>
+  {/* Sidebar */}
+  <div
+    className={`fixed inset-y-0 left-0 bg-gradient-to-b from-green-300 to-blue-300 w-64 transform ${
+      isMenuOpen ? "translate-x-0" : "-translate-x-full"
+    } transition-transform duration-300 ease-in-out z-20 shadow-lg rounded-r-2xl`}
+  >
+    <div className="p-8 text-white font-semibold">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold">Menu</h2>
       </div>
+
+      {isAuthenticated ? (
+        <>
+          <Link href="/" className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300">
+            Home
+          </Link>
+          <Link href="/my-search" className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300">
+            Search History
+          </Link>
+          <Link href="/add-child" className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300">
+            Add Child
+          </Link>
+        </>
+      ) : (
+        <>
+          <Link href="/about-us" className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300">
+            About Us
+          </Link>
+          <Link href="/our-story" className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300">
+            Our Story
+          </Link>
+          <Link href="/contact-us" className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300">
+            Contact Us
+          </Link>
+        </>
+      )}
+    </div>
+  </div>
+</div>
+
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">

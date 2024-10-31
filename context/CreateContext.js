@@ -6,18 +6,29 @@ const ChildrenContext = createContext();
 
 export const ChildrenProvider = ({ children }) => {
   const [childrenData, setChildrenData] = useState([]);
-  const [selectedChildId, setSelectedChildId] = useState(null); // New state for selected child ID
-  const [selectedAge, setSelectedAge] = useState(null); // New state for selected child ID
+  const [selectedChildId, setSelectedChildId] = useState(null);
+  const [selectedAge, setSelectedAge] = useState(null);
+  const [selectedGender, setSelectedGender] = useState(null); // New state for selected child gender
 
   const updateChildrenData = (data) => {
     setChildrenData(data);
   };
 
   const selectChild = (childId) => {
-    setSelectedChildId(childId); // Update the selected child ID
+    const selectedChild = childrenData.find((child) => child.id === parseInt(childId));
+    if (selectedChild) {
+      setSelectedChildId(selectedChild.id);
+      setSelectedAge(selectedChild.age);
+      setSelectedGender(selectedChild.gender);
+    }
   };
+
   const selectChildAge = (age) => {
-    setSelectedAge(age); // Update the selected child ID
+    setSelectedAge(age);
+  };
+
+  const selectChildGender = (gender) => {
+    setSelectedGender(gender); // Update the selected child gender
   };
 
   return (
@@ -27,8 +38,10 @@ export const ChildrenProvider = ({ children }) => {
         updateChildrenData,
         selectedChildId,
         selectChild,
-        selectChildAge,
         selectedAge,
+        selectChildAge,
+        selectedGender,
+        selectChildGender,
       }}
     >
       {children}

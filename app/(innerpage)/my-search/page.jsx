@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import ChildSelector from "@/app/_components/ChildSelecter";
 
 const CourseList = () => {
   const [courses, setCourses] = useState([]);
@@ -31,7 +32,6 @@ const CourseList = () => {
         });
         setCourses(response.data.courses);
         setTotalPages(response.data.totalPages);
-        // toast.success("Courses loaded successfully!");
       } catch (error) {
         console.error("Error fetching topics:", error);
         toast.error("Failed to load topics.");
@@ -39,55 +39,75 @@ const CourseList = () => {
         setLoading(false);
       }
     }
-  }, [selectedChildId, page, type, sortBy]); // Include dependencies here
+  }, [selectedChildId, page, type, sortBy]);
 
   useEffect(() => {
     fetchCourse();
   }, [fetchCourse]);
-  return (
-    <div className="w-full h-full p-6 min-h-screen md:pt-20 pt-1">
-      <h1 className="text-3xl font-bold mb-4">Courses</h1>
 
-      <div className="flex justify-between items-center mb-4">
-        <label className="mr-4">
-          Filter by Type:
+  return (
+    <div className="w-full h-full p-8 min-h-screen flex flex-col items-center">
+      <motion.h1 
+        className="text-4xl font-bold mb-6 text-blue-700" 
+        initial={{ opacity: 0, y: -20 }} 
+        animate={{ opacity: 1, y: 0 }}
+      >
+        Topics
+      </motion.h1>
+
+      <div className="w-full flex justify-end items-center my-4 max-w-3xl">
+              <ChildSelector />
+            </div>
+
+      <div className="flex flex-wrap justify-center items-center gap-6 mb-8">
+        <div className="flex items-center gap-2">
+          <label className="font-semibold">Filter by Type:</label>
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="ml-2 border rounded px-2 py-1"
+            className="border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="story">Story</option>
             <option value="poem">Poem</option>
+            <option value="bedtime story">Bedtime Story</option>
+            <option value="podcast">Podcast</option>
+            <option value="explanation">Explanation</option>
           </select>
-        </label>
-        <label>
-          Sort By:
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="font-semibold">Sort By:</label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="ml-2 border rounded px-2 py-1"
+            className="border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="latest">Latest</option>
             <option value="oldest">Oldest</option>
           </select>
-        </label>
+        </div>
       </div>
 
       {loading ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-center text-xl"
+          className="text-center text-xl text-white h-[50vh] flex justify-center items-center"
         >
-          <AiOutlineLoading3Quarters className="animate-spin text-4xl mx-auto text-blue-600" />
+          <AiOutlineLoading3Quarters className="animate-spin text-5xl mx-auto" />
           Loading...
         </motion.div>
       ) : courses.length === 0 ? (
-        <p className="text-center text-gray-500 mt-8">
-          No data exists right now for this child.
-        </p>
+        <motion.p
+          className="text-center text-gray-700 mt-16 text-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          No topics available for this selection.
+          <br />
+          <span className="text-white/70 text-sm font-light">Please try another filter or type.</span>
+        </motion.p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-6xl">
           {courses.map((course) => (
             <motion.div
               key={course.id}
@@ -95,31 +115,31 @@ const CourseList = () => {
               whileHover={{ scale: 1.05 }}
               onClick={() => router.push(`/topic/${course.slug}`)}
             >
-              <div className="p-4">
-                <h2 className="text-xl font-semibold">{course.name}</h2>
-                <p className="text-gray-600">{course.type}</p>
+              <div className="p-6">
+                <h2 className="text-xl font-semibold text-blue-600">{course.name}</h2>
+                <p className="text-gray-600 mt-2">{course.type}</p>
               </div>
             </motion.div>
           ))}
         </div>
       )}
 
-      <div className="flex justify-between items-center mt-10">
+      <div className="flex justify-between items-center mt-10 w-full max-w-2xl">
         <button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
-          className={`px-4 py-2 bg-blue-500 text-white rounded ${
-            page === 1 ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className={`px-4 py-2 bg-blue-600 text-white rounded-lg ${
+            page === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-500"
+          } transition-colors duration-300`}
         >
           Previous
         </button>
         <button
           onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={page === totalPages}
-          className={`px-4 py-2 bg-blue-500 text-white rounded ${
-            page === totalPages ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className={`px-4 py-2 bg-blue-600 text-white rounded-lg ${
+            page === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-500"
+          } transition-colors duration-300`}
         >
           Next
         </button>
