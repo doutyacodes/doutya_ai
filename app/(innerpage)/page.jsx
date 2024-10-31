@@ -124,7 +124,7 @@ const Home = () => {
   }
 
   return (
-    <div className=" flex flex-col items-center justify-center  text-gray-800 p-5 md:pt-20 pt-1">
+    <div className=" flex flex-col items-center justify-center  text-gray-800 p-5 md:pt-20 pt-0">
       <Toaster />
 
       {!latestCourse && (
@@ -133,7 +133,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-10"
+            className="text-center mt-2"
           >
             {/* <h1 className="text-5xl font-bold text-white mb-4">
               Learn Anything, Anytime, Your Way
