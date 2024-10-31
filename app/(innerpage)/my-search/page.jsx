@@ -1,8 +1,7 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
-import Navbar from "@/app/_components/Navbar";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
@@ -19,25 +18,24 @@ const CourseList = () => {
   const { selectedChildId } = useChildren();
   const router = useRouter();
 
-  const fetchCourse = async ()=>{
-    if (selectedChildId) {
-      setLoading(true);
-      try {
-        const response = await GlobalApi.FetchCourses({
-          childId: selectedChildId,
-          page,
-          limit: 12,
-          type,
-          sortBy,
-        });
-        setCourses(response.data.courses);
-        setTotalPages(response.data.totalPages);
-      } catch (error) {
-        console.error("Error fetching topics:", error);
-        toast.error("Failed to load topics.");
-      } finally {
-        setLoading(false);
-      }
+  const fetchCourse = async () => {
+
+    setLoading(true);
+    try {
+      const response = await GlobalApi.FetchCourses({
+        childId: selectedChildId ? selectedChildId : null,
+        page,
+        limit: 12,
+        type,
+        sortBy,
+      });
+      setCourses(response.data.courses);
+      setTotalPages(response.data.totalPages);
+    } catch (error) {
+      console.error("Error fetching topics:", error);
+      toast.error("Failed to load topics.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,8 +54,8 @@ const CourseList = () => {
       </motion.h1>
 
       <div className="w-full flex justify-end items-center my-4 max-w-3xl">
-              <ChildSelector />
-            </div>
+        <ChildSelector />
+      </div>
 
       <div className="flex flex-wrap justify-center items-center gap-6 mb-8">
         <div className="flex items-center gap-2">
