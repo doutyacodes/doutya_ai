@@ -71,9 +71,9 @@ const Chapter = () => {
           >
             <div className="uppercase">{latestCourse?.type}</div>
             <div className="uppercase">Topic: {latestCourse?.courseName}</div>
-            <div className="flex gap-5 items-center">
-            <div className="uppercase font-normal">Age: {latestCourse?.age}</div>
-            <div className="uppercase font-normal">Language: {latestCourse?.language}</div>
+            <div className="flex gap-7 items-center">
+            <div className="uppercase text-lg font-normal">Age: {latestCourse?.age}</div>
+            <div className="uppercase text-lg font-normal">Language: {latestCourse?.language}</div>
             </div>
           </motion.div>
         </>
