@@ -12,7 +12,7 @@ export default function AboutUs() {
         transition={{ duration: 0.8, ease: 'easeOut' }}
         className="text-5xl font-bold text-center mb-8 text-white"
       >
-        About Us: DOutya Kids
+        About Us
       </motion.h1>
 
       <div className="text-lg text-justify mx-auto max-w-5xl text-white leading-relaxed space-y-6">

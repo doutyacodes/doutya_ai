@@ -78,12 +78,12 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="w-full md:bg-transparent  md:fixed top-0 left-0 z-10 md:pt-10">
+    <nav className="w-full md:bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center md:justify-between justify-center">
-          <div className="flex items-center max-md:justify-center max-md:mt-4">
+          <Link href={"/"} className="flex items-center max-md:justify-center max-md:mt-4">
             <Image src={"/images/logo.png"} width={150} height={150} alt="logo" />
-          </div>
+          </Link>
           <div className="hidden md:flex items-center space-x-6">
             {isAuthenticated ? (
               <>
@@ -93,6 +93,8 @@ const Navbar = () => {
               </>
             ) : (
               <>
+                              <Link href="/" className="block px-4 py-2 text-white hover:text-orange-600">Home</Link>
+
                 <Link href="/about-us" className="block px-4 py-2 text-white hover:text-orange-600">About Us</Link>
                 <Link href="/our-story" className="block px-4 py-2 text-white hover:text-orange-600">Our Story</Link>
                 {/* <Link href="/contact-us" className="block px-4 py-2 text-white hover:text-orange-600">Contact Us</Link> */}
@@ -149,6 +151,9 @@ const Navbar = () => {
         </>
       ) : (
         <>
+         <Link href="/" className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300">
+            Home
+          </Link>
           <Link href="/about-us" className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300">
             About Us
           </Link>

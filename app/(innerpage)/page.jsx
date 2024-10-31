@@ -124,7 +124,7 @@ const Home = () => {
   }
 
   return (
-    <div className="md:min-h-screen flex flex-col items-center justify-center  text-gray-800 p-5 md:pt-20 pt-1">
+    <div className=" flex flex-col items-center justify-center  text-gray-800 p-5 md:pt-20 pt-1">
       <Toaster />
 
       {!latestCourse && (
@@ -246,10 +246,10 @@ const Home = () => {
                           <SelectItem value="portuguese">Portuguese</SelectItem>
                           <SelectItem value="dutch">Dutch</SelectItem>
                           <SelectItem value="russian">Russian</SelectItem>
-                          <SelectItem value="chinese_simplified">
+                          <SelectItem value="chinese simplified">
                             Chinese (Simplified)
                           </SelectItem>
-                          <SelectItem value="chinese_traditional">
+                          <SelectItem value="chinese traditional">
                             Chinese (Traditional)
                           </SelectItem>
                           <SelectItem value="japanese">Japanese</SelectItem>
@@ -303,7 +303,10 @@ const Home = () => {
           >
             <div className="uppercase">{latestCourse?.type}</div>
             <div className="uppercase">Topic: {latestCourse?.courseName}</div>
-            <div className="uppercase">Age: {latestCourse?.age}</div>
+            <div className="flex gap-3 items-center">
+            <div className="uppercase font-normal">Age: {latestCourse?.age}</div>
+            <div className="uppercase font-normal">Language: {latestCourse?.language}</div>
+            </div>
           </motion.div>
         </>
       )}
