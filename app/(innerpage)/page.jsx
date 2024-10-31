@@ -148,7 +148,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-            className="flex flex-col items-center space-y-4 rounded-lg w-full max-w-4xl p-6"
+            className="flex flex-col items-center space-y-4 rounded-lg w-full max-w-4xl p-1 py-4"
           >
             <div className="w-full flex justify-end items-center">
               <ChildSelector />
