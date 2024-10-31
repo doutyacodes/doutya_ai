@@ -2,11 +2,16 @@ import axios from "axios";
 
 const SearchUser = (token, data) => {
   // console.log(token)
-  return axios.post("/api/search", data, {
-    headers: {
-      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-    },
-  });
+  if(token)
+  {
+    return axios.post("/api/search", data, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+      },
+    });
+  }else{
+    return axios.post("/api/search", data);
+  }
 };
 
 const SignUpUser = (data) => axios.post("/api/signup", data);

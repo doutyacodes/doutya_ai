@@ -17,7 +17,7 @@ const ChildSelector = () => {
   }
 
   return (
-    <div className="flex max-w-3xl gap-4 items-center">
+    <div className="flex max-w-3xl gap-2 items-center">
       <Image
         src={selectedGender === "male" ? "/images/boy.png" : "/images/girl.png"}
         width={50}
