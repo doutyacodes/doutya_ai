@@ -160,9 +160,9 @@ const Home = () => {
                   <Select
                     onValueChange={setType}
                     value={type}
-                    className="bg-transparent ring-transparent border border-transparent"
+                    className="bg-transparent ring-transparent border focus:ring-0 focus-visible:ring-0 border-transparent underline decoration-2 underline-offset-4" // Thicker underline with offset
                   >
-                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent focus:border-transparent outline-none focus:outline-none bg-transparent md:text-4xl text-[35px] uppercase underline rounded-full p-2 text-white">
+                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-[35px] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0 text-white underline decoration-2 underline-offset-4 [&>svg]:w-6 [&>svg]:h-24 [&>svg]:opacity-100">
                       <SelectValue placeholder="Story" className="text-black" />
                     </SelectTrigger>
                     <SelectContent>
@@ -174,19 +174,11 @@ const Home = () => {
                         <SelectItem value="explanation">
                           an Explanation
                         </SelectItem>
-                        {/* <SelectItem value="course">a Course</SelectItem> */}
-
-                        {/* <SelectItem value="essay">an Essay</SelectItem> */}
                         <SelectItem value="informative story">
-                          a Informative Story
+                          an Informative Story
                         </SelectItem>
                         <SelectItem value="podcast">a Podcast</SelectItem>
                         <SelectItem value="poem">a Poem</SelectItem>
-                        {/* {age != "" && age > 13 && (
-                          <SelectItem value="presentation">
-                            a Presentation
-                          </SelectItem>
-                        )} */}
                       </SelectGroup>
                     </SelectContent>
                   </Select>{" "}
@@ -304,8 +296,12 @@ const Home = () => {
             <div className="uppercase">{latestCourse?.type}</div>
             <div className="uppercase">Topic: {latestCourse?.courseName}</div>
             <div className="flex gap-3 items-center">
-            <div className="uppercase font-normal">Age: {latestCourse?.age}</div>
-            <div className="uppercase font-normal">Language: {latestCourse?.language}</div>
+              <div className="uppercase font-normal">
+                Age: {latestCourse?.age}
+              </div>
+              <div className="uppercase font-normal">
+                Language: {latestCourse?.language}
+              </div>
             </div>
           </motion.div>
         </>
