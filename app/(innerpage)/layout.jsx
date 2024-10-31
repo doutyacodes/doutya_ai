@@ -5,7 +5,7 @@ import Navbar from "../_components/Navbar";
 
 const ProtectLayout = ({ children }) => {
   return (
-    <ProtectedRoute allowedRoutes={["/","/our-story"]}>
+    <ProtectedRoute allowedRoutes={["/","/our-story","/about-us"]}>
       <ChildrenProvider>
         <div className="relative min-h-screen md:pt-30 pt-14 overflow-hidden">
           {/* Video Background */}

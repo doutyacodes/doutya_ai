@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request) {
   try {
-    const authResult = await authenticate(request);
+    const authResult = await authenticate(request,true);
     if (!authResult.authenticated) {
       return authResult.response; // Return the response if authentication fails
     }
