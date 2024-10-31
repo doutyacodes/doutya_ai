@@ -155,14 +155,14 @@ const Home = () => {
             </div>
             <form onSubmit={handleSearch} className="w-full ">
               <div className="w-full text-center mb-4">
-                <h2 className="text-lg font-semibold mb-8 items-center justify-center flex md:flex-wrap max-md:flex-col gap-3 text-white">
+                <h2 className="text-xl font-semibold mb-8 items-center justify-center flex md:flex-wrap max-md:flex-col gap-3 text-white">
                   <div>I want </div>
                   <Select
                     onValueChange={setType}
                     value={type}
                     className="bg-transparent ring-transparent border border-transparent"
                   >
-                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-xl uppercase underline rounded-full p-2 text-white">
+                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent focus:border-transparent outline-none focus:outline-none bg-transparent md:text-4xl text-2xl uppercase underline rounded-full p-2 text-white">
                       <SelectValue placeholder="Story" className="text-black" />
                     </SelectTrigger>
                     <SelectContent>

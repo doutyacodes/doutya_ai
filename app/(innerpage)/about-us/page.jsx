@@ -1,4 +1,4 @@
-"use client"
+"use client";
 // pages/about-us/page.js
 
 import { motion } from 'framer-motion';
@@ -23,7 +23,7 @@ export default function AboutUs() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, ease: 'easeInOut', delay: 0.3 }}
         >
-          Welcome to DOutya Kids, a place where learning is an adventure, and every child’s curiosity is celebrated. We’re passionate about providing young minds with an engaging, age-appropriate way to explore the world, guided by their natural wonder and creativity. DOutya Kids was born out of a simple but powerful idea: every child deserves a learning experience that is as unique, delightful, and meaningful as they are.
+          Doutya Kids was born from a simple idea—to make learning an exciting journey of discovery for young minds. It all began when our founder, faced with the daily challenge of explaining complex topics to his curious 3-year-old, found himself running out of bedtime stories and explanations that would captivate and satisfy his child’s endless questions. This experience sparked the vision for a platform that could provide children with endless age-appropriate stories, facts, and explanations tailored to their unique, growing curiosity.
         </motion.div>
 
         {/* Second Paragraph */}
@@ -32,7 +32,7 @@ export default function AboutUs() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, ease: 'easeInOut', delay: 0.6 }}
         >
-          DOutya Kids started when our founder, a parent himself, found that explaining complex ideas to his curious 3-year-old was a bigger challenge than he’d expected. He realized that the world is filled with fascinating topics, but that young children needed a way to understand them in ways that were both accurate and engaging. Bedtime stories ran out too quickly, explanations were often too complicated, and he wondered: What if there was a way for parents to create educational, interesting stories on any topic at the click of a button?
+          Our mission at Doutya Kids is to help parents inspire a love for learning in their children by turning their natural curiosity into moments of joy, wonder, and understanding. We believe that the early years are crucial for exploring the world, so we’ve created a space where children ages 2 to 12 can dive into stories and information designed just for them. Every story and fact is crafted with care to ignite young imaginations, from the magical world of animals and nature to fun facts about the stars, science, and the history of amazing people.
         </motion.div>
 
         {/* Third Paragraph */}
@@ -41,7 +41,7 @@ export default function AboutUs() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, ease: 'easeInOut', delay: 0.9 }}
         >
-          From this idea, DOutya Kids grew into a comprehensive learning platform designed for children aged 2-12, covering everything from bedtime stories to informative tales on any topic parents might imagine. But it doesn’t stop there. DOutya Kids also offers personalized evaluations that help parents understand their child’s unique strengths and areas for growth. Based on these insights, DOutya Kids provides courses tailored to nurture each child’s skills, from creative thinking and problem-solving to language development and early science exploration.
+          With Doutya Kids, parents can find engaging stories and explanations that bring knowledge to life. Whether it’s a cozy bedtime story, an interesting fact, or a fascinating explanation, Doutya Kids is here to help families share joyful learning moments. We’re committed to making every child feel like a little explorer, supported by stories that spark curiosity and excitement about the world around them.
         </motion.div>
 
         {/* Fourth Paragraph */}
@@ -50,16 +50,7 @@ export default function AboutUs() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, ease: 'easeInOut', delay: 1.2 }}
         >
-          We know that every family’s learning journey is different, and we’re here to support that journey with content designed to entertain, educate, and inspire. DOutya Kids makes it easy for parents, grandparents, and caregivers to explore topics as varied as outer space, wildlife, history, or even the wonders of everyday life. We are here to make learning moments magical, all while helping children grow confidently with tools crafted just for them.
-        </motion.div>
-
-        {/* Fifth Paragraph */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1, ease: 'easeInOut', delay: 1.5 }}
-        >
-          At DOutya Kids, we’re more than just a learning app; we’re a partner in your child’s development. Our goal is to help you nurture curious, capable, and joyful learners who are ready to explore the world around them with enthusiasm and imagination. Join us on this journey and let’s make every day a new adventure in learning for your little ones!
+          Our journey is one of inspiring young minds and creating lifelong learners. At Doutya Kids, we’re here to make childhood curiosity an endless adventure, one story at a time.
         </motion.div>
         
       </div>
