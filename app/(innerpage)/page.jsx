@@ -162,7 +162,7 @@ const Home = () => {
                     value={type}
                     className="bg-transparent ring-transparent border border-transparent"
                   >
-                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent focus:border-transparent outline-none focus:outline-none bg-transparent md:text-4xl text-2xl uppercase underline rounded-full p-2 text-white">
+                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent focus:border-transparent outline-none focus:outline-none bg-transparent md:text-4xl text-[35px] uppercase underline rounded-full p-2 text-white">
                       <SelectValue placeholder="Story" className="text-black" />
                     </SelectTrigger>
                     <SelectContent>
@@ -216,7 +216,7 @@ const Home = () => {
                     </h2>
                     <Input
                       type="number"
-                      placeholder="Enter your age"
+                      placeholder="Enter your child’s age (2-12)"
                       value={age}
                       onChange={(e) => setAge(e.target.value)}
                       className="w-full p-2 placeholder:text-center focus-visible:ring-transparent border border-gray-300 rounded-full"
@@ -299,7 +299,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-            className="flex flex-col gap-3 items-center bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative mt-6 font-bold text-xl"
+            className="flex flex-col gap-3 items-center bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative font-bold text-xl"
           >
             <div className="uppercase">{latestCourse?.type}</div>
             <div className="uppercase">Topic: {latestCourse?.courseName}</div>
