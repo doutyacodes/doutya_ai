@@ -160,6 +160,11 @@ const Navbar = () => {
           </Link> */}
         </>
       )}
+       {isAuthenticated ? (
+              <button onClick={logout} className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300">Logout</button>
+            ) : (
+              <Link href="/login" className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300">Login</Link>
+            )}
     </div>
   </div>
 </div>
