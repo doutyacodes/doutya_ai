@@ -81,7 +81,7 @@ const AddChildModal = () => {
           </select>
         </div>
         <div className="mb-6">
-          <label className="block text-sm font-medium mb-1">Child&apo;s Age</label>
+          <label className="block text-sm font-medium mb-1">Child&apos;s Age</label>
           <input
             type="number"
             value={newChildAge}

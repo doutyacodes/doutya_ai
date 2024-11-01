@@ -1,4 +1,3 @@
-// app/components/Chapter.js
 "use client";
 
 import { useEffect, useState } from "react";
@@ -14,15 +13,16 @@ const Chapter = () => {
   const { slug } = useParams();
   const [latestCourse, setLatestCourse] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
+  const [showTranscript, setShowTranscript] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0); // Track current playback position
+  let speech = null;
 
   useEffect(() => {
     const handleSlug = async () => {
       setLoading(true);
       try {
         const response = await GlobalApi.FetchSubtopics({ slug });
-
-        console.log(response.data.course[0].chapter_content);
         setLatestCourse(JSON.parse(response.data.course[0].chapter_content));
       } catch (err) {
         console.error("Error fetching subtopic:", err);
@@ -38,22 +38,44 @@ const Chapter = () => {
   }, [slug]);
 
   const playContent = () => {
-    // Implement the logic to play the content based on course type
-    const content =
-      latestCourse.type === "poem"
-        ? latestCourse.verses.map((verse) => verse.line).join(" ")
-        : latestCourse.introduction?.content +
-            latestCourse.body
-              ?.map((paragraph) => paragraph.content)
-              .join(" ") || "";
+    if (isPlaying) {
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+    } else {
+      const content =
+        latestCourse.type === "poem"
+          ? latestCourse.verses.map((verse) => verse.line).join(" ")
+          : latestCourse.introduction?.content +
+              latestCourse.body
+                ?.map((paragraph) => paragraph.content)
+                .join(" ") || "";
 
-    if (content) {
-      const speech = new SpeechSynthesisUtterance();
-      speech.text = content;
-      speech.lang = "en-US";
-      speech.rate = 1;
-      speech.pitch = 1.2;
-      window.speechSynthesis.speak(speech);
+      const contentChunks = content.split(". "); // Split content into sentences
+
+      if (content) {
+        speech = new SpeechSynthesisUtterance();
+        speech.text = contentChunks.slice(currentIndex).join(". ");
+        switch (latestCourse.language) {
+          case "japanese":
+            speech.lang = "ja-JP";
+            break;
+          case "korean":
+            speech.lang = "ko-KR";
+            break;
+          default:
+            speech.lang = "en-US"; // Default to English if not Japanese or Korean
+        }
+        speech.rate = 1;
+        speech.pitch = 1.2;
+
+        window.speechSynthesis.speak(speech);
+        setIsPlaying(true);
+
+        speech.onend = () => {
+          setCurrentIndex((prevIndex) => prevIndex + 1);
+          setIsPlaying(false);
+        };
+      }
     }
   };
 
@@ -72,8 +94,12 @@ const Chapter = () => {
             <div className="uppercase">{latestCourse?.type}</div>
             <div className="uppercase">Topic: {latestCourse?.courseName}</div>
             <div className="flex gap-7 items-center">
-            <div className="uppercase text-lg font-normal">Age: {latestCourse?.age}</div>
-            <div className="uppercase text-lg font-normal">Language: {latestCourse?.language}</div>
+              <div className="uppercase text-lg font-normal">
+                Age: {latestCourse?.age}
+              </div>
+              <div className="uppercase text-lg font-normal">
+                Language: {latestCourse?.language}
+              </div>
             </div>
           </motion.div>
         </>
@@ -132,13 +158,15 @@ const Chapter = () => {
             ) : latestCourse.type == "podcast" ? (
               <>
                 <div className="flex flex-col items-center justify-center mt-4">
-                  <button
-                    onClick={playContent}
-                    className="text-white bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
-                  >
-                    <IoPlayCircle className="text-3xl" />
-                    <span>Play Podcast</span>
-                  </button>
+                  {latestCourse.language == "english" && (
+                    <button
+                      onClick={playContent}
+                      className="text-white bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
+                    >
+                      <IoPlayCircle className="text-3xl" />
+                      <span>{isPlaying ? "Pause" : "Play Podcast"}</span>
+                    </button>
+                  )}
 
                   <button
                     onClick={() => setShowTranscript(!showTranscript)}
@@ -303,19 +331,21 @@ const Chapter = () => {
                 </p>
               </>
             )}
-           
+
             {(latestCourse.type === "story" ||
               latestCourse.type === "bedtime story" ||
               latestCourse.type === "explanation" ||
               latestCourse.type === "informative story" ||
               latestCourse.type === "poem") && (
               <div className="text-center mt-4 absolute right-5 top-5">
-                <button
-                  onClick={playContent}
-                  className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all"
-                >
-                  Play As Audio
-                </button>
+                {latestCourse.language == "english" && (
+                  <button
+                    onClick={playContent}
+                    className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all"
+                  >
+                    {isPlaying ? "Pause" : " Play As Audio"}
+                  </button>
+                )}
               </div>
             )}
           </div>

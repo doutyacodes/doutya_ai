@@ -34,7 +34,9 @@ const Home = () => {
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
   const { selectedChildId, selectedAge } = useChildren(); // Accessing selected child ID from context
   const { isAuthenticated, loading, logout } = useAuth();
-
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0); // Track current playback position
+  let speech = null;
   // const validateForm = () => {
   //   if (!courseName || !age) {
   //     setError("Course name and age are required.");
@@ -47,6 +49,7 @@ const Home = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
+    console.log(selectedChildId);
 
     // if (!validateForm()) return;
 
@@ -64,14 +67,18 @@ const Home = () => {
           return; // Early return if age is out of bounds
         }
       }
-
+      if (!courseName) {
+        toast.error("Please enter the topic to continue.");
+        setIsLoading(false);
+        return; // Early return if age is out of bounds
+      }
       const response = await GlobalApi.SearchUser(token, {
         courseName,
         language,
         difficulty,
         age: isAuthenticated ? selectedAge : age,
         type,
-        childId: isAuthenticated ? selectedChildId : null, // Pass selected child ID
+        childId: selectedChildId ? selectedChildId : null, // Pass selected child ID
       });
 
       console.log("API Response:", response.data.content); // Updated to match new JSON structure
@@ -100,22 +107,50 @@ const Home = () => {
     }
   };
   const playContent = () => {
-    // Implement the logic to play the content based on course type
-    const content =
-      latestCourse.type === "poem"
-        ? latestCourse.verses.map((verse) => verse.line).join(" ")
-        : latestCourse.introduction?.content +
-            latestCourse.body
-              ?.map((paragraph) => paragraph.content)
-              .join(" ") || "";
+    if (isPlaying) {
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+    } else {
+      const content =
+        latestCourse.type === "poem"
+          ? latestCourse.verses.map((verse) => verse.line).join(" ")
+          : latestCourse.introduction?.content +
+              latestCourse.body
+                ?.map((paragraph) => paragraph.content)
+                .join(" ") || "";
 
-    if (content) {
-      const speech = new SpeechSynthesisUtterance();
-      speech.text = content;
-      speech.lang = "en-US";
-      speech.rate = 1;
-      speech.pitch = 1.2;
-      window.speechSynthesis.speak(speech);
+      const contentChunks = content.split(". "); // Split content into sentences
+
+      if (content) {
+        speech = new SpeechSynthesisUtterance();
+        speech.text = contentChunks.slice(currentIndex).join(". ");
+        switch (latestCourse.language) {
+          case "japanese":
+            speech.lang = "ja-JP";
+            break;
+          case "korean":
+            speech.lang = "ko-KR";
+            break;
+          default:
+            speech.lang = "en-US"; // Default to English if not Japanese or Korean
+        }
+        speech.rate = 1;
+        speech.pitch = 1.2;
+
+        window.speechSynthesis.speak(speech);
+        setIsPlaying(true);
+
+        speech.onend = () => {
+          setCurrentIndex((prevIndex) => prevIndex + 1);
+          setIsPlaying(false);
+        };
+      }
+    }
+  };
+  const handleTypeChange = (newType) => {
+    setType(newType);
+    if (newType === "podcast") {
+      setLanguage("english");
     }
   };
 
@@ -158,12 +193,15 @@ const Home = () => {
                 <h2 className="text-xl font-semibold max-md:w-full mb-8 items-center justify-center flex md:flex-wrap max-md:flex-col gap-3 text-white">
                   <div>I want </div>
                   <Select
-                    onValueChange={setType}
+                    onValueChange={handleTypeChange}
                     value={type}
                     className="bg-transparent ring-transparent border focus:ring-0 focus-visible:ring-0 border-transparent underline decoration-2  max-md:w-full" // Thicker underline with offset
                   >
-                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-[30px] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0 text-white underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
-                      <SelectValue placeholder="Story" className="text-black w-full" />
+                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-[29px] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0 text-white underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
+                      <SelectValue
+                        placeholder="Story"
+                        className="text-black w-full"
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -231,7 +269,10 @@ const Home = () => {
                       <SelectContent>
                         <SelectGroup>
                           <SelectItem value="english">English</SelectItem>
-                          <SelectItem value="spanish">Spanish</SelectItem>
+                          {
+                            type!="podcast" && (
+                                <>
+                                <SelectItem value="spanish">Spanish</SelectItem>
                           <SelectItem value="french">French</SelectItem>
                           <SelectItem value="german">German</SelectItem>
                           <SelectItem value="italian">Italian</SelectItem>
@@ -247,6 +288,9 @@ const Home = () => {
                           <SelectItem value="japanese">Japanese</SelectItem>
                           <SelectItem value="korean">Korean</SelectItem>
                           <SelectItem value="arabic">Arabic</SelectItem>
+                                </>
+                            )
+                          }
                         </SelectGroup>
                       </SelectContent>
                     </SelectContent>
@@ -296,8 +340,12 @@ const Home = () => {
             <div className="uppercase">{latestCourse?.type}</div>
             <div className="uppercase">Topic: {latestCourse?.courseName}</div>
             <div className="flex gap-7 items-center">
-            <div className="uppercase text-lg font-normal">Age: {latestCourse?.age}</div>
-            <div className="uppercase text-lg font-normal">Language: {latestCourse?.language}</div>
+              <div className="uppercase text-lg font-normal">
+                Age: {latestCourse?.age}
+              </div>
+              <div className="uppercase text-lg font-normal">
+                Language: {latestCourse?.language}
+              </div>
             </div>
           </motion.div>
         </>
@@ -356,14 +404,16 @@ const Home = () => {
             ) : latestCourse.type == "podcast" ? (
               <>
                 <div className="flex flex-col items-center justify-center mt-4">
+                {
+                  latestCourse.language =="english" && (
                   <button
                     onClick={playContent}
                     className="text-white bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
                   >
                     <IoPlayCircle className="text-3xl" />
-                    <span>Play Podcast</span>
+                    <span>{isLoading ? "Pause" : "Play Podcast"}</span>
                   </button>
-
+                  )}
                   <button
                     onClick={() => setShowTranscript(!showTranscript)}
                     className="mt-4 text-[#1e5f9f] hover:underline text-lg font-semibold"
@@ -546,12 +596,14 @@ const Home = () => {
               latestCourse.type === "informative story" ||
               latestCourse.type === "poem") && (
               <div className="text-center mt-4 absolute right-5 top-5">
+                 {
+                  latestCourse.language =="english" && (
                 <button
                   onClick={playContent}
                   className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all"
                 >
-                  Play As Audio
-                </button>
+                  {isPlaying ? "Pause" : "Play As Audio"}
+                </button>)}
               </div>
             )}
           </div>
