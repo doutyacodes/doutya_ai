@@ -38,8 +38,8 @@ const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0); // Track current playback position
   const [genre, setGenre] = useState({
     value: "Any",
-    label: "Any",
     label1: "Any",
+    label: "A broad selection of age-appropriate stories for children.",
   }); // State for selected genre
   const [ageGenres, setAgeGenres] = useState([]);
   let speech = null;
@@ -113,7 +113,11 @@ const Home = () => {
       setLanguage("english");
       setDifficulty("basic");
       setType("story");
-      setGenre({ value: "Any", label: "Any", label1: "Any" });
+      setGenre({
+        value: "Any",
+        label1: "Any",
+        label: "A broad selection of age-appropriate stories for children.",
+      });
       setAge(selectedAge ? selectedAge : 2);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -185,11 +189,15 @@ const Home = () => {
 
   const genreOptions = {
     "2-5": [
-      { value: "Any", label1: "Any", label: "Any" },
+      {
+        value: "Any",
+        label1: "Any",
+        label: "A broad selection of age-appropriate stories for children.",
+      },
       {
         value: "informative story",
         label1: "Informative Story",
-        label: "Informative Story",
+        label: "Engaging stories that introduce simple facts and concepts.",
       },
       {
         value: "bedtime stories",
@@ -216,8 +224,7 @@ const Home = () => {
       {
         value: "fairy tales",
         label1: "Fairy Tales",
-        label:
-          "Simplified classic tales with gentle morals, like 'Goldilocks' or 'The Three Little Pigs.'",
+        label: "Simplified classic tales with gentle morals.",
       },
       {
         value: "counting alphabet stories",
@@ -248,11 +255,15 @@ const Home = () => {
       },
     ],
     "6-8": [
-      { value: "Any", label1: "Any", label: "Any" },
+      {
+        value: "Any",
+        label1: "Any",
+        label: "A broad selection of age-appropriate stories for children.",
+      },
       {
         value: "informative story",
         label1: "Informative Story",
-        label: "Informative Story",
+        label: "Engaging stories that introduce simple facts and concepts.",
       },
       {
         value: "bedtime stories",
@@ -317,11 +328,15 @@ const Home = () => {
       },
     ],
     "9-12": [
-      { value: "Any", label1: "Any", label: "Any" },
+      {
+        value: "Any",
+        label1: "Any",
+        label: "A broad selection of age-appropriate stories for children.",
+      },
       {
         value: "informative story",
         label1: "Informative Story",
-        label: "Informative Story",
+        label: "Engaging stories that introduce simple facts and concepts.",
       },
       {
         value: "bedtime stories",
@@ -512,10 +527,12 @@ const Home = () => {
                       <SelectGroup className="max-md:w-screen pr-2">
                         {ageGenres.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
-                            <span>{option.label1}</span>
-                           {
-                            (option.label1 !=="Any" && option.label1 !=="Informative Story")&&  <div className="text-[10px] text-gray-500">{option.label}</div>
-                           }
+                            <span className="w-full">{option.label1}<span className="max-md:hidden">{" - "}{option.label}</span></span>
+                            {
+                              <div className="text-[10px] md:hidden text-gray-500 pt-1 mt-1 w-full border-t-[1px]">
+                                {option.label}
+                              </div>
+                            }
                           </SelectItem>
                         ))}
                       </SelectGroup>
