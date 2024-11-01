@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { COURSES, MODULES, SUBTOPICS } from "@/utils/schema";
+import { COURSES } from "@/utils/schema";
 import { db } from "@/utils";
 import { generateUniqueSlug } from "@/lib/utils";
 import { authenticate } from "@/lib/jwtMiddleware";
@@ -17,15 +17,19 @@ export async function POST(request) {
     }
 
     const userId = authResult.decoded_Data.id;
-    const { courseName, language, difficulty, age, type, childId } =
-      await request.json();
+    const {
+      courseName,
+      language,
+      difficulty,
+      age,
+      type,
+      childId,
+      label,
+      genre,
+    } = await request.json();
 
     // Basic validation
-    if (
-      ![courseName, language, difficulty, age].every((field) =>
-        field?.toString().trim()
-      )
-    ) {
+    if (![courseName, language, difficulty, age].every(field => field?.toString().trim())) {
       return NextResponse.json(
         { message: "All fields are required and must not be empty." },
         { status: 400 }
@@ -41,109 +45,117 @@ export async function POST(request) {
           eq(COURSES.name, courseName),
           eq(COURSES.age, age),
           eq(COURSES.language, language),
-          eq(COURSES.type, type)
+          eq(COURSES.type, type),
+          (type=="story" && type=="story") && eq(COURSES.genre, genre)
         )
       );
 
-      if (existingCourse.length > 0) {
-        const course = existingCourse[0];
-        const courseData = JSON.parse(course.chapter_content);
-  
-        // Structure response based on course type
-        let structuredResponse;
-        if (["story", "bedtime story", "informative story", "podcast"].includes(type)) {
-          structuredResponse = {
-            courseName,
-            language,
-            difficulty,
-            age,
-            type,
-            title: courseData.title,
-            introduction: { content: courseData.introduction.content },
-            body: courseData.body.map(paragraph => ({ content: paragraph.content })),
-            conclusion: { content: courseData.conclusion.content },
-          };
-        } else if (type === "poem") {
-          structuredResponse = {
-            courseName,
-            language,
-            difficulty,
-            age,
-            type,
-            title: courseData.title,
-            verses: courseData.verses.map(verse => ({ line: verse.line })),
-          };
-        } else if (type === "presentation") {
-          structuredResponse = {
-            courseName,
-            language,
-            difficulty,
-            age,
-            type,
-            presentation: {
-              title: courseData.presentation.title,
-              slides: courseData.presentation.slides.map(slide => ({
-                slide_number: slide.slide_number,
-                content: slide.content.map(item => ({
-                  content: item.content,
-                  image_suggestion: item.image_suggestion,
-                  additional_resources: item.additional_resources,
-                })),
-              })),
+      console.log("hello",existingCourse)
+
+    if (existingCourse.length > 0) {
+      const course = existingCourse[0];
+      const courseData = JSON.parse(course.chapter_content || "{}");
+
+      // Structure response based on course type
+      let structuredResponse;
+      if (["story", "bedtime story", "informative story", "podcast"].includes(type)) {
+        structuredResponse = {
+          courseName,
+          genre,
+          label,
+          language,
+          difficulty,
+          age,
+          type,
+          title: courseData.title,
+          introduction: { content: courseData.introduction?.content },
+          body: courseData.body?.map(paragraph => ({ content: paragraph.content })) || [],
+          conclusion: { content: courseData.conclusion?.content },
+        };
+      } else if (type === "poem") {
+        structuredResponse = {
+          courseName,
+          language,
+          difficulty,
+          age,
+          type,
+          title: courseData.title,
+          verses: courseData.verses?.map(verse => ({ line: verse.line })) || [],
+        };
+      } else if (type === "presentation") {
+        structuredResponse = {
+          courseName,
+          language,
+          difficulty,
+          age,
+          type,
+          presentation: {
+            title: courseData.presentation?.title,
+            slides: courseData.presentation?.slides?.map(slide => ({
+              slide_number: slide.slide_number,
+              content: slide.content?.map(item => ({
+                content: item.content,
+                image_suggestion: item.image_suggestion,
+                additional_resources: item.additional_resources,
+              })) || [],
+            })) || [],
+          },
+        };
+      } else if (type === "course") {
+        structuredResponse = {
+          courseName,
+          language,
+          difficulty,
+          age,
+          type,
+          courseContent: {
+            introduction: { content: courseData.introduction?.content },
+            body: {
+              modules: courseData.body?.modules?.map(module => ({
+                module_number: module.module_number,
+                title: module.title,
+                subtopics: module.subtopics?.map(subtopic => ({
+                  title: subtopic.title,
+                })) || [],
+              })) || [],
             },
-          };
-        } else if (type === "course") {
-          structuredResponse = {
-            courseName,
-            language,
-            difficulty,
-            age,
-            type,
-            courseContent: {
-              introduction: { content: courseData.introduction.content },
-              body: {
-                modules: courseData.body.modules.map(module => ({
-                  module_number: module.module_number,
-                  title: module.title,
-                  subtopics: module.subtopics.map(subtopic => ({
-                    title: subtopic.title,
-                  })),
-                })),
-              },
-              conclusion: { content: courseData.conclusion.content },
+            conclusion: { content: courseData.conclusion?.content },
+          },
+        };
+      } else {
+        structuredResponse = {
+          courseName,
+          language,
+          difficulty,
+          age,
+          type,
+          essayContent: {
+            introduction: { content: courseData.introduction?.content },
+            body: {
+              sections: courseData.body?.sections?.map(section => ({
+                title: section.title,
+                content: section.content,
+                subtopics: section.subtopics?.map(subtopic => ({
+                  title: subtopic.title,
+                  content: subtopic.content,
+                })) || [],
+              })) || [],
             },
-          };
-        } else {
-          structuredResponse = {
-            courseName,
-            language,
-            difficulty,
-            age,
-            type,
-            essayContent: {
-              introduction: { content: courseData.introduction.content },
-              body: {
-                sections: courseData.body.sections.map(section => ({
-                  title: section.title,
-                  content: section.content,
-                  subtopics: section.subtopics.map(subtopic => ({
-                    title: subtopic.title,
-                    content: subtopic.content,
-                  })),
-                })),
-              },
-              conclusion: { content: courseData.conclusion.content },
-            },
-          };
-        }
-  
-        return NextResponse.json(
-          { message: "Course already exists for this user", content: structuredResponse },
-          { status: 200 }
-        );
+            conclusion: { content: courseData.conclusion?.content },
+          },
+        };
       }
 
-    // If no course exists, call the OpenAI API
+      return NextResponse.json(
+        {
+          message: "Course already exists for this user",
+          content: structuredResponse,
+        },
+        { status: 200 }
+      );
+    }
+
+    // Check for the OpenAI API key
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
         { message: "API Key is missing in environment variables." },
@@ -151,7 +163,7 @@ export async function POST(request) {
       );
     }
 
-    const prompt = generatePrompt(courseName, language, difficulty, age, type);
+    const prompt = generatePrompt(courseName, language, difficulty, age, type, genre, label);
     let chatGptResponse;
 
     try {
@@ -170,18 +182,15 @@ export async function POST(request) {
         }
       );
     } catch (apiError) {
-      console.error(
-        "API Request Error:",
-        apiError.response ? apiError.response.data : apiError.message
-      );
+      console.error("API Request Error:", apiError.response ? apiError.response.data : apiError.message);
       return NextResponse.json(
         { message: "Error with OpenAI API request", error: apiError.message },
         { status: 500 }
       );
     }
-
-    const responseContent =
-      chatGptResponse.data.choices?.[0]?.message?.content.trim();
+    
+    const responseContent = chatGptResponse.data.choices?.[0]?.message?.content.trim();
+    console.log("prompt",responseContent)
     if (!responseContent) {
       return NextResponse.json(
         { message: "No response content from OpenAI API." },
@@ -191,9 +200,7 @@ export async function POST(request) {
 
     let parsedData;
     try {
-      parsedData = JSON.parse(
-        responseContent.replace(/```json|```/g, "").trim()
-      );
+      parsedData = JSON.parse(responseContent.replace(/```json|```/g, "").trim());
     } catch (jsonError) {
       console.error("JSON Parsing Error:", jsonError);
       return NextResponse.json(
@@ -213,14 +220,15 @@ export async function POST(request) {
       age,
       slug: generateUniqueSlug(),
       type,
+      genre,
+      label,
       chapter_content: JSON.stringify(parsedData),
       user_id: userId,
       child_id: childId, // Pass selected child ID
     });
 
-    const courseId = courseInsert[0].insertId;
-    if (!courseId)
-      throw new Error("Course insertion did not return an insertId");
+    const courseId = courseInsert[0]?.insertId;
+    if (!courseId) throw new Error("Course insertion did not return an insertId");
 
     return NextResponse.json(
       { message: "Course created successfully!", content: parsedData },
@@ -234,8 +242,7 @@ export async function POST(request) {
     );
   }
 }
-
-function generatePrompt(courseName, language, difficulty, age, type) {
+function generatePrompt(courseName, language, difficulty, age, type,genre,label) {
   if (
     ["story", "bedtime story", "poem", "informative story", "podcast"].includes(
       type
@@ -248,13 +255,15 @@ function generatePrompt(courseName, language, difficulty, age, type) {
       The ${type} should be engaging and age-appropriate${
       type == "informative story" &&
       " with the history and relevant facts about the topic"
-    }.
+    }${type=="story" && genre && genre !="Any" && "The genre should be "+ genre +" and "+ label}.Ensure that the response returning should be a json file without description or comments.
       
       Structure:
       - If it’s a "story" or "bedtime story" or "informative story" or "podcast":
         {"courseName": "${courseName}",
       "language": "${language}",
       "difficulty": "${difficulty}",
+      "genre": "${genre}",
+      "label": "${label}",
       "age": ${age},
       "type": ${type},
           "title": "${type} Title",

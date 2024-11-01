@@ -93,6 +93,14 @@ const Chapter = () => {
           >
             <div className="uppercase">{latestCourse?.type}</div>
             <div className="uppercase">Topic: {latestCourse?.courseName}</div>
+            {
+                (latestCourse?.type=="story"||latestCourse?.type=="explanation") && (
+                    <div className="uppercase text-lg font-normal">
+                Genre: {latestCourse?.genre}
+              </div>
+                )
+                
+            }
             <div className="flex gap-7 items-center">
               <div className="uppercase text-lg font-normal">
                 Age: {latestCourse?.age}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Select,
@@ -27,7 +27,7 @@ const Home = () => {
   const [language, setLanguage] = useState("english");
   const [difficulty, setDifficulty] = useState("basic");
   const [type, setType] = useState("story");
-  const [age, setAge] = useState(""); // New state for age input
+  const [age, setAge] = useState(2); // New state for age input
   const [error, setError] = useState("");
   const [latestCourse, setLatestCourse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +36,12 @@ const Home = () => {
   const { isAuthenticated, loading, logout } = useAuth();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0); // Track current playback position
+  const [genre, setGenre] = useState({
+    value: "Any",
+    label: "Any",
+    label1: "Any",
+  }); // State for selected genre
+  const [ageGenres, setAgeGenres] = useState([]);
   let speech = null;
   // const validateForm = () => {
   //   if (!courseName || !age) {
@@ -51,61 +57,74 @@ const Home = () => {
     e.preventDefault();
     console.log(selectedChildId);
 
-    // if (!validateForm()) return;
+    // Start loading state immediately
+    setIsLoading(true);
 
-    try {
-      setIsLoading(true);
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-      const token =
-        typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-      // console.log(token)
-      if (!token) {
-        if (age > 12 || age < 2) {
-          toast.error("Age must be between 2 and 12.");
-          setIsLoading(false);
-          return; // Early return if age is out of bounds
-        }
-      }
-      if (!courseName) {
-        toast.error("Please enter the topic to continue.");
-        setIsLoading(false);
+    if (!token) {
+      if (age > 12 || age < 2) {
+        toast.error("Age must be between 2 and 12.");
+        setIsLoading(false); // Ensure loading is stopped
         return; // Early return if age is out of bounds
       }
+    }
+    if (!courseName) {
+      toast.error("Please enter the topic to continue.");
+      setIsLoading(false); // Ensure loading is stopped
+      return;
+    }
+    if (type === "story") {
+      if (!genre) {
+        toast.error("Please select a genre to continue.");
+        setGenre({ value: "Any", label: "Any" });
+        setIsLoading(false); // Ensure loading is stopped
+        return;
+      }
+    }
+
+    try {
       const response = await GlobalApi.SearchUser(token, {
         courseName,
         language,
+        label:
+          type === "story" && genre ? genre.label1 + " " + genre.label : null,
+        genre: type === "story" && genre ? genre.value : null,
         difficulty,
         age: isAuthenticated ? selectedAge : age,
         type,
-        childId: selectedChildId ? selectedChildId : null, // Pass selected child ID
+        childId: selectedChildId || null, // Pass selected child ID
       });
 
-      console.log("API Response:", response.data.content); // Updated to match new JSON structure
+      console.log("API Response:", response.data.content);
 
       const newCourse = response?.data?.content || {};
       setLatestCourse(newCourse);
 
       if (newCourse && Object.keys(newCourse).length > 0) {
-        // toast.success("Topic created successfully!");
+        // Optionally show success toast
       } else {
         toast.error("No data found.");
       }
 
+      // Reset fields after search
       setCourseName("");
       setLanguage("english");
       setDifficulty("basic");
       setType("story");
-      setAge(selectedAge);
+      setGenre({ value: "Any", label: "Any", label1: "Any" });
+      setAge(selectedAge ? selectedAge : 2);
     } catch (err) {
       console.error("Error fetching data:", err);
       toast.error(
         "Error: " + (err?.message || "An unexpected error occurred.")
       );
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Ensure loading is stopped in all cases
     }
   };
+
   const playContent = () => {
     if (isPlaying) {
       window.speechSynthesis.cancel();
@@ -152,12 +171,255 @@ const Home = () => {
     if (newType === "podcast") {
       setLanguage("english");
     }
+    if (
+      newType != "story" &&
+      newType != "explanation" &&
+      (language == "malayalam" ||
+        language == "hindi" ||
+        language == "kannada" ||
+        language == "telugu")
+    ) {
+      setLanguage("english");
+    }
   };
+
+  const genreOptions = {
+    "2-5": [
+      { value: "Any", label1: "Any", label: "Any" },
+      {
+        value: "informative story",
+        label1: "Informative Story",
+        label: "Informative Story",
+      },
+      {
+        value: "bedtime stories",
+        label1: "Bedtime Stories",
+        label:
+          "Calm, soothing tales designed to help children wind down for sleep.",
+      },
+      {
+        value: "animal adventures",
+        label1: "Animal Adventures",
+        label:
+          "Simple stories featuring animals on fun, friendly journeys or adventures.",
+      },
+      {
+        value: "friendship stories",
+        label1: "Friendship Stories",
+        label: "Tales that teach sharing, kindness, and empathy among friends.",
+      },
+      {
+        value: "rhyming stories",
+        label1: "Rhyming Stories",
+        label: "Rhyming, rhythmic stories that support language development.",
+      },
+      {
+        value: "fairy tales",
+        label1: "Fairy Tales",
+        label:
+          "Simplified classic tales with gentle morals, like 'Goldilocks' or 'The Three Little Pigs.'",
+      },
+      {
+        value: "counting alphabet stories",
+        label1: "Counting & Alphabet Stories",
+        label: "Stories that incorporate numbers and letters in playful ways.",
+      },
+      {
+        value: "fantasy magic",
+        label1: "Fantasy & Magic",
+        label:
+          "Very light fantasy with magical elements like talking animals or whimsical worlds.",
+      },
+      {
+        value: "silly stories",
+        label1: "Silly Stories",
+        label: "Playful, humorous tales with funny characters.",
+      },
+      {
+        value: "adventure exploration",
+        label1: "Adventure & Exploration",
+        label: "Simple stories of curiosity and discovery.",
+      },
+      {
+        value: "seasonal stories",
+        label1: "Seasonal Stories",
+        label:
+          "Stories centered on holidays, weather changes, or seasonal activities.",
+      },
+    ],
+    "6-8": [
+      { value: "Any", label1: "Any", label: "Any" },
+      {
+        value: "informative story",
+        label1: "Informative Story",
+        label: "Informative Story",
+      },
+      {
+        value: "bedtime stories",
+        label1: "Bedtime Stories",
+        label:
+          "Calm, soothing tales designed to help children wind down for sleep.",
+      },
+      {
+        value: "fantasy magic",
+        label1: "Fantasy & Magic",
+        label: "Magical tales with more imaginative elements.",
+      },
+      {
+        value: "humor mischief",
+        label1: "Humor & Mischief",
+        label: "Silly, playful stories with funny twists.",
+      },
+      {
+        value: "animal fables",
+        label1: "Animal Fables",
+        label: "Short stories with animals, each ending in a moral.",
+      },
+      {
+        value: "mystery",
+        label1: "Mystery",
+        label: "Simple mysteries, such as finding lost objects.",
+      },
+      {
+        value: "adventure stories",
+        label1: "Adventure Stories",
+        label: "Characters go on small quests.",
+      },
+      {
+        value: "superhero tales",
+        label1: "Superhero Tales",
+        label: "Age-appropriate superhero stories.",
+      },
+      {
+        value: "historical legends",
+        label1: "Historical Legends",
+        label: "Gentle retellings of folk tales.",
+      },
+      {
+        value: "friendship family stories",
+        label1: "Friendship & Family Stories",
+        label: "Stories about navigating simple conflicts.",
+      },
+      {
+        value: "nature science",
+        label1: "Nature & Science",
+        label: "Stories that introduce basic science concepts.",
+      },
+      {
+        value: "travel exploration",
+        label1: "Travel & Exploration",
+        label: "Tales about visiting new places.",
+      },
+      {
+        value: "everyday adventures",
+        label1: "Everyday Adventures",
+        label: "Stories where characters tackle school or personal goals.",
+      },
+    ],
+    "9-12": [
+      { value: "Any", label1: "Any", label: "Any" },
+      {
+        value: "informative story",
+        label1: "Informative Story",
+        label: "Informative Story",
+      },
+      {
+        value: "bedtime stories",
+        label1: "Bedtime Stories",
+        label:
+          "Calm, soothing tales designed to help children wind down for sleep.",
+      },
+      {
+        value: "historical fiction",
+        label1: "Historical Fiction",
+        label: "Stories set in different historical periods.",
+      },
+      {
+        value: "science fiction",
+        label1: "Science Fiction",
+        label: "Light sci-fi exploring concepts like space travel.",
+      },
+      {
+        value: "fantasy quests",
+        label1: "Fantasy Quests",
+        label: "More complex fantasy stories involving quests.",
+      },
+      {
+        value: "detective mystery",
+        label1: "Detective & Mystery",
+        label: "Engaging mysteries that require problem-solving.",
+      },
+      {
+        value: "adventure survival",
+        label1: "Adventure & Survival",
+        label: "Stories about surviving in the wild.",
+      },
+      {
+        value: "mythology",
+        label1: "Mythology",
+        label: "Stories based on myths from different cultures.",
+      },
+      {
+        value: "coming of age",
+        label1: "Coming-of-Age",
+        label: "Stories exploring themes of self-discovery.",
+      },
+      {
+        value: "humor satires",
+        label1: "Humor & Satire",
+        label: "Funny stories with gentle satire.",
+      },
+      {
+        value: "real life situations",
+        label1: "Real-Life Situations",
+        label: "Stories dealing with friendship issues.",
+      },
+      {
+        value: "sports competition",
+        label1: "Sports & Competition",
+        label: "Stories about sportsmanship.",
+      },
+      {
+        value: "science technology",
+        label1: "Science & Technology",
+        label: "Stories that introduce technology.",
+      },
+      {
+        value: "magic realism",
+        label1: "Magic Realism",
+        label: "Stories blending reality and magical elements.",
+      },
+    ],
+  };
+
+  // Effect to set genre options based on selected age
+  useEffect(() => {
+    if (selectedAge) {
+      if (selectedAge >= 2 && selectedAge <= 5) {
+        setAgeGenres(genreOptions["2-5"]);
+      } else if (selectedAge >= 6 && selectedAge <= 8) {
+        setAgeGenres(genreOptions["6-8"]);
+      } else if (selectedAge >= 9 && selectedAge <= 12) {
+        setAgeGenres(genreOptions["9-12"]);
+      } else {
+        setAgeGenres([]); // Reset if age is out of bounds
+      }
+    } else {
+      if (age >= 2 && age <= 5) {
+        setAgeGenres(genreOptions["2-5"]);
+      } else if (age >= 6 && age <= 8) {
+        setAgeGenres(genreOptions["6-8"]);
+      } else if (age >= 9 && age <= 12) {
+        setAgeGenres(genreOptions["9-12"]);
+      } else {
+        setAgeGenres([]); // Reset if age is out of bounds
+      }
+    }
+  }, [age, selectedAge]);
 
   if (isLoading) {
     return <LoadingSpinner />;
   }
-
   return (
     <div className=" flex flex-col items-center justify-center  text-gray-800 p-5 md:pt-20 pt-0">
       <Toaster />
@@ -206,15 +468,15 @@ const Home = () => {
                     <SelectContent>
                       <SelectGroup>
                         <SelectItem value="story">a Story</SelectItem>
-                        <SelectItem value="bedtime story">
+                        {/* <SelectItem value="bedtime story">
                           a Bedtime Story
-                        </SelectItem>
+                        </SelectItem> */}
                         <SelectItem value="explanation">
                           an Explanation
                         </SelectItem>
-                        <SelectItem value="informative story">
+                        {/* <SelectItem value="informative story">
                           an Informative Story
-                        </SelectItem>
+                        </SelectItem> */}
                         <SelectItem value="podcast">a Podcast</SelectItem>
                         <SelectItem value="poem">a Poem</SelectItem>
                       </SelectGroup>
@@ -230,7 +492,37 @@ const Home = () => {
                   className="w-full p-2 max-md:py-12 py-6 text-xl placeholder:text-lg focus-visible:ring-transparent border border-gray-300 rounded-xl md:rounded-full placeholder:text-center md:mb-16"
                 />
               </div>
-
+              {ageGenres.length > 0 && type == "story" && (
+                <div className="w-full text-center mb-4">
+                  <h2 className="text-lg font-semibold mb-2 text-white">
+                    Select a Genre
+                  </h2>
+                  <Select
+                    onValueChange={(value) =>
+                      setGenre(
+                        ageGenres.find((option) => option.value === value)
+                      )
+                    }
+                    value={genre.value}
+                  >
+                    <SelectTrigger className="w-full border text-center focus-visible:ring-transparent border-gray-300 rounded-full p-2">
+                      <SelectValue placeholder={genre.label} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup className="max-md:w-screen pr-2">
+                        {ageGenres.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            <span>{option.label1}</span>
+                           {
+                            (option.label1 !=="Any" && option.label1 !=="Informative Story")&&  <div className="text-[10px] text-gray-500">{option.label}</div>
+                           }
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <div
                 className={cn(
                   "grid gap-2 md:gap-8",
@@ -269,28 +561,38 @@ const Home = () => {
                       <SelectContent>
                         <SelectGroup>
                           <SelectItem value="english">English</SelectItem>
-                          {
-                            type!="podcast" && (
-                                <>
-                                <SelectItem value="spanish">Spanish</SelectItem>
-                          <SelectItem value="french">French</SelectItem>
-                          <SelectItem value="german">German</SelectItem>
-                          <SelectItem value="italian">Italian</SelectItem>
-                          <SelectItem value="portuguese">Portuguese</SelectItem>
-                          <SelectItem value="dutch">Dutch</SelectItem>
-                          <SelectItem value="russian">Russian</SelectItem>
-                          <SelectItem value="chinese simplified">
-                            Chinese (Simplified)
-                          </SelectItem>
-                          <SelectItem value="chinese traditional">
-                            Chinese (Traditional)
-                          </SelectItem>
-                          <SelectItem value="japanese">Japanese</SelectItem>
-                          <SelectItem value="korean">Korean</SelectItem>
-                          <SelectItem value="arabic">Arabic</SelectItem>
-                                </>
-                            )
-                          }
+                          {type != "podcast" && (
+                            <>
+                              <SelectItem value="spanish">Spanish</SelectItem>
+                              <SelectItem value="french">French</SelectItem>
+                              <SelectItem value="german">German</SelectItem>
+                              <SelectItem value="italian">Italian</SelectItem>
+                              <SelectItem value="portuguese">
+                                Portuguese
+                              </SelectItem>
+                              {/* <SelectItem value="dutch">Dutch</SelectItem>
+                              <SelectItem value="russian">Russian</SelectItem>
+                              <SelectItem value="chinese simplified">
+                                Chinese (Simplified)
+                              </SelectItem>
+                              <SelectItem value="chinese traditional">
+                                Chinese (Traditional)
+                              </SelectItem>
+                              <SelectItem value="japanese">Japanese</SelectItem>
+                              <SelectItem value="korean">Korean</SelectItem>
+                              <SelectItem value="arabic">Arabic</SelectItem> */}
+                            </>
+                          )}
+                          {/* {(type == "story" || type == "explanation") && (
+                            <>
+                              <SelectItem value="malayalam">
+                                Malayalam
+                              </SelectItem>
+                              <SelectItem value="kannada">Kannada</SelectItem>
+                              <SelectItem value="telugu">Telugu</SelectItem>
+                              <SelectItem value="hindi">Hindi</SelectItem>
+                            </>
+                          )} */}
                         </SelectGroup>
                       </SelectContent>
                     </SelectContent>
@@ -339,6 +641,12 @@ const Home = () => {
           >
             <div className="uppercase">{latestCourse?.type}</div>
             <div className="uppercase">Topic: {latestCourse?.courseName}</div>
+            {(latestCourse?.type == "story" ||
+              latestCourse?.type == "explanation") && (
+              <div className="uppercase text-lg font-normal">
+                Genre: {latestCourse?.genre}
+              </div>
+            )}
             <div className="flex gap-7 items-center">
               <div className="uppercase text-lg font-normal">
                 Age: {latestCourse?.age}
@@ -404,15 +712,14 @@ const Home = () => {
             ) : latestCourse.type == "podcast" ? (
               <>
                 <div className="flex flex-col items-center justify-center mt-4">
-                {
-                  latestCourse.language =="english" && (
-                  <button
-                    onClick={playContent}
-                    className="text-white bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
-                  >
-                    <IoPlayCircle className="text-3xl" />
-                    <span>{isLoading ? "Pause" : "Play Podcast"}</span>
-                  </button>
+                  {latestCourse.language == "english" && (
+                    <button
+                      onClick={playContent}
+                      className="text-white bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
+                    >
+                      <IoPlayCircle className="text-3xl" />
+                      <span>{isLoading ? "Pause" : "Play Podcast"}</span>
+                    </button>
                   )}
                   <button
                     onClick={() => setShowTranscript(!showTranscript)}
@@ -596,14 +903,14 @@ const Home = () => {
               latestCourse.type === "informative story" ||
               latestCourse.type === "poem") && (
               <div className="text-center mt-4 absolute right-5 top-5">
-                 {
-                  latestCourse.language =="english" && (
-                <button
-                  onClick={playContent}
-                  className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all"
-                >
-                  {isPlaying ? "Pause" : "Play As Audio"}
-                </button>)}
+                {latestCourse.language == "english" && (
+                  <button
+                    onClick={playContent}
+                    className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all"
+                  >
+                    {isPlaying ? "Pause" : "Play As Audio"}
+                  </button>
+                )}
               </div>
             )}
           </div>
