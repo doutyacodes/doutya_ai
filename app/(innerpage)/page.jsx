@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Select,
@@ -21,6 +21,8 @@ import { useChildren } from "@/context/CreateContext";
 import useAuth from "../hooks/useAuth";
 import { cn } from "@/lib/utils";
 import ChildSelector from "../_components/ChildSelecter";
+import { Button } from "@/components/ui/button";
+import { ArrowUpLeftFromSquare, ChevronLeft } from "lucide-react";
 
 const Home = () => {
   const [courseName, setCourseName] = useState("");
@@ -34,7 +36,11 @@ const Home = () => {
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
   const { selectedChildId, selectedAge } = useChildren(); // Accessing selected child ID from context
   const { isAuthenticated, loading, logout } = useAuth();
+  const [image, setImage] = useState(null);
+  const [file, setFile] = useState(null); // Track the uploaded file
   const [isPlaying, setIsPlaying] = useState(false);
+  const fileInputRef = useRef(null); // Create a reference for the file input
+  const [hideActivity, setHideActivity] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0); // Track current playback position
   const [genre, setGenre] = useState({
     value: "Any",
@@ -118,6 +124,8 @@ const Home = () => {
         label1: "Any",
         label: "A broad selection of age-appropriate stories for children.",
       });
+      setHideActivity(true);
+
       setAge(selectedAge ? selectedAge : 2);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -432,6 +440,39 @@ const Home = () => {
     }
   }, [age, selectedAge]);
 
+  const handleUpload = () => {
+    // Open the file upload dialog
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+
+    // Check if the selected file is an image
+    if (selectedFile && selectedFile.type.startsWith("image/")) {
+      setFile(selectedFile); // Store the file for later use
+      setImage(URL.createObjectURL(selectedFile)); // Preview the image (optional)
+      console.log("Image uploaded:", selectedFile);
+    } else {
+      alert("Please upload a valid image file.");
+    }
+  };
+
+  const submitUpload = () => {
+    // Check if an image exists
+    if (file) {
+      // Call your desired function here
+      console.log("Image exists, calling the upload function...");
+      // Here you can call an upload function, for example:
+      // uploadImage(file);
+      setHideActivity(false);
+      toast.success("Image uploaded successfully!");
+    } else {
+      toast.error("No image uploaded. Please upload an image first.");
+    }
+  };
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -527,7 +568,13 @@ const Home = () => {
                       <SelectGroup className="max-md:w-screen pr-2">
                         {ageGenres.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
-                            <span className="w-full">{option.label1}<span className="max-md:hidden">{" - "}{option.label}</span></span>
+                            <span className="w-full">
+                              {option.label1}
+                              <span className="max-md:hidden">
+                                {" - "}
+                                {option.label}
+                              </span>
+                            </span>
                             {
                               <div className="text-[10px] md:hidden text-gray-500 pt-1 mt-1 w-full border-t-[1px]">
                                 {option.label}
@@ -649,21 +696,32 @@ const Home = () => {
         </>
       )}
       {latestCourse && (
-        <>
+        <div className="flex items-start justify-between bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative font-bold text-xl">
+          <div
+            onClick={() => setLatestCourse(null)}
+            className="bg-orange-500 text-white p-2 rounded-full"
+          >
+            <ChevronLeft />
+          </div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-            className="flex flex-col gap-3 items-center bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative font-bold text-xl"
+            className="flex flex-col gap-3 items-center "
           >
-            <div className="uppercase">{latestCourse?.type}</div>
-            <div className="uppercase">Topic: {latestCourse?.courseName}</div>
-            {(latestCourse?.type == "story" ||
-              latestCourse?.type == "explanation") && (
-              <div className="uppercase text-lg font-normal">
-                Genre: {latestCourse?.genre}
-              </div>
-            )}
+            <div className="uppercase underline">
+              {latestCourse?.courseName}
+            </div>
+            <div className="uppercase  text-lg font-normal">
+              {latestCourse?.type}{" "}
+              {(latestCourse?.type == "story" ||
+                latestCourse?.type == "explanation") && (
+                <span className="uppercase text-lg font-normal">
+                 - {latestCourse?.genre}
+                </span>
+              )}
+            </div>
+
             <div className="flex gap-7 items-center">
               <div className="uppercase text-lg font-normal">
                 Age: {latestCourse?.age}
@@ -673,7 +731,8 @@ const Home = () => {
               </div>
             </div>
           </motion.div>
-        </>
+          <div />
+        </div>
       )}
       {latestCourse && (
         <motion.div
@@ -902,8 +961,49 @@ const Home = () => {
               </>
             )}
             {latestCourse && (
-              <div className="flex justify-center items-center">
-                <motion.div
+              <div className="flex flex-col gap-3 justify-center items-center">
+                {latestCourse?.activities && hideActivity && (
+                  <div className="  mt-5">
+                    <h4 className="uppercase font-bold underline text-center text-xl mb-5">
+                      Actvities
+                    </h4>
+                    <h4 className="uppercase font-semibold my-3 text-lg">
+                      {latestCourse?.activities?.title}
+                    </h4>
+                    <h4 className="uppercase ">
+                      {latestCourse?.activities?.content}
+                    </h4>
+                    <div className="w-full flex justify-between mt-5">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        ref={fileInputRef} // Attach the ref to the file input
+                      />
+                      <Button
+                        className="bg-orange-500 p-2 font-bold"
+                        onClick={handleUpload} // Open the file dialog
+                      >
+                        Upload Picture
+                      </Button>
+                      <Button
+                        className="bg-green-600 p-2 font-bold"
+                        onClick={submitUpload}
+                      >
+                        Submit
+                      </Button>
+                      {image && (
+                        <img
+                          src={image}
+                          alt="Preview"
+                          style={{ maxWidth: "100px", maxHeight: "100px" }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
+                {/* <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 1 }}
@@ -911,7 +1011,7 @@ const Home = () => {
                   onClick={() => setLatestCourse(null)}
                 >
                   Back to Search
-                </motion.div>
+                </motion.div> */}
               </div>
             )}
             {(latestCourse.type === "story" ||

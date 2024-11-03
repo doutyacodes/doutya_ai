@@ -84,12 +84,12 @@ const CourseList = () => {
           </select>
         </div>
       </div>
-<div className="w-full max-w-6xl min-h-[40vh] ">
+
       {loading ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-center text-xl text-white h-[50vh] flex justify-center gap-4 items-center w-full"
+          className="text-center text-xl text-white h-[50vh] flex justify-center items-center"
         >
           <AiOutlineLoading3Quarters className="animate-spin text-5xl mx-auto" />
           Loading...
@@ -105,7 +105,7 @@ const CourseList = () => {
           <span className="text-white/70 text-sm font-light">Please try another filter or type.</span>
         </motion.p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8  ">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-6xl">
           {courses.map((course) => (
             <motion.div
               key={course.id}
@@ -121,7 +121,6 @@ const CourseList = () => {
           ))}
         </div>
       )}
-      </div>
 
       <div className="flex justify-between items-center mt-10 w-full max-w-2xl">
         <button

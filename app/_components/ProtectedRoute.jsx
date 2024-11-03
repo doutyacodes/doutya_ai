@@ -11,7 +11,10 @@ const ProtectedRoute = ({ children, allowedRoutes = [] }) => {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!loading && !isAuthenticated && !allowedRoutes.includes(pathname)) {
+    const isAllowed = 
+      allowedRoutes.includes(pathname) || pathname.startsWith("/learn/");
+
+    if (!loading && !isAuthenticated && !isAllowed) {
       router.replace("/login"); // Redirect to login page
     }
   }, [isAuthenticated, loading, pathname, router, allowedRoutes]);
@@ -20,7 +23,10 @@ const ProtectedRoute = ({ children, allowedRoutes = [] }) => {
     return <LoadingSpinner />; // Optionally, add a loading spinner
   }
 
-  return isAuthenticated || allowedRoutes.includes(pathname) ? children : null;
+  const isAllowed = 
+    allowedRoutes.includes(pathname) || pathname.startsWith("/learn/");
+
+  return isAuthenticated || isAllowed ? children : null;
 };
 
 export default ProtectedRoute;

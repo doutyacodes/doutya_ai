@@ -5,7 +5,7 @@ import Navbar from "../_components/Navbar";
 
 const ProtectLayout = ({ children }) => {
   return (
-    <ProtectedRoute allowedRoutes={["/","/our-story","/about-us"]}>
+    <ProtectedRoute allowedRoutes={["/","/our-story","/about-us","/learn"]}>
       <ChildrenProvider>
         <div className="relative min-h-screen  pt-3 bg-gradient-to-br from-[#1e5f9f] via-[#40cb9f] to-[#1e5f9f]">
         

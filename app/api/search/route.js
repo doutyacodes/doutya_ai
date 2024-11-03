@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { COURSES } from "@/utils/schema";
+import { ACTIVITIES, COURSES } from "@/utils/schema";
 import { db } from "@/utils";
 import { generateUniqueSlug } from "@/lib/utils";
 import { authenticate } from "@/lib/jwtMiddleware";
@@ -29,7 +29,11 @@ export async function POST(request) {
     } = await request.json();
 
     // Basic validation
-    if (![courseName, language, difficulty, age].every(field => field?.toString().trim())) {
+    if (
+      ![courseName, language, difficulty, age].every((field) =>
+        field?.toString().trim()
+      )
+    ) {
       return NextResponse.json(
         { message: "All fields are required and must not be empty." },
         { status: 400 }
@@ -46,11 +50,11 @@ export async function POST(request) {
           eq(COURSES.age, age),
           eq(COURSES.language, language),
           eq(COURSES.type, type),
-          (type=="story" && type=="story") && eq(COURSES.genre, genre)
+          type == "story" && type == "story" && eq(COURSES.genre, genre)
         )
       );
 
-      console.log("hello",existingCourse)
+    console.log("hello", existingCourse);
 
     if (existingCourse.length > 0) {
       const course = existingCourse[0];
@@ -58,7 +62,11 @@ export async function POST(request) {
 
       // Structure response based on course type
       let structuredResponse;
-      if (["story", "bedtime story", "informative story", "podcast"].includes(type)) {
+      if (
+        ["story", "bedtime story", "informative story", "podcast"].includes(
+          type
+        )
+      ) {
         structuredResponse = {
           courseName,
           genre,
@@ -69,7 +77,10 @@ export async function POST(request) {
           type,
           title: courseData.title,
           introduction: { content: courseData.introduction?.content },
-          body: courseData.body?.map(paragraph => ({ content: paragraph.content })) || [],
+          body:
+            courseData.body?.map((paragraph) => ({
+              content: paragraph.content,
+            })) || [],
           conclusion: { content: courseData.conclusion?.content },
         };
       } else if (type === "poem") {
@@ -80,7 +91,8 @@ export async function POST(request) {
           age,
           type,
           title: courseData.title,
-          verses: courseData.verses?.map(verse => ({ line: verse.line })) || [],
+          verses:
+            courseData.verses?.map((verse) => ({ line: verse.line })) || [],
         };
       } else if (type === "presentation") {
         structuredResponse = {
@@ -91,14 +103,16 @@ export async function POST(request) {
           type,
           presentation: {
             title: courseData.presentation?.title,
-            slides: courseData.presentation?.slides?.map(slide => ({
-              slide_number: slide.slide_number,
-              content: slide.content?.map(item => ({
-                content: item.content,
-                image_suggestion: item.image_suggestion,
-                additional_resources: item.additional_resources,
+            slides:
+              courseData.presentation?.slides?.map((slide) => ({
+                slide_number: slide.slide_number,
+                content:
+                  slide.content?.map((item) => ({
+                    content: item.content,
+                    image_suggestion: item.image_suggestion,
+                    additional_resources: item.additional_resources,
+                  })) || [],
               })) || [],
-            })) || [],
           },
         };
       } else if (type === "course") {
@@ -111,13 +125,15 @@ export async function POST(request) {
           courseContent: {
             introduction: { content: courseData.introduction?.content },
             body: {
-              modules: courseData.body?.modules?.map(module => ({
-                module_number: module.module_number,
-                title: module.title,
-                subtopics: module.subtopics?.map(subtopic => ({
-                  title: subtopic.title,
+              modules:
+                courseData.body?.modules?.map((module) => ({
+                  module_number: module.module_number,
+                  title: module.title,
+                  subtopics:
+                    module.subtopics?.map((subtopic) => ({
+                      title: subtopic.title,
+                    })) || [],
                 })) || [],
-              })) || [],
             },
             conclusion: { content: courseData.conclusion?.content },
           },
@@ -132,14 +148,16 @@ export async function POST(request) {
           essayContent: {
             introduction: { content: courseData.introduction?.content },
             body: {
-              sections: courseData.body?.sections?.map(section => ({
-                title: section.title,
-                content: section.content,
-                subtopics: section.subtopics?.map(subtopic => ({
-                  title: subtopic.title,
-                  content: subtopic.content,
+              sections:
+                courseData.body?.sections?.map((section) => ({
+                  title: section.title,
+                  content: section.content,
+                  subtopics:
+                    section.subtopics?.map((subtopic) => ({
+                      title: subtopic.title,
+                      content: subtopic.content,
+                    })) || [],
                 })) || [],
-              })) || [],
             },
             conclusion: { content: courseData.conclusion?.content },
           },
@@ -163,7 +181,15 @@ export async function POST(request) {
       );
     }
 
-    const prompt = generatePrompt(courseName, language, difficulty, age, type, genre, label);
+    const prompt = generatePrompt(
+      courseName,
+      language,
+      difficulty,
+      age,
+      type,
+      genre,
+      label
+    );
     let chatGptResponse;
 
     try {
@@ -182,15 +208,19 @@ export async function POST(request) {
         }
       );
     } catch (apiError) {
-      console.error("API Request Error:", apiError.response ? apiError.response.data : apiError.message);
+      console.error(
+        "API Request Error:",
+        apiError.response ? apiError.response.data : apiError.message
+      );
       return NextResponse.json(
         { message: "Error with OpenAI API request", error: apiError.message },
         { status: 500 }
       );
     }
-    
-    const responseContent = chatGptResponse.data.choices?.[0]?.message?.content.trim();
-    console.log("prompt",responseContent)
+
+    const responseContent =
+      chatGptResponse.data.choices?.[0]?.message?.content.trim();
+    console.log("prompt", responseContent);
     if (!responseContent) {
       return NextResponse.json(
         { message: "No response content from OpenAI API." },
@@ -200,7 +230,9 @@ export async function POST(request) {
 
     let parsedData;
     try {
-      parsedData = JSON.parse(responseContent.replace(/```json|```/g, "").trim());
+      parsedData = JSON.parse(
+        responseContent.replace(/```json|```/g, "").trim()
+      );
     } catch (jsonError) {
       console.error("JSON Parsing Error:", jsonError);
       return NextResponse.json(
@@ -228,7 +260,27 @@ export async function POST(request) {
     });
 
     const courseId = courseInsert[0]?.insertId;
-    if (!courseId) throw new Error("Course insertion did not return an insertId");
+    if (!courseId)
+      throw new Error("Course insertion did not return an insertId");
+
+    try {
+      const activityInsert = await db.insert(ACTIVITIES).values({
+        title: parsedData.activities.title,
+        content: parsedData.activities.content,
+        course_id: courseId,
+        language: language,
+        genre: genre,
+        difficulty: difficulty,
+      });
+      const activityId = activityInsert[0]?.insertId;
+      if (!activityId)
+        throw new Error("Activity insertion did not return an insertId");
+
+      // Include the ID in the response
+      parsedData.activityId = activityId;
+    } catch (dbError) {
+      console.error("Database Insert Error:", dbError);
+    }
 
     return NextResponse.json(
       { message: "Course created successfully!", content: parsedData },
@@ -242,7 +294,15 @@ export async function POST(request) {
     );
   }
 }
-function generatePrompt(courseName, language, difficulty, age, type,genre,label) {
+function generatePrompt(
+  courseName,
+  language,
+  difficulty,
+  age,
+  type,
+  genre,
+  label
+) {
   if (
     ["story", "bedtime story", "poem", "informative story", "podcast"].includes(
       type
@@ -255,7 +315,12 @@ function generatePrompt(courseName, language, difficulty, age, type,genre,label)
       The ${type} should be engaging and age-appropriate${
       type == "informative story" &&
       " with the history and relevant facts about the topic"
-    }${type=="story" && genre && genre !="Any" && "The genre should be "+ genre +" and "+ label}.Ensure that the response returning should be a json file without description or comments.
+    }${
+      type == "story" &&
+      genre &&
+      genre != "Any" &&
+      "The genre should be " + genre + " and " + label
+    }.Ensure that the response returning should be a json file without description or comments.
       
       Structure:
       - If it’s a "story" or "bedtime story" or "informative story" or "podcast":
@@ -266,6 +331,10 @@ function generatePrompt(courseName, language, difficulty, age, type,genre,label)
       "label": "${label}",
       "age": ${age},
       "type": ${type},
+      "activities":{
+          "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
+          "content": "a description of the activity",
+          },
           "title": "${type} Title",
           "introduction": {
             "content": "Introduction to set the scene or introduce main characters."
@@ -287,6 +356,10 @@ function generatePrompt(courseName, language, difficulty, age, type,genre,label)
       "difficulty": "${difficulty}",
       "age": ${age},
       "type": ${type},
+      "activities":{
+          "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
+          "content": "a description of the activity",
+          },
           "title": "Poem Title",
           "verses": [
             {
@@ -307,6 +380,10 @@ function generatePrompt(courseName, language, difficulty, age, type,genre,label)
       "difficulty": "${difficulty}",
       "age": ${age},
       "type": ${type},
+      "activities":{
+          "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
+          "content": "a description of the activity",
+          },
           "title": "Explanation Title",
           "introduction": {
             "content": "Introduction to explanation."
@@ -337,6 +414,10 @@ function generatePrompt(courseName, language, difficulty, age, type,genre,label)
         "difficulty": "${difficulty}",
         "age": ${age},
         "type": "${type}",
+        "activities":{
+          "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
+          "content": "a description of the activity",
+          },
         "presentation": {
           "title": "Appropriate title for the presentation",
           "slides": [
@@ -371,6 +452,10 @@ function generatePrompt(courseName, language, difficulty, age, type,genre,label)
       "difficulty": "${difficulty}",
       "age": ${age},
       "type": ${type},
+      "activities":{
+          "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
+          "content": "a description of the activity",
+          },
       "courseContent": {
         "introduction": {
           "content": "A brief, age-appropriate introduction to the topic."
@@ -419,6 +504,10 @@ function generatePrompt(courseName, language, difficulty, age, type,genre,label)
       "difficulty": "${difficulty}",
       "age": ${age},
       "type": ${type},
+      "activities":{
+          "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
+          "content": "a description of the activity",
+          },
       "essayContent": {
         "introduction": {
           "content": "A brief, age-appropriate introduction to the topic."

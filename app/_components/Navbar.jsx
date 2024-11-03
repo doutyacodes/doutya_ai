@@ -7,6 +7,7 @@ import { useChildren } from "@/context/CreateContext";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
+import ChildSelector from "./ChildSelecter";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -124,6 +125,19 @@ const Navbar = () => {
                 >
                   Add Child
                 </Link>
+                <Link
+                  href="/learn"
+                  className="block px-4 py-2 text-white hover:text-orange-600"
+                >
+                  Learn
+                </Link>
+                <Link
+                  href="/badges"
+                  className="block px-4 py-2 text-white hover:text-orange-600"
+                >
+                  Badge
+                </Link>
+                <ChildSelector />
               </>
             ) : (
               <>
@@ -190,6 +204,11 @@ const Navbar = () => {
               </svg>
             </button>
           </div> */}
+          {isAuthenticated && (
+            <div className="md:hidden">
+              <ChildSelector />
+            </div>
+          )}
         </div>
       </div>
 
@@ -328,7 +347,7 @@ const Navbar = () => {
           </div>
         </div>
       )}
-      <div className=" w-full md:hidden fixed bottom-3 px-3">
+      <div className=" w-full md:hidden fixed bottom-3 z-[99999] px-3">
         <div className=" bg-[#0070c0] p-3 rounded-full  w-full">
           <div
             className={cn(
@@ -340,7 +359,7 @@ const Navbar = () => {
               Home
             </Link>
             {isAuthenticated && (
-              <Link href={"/"} className="text-white text-center">
+              <Link href={"/learn"} className="text-white text-center">
                 Learn
               </Link>
             )}
@@ -353,8 +372,8 @@ const Navbar = () => {
               </div>
             </Link>
             {isAuthenticated && (
-              <Link href={"/"} className="text-white text-center">
-                Activities
+              <Link href={"/badges"} className="text-white text-center">
+                Badge
               </Link>
             )}
             <div className="w-full flex justify-center items-center">
