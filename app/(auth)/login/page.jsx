@@ -52,9 +52,9 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1e5f9f] via-[#40cb9f] to-[#1e5f9f] text-gray-800 p-5">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-100 via-white to-orange-50 text-gray-800 p-5">
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="w-full max-w-xl p-6 shadow-lg rounded-lg bg-white">
+      <div className="w-full max-w-xl p-6 shadow-lg rounded-lg bg-white border border-slate-200">
         <h1 className="text-2xl font-semibold text-center mb-4">Login</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

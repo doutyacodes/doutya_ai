@@ -86,9 +86,9 @@ export function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1e5f9f] via-[#40cb9f] to-[#1e5f9f] text-gray-800 p-5">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-100 via-white to-orange-50 text-gray-800 p-5">
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="w-full max-w-xl p-6 shadow-lg rounded-lg bg-white">
+      <div className="w-full max-w-xl p-6 shadow-lg rounded-lg bg-white border border-slate-200">
         <h1 className="text-2xl font-semibold text-center mb-4">Sign Up</h1>
         <p className="text-center mb-6">Create an account to get started</p>
         <Form {...form}>
