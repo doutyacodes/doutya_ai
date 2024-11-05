@@ -16,7 +16,6 @@ const LearnPage = () => {
   const [isLoading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Fetch learn topic data on component mount
   useEffect(() => {
     const fetchLearnTopicsData = async () => {
       setLoading(true);
@@ -55,26 +54,26 @@ const LearnPage = () => {
   };
 
   return (
-    <div className="w-screen overflow-hidden bg-[#0f6574] min-h-screen p-3 space-y-7">
+    <div className="overflow-hidden bg-gradient-to-b from-orange-100 via-white to-orange-50 min-h-screen p-4 space-y-8">
       <motion.div
-        className="flex items-center justify-center flex-col gap-7"
+        className="flex items-center justify-center flex-col gap-5"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         <Image src={`/images/${learnData.topic[0]?.image}`} width={250} height={250} alt="space" />
-        <h4 className="text-center font-bold text-2xl uppercase text-white">
+        <h4 className="text-center font-bold text-2xl uppercase text-orange-700">
           {learnData.topic[0]?.title}
         </h4>
       </motion.div>
 
-      <div className="flex justify-center gap-8 bg-[#0d4957] p-4 rounded-md">
+      <div className="flex justify-center gap-8 bg-orange-200 p-4 rounded-md shadow-md">
         {["Explanation", "Tests", "Activities"].map((tab) => (
           <button
             key={tab}
-            className={`text-white font-semibold ${
-              activeTab === tab ? "border-b-2 border-white" : "opacity-70"
-            }`}
+            className={`text-orange-700 font-semibold ${
+              activeTab === tab ? "border-b-2 border-orange-600" : "opacity-70"
+            } transition-all duration-200`}
             onClick={() => setActiveTab(tab)}
           >
             {tab}
@@ -82,21 +81,21 @@ const LearnPage = () => {
         ))}
       </div>
 
-      <div className="p-4 bg-[#e0f7fa] rounded-md min-h-[300px]">
+      <div className="p-6 bg-white rounded-lg shadow-lg min-h-[300px] space-y-4">
         {activeTab === "Explanation" && (
-          <p className="text-center text-lg text-[#0f6574]">
+          <p className="text-center text-lg text-orange-600">
             {learnData.learnData[0]?.explanation}
           </p>
         )}
 
         {activeTab === "Tests" && (
           <div>
-            <h5 className="text-center font-semibold text-lg text-[#0f6574]">Quizzes</h5>
+            <h5 className="text-center font-semibold text-lg text-orange-600">Quizzes</h5>
             <motion.div
               onClick={handleTestClick}
-              whileHover={{ scale: 1.01 }}
+              whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
-              className="w-full p-4 bg-white shadow-md rounded-lg text-center mt-6 text-xl cursor-pointer"
+              className="w-full p-4 bg-orange-100 shadow-md rounded-lg text-center mt-6 text-xl cursor-pointer text-orange-700 font-semibold"
             >
               {learnData.status === "incomplete"
                 ? "Start the test"
@@ -108,16 +107,16 @@ const LearnPage = () => {
         )}
 
         {activeTab === "Activities" && (
-          <div>
-            <h5 className="text-center font-semibold text-lg text-[#0f6574]">Activities</h5>
-            <h6 className="text-center text-lg text-[#0f6574]">
+          <div className="space-y-3">
+            <h5 className="text-center font-semibold text-lg text-orange-600">Activities</h5>
+            <h6 className="text-center text-lg text-orange-600 font-medium">
               {learnData.learnData[0]?.activity_title}
             </h6>
-            <p className="text-lg text-[#0f6574]">
+            <p className="text-lg text-orange-600">
               {learnData.learnData[0]?.activity_steps}
             </p>
-            <h6 className="text-center text-lg text-[#0f6574]">Materials Needed:</h6>
-            <ul className="list-disc pl-8 text-[#0f6574]">
+            <h6 className="text-center text-lg text-orange-600 font-medium">Materials Needed:</h6>
+            <ul className="list-disc pl-8 text-orange-600">
               {learnData.learnData[0]?.activity_materials?.materials?.map((material, index) => (
                 <li key={index} className="text-lg">{material}</li>
               ))}

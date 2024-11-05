@@ -332,8 +332,8 @@ function generatePrompt(
       "age": ${age},
       "type": ${type},
       "activities":{
-          "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
-          "content": "a description of the activity",
+          "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which can take picture and upload",
+          "content": "a description of the activity and be sure to mention to upload.",
           },
           "title": "${type} Title",
           "introduction": {

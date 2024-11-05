@@ -1,4 +1,3 @@
-// app/quiz/QuizSection.js
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -8,6 +7,8 @@ import { toast } from "react-hot-toast";
 import Modal from "@/app/_components/Modal";
 import { Button } from "@/components/ui/button";
 import { useChildren } from "@/context/CreateContext";
+import { motion } from "framer-motion";
+
 
 const QuizSection = () => {
   const { slug } = useParams();
@@ -27,15 +28,16 @@ const QuizSection = () => {
         const response = await GlobalApi.GetQuizData({ slug });
         setQuestions(response.data.questions);
         setCompleted(response.data.completed);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching quiz data:", error);
         toast.error("Failed to fetch quiz data.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchQuizData();
-  }, [slug,selectedChildId]);
+  }, [slug, selectedChildId]);
 
   // Function to handle submitting answers
   const handleSubmitQuiz = async () => {
@@ -62,37 +64,43 @@ const QuizSection = () => {
   }
 
   return (
-    <div className="p-4 bg-[#0f6574] rounded-md">
+    <div className="p-6 bg-gradient-to-b from-orange-100 via-white to-orange-50 rounded-lg min-h-screen">
       {isModalOpen && (
         <Modal onClose={() => setModalOpen(false)}>
-          <h3 className="text-lg font-semibold">
+          <h3 className="text-lg font-semibold text-orange-800">
             Continue from where you left off?
           </h3>
-          <Button onClick={() => setModalOpen(false)}>Continue</Button>
-          <Button
-            onClick={() => {
-              setUserAnswers({});
-              setModalOpen(false);
-            }}
-          >
-            Start Fresh
-          </Button>
+          <div className="flex justify-center gap-4 mt-4">
+            <Button onClick={() => setModalOpen(false)} className="bg-orange-500 text-white">
+              Continue
+            </Button>
+            <Button
+              onClick={() => {
+                setUserAnswers({});
+                setModalOpen(false);
+              }}
+              className="bg-white text-orange-800 border border-orange-500"
+            >
+              Start Fresh
+            </Button>
+          </div>
         </Modal>
       )}
-      <h2 className="text-center text-2xl font-bold text-[#e0f7fa]">
+      <h2 className="text-center text-2xl font-bold text-orange-800 mt-4">
         {completed ? "Continue your quiz" : "Start the quiz"}
       </h2>
-      <div className="mt-4 bg-[#e0f7fa] p-3 rounded-md">
+      <div className="mt-6 p-6 bg-white rounded-lg shadow-lg space-y-6">
         {questions.map((question, index) => (
-          <div key={index} className="mb-4">
-            <h4 className="font-semibold">{question.question_text}</h4>
-            <div>
+          <div key={index} className="mb-6">
+            <h4 className="font-semibold text-lg text-orange-800">{question.question_text}</h4>
+            <div className="mt-2 space-y-2">
               {question.options.map((option) => (
-                <label key={option.id} className="block">
+                <label key={option.id} className="block cursor-pointer">
                   <input
                     type="radio"
                     name={`question-${index}`}
                     value={option.id}
+                    className="mr-2 accent-orange-600"
                     onChange={() =>
                       setUserAnswers((prev) => ({
                         ...prev,
@@ -100,18 +108,19 @@ const QuizSection = () => {
                       }))
                     }
                   />
-                  {option.option_text}
+                  <span className="text-orange-700">{option.option_text}</span>
                 </label>
               ))}
             </div>
           </div>
         ))}
-        <button
+        <motion.button
           onClick={handleSubmitQuiz}
-          className="w-full p-2 bg-[#0f6574] text-white rounded"
+          whileHover={{ scale: 1.05 }}
+          className="w-full p-3 bg-orange-500 text-white font-semibold rounded-lg transition-all duration-200"
         >
           Submit Quiz
-        </button>
+        </motion.button>
       </div>
     </div>
   );

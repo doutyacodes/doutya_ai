@@ -6,7 +6,7 @@ import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Search } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import ChildSelector from "./ChildSelecter";
 
 const Navbar = () => {
@@ -90,318 +90,26 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="w-full md:bg-transparent">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center md:justify-between justify-center">
-          <Link
-            href={"/"}
-            className="flex items-center max-md:justify-center max-md:mt-4"
-          >
-            <Image
-              src={"/images/logo.png"}
-              width={150}
-              height={150}
-              alt="logo"
-            />
-          </Link>
-          <div className="hidden md:flex items-center space-x-6">
-            {isAuthenticated ? (
-              <>
-                <Link
-                  href="/"
-                  className="block px-4 py-2 text-white hover:text-orange-600"
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/my-search"
-                  className="block px-4 py-2 text-white hover:text-orange-600"
-                >
-                  Search History
-                </Link>
-                <Link
-                  href="/add-child"
-                  className="block px-4 py-2 text-white hover:text-orange-600"
-                >
-                  Add Child
-                </Link>
-                <Link
-                  href="/learn"
-                  className="block px-4 py-2 text-white hover:text-orange-600"
-                >
-                  Learn
-                </Link>
-                <Link
-                  href="/badges"
-                  className="block px-4 py-2 text-white hover:text-orange-600"
-                >
-                  Badge
-                </Link>
-                <ChildSelector />
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/"
-                  className="block px-4 py-2 text-white hover:text-orange-600"
-                >
-                  Home
-                </Link>
-
-                <Link
-                  href="/about-us"
-                  className="block px-4 py-2 text-white hover:text-orange-600"
-                >
-                  About Us
-                </Link>
-                <Link
-                  href="/our-story"
-                  className="block px-4 py-2 text-white hover:text-orange-600"
-                >
-                  Our Story
-                </Link>
-                {/* <Link href="/contact-us" className="block px-4 py-2 text-white hover:text-orange-600">Contact Us</Link> */}
-              </>
-            )}
-            {isAuthenticated ? (
-              <button
-                onClick={logout}
-                className="block px-4 py-2 text-white hover:text-orange-600"
-              >
-                Logout
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                className="block px-4 py-2 text-white hover:text-orange-600"
-              >
-                Login
-              </Link>
-            )}
-          </div>
-          {/* <div className="md:hidden ml-auto">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-white hover:text-orange-600 focus:outline-none"
-            >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d={
-                    isMenuOpen
-                      ? "M6 18L18 6M6 6l12 12"
-                      : "M4 6h16M4 12h16M4 18h16"
-                  }
-                />
-              </svg>
-            </button>
-          </div> */}
-          {isAuthenticated && (
-            <div className="md:hidden">
-              <ChildSelector />
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Sidebar for Mobile */}
-      <div>
-        {/* Overlay for Sidebar */}
-        <div
-          className={`fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 ${
-            isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-          } z-10`}
-          onClick={() => setIsMenuOpen(false)}
-        ></div>
-
-        {/* Sidebar */}
-        <div
-          className={`fixed inset-y-0 left-0 bg-gradient-to-b from-green-300 to-blue-300 w-64 transform ${
-            isMenuOpen ? "translate-x-0" : "-translate-x-full"
-          } transition-transform duration-300 ease-in-out z-20 shadow-lg rounded-r-2xl`}
-        >
-          <div className="p-8 text-white font-semibold">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold">Menu</h2>
-            </div>
-
-            {isAuthenticated ? (
-              <>
-                <Link
-                  href="/"
-                  className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300"
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/my-search"
-                  className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300"
-                >
-                  Search History
-                </Link>
-                <Link
-                  href="/add-child"
-                  className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300"
-                >
-                  Add Child
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/"
-                  className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300"
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/about-us"
-                  className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300"
-                >
-                  About Us
-                </Link>
-                <Link
-                  href="/our-story"
-                  className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300"
-                >
-                  Our Story
-                </Link>
-                {/* <Link href="/contact-us" className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300">
-            Contact Us
-          </Link> */}
-              </>
-            )}
-            {isAuthenticated ? (
-              <button
-                onClick={logout}
-                className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300"
-              >
-                Logout
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                className="block px-4 py-2 mt-2 rounded-lg bg-white/15 bg-opacity-20 hover:bg-opacity-40 transition-colors duration-300"
-              >
-                Login
-              </Link>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-            <h2 className="text-lg font-bold mb-4">Add New Child</h2>
-            <div>
-              <label className="block mb-2">Name:</label>
-              <input
-                type="text"
-                value={newChildName}
-                onChange={(e) => setNewChildName(e.target.value)}
-                className="border rounded-md p-2 w-full mb-4"
-                required
-              />
-              <label className="block mb-2">Gender:</label>
-              <select
-                value={newChildGender}
-                onChange={(e) => setNewChildGender(e.target.value)}
-                className="border rounded-md p-2 w-full mb-4"
-              >
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-              <label className="block mb-2">Age:</label>
-              <input
-                type="number"
-                value={newChildAge}
-                onChange={(e) => setNewChildAge(e.target.value)}
-                className="border rounded-md p-2 w-full mb-4"
-                required
-              />
-            </div>
-            <div className="flex justify-between">
-              <button
-                onClick={() => setShowModal(false)}
-                className="bg-gray-300 rounded-md px-4 py-2"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAddChild}
-                className="bg-blue-600 text-white rounded-md px-4 py-2"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      <div className=" w-full md:hidden fixed bottom-3 z-[99999] px-3">
-        <div className=" bg-[#0070c0] p-3 rounded-full  w-full">
+    <nav className="w-full bg-transparent min-h-16 border-b-4 border-[#f59e1e]">
+      <div className="max-w-7xl mx-auto pr-1 ">
+        <div className="flex items-center justify-between w-full">
           <div
             className={cn(
-              "grid gap-2 items-center",
-              isAuthenticated ? "grid-cols-5" : "grid-cols-3"
+              "block absolute top-10 left-2 z-[999999999] md:hidden opacity-0"
             )}
           >
-            <Link href={"/"} className="text-white text-center">
-              Home
-            </Link>
-            {isAuthenticated && (
-              <Link href={"/learn"} className="text-white text-center">
-                Learn
-              </Link>
-            )}
-            <Link
-              href={"/"}
-              className="text-white text-center relative flex justify-center items-center"
-            >
-              <div className=" rounded-full bg-orange-500 absolute -top-7 border-2 p-3 border-white">
-                <Search className="text-white text-2xl" />
-              </div>
-            </Link>
-            {isAuthenticated && (
-              <Link href={"/badges"} className="text-white text-center">
-                Badge
-              </Link>
-            )}
-            <div className="w-full flex justify-center items-center">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-white hover:text-orange-600 focus:outline-none"
-              >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d={
-                      isMenuOpen
-                        ? "M6 18L18 6M6 6l12 12"
-                        : "M4 6h16M4 12h16M4 18h16"
-                    }
-                  />
-                </svg>
-              </button>
-            </div>
+            <Menu />
           </div>
+          <Link href={"/"} className=" mx-auto flex justify-center items-center">
+            <Image src={"/images/logo2.png"} width={120} height={120} alt="logo" />
+          </Link>
+          {isAuthenticated ? (
+            <ChildSelector />
+          ) : (
+            <Link className="font-semibold" href={"/login"}>
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </nav>

@@ -488,7 +488,7 @@ const Home = () => {
             transition={{ duration: 0.8 }}
             className="text-center mt-2"
           >
-            {/* <h1 className="text-5xl font-bold text-white mb-4">
+            {/* <h1 className="text-5xl font-bold  mb-4">
               Learn Anything, Anytime, Your Way
             </h1>
             <p className="text-lg text-gray-200 max-w-lg mx-auto">
@@ -503,19 +503,19 @@ const Home = () => {
             transition={{ duration: 1 }}
             className="flex flex-col items-center space-y-4 rounded-lg w-full max-w-4xl p-1 py-4"
           >
-            <div className="w-full flex justify-end items-center">
+            {/* <div className="w-full flex justify-end items-center">
               <ChildSelector />
-            </div>
+            </div> */}
             <form onSubmit={handleSearch} className="w-full ">
               <div className="w-full text-center mb-4">
-                <h2 className="text-xl font-semibold max-md:w-full mb-8 items-center justify-center flex md:flex-wrap max-md:flex-col gap-3 text-white">
+                <h2 className="text-xl font-semibold max-md:w-full mb-8 items-center justify-center flex flex-wrap  gap-3 ">
                   <div>I want </div>
                   <Select
                     onValueChange={handleTypeChange}
                     value={type}
-                    className="bg-transparent ring-transparent border focus:ring-0 focus-visible:ring-0 border-transparent underline decoration-2  max-md:w-full" // Thicker underline with offset
+                    className="bg-transparent ring-transparent border  bg-[#ede7e7] focus:ring-0 focus-visible:ring-0 border-[#f59e1e] underline decoration-2  max-md:w-full" // Thicker underline with offset
                   >
-                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-[29px] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0 text-white underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
+                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-[29px] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0  underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
                       <SelectValue
                         placeholder="Story"
                         className="text-black w-full"
@@ -545,12 +545,12 @@ const Home = () => {
                   placeholder="Type the topic name here"
                   value={courseName}
                   onChange={(e) => setCourseName(e.target.value)}
-                  className="w-full p-2 max-md:py-12 py-6 text-xl placeholder:text-lg focus-visible:ring-transparent border border-gray-300 rounded-xl md:rounded-full placeholder:text-center md:mb-16"
+                  className="w-full p-2 max-md:py-12 py-6 text-xl placeholder:text-lg focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-16 bg-[#ede7e7]"
                 />
               </div>
               {ageGenres.length > 0 && type == "story" && (
                 <div className="w-full text-center mb-4">
-                  <h2 className="text-lg font-semibold mb-2 text-white">
+                  <h2 className="text-lg font-semibold mb-2 ">
                     Select a Genre
                   </h2>
                   <Select
@@ -561,14 +561,14 @@ const Home = () => {
                     }
                     value={genre.value}
                   >
-                    <SelectTrigger className="w-full border text-center focus-visible:ring-transparent border-gray-300 rounded-full p-2">
+                    <SelectTrigger className="w-full border text-center focus-visible:ring-transparent  bg-[#ede7e7] border-[#f59e1e] rounded-lg p-2">
                       <SelectValue placeholder={genre.label} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup className="max-md:w-screen pr-2">
                         {ageGenres.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            <span className="w-full">
+                          <SelectItem className="w-full" key={option.value} value={option.value}>
+                            <span className="w-full text-center">
                               {option.label1}
                               <span className="max-md:hidden">
                                 {" - "}
@@ -597,25 +597,21 @@ const Home = () => {
               >
                 {!isAuthenticated && (
                   <div className="w-full text-center mb-4">
-                    <h2 className="text-lg font-semibold mb-2 text-white">
-                      Age
-                    </h2>
+                    <h2 className="text-lg font-semibold mb-2 ">Age</h2>
                     <Input
                       type="number"
                       placeholder="Enter your child’s age (2-12)"
                       value={age}
                       onChange={(e) => setAge(e.target.value)}
-                      className="w-full p-2 placeholder:text-center focus-visible:ring-transparent border border-gray-300 rounded-full"
+                      className="w-full p-2 placeholder:text-center  bg-[#ede7e7] focus-visible:ring-transparent border border-[#f59e1e] rounded-lg"
                     />
                   </div>
                 )}
 
                 <div className="w-full text-center mb-4">
-                  <h2 className="text-lg font-semibold mb-2 text-white">
-                    Language
-                  </h2>
+                  <h2 className="text-lg font-semibold mb-2 ">Language</h2>
                   <Select onValueChange={setLanguage} value={language}>
-                    <SelectTrigger className="w-full border text-center focus-visible:ring-transparent border-gray-300 rounded-full p-2">
+                    <SelectTrigger className="w-full border text-center  bg-[#ede7e7] focus-visible:ring-transparent border-[#f59e1e] rounded-lg p-2">
                       <SelectValue
                         className="w-full text-center"
                         placeholder="English"
@@ -666,7 +662,7 @@ const Home = () => {
 
               {/* {age > 13 && (
                 <div className="w-full text-center mb-4">
-                  <h2 className="text-lg font-semibold mb-2 text-white">
+                  <h2 className="text-lg font-semibold mb-2 ">
                     Difficulty
                   </h2>
                   <Select onValueChange={setDifficulty} value={difficulty}>
@@ -685,7 +681,7 @@ const Home = () => {
               <div className="w-full flex justify-center items-center mt-5">
                 <button
                   type="submit"
-                  className="bg-[#ffbd59] uppercase font-bold py-4 md:py-2 text-lg px-4 rounded-lg transition-all max-md:w-full md:min-w-52"
+                  className="bg-[#ea1b24] text-white rounded-full uppercase font-semibold py-4 md:py-2 text-lg px-4 transition-all max-md:w-full md:min-w-60"
                 >
                   Submit
                 </button>
@@ -696,10 +692,10 @@ const Home = () => {
         </>
       )}
       {latestCourse && (
-        <div className="flex items-start justify-between bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative font-bold text-xl">
+        <div className="flex items-start justify-between bg-white rounded-lg w-full max-w-4xl p-6 relative font-bold text-xl">
           <div
             onClick={() => setLatestCourse(null)}
-            className="bg-orange-500 text-white p-2 rounded-full"
+            className="bg-orange-500  p-2 rounded-full"
           >
             <ChevronLeft />
           </div>
@@ -709,24 +705,24 @@ const Home = () => {
             transition={{ duration: 1 }}
             className="flex flex-col gap-3 items-center "
           >
-            <div className="uppercase underline">
+            <div className="uppercase underline text-xl">
               {latestCourse?.courseName}
             </div>
-            <div className="uppercase  text-lg font-normal">
+            <div className="uppercase  text-base font-semibold">
               {latestCourse?.type}{" "}
               {(latestCourse?.type == "story" ||
                 latestCourse?.type == "explanation") && (
-                <span className="uppercase text-lg font-normal">
-                 - {latestCourse?.genre}
+                <span className="uppercase text-base font-semibold">
+                  - {latestCourse?.genre}
                 </span>
               )}
             </div>
 
             <div className="flex gap-7 items-center">
-              <div className="uppercase text-lg font-normal">
+              <div className="uppercase text-sm font-normal">
                 Age: {latestCourse?.age}
               </div>
-              <div className="uppercase text-lg font-normal">
+              <div className="uppercase text-sm font-normal">
                 Language: {latestCourse?.language}
               </div>
             </div>
@@ -734,15 +730,16 @@ const Home = () => {
           <div />
         </div>
       )}
-      {latestCourse && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg w-full max-w-4xl p-6 relative mt-6"
-        >
-          <div className="mt-6 w-full text-left">
-            {/* <h3 className="text-2xl font-semibold mb-4">
+      <div className="w-full md:flex gap-7  pt-6">
+        {latestCourse && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="flex flex-col items-center space-y-4 bg-[#f8f8f8] shadow-lg rounded-lg w-full max-w-4xl p-3 py-6 relative"
+          >
+            <div className="mt-6 w-full text-left">
+              {/* <h3 className="text-2xl font-semibold mb-4">
               Latest Course Details
             </h3>
 
@@ -763,276 +760,303 @@ const Home = () => {
                 <strong>Type:</strong> {latestCourse.type || "N/A"}
               </p>
             </div> */}
-            {latestCourse.type == "story" ||
-            latestCourse.type == "explanation" ||
-            latestCourse.type == "bedtime story" ||
-            latestCourse.type == "informative story" ? (
-              <>
-                <h2 className="text-3xl font-bold mb-6 mt-9 text-center text-[#1e5f9f]">
-                  {latestCourse.title}
-                </h2>
-                <p className="text-gray-700 mb-8">
-                  {latestCourse.introduction?.content ||
-                    "Introduction data is unavailable."}
-                </p>
-                {latestCourse.body?.map((paragraph, index) => (
-                  <p key={index} className="text-gray-700 mb-4">
-                    {paragraph.content}
+              {latestCourse.type == "story" ||
+              latestCourse.type == "explanation" ||
+              latestCourse.type == "bedtime story" ||
+              latestCourse.type == "informative story" ? (
+                <>
+                  <h2 className="text-3xl font-bold mb-6 mt-9 text-center text-black">
+                    {latestCourse.title}
+                  </h2>
+                  <p className="text-gray-700 mb-8">
+                    {latestCourse.introduction?.content ||
+                      "Introduction data is unavailable."}
                   </p>
-                ))}
-                <p className="text-gray-700">
-                  {latestCourse.conclusion?.content ||
-                    "Conclusion data is unavailable."}
-                </p>
-              </>
-            ) : latestCourse.type == "podcast" ? (
-              <>
-                <div className="flex flex-col items-center justify-center mt-4">
+                  {latestCourse.body?.map((paragraph, index) => (
+                    <p key={index} className="text-gray-700 mb-4">
+                      {paragraph.content}
+                    </p>
+                  ))}
+                  <p className="text-gray-700">
+                    {latestCourse.conclusion?.content ||
+                      "Conclusion data is unavailable."}
+                  </p>
+                </>
+              ) : latestCourse.type == "podcast" ? (
+                <>
+                  <div className="flex flex-col items-center justify-center mt-4">
+                    {latestCourse.language == "english" && (
+                      <button
+                        onClick={playContent}
+                        className=" bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
+                      >
+                        <IoPlayCircle className="text-3xl text-white" />
+                        <span>{isLoading ? "Pause" : "Play Podcast"}</span>
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setShowTranscript(!showTranscript)}
+                      className="mt-4 text-[#1e5f9f] hover:underline text-lg font-semibold"
+                    >
+                      {showTranscript ? "Hide Transcript" : "Show Transcript"}
+                    </button>
+
+                    {showTranscript && (
+                      <div className="text-left mt-6 p-4 bg-gray-50 rounded-lg">
+                        <p className="text-gray-700">
+                          {latestCourse.introduction?.content ||
+                            "Introduction data is unavailable."}
+                        </p>
+                        {latestCourse.body?.map((paragraph, index) => (
+                          <p key={index} className="text-gray-700 mb-4">
+                            {paragraph.content}
+                          </p>
+                        ))}
+                        <p className="text-gray-700">
+                          {latestCourse.conclusion?.content ||
+                            "Conclusion data is unavailable."}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : latestCourse.type == "poem" ? (
+                <>
+                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                    {latestCourse.title}
+                  </h2>
+                  {latestCourse.verses?.map((verse, index) => (
+                    <p key={index} className="text-gray-700 mb-2">
+                      {verse.line}
+                    </p>
+                  ))}
+                </>
+              ) : latestCourse.type === "presentation" ? (
+                <>
+                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                    {latestCourse.presentation?.title ||
+                      "Title is unavailable."}
+                  </h2>
+                  <div className="mb-8">
+                    {latestCourse.presentation?.slides.map((slide, index) => (
+                      <div
+                        key={index}
+                        className="mb-4 rounded-md shadow-md p-2 "
+                      >
+                        <h3 className="text-xl font-semibold">
+                          Slide {slide.slide_number}
+                        </h3>
+                        {slide.content.map((contentItem, contentIndex) => (
+                          <div key={contentIndex}>
+                            <p className="text-lg font-semibold">Title</p>
+                            <p className="text-gray-700">
+                              {contentItem.content}
+                            </p>
+                            <p className="text-lg font-semibold">
+                              Relevant Data
+                            </p>
+
+                            <p className="text-gray-700  mb-4">
+                              {contentItem.image_suggestion}
+                            </p>
+
+                            {contentItem.additional_resources && (
+                              <a
+                                href={contentItem.additional_resources}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 underline"
+                              >
+                                Additional Resources
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : latestCourse.type === "course" ? (
+                <>
+                  {/* {
+                console.log(latestCourse)
+              } */}
+                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                    Introduction
+                  </h2>
+                  <p className="text-gray-700 mb-8">
+                    {latestCourse.courseContent?.introduction?.content ||
+                      "Introduction data is unavailable."}
+                  </p>
+                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                    Modules
+                  </h2>
+                  {latestCourse.courseContent?.body?.modules?.map(
+                    (section, index) => (
+                      <div
+                        key={index}
+                        className="mb-8 p-4 bg-gray-100 rounded-md"
+                      >
+                        <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
+                          Module - {section.module_number} : {section.title}
+                        </h4>
+                        <p className="text-gray-700 mb-4">{section.content}</p>
+                        {section.subtopics?.map((subtopic, subIndex) => (
+                          <div key={subIndex} className="ml-4 mb-2">
+                            <Link href={`/chapter/${subtopic.subtopic_slug}`}>
+                              <h5 className="text-lg font-semibold text-gray-800 cursor-pointer">
+                                {subtopic.title}
+                              </h5>
+                            </Link>
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  )}
+                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                    Conclusion
+                  </h2>
+                  <p className="text-gray-700">
+                    {latestCourse.courseContent?.conclusion?.content ||
+                      "Conclusion data is unavailable."}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                    Introduction
+                  </h2>
+                  <p className="text-gray-700 mb-8">
+                    {latestCourse.essayContent?.introduction?.content ||
+                      "Introduction data is unavailable."}
+                  </p>
+
+                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                    Main Sections
+                  </h2>
+                  {latestCourse.essayContent?.body?.sections?.map(
+                    (section, index) => (
+                      <div
+                        key={index}
+                        className="mb-8 p-4 bg-gray-100 rounded-md"
+                      >
+                        <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
+                          {section.title}
+                        </h4>
+                        <p className="text-gray-700 mb-4">{section.content}</p>
+                        {section.subtopics?.map((subtopic, subIndex) => (
+                          <div key={subIndex} className="ml-4 mb-2">
+                            <h5 className="text-lg font-semibold text-gray-800">
+                              {subtopic.title}
+                            </h5>
+                            <p className="text-gray-700">{subtopic.content}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  )}
+
+                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                    Conclusion
+                  </h2>
+                  <p className="text-gray-700">
+                    {latestCourse.essayContent?.conclusion?.content ||
+                      "Conclusion data is unavailable."}
+                  </p>
+                </>
+              )}
+
+              {/* {(latestCourse.type === "story" ||
+                latestCourse.type === "bedtime story" ||
+                latestCourse.type === "explanation" ||
+                latestCourse.type === "informative story" ||
+                latestCourse.type === "poem") && (
+                <div className="text-center mt-4 absolute right-5 top-5">
                   {latestCourse.language == "english" && (
                     <button
                       onClick={playContent}
-                      className="text-white bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
+                      className="bg-[#1e5f9f] hover:bg-[#40cb9f]  font-bold py-2 px-4 rounded-lg text-white transition-all"
                     >
-                      <IoPlayCircle className="text-3xl" />
-                      <span>{isLoading ? "Pause" : "Play Podcast"}</span>
+                      {isPlaying ? "Pause" : "Play As Audio"}
                     </button>
                   )}
-                  <button
-                    onClick={() => setShowTranscript(!showTranscript)}
-                    className="mt-4 text-[#1e5f9f] hover:underline text-lg font-semibold"
+                </div>
+              )} */}
+            </div>
+          </motion.div>
+        )}
+        {latestCourse && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="flex flex-col  gap-3 md:w-[30%]"
+          >
+            {latestCourse?.activities && hideActivity && (
+              <div className=" bg-[#f8f8f8] rounded-lg p-3 shadow-lg flex-1 max-md:mt-4 border border-slate-200">
+                <h4 className="uppercase underline  font-bold text-center text-xl mb-8">
+                  Actvity
+                </h4>
+                <h4 className="uppercase font-semibold my-3 text-lg">
+                  {latestCourse?.activities?.title}
+                </h4>
+                <h4 className="uppercase ">
+                  {latestCourse?.activities?.content}
+                </h4>
+                <div className="w-full flex justify-between mt-5">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    ref={fileInputRef} // Attach the ref to the file input
+                  />
+                  <Button
+                    className="bg-orange-500 p-2 font-bold"
+                    onClick={handleUpload} // Open the file dialog
                   >
-                    {showTranscript ? "Hide Transcript" : "Show Transcript"}
-                  </button>
-
-                  {showTranscript && (
-                    <div className="text-left mt-6 p-4 bg-gray-50 rounded-lg">
-                      <p className="text-gray-700">
-                        {latestCourse.introduction?.content ||
-                          "Introduction data is unavailable."}
-                      </p>
-                      {latestCourse.body?.map((paragraph, index) => (
-                        <p key={index} className="text-gray-700 mb-4">
-                          {paragraph.content}
-                        </p>
-                      ))}
-                      <p className="text-gray-700">
-                        {latestCourse.conclusion?.content ||
-                          "Conclusion data is unavailable."}
-                      </p>
-                    </div>
-                  )}
+                    Upload Picture
+                  </Button>
+                  <Button
+                    className="bg-green-600 p-2 font-bold"
+                    onClick={submitUpload}
+                  >
+                    Submit
+                  </Button>
                 </div>
-              </>
-            ) : latestCourse.type == "poem" ? (
-              <>
-                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                  {latestCourse.title}
-                </h2>
-                {latestCourse.verses?.map((verse, index) => (
-                  <p key={index} className="text-gray-700 mb-2">
-                    {verse.line}
-                  </p>
-                ))}
-              </>
-            ) : latestCourse.type === "presentation" ? (
-              <>
-                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                  {latestCourse.presentation?.title || "Title is unavailable."}
-                </h2>
-                <div className="mb-8">
-                  {latestCourse.presentation?.slides.map((slide, index) => (
-                    <div key={index} className="mb-4 rounded-md shadow-md p-2 ">
-                      <h3 className="text-xl font-semibold">
-                        Slide {slide.slide_number}
-                      </h3>
-                      {slide.content.map((contentItem, contentIndex) => (
-                        <div key={contentIndex}>
-                          <p className="text-lg font-semibold">Title</p>
-                          <p className="text-gray-700">{contentItem.content}</p>
-                          <p className="text-lg font-semibold">Relevant Data</p>
-
-                          <p className="text-gray-700  mb-4">
-                            {contentItem.image_suggestion}
-                          </p>
-
-                          {contentItem.additional_resources && (
-                            <a
-                              href={contentItem.additional_resources}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-500 underline"
-                            >
-                              Additional Resources
-                            </a>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : latestCourse.type === "course" ? (
-              <>
-                {/* {
-                console.log(latestCourse)
-              } */}
-                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                  Introduction
-                </h2>
-                <p className="text-gray-700 mb-8">
-                  {latestCourse.courseContent?.introduction?.content ||
-                    "Introduction data is unavailable."}
-                </p>
-                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                  Modules
-                </h2>
-                {latestCourse.courseContent?.body?.modules?.map(
-                  (section, index) => (
-                    <div
-                      key={index}
-                      className="mb-8 p-4 bg-gray-100 rounded-md"
-                    >
-                      <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
-                        Module - {section.module_number} : {section.title}
-                      </h4>
-                      <p className="text-gray-700 mb-4">{section.content}</p>
-                      {section.subtopics?.map((subtopic, subIndex) => (
-                        <div key={subIndex} className="ml-4 mb-2">
-                          <Link href={`/chapter/${subtopic.subtopic_slug}`}>
-                            <h5 className="text-lg font-semibold text-gray-800 cursor-pointer">
-                              {subtopic.title}
-                            </h5>
-                          </Link>
-                        </div>
-                      ))}
-                    </div>
-                  )
+                {image && (
+                  <img
+                    src={image}
+                    alt="Preview"
+                    style={{ maxWidth: "100px", maxHeight: "100px" }}
+                  />
                 )}
-                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                  Conclusion
-                </h2>
-                <p className="text-gray-700">
-                  {latestCourse.courseContent?.conclusion?.content ||
-                    "Conclusion data is unavailable."}
-                </p>
-              </>
-            ) : (
-              <>
-                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                  Introduction
-                </h2>
-                <p className="text-gray-700 mb-8">
-                  {latestCourse.essayContent?.introduction?.content ||
-                    "Introduction data is unavailable."}
-                </p>
-
-                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                  Main Sections
-                </h2>
-                {latestCourse.essayContent?.body?.sections?.map(
-                  (section, index) => (
-                    <div
-                      key={index}
-                      className="mb-8 p-4 bg-gray-100 rounded-md"
-                    >
-                      <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
-                        {section.title}
-                      </h4>
-                      <p className="text-gray-700 mb-4">{section.content}</p>
-                      {section.subtopics?.map((subtopic, subIndex) => (
-                        <div key={subIndex} className="ml-4 mb-2">
-                          <h5 className="text-lg font-semibold text-gray-800">
-                            {subtopic.title}
-                          </h5>
-                          <p className="text-gray-700">{subtopic.content}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )
-                )}
-
-                <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                  Conclusion
-                </h2>
-                <p className="text-gray-700">
-                  {latestCourse.essayContent?.conclusion?.content ||
-                    "Conclusion data is unavailable."}
-                </p>
-              </>
+              </div>
             )}
-            {latestCourse && (
-              <div className="flex flex-col gap-3 justify-center items-center">
-                {latestCourse?.activities && hideActivity && (
-                  <div className="  mt-5">
-                    <h4 className="uppercase font-bold underline text-center text-xl mb-5">
-                      Actvities
-                    </h4>
-                    <h4 className="uppercase font-semibold my-3 text-lg">
-                      {latestCourse?.activities?.title}
-                    </h4>
-                    <h4 className="uppercase ">
-                      {latestCourse?.activities?.content}
-                    </h4>
-                    <div className="w-full flex justify-between mt-5">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="hidden"
-                        ref={fileInputRef} // Attach the ref to the file input
-                      />
-                      <Button
-                        className="bg-orange-500 p-2 font-bold"
-                        onClick={handleUpload} // Open the file dialog
-                      >
-                        Upload Picture
-                      </Button>
-                      <Button
-                        className="bg-green-600 p-2 font-bold"
-                        onClick={submitUpload}
-                      >
-                        Submit
-                      </Button>
-                      {image && (
-                        <img
-                          src={image}
-                          alt="Preview"
-                          style={{ maxWidth: "100px", maxHeight: "100px" }}
-                        />
-                      )}
-                    </div>
-                  </div>
-                )}
-                {/* <motion.div
+            {/* <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 1 }}
-                  className="flex flex-col items-center space-y-4 bg-orange-400 text-white font-bold shadow-lg rounded-lg max-md:w-full w-72 max-w-4xl p-3 text-xl relative mt-6"
+                  className="flex flex-col items-center space-y-4 bg-orange-400  font-bold shadow-lg rounded-lg max-md:w-full w-72 max-w-4xl p-3 text-xl relative mt-6"
                   onClick={() => setLatestCourse(null)}
                 >
                   Back to Search
                 </motion.div> */}
+            <div className="flex flex-col gap-5">
+              <p className="uppercase font-bold text-lg text-center">Related Topics</p>
+
+              <div className="flex justify-between gap-3">
+                <div className="bg-yellow-400 p-3 rounded-md px-7 text-center uppercase font-semibold text-sm">
+                  Related Topics 1
+                </div>
+                <div className="bg-yellow-400 p-3 rounded-md px-7 text-center uppercase font-semibold text-sm">
+                  Related Topics 2
+                </div>
               </div>
-            )}
-            {(latestCourse.type === "story" ||
-              latestCourse.type === "bedtime story" ||
-              latestCourse.type === "explanation" ||
-              latestCourse.type === "informative story" ||
-              latestCourse.type === "poem") && (
-              <div className="text-center mt-4 absolute right-5 top-5">
-                {latestCourse.language == "english" && (
-                  <button
-                    onClick={playContent}
-                    className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all"
-                  >
-                    {isPlaying ? "Pause" : "Play As Audio"}
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        </motion.div>
-      )}
+            </div>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 };
