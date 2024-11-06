@@ -1,6 +1,6 @@
 "use client";
-// CreateContext.js
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import GlobalApi from "@/app/api/_services/GlobalApi";
 
 const ChildrenContext = createContext();
 
@@ -8,8 +8,9 @@ export const ChildrenProvider = ({ children }) => {
   const [childrenData, setChildrenData] = useState([]);
   const [selectedChildId, setSelectedChildId] = useState(null);
   const [selectedAge, setSelectedAge] = useState(null);
-  const [selectedGender, setSelectedGender] = useState(null); // New state for selected child gender
-  const [selectedName, setSelectedName] = useState(null); // New state for selected child gender
+  const [selectedGender, setSelectedGender] = useState(null);
+  const [selectedName, setSelectedName] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const updateChildrenData = (data) => {
     setChildrenData(data);
@@ -25,13 +26,28 @@ export const ChildrenProvider = ({ children }) => {
     }
   };
 
-  const selectChildAge = (age) => {
-    setSelectedAge(age);
+  const fetchChildren = async () => {
+    try {
+      setLoading(true);
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      if (token) {
+        const response = await GlobalApi.GetUserChildren(token);
+        const children = response.data.data;
+        setChildrenData(children);
+        if (children.length > 0) {
+          selectChild(children[0].id);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching children:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const selectChildGender = (gender) => {
-    setSelectedGender(gender); // Update the selected child gender
-  };
+  useEffect(() => {
+    fetchChildren();
+  }, []);
 
   return (
     <ChildrenContext.Provider
@@ -41,11 +57,9 @@ export const ChildrenProvider = ({ children }) => {
         selectedChildId,
         selectChild,
         selectedAge,
-        selectChildAge,
         selectedGender,
-        selectChildGender,
         selectedName,
-        setSelectedName
+        loading,
       }}
     >
       {children}
