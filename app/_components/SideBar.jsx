@@ -38,9 +38,9 @@ const SideBar = () => {
     { label: "Tests", links: "/tests", icon: FaTasks },
     { label: "Activities", links: "/activities", icon: FaUserFriends },
     { label: "Communities", links: "/communities", icon: FaUserFriends },
-    { label: "My Badges", links: "/badges", icon: FaMedal },
-    { label: "My Searches", links: "/my-search", icon: FaHistory },
-    { label: "My Profile", links: "/my-profile", icon: FaUser },
+    // { label: "My Badges", links: "/badges", icon: FaMedal },
+    // { label: "My Searches", links: "/my-search", icon: FaHistory },
+    // { label: "My Profile", links: "/my-profile", icon: FaUser },
     { label: "Settings", links: "/settings", icon: FaCog },
   ];
 
@@ -142,7 +142,7 @@ const SideBar = () => {
               </motion.div>
             );
           })}
-          {isAuthenticated && (
+          {/* {isAuthenticated && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -162,7 +162,7 @@ const SideBar = () => {
                 Sign Out
               </span>
             </motion.div>
-          )}
+          )} */}
         </nav>
       </motion.div>
     </>

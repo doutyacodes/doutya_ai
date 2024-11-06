@@ -6,11 +6,13 @@ import GlobalApi from "@/app/api/_services/GlobalApi";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import Link from "next/link";
 import { useChildren } from "@/context/CreateContext";
+import useAuth from "@/app/hooks/useAuth";
 
 const Learn = () => {
   const [learnData, setLearnData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { selectedChildId, selectedAge } = useChildren();
+  const { isAuthenticated } = useAuth();
 
   const LoadData = async () => {
     try {
@@ -73,15 +75,27 @@ const Learn = () => {
                 whileHover={{ scale: 1.1 }}
                 transition={{ duration: 0.3 }}
               >
-                <Link href={`learn/${item.slug}`}>
-                  <Image
-                    src={`/images/${item.image}`}
-                    width={130}
-                    height={130}
-                    alt={item.title}
-                    className="rounded-lg shadow-md"
-                  />
-                </Link>
+                {isAuthenticated ? (
+                  <Link href={`learn/${item.slug}`}>
+                    <Image
+                      src={`/images/${item.image}`}
+                      width={130}
+                      height={130}
+                      alt={item.title}
+                      className="rounded-lg shadow-md"
+                    />
+                  </Link>
+                ) : (
+                  <Link href={`/login`}>
+                    <Image
+                      src={`/images/${item.image}`}
+                      width={130}
+                      height={130}
+                      alt={item.title}
+                      className="rounded-lg shadow-md"
+                    />
+                  </Link>
+                )}
               </motion.div>
               <h4 className="text-center font-bold text-lg uppercase text-orange-700">
                 {item.title}
