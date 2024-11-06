@@ -12,17 +12,30 @@ import {
   FaCog,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { GiTiedScroll } from "react-icons/gi";
+import { BsActivity } from "react-icons/bs";
+import { PiCertificateFill } from "react-icons/pi";
 import Image from "next/image";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import useAuth from "../hooks/useAuth";
+import { useChildren } from "@/context/CreateContext";
+import ChildSelector from "./ChildSelecter";
 
 const RightSideBar = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const pathname = usePathname();
   const { isAuthenticated, loading, logout } = useAuth();
+  const {
+    selectedAge,
+    selectedChildId,
+    selectChild,
+    selectedGender,
+    selectedName,
+    childrenData,
+  } = useChildren();
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -33,29 +46,45 @@ const RightSideBar = () => {
   };
 
   const navLinks = [
-    { label: "Search", links: "/", icon: FaSearch },
-    { label: "Learn", links: "/learn", icon: FaBook },
-    { label: "Tests", links: "/tests", icon: FaTasks },
-    { label: "Activities", links: "/activities", icon: FaUserFriends },
-    { label: "Communities", links: "/communities", icon: FaUserFriends },
+    { label: "My Search history", links: "/my-search", icon: FaHistory },
+    { label: "My Lessons", links: "/learn", icon: GiTiedScroll },
+    { label: "My Activities", links: "/activities", icon: BsActivity },
     { label: "My Badges", links: "/badges", icon: FaMedal },
-    { label: "My Searches", links: "/my-search", icon: FaHistory },
+    {
+      label: "My Certificates",
+      links: "/my-certificates",
+      icon: PiCertificateFill,
+    },
     { label: "My Profile", links: "/my-profile", icon: FaUser },
     { label: "Settings", links: "/settings", icon: FaCog },
   ];
 
+  if (!childrenData || childrenData.length === 0) {
+    return <p></p>;
+  }
   return (
     <>
       <div
         onClick={toggleCollapse}
         className={cn(
           "",
-          isCollapsed
-            ? "block absolute top-10 left-3 z-[999999999] md:hidden"
-            : "hidden"
+          isCollapsed ? "block absolute top-5 right-3 z-[999999999]" : "hidden"
         )}
       >
-        <Menu />
+        {selectedGender && (
+          <div className="flex flex-col w-fit gap-[1px] items-center md:hidden">
+            <Image
+              src={
+                selectedGender === "male"
+                  ? "/images/boy.png"
+                  : "/images/girl.png"
+              }
+              width={40}
+              height={40}
+              alt={selectedGender || "gender"}
+            />
+          </div>
+        )}
       </div>
       {!isCollapsed && (
         <div
@@ -66,7 +95,7 @@ const RightSideBar = () => {
       <motion.div
         animate={{ width: isCollapsed ? "6rem" : "14rem" }}
         className={cn(
-          "min-h-screen shadow-lg bg-[#f8f8f8]  max-md:fixed z-[9999999] flex flex-col p-3 rounded-md lg:block ",
+          "min-h-screen shadow-lg bg-[#f8f8f8] right-0 max-md:fixed z-[9999999] flex flex-col p-3 rounded-md lg:block ",
           isCollapsed ? "hidden" : "flex"
         )}
         initial={{ width: "6rem" }}
@@ -76,25 +105,9 @@ const RightSideBar = () => {
           <motion.div
             initial={{ opacity: isCollapsed ? 1 : 1 }}
             animate={{ opacity: isCollapsed ? 1 : 1 }}
-            className="text-2xl font-bold text-blue-600"
+            className="text-2xl font-bold text-blue-600 flex justify-center w-full"
           >
-            {isCollapsed ? (
-              <Image
-                onClick={toggleCollapse}
-                src={"/images/logo.png"}
-                alt="logo"
-                width={60}
-                height={60}
-              />
-            ) : (
-              <Image
-                src={"/images/logo2.png"}
-                alt="logo"
-                width={120}
-                height={120}
-                className=""
-              />
-            )}
+            <ChildSelector />
           </motion.div>
           {/* {!isCollapsed && (
             <button onClick={toggleCollapse} className="ml-auto p-1">
@@ -155,10 +168,10 @@ const RightSideBar = () => {
             >
               <FaSignOutAlt size={24} className="text-black" />
               <span
-                    className={`ml-3 ${
-                      isCollapsed ? "text-[10px] text-nowrap " : "block"
-                    } transition-all duration-300 `}
-                  >
+                className={`ml-3 ${
+                  isCollapsed ? "text-[10px] text-nowrap " : "block"
+                } transition-all duration-300 `}
+              >
                 Sign Out
               </span>
             </motion.div>

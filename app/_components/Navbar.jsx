@@ -104,7 +104,7 @@ const Navbar = () => {
             <Image src={"/images/logo2.png"} width={120} height={120} alt="logo" />
           </Link>
           {isAuthenticated ? (
-            <ChildSelector />
+            <div />
           ) : (
             <Link className="font-semibold" href={"/login"}>
               Login

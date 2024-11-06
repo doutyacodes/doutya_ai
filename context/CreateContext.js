@@ -9,6 +9,7 @@ export const ChildrenProvider = ({ children }) => {
   const [selectedChildId, setSelectedChildId] = useState(null);
   const [selectedAge, setSelectedAge] = useState(null);
   const [selectedGender, setSelectedGender] = useState(null); // New state for selected child gender
+  const [selectedName, setSelectedName] = useState(null); // New state for selected child gender
 
   const updateChildrenData = (data) => {
     setChildrenData(data);
@@ -20,6 +21,7 @@ export const ChildrenProvider = ({ children }) => {
       setSelectedChildId(selectedChild.id);
       setSelectedAge(selectedChild.age);
       setSelectedGender(selectedChild.gender);
+      setSelectedName(selectedChild.name);
     }
   };
 
@@ -42,6 +44,8 @@ export const ChildrenProvider = ({ children }) => {
         selectChildAge,
         selectedGender,
         selectChildGender,
+        selectedName,
+        setSelectedName
       }}
     >
       {children}
