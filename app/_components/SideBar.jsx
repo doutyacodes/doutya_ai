@@ -13,7 +13,7 @@ import {
   FaSignOutAlt,
 } from "react-icons/fa";
 import Image from "next/image";
-import { Menu } from "lucide-react";
+import { ChevronRight, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -66,41 +66,25 @@ const SideBar = () => {
       <motion.div
         animate={{ width: isCollapsed ? "6rem" : "14rem" }}
         className={cn(
-          "min-h-screen shadow-lg bg-[#f8f8f8]  max-md:fixed z-[9999999] flex flex-col p-3 rounded-md lg:block ",
+          "min-h-screen shadow-lg bg-[#f8f8f8] relative max-md:fixed z-[9999999] flex flex-col p-3 rounded-md lg:block ",
           isCollapsed ? "hidden" : "flex"
         )}
         initial={{ width: "6rem" }}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between">
+        <div
+          className="flex items-center justify-between rounded-full bg-orange-500 w-fit absolute -right-2 top-5 z-[99999999]"
+          onClick={toggleCollapse}
+        >
           <motion.div
-            initial={{ opacity: isCollapsed ? 1 : 1 }}
-            animate={{ opacity: isCollapsed ? 1 : 1 }}
-            className="text-2xl font-bold text-blue-600"
+            initial={{ rotate: 0 }}
+            animate={{ rotate: isCollapsed ? 0 : 180 }}
+
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="text-2xl font-bold text-white"
           >
-            {isCollapsed ? (
-              <Image
-                onClick={toggleCollapse}
-                src={"/images/logo.png"}
-                alt="logo"
-                width={60}
-                height={60}
-              />
-            ) : (
-              <Image
-                src={"/images/logo2.png"}
-                alt="logo"
-                width={120}
-                height={120}
-                className=""
-              />
-            )}
+            <ChevronRight />
           </motion.div>
-          {/* {!isCollapsed && (
-            <button onClick={toggleCollapse} className="ml-auto p-1">
-              ➡️
-            </button>
-          )} */}
         </div>
 
         {/* Navigation Links */}
@@ -131,7 +115,7 @@ const SideBar = () => {
                   />
                   <span
                     className={`${
-                      isCollapsed ? "text-[10px] text-nowrap" : "block "
+                      isCollapsed ? "text-[10px] text-nowrap" : "block ml-3"
                     } transition-all duration-300 ${
                       isActive ? "text-red-500" : ""
                     }`}

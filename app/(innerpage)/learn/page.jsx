@@ -88,8 +88,8 @@ const Learn = () => {
                   <Link href={`learn/${item.slug}`}>
                     <Image
                       src={`/images/${item.image}`}
-                      width={130}
-                      height={130}
+                      width={100}
+                      height={100}
                       alt={item.title}
                       className="rounded-lg shadow-md"
                     />
@@ -98,8 +98,8 @@ const Learn = () => {
                   <Link href={`/login`}>
                     <Image
                       src={`/images/${item.image}`}
-                      width={130}
-                      height={130}
+                      width={100}
+                      height={100}
                       alt={item.title}
                       className="rounded-lg shadow-md"
                     />

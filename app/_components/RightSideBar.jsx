@@ -149,8 +149,8 @@ const RightSideBar = () => {
                         className={isActive ? "text-red-500" : "text-black"}
                       />
                       <span
-                        className={` ${
-                          isCollapsed ? "text-[10px] text-nowrap" : "block"
+                        className={`ml-3 ${
+                          isCollapsed ? "text-[10px] text-nowrap" : "block ml-3"
                         } transition-all duration-300 ${
                           isActive ? "text-red-500" : ""
                         }`}
@@ -175,7 +175,7 @@ const RightSideBar = () => {
                   <FaSignOutAlt size={24} className="text-black" />
                   <span
                     className={` ${
-                      isCollapsed ? "text-[10px] text-nowrap " : "block"
+                      isCollapsed ? "text-[10px] text-nowrap " : "block ml-3"
                     } transition-all duration-300 `}
                   >
                     Sign Out
