@@ -64,120 +64,130 @@ const RightSideBar = () => {
   }
   return (
     <>
-      <div
-        onClick={toggleCollapse}
-        className={cn(
-          "",
-          isCollapsed ? "block absolute top-5 right-3 z-[999999999]" : "hidden"
-        )}
-      >
-        {selectedGender && (
-          <div className="flex flex-col w-fit gap-[1px] items-center md:hidden">
-            <Image
-              src={
-                selectedGender === "male"
-                  ? "/images/boy.png"
-                  : "/images/girl.png"
-              }
-              width={40}
-              height={40}
-              alt={selectedGender || "gender"}
-            />
-          </div>
-        )}
-      </div>
-      {!isCollapsed && (
-        <div
-          onClick={toggleCollapse}
-          className="fixed inset-0 bg-black bg-opacity-50 z-[9998] md:hidden"
-        />
-      )}
-      <motion.div
-        animate={{ width: isCollapsed ? "6rem" : "14rem" }}
-        className={cn(
-          "min-h-screen shadow-lg bg-[#f8f8f8] right-0 max-md:fixed z-[9999999] flex flex-col p-3 rounded-md lg:block ",
-          isCollapsed ? "hidden" : "flex"
-        )}
-        initial={{ width: "6rem" }}
-      >
-        {/* RightSideBar Header */}
-        <div className="flex items-center justify-between">
-          <motion.div
-            initial={{ opacity: isCollapsed ? 1 : 1 }}
-            animate={{ opacity: isCollapsed ? 1 : 1 }}
-            className="text-2xl font-bold text-blue-600 flex justify-center w-full"
+      {isAuthenticated ? (
+        <>
+          <div
+            onClick={toggleCollapse}
+            className={cn(
+              "",
+              isCollapsed
+                ? "block absolute top-5 right-3 z-[999999999]"
+                : "hidden"
+            )}
           >
-            <ChildSelector />
-          </motion.div>
-          {/* {!isCollapsed && (
-            <button onClick={toggleCollapse} className="ml-auto p-1">
-              ➡️
-            </button>
-          )} */}
-        </div>
-
-        {/* Navigation Links */}
-        <nav className="flex-1 mt-8 space-y-4">
-          {navLinks.map(({ label, icon: Icon, links }, idx) => {
-            const isActive =
-              links === "/"
-                ? pathname === links // Exact match for the root path
-                : pathname.includes(links); // Partial match for other links
-            return (
+            {selectedGender && (
+              <div className="flex flex-col w-fit gap-[1px] items-center md:hidden">
+                <Image
+                  src={
+                    selectedGender === "male"
+                      ? "/images/boy.png"
+                      : "/images/girl.png"
+                  }
+                  width={40}
+                  height={40}
+                  alt={selectedGender || "gender"}
+                />
+              </div>
+            )}
+          </div>
+          {!isCollapsed && (
+            <div
+              onClick={toggleCollapse}
+              className="fixed inset-0 bg-black bg-opacity-50 z-[9998] md:hidden"
+            />
+          )}
+          <motion.div
+            animate={{ width: isCollapsed ? "6rem" : "14rem" }}
+            className={cn(
+              "min-h-screen shadow-lg bg-[#f8f8f8] right-0 max-md:fixed z-[9999999] flex flex-col p-3 rounded-md lg:block ",
+              isCollapsed ? "hidden" : "flex"
+            )}
+            initial={{ width: "6rem" }}
+          >
+            {/* RightSideBar Header */}
+            <div className="flex items-center justify-between">
               <motion.div
-                key={idx}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: idx * 0.1 }}
-                onClick={handleItemClick} // Collapse RightSideBar when item is clicked
+                initial={{ opacity: isCollapsed ? 1 : 1 }}
+                animate={{ opacity: isCollapsed ? 1 : 1 }}
+                className="text-2xl font-bold text-blue-600 flex justify-center w-full"
               >
-                <Link
-                  href={links || "/"}
+                <ChildSelector />
+              </motion.div>
+              {/* {!isCollapsed && (
+                <button onClick={toggleCollapse} className="ml-auto p-1">
+                  ➡️
+                </button>
+              )} */}
+            </div>
+
+            {/* Navigation Links */}
+            <nav className="flex-1 mt-8 space-y-4">
+              {navLinks.map(({ label, icon: Icon, links }, idx) => {
+                const isActive =
+                  links === "/"
+                    ? pathname === links // Exact match for the root path
+                    : pathname.includes(links); // Partial match for other links
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: idx * 0.1 }}
+                    onClick={handleItemClick} // Collapse RightSideBar when item is clicked
+                  >
+                    <Link
+                      href={links || "/"}
+                      className={cn(
+                        "flex items-center p-2 hover:bg-blue-100 rounded-lg cursor-pointer",
+                        isCollapsed
+                          ? "flex-col justify-center gap-2"
+                          : "flex-row"
+                      )}
+                    >
+                      <Icon
+                        size={24}
+                        className={isActive ? "text-red-500" : "text-black"}
+                      />
+                      <span
+                        className={`ml-3 ${
+                          isCollapsed ? "text-[10px] text-nowrap" : "block"
+                        } transition-all duration-300 ${
+                          isActive ? "text-red-500" : ""
+                        }`}
+                      >
+                        {label}
+                      </span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+              {isAuthenticated && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: navLinks.length * 0.1 }}
+                  onClick={logout}
                   className={cn(
                     "flex items-center p-2 hover:bg-blue-100 rounded-lg cursor-pointer",
                     isCollapsed ? "flex-col justify-center gap-2" : "flex-row"
                   )}
                 >
-                  <Icon
-                    size={24}
-                    className={isActive ? "text-red-500" : "text-black"}
-                  />
+                  <FaSignOutAlt size={24} className="text-black" />
                   <span
                     className={`ml-3 ${
-                      isCollapsed ? "text-[10px] text-nowrap" : "block"
-                    } transition-all duration-300 ${
-                      isActive ? "text-red-500" : ""
-                    }`}
+                      isCollapsed ? "text-[10px] text-nowrap " : "block"
+                    } transition-all duration-300 `}
                   >
-                    {label}
+                    Sign Out
                   </span>
-                </Link>
-              </motion.div>
-            );
-          })}
-          {isAuthenticated && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: navLinks.length * 0.1 }}
-              onClick={logout}
-              className={cn(
-                "flex items-center p-2 hover:bg-blue-100 rounded-lg cursor-pointer",
-                isCollapsed ? "flex-col justify-center gap-2" : "flex-row"
+                </motion.div>
               )}
-            >
-              <FaSignOutAlt size={24} className="text-black" />
-              <span
-                className={`ml-3 ${
-                  isCollapsed ? "text-[10px] text-nowrap " : "block"
-                } transition-all duration-300 `}
-              >
-                Sign Out
-              </span>
-            </motion.div>
-          )}
-        </nav>
-      </motion.div>
+            </nav>
+          </motion.div>{" "}
+        </>
+      ) : (
+        <></>
+      )}
     </>
   );
 };
