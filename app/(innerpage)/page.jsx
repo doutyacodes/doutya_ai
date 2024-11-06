@@ -477,7 +477,7 @@ const Home = () => {
     return <LoadingSpinner />;
   }
   return (
-    <div className=" flex flex-col items-center justify-center  text-gray-800 p-5 md:pt-20 pt-0">
+    <div className={cn(" flex flex-col items-center justify-center  text-gray-800 p-5  pt-0",!latestCourse ? "md:pt-20":"md:pt-5")}>
       <Toaster />
 
       {!latestCourse && (
@@ -692,7 +692,7 @@ const Home = () => {
         </>
       )}
       {latestCourse && (
-        <div className="flex items-start justify-between bg-white rounded-lg w-full max-w-4xl p-6 relative font-bold text-xl">
+        <div className="flex items-start justify-between bg-white rounded-lg w-full shadow-md max-md:mt-4 p-6 relative font-bold text-xl">
           <div
             onClick={() => setLatestCourse(null)}
             className="bg-orange-500  p-2 rounded-full"
@@ -993,7 +993,7 @@ const Home = () => {
             className="flex flex-col  gap-3 md:w-[30%]"
           >
             {latestCourse?.activities && hideActivity && (
-              <div className=" bg-[#f8f8f8] rounded-lg p-3 shadow-lg flex-1 max-md:mt-4 border border-slate-200">
+              <div className=" bg-[#f8f8f8] rounded-lg p-3 shadow-lg  max-md:mt-4 border border-slate-200">
                 <h4 className="uppercase underline  font-bold text-center text-xl mb-8">
                   Actvity
                 </h4>

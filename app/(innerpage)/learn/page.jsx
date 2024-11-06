@@ -45,7 +45,7 @@ const Learn = () => {
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         <h4 className="text-center font-bold text-2xl underline-offset-2 underline uppercase text-orange-700">
-          Badge of the Week
+          Lesson of the Week
         </h4>
         <Image src="/images/space.png" width={250} height={250} alt="space" />
       </motion.div>
@@ -56,7 +56,16 @@ const Learn = () => {
           completion
         </p>
       </div>
-
+      <h4 className="text-center font-bold text-2xl my-3 uppercase text-orange-700">
+        Chapters
+      </h4>
+      <div className="flex justify-center">
+        <p className="text-orange-600 uppercase text-center font-semibold mb-3 max-w-3xl">
+          Each chapter contains a brief explanation, an activity and a test.You
+          will need to complete all the activities and pass the tests, inorder
+          to earn the badge.
+        </p>
+      </div>
       <div className="grid md:grid-cols-3 grid-cols-2 gap-5">
         {learnData?.length > 0 &&
           learnData.map((item, index) => (

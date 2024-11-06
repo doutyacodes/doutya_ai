@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { ACTIVITIES, COURSES } from "@/utils/schema";
+import { ACTIVITIES, CHILDREN, COURSES } from "@/utils/schema";
 import { db } from "@/utils";
 import { generateUniqueSlug } from "@/lib/utils";
 import { authenticate } from "@/lib/jwtMiddleware";
@@ -243,6 +243,28 @@ export async function POST(request) {
         { status: 500 }
       );
     }
+    let finalChildId = childId;
+    if(userId)
+    {
+
+      if (!childId) {
+        const firstChild = await db
+          .select()
+          .from(CHILDREN)
+          .where(eq(CHILDREN.user_id, userId))
+          .limit(1)
+          .execute();
+    
+        if (firstChild.length > 0) {
+          finalChildId = firstChild[0].id; // Assuming 'id' is the identifier for CHILDREN
+        } else {
+          return NextResponse.json(
+            { error: "No children found for the user." },
+            { status: 404 }
+          );
+        }
+      }
+    }
 
     // Insert the new course into the database
     const courseInsert = await db.insert(COURSES).values({
@@ -256,7 +278,7 @@ export async function POST(request) {
       label,
       chapter_content: JSON.stringify(parsedData),
       user_id: userId,
-      child_id: childId, // Pass selected child ID
+      child_id: finalChildId, // Pass selected child ID
     });
 
     const courseId = courseInsert[0]?.insertId;
