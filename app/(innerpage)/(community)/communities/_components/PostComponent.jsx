@@ -34,7 +34,7 @@ const PostComponent = ({ post }) => {
 
   return (
     <motion.div
-      key={post.postId}
+      
       className="p-4 bg-white shadow-md rounded-lg"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

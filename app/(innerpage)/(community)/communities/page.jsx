@@ -20,7 +20,7 @@ const CommunityList = () => {
       const response = await GlobalApi.GetKidsPost({
         age: selectedAge,
       });
-      console.log("response",response.data)
+      console.log("response", response.data);
       setPosts(response.data.data); // Updated to access posts directly from `data`
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -33,6 +33,7 @@ const CommunityList = () => {
   useEffect(() => {
     fetchCourse();
   }, [selectedAge]);
+  
 
   return (
     <div className="w-full min-h-screen p-8 bg-gradient-to-b from-orange-100 to-orange-50 flex flex-col items-center">
@@ -41,9 +42,7 @@ const CommunityList = () => {
       ) : (
         <div className="w-full grid gap-2 md:grid-cols-2">
           {posts.length > 0 ? (
-            posts.map((post) => (
-              <PostComponent post={post} />
-            ))
+            posts.map((post) => <PostComponent post={post} />)
           ) : (
             <p className="text-gray-600">No posts found for this community.</p>
           )}
