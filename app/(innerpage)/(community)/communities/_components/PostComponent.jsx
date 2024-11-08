@@ -69,7 +69,7 @@ const PostComponent = ({ post }) => {
         </div>
 
         {post.caption && (
-          <p className="text-gray-500 italic">"{post.caption}"</p>
+          <p className="text-gray-500 italic">{post.caption}</p>
         )}
 
         <p className="text-xs text-gray-400">
