@@ -14,7 +14,7 @@ import {
 } from "react-icons/fa";
 import { GiTiedScroll } from "react-icons/gi";
 import { BsActivity } from "react-icons/bs";
-import { PiCertificateFill } from "react-icons/pi";
+import { PiCertificateFill, PiHandPeaceFill } from "react-icons/pi";
 import Image from "next/image";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -172,7 +172,7 @@ const RightSideBar = () => {
                     isCollapsed ? "flex-col justify-center gap-2" : "flex-row"
                   )}
                 >
-                  <FaSignOutAlt size={24} className="text-black" />
+                  <PiHandPeaceFill size={24} className="text-black" />
                   <span
                     className={` ${
                       isCollapsed ? "text-[10px] text-nowrap " : "block ml-3"

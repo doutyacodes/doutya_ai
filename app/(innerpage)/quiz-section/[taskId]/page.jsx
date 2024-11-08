@@ -2,13 +2,13 @@
 import LoadingOverlay from "@/app/_components/LoadingOverlay";
 import QuizProgressAlert from "@/app/_components/QuizProgressAlert";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import toast, { LoaderIcon, Toaster } from "react-hot-toast";
-import { useTranslations } from "next-intl";
 import GlobalApi from "@/app/api/_services/GlobalApi";
+import { useChildren } from "@/context/CreateContext";
 
-function Page({ params }) {
+function Page() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [shuffledChoices, setShuffledChoices] = useState([]);
   const [selectedChoice, setSelectedChoice] = useState(null);
@@ -19,8 +19,10 @@ function Page({ params }) {
   const [progressLoading, setProgressLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const router = useRouter();
+  const params = useParams();
   const quizId = params.taskId;
   const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const { selectedChildId, selectedAge } = useChildren(); // Accessing selected child ID from context
 
   useEffect(() => {
     const authCheck = () => {
@@ -41,26 +43,14 @@ function Page({ params }) {
     const getQuizData = async () => {
       setIsLoading(true);
       try {
-        const token =
-          typeof window !== "undefined" ? localStorage.getItem("token") : null;
+        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
         const resp = await GlobalApi.GetQuizData(quizId, token);
         setCurrentQuestionIndex(resp.data.quizProgress);
         if (resp.data.quizProgress > 0) {
           setShowAlert(true);
         }
-        let questionsData = []; // Use a local variable for questions
-        let optionsData = []; // Use a local variable for options
-
-        questionsData = questionsData.map((question) => ({
-          ...question,
-          options: optionsData.filter(
-            (option) => option.question_id === question.id
-          ),
-        }));
-        console.log(questionsData);
-        // }
-
-        setQuestions(questionsData);
+        setQuestions(resp.data.questions || []);
+        console.log("resp.data.",resp.data)
       } catch (error) {
         console.error("Error Fetching Quiz Data:", error);
       } finally {
@@ -68,17 +58,16 @@ function Page({ params }) {
       }
     };
     getQuizData();
-  }, []);
+  }, [selectedChildId]);
 
   useEffect(() => {
     if (quizCompleted) {
-      // setIsLoading(true)
       const interval = setInterval(() => {
         setSecondsRemaining((prevSeconds) => prevSeconds - 1);
       }, 1000);
 
       const timer = setTimeout(() => {
-        router.replace("/dashboard");
+        router.replace("/tests");
       }, 5000);
 
       return () => {
@@ -89,11 +78,8 @@ function Page({ params }) {
   }, [quizCompleted, router]);
 
   useEffect(() => {
-    // Shuffle and set options for the current question
-    if (questions.length > 0 && questions[currentQuestionIndex]?.options) {
-      const choices = questions[currentQuestionIndex].options;
-      console.log(choices);
-      setShuffledChoices([...choices].sort(() => Math.random() - 0.5));
+    if (questions.length > 0 && questions[currentQuestionIndex]?.answers) {
+      setShuffledChoices([...questions[currentQuestionIndex].answers].sort(() => Math.random() - 0.5));
     }
   }, [currentQuestionIndex, questions]);
 
@@ -106,38 +92,30 @@ function Page({ params }) {
       questionId: questions[currentQuestionIndex].id,
       optionId: selectedChoice.id,
       optionText: selectedChoice.text,
-      analyticId: selectedChoice.analytic_id,
+      analyticId: selectedChoice.analyticId,
     };
+    console.log("answer",answer)
 
     await quizProgressSubmit(answer);
 
     if (currentQuestionIndex < questions.length - 1) {
-      /* Api to save the progress */
-      setSelectedChoice(null); // Resetting selected choice for the next question
+      setSelectedChoice(null);
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       setQuizCompleted(true);
-      quizSubmit(); //finished, send data to API
+      quizSubmit();
     }
   };
 
   const quizProgressSubmit = async (data) => {
     setProgressLoading(true);
     try {
-      const token =
-        typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      const resp = await GlobalApi.SaveQuizProgress(data, token, quizId);
-
-      if (resp && resp.status === 201) {
-        console.log("Response");
-      } else {
-        console.error("Failed to save progress. Status code:", resp.status);
-        alert("There was a problem saving your progress. Please check your internet connection.");
+      const resp = await GlobalApi.SaveQuizProgress(data, quizId,selectedChildId);
+      if (resp.status !== 201) {
+        alert("Error saving your progress. Check internet connection.");
       }
     } catch (error) {
-      console.error("Error submitting progress:", error.message);
-      alert("There was an error saving your progress. Please try again later.");
-      alert("There was an error saving your progress. Please try again later.");
+      alert("Error saving progress. Try again later.");
     } finally {
       setProgressLoading(false);
     }
@@ -145,22 +123,16 @@ function Page({ params }) {
 
   const quizSubmit = async () => {
     setIsLoading(true);
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
     try {
-      const resp = await GlobalApi.SaveQuizResult(token);
-
-      if (resp && resp.status === 201) {
-        toast.success("Quiz Completed successfully!.");
+      const resp = await GlobalApi.SaveQuizResult(selectedChildId);
+      if (resp.status === 201) {
+        toast.success("Quiz Completed!");
       } else {
-        // toast.error('Failed to create Challenge.');
-        toast.error("Failed Submitted results");
+        toast.error("Failed to submit quiz.");
       }
     } catch (error) {
-      console.error("Error creating Submitting:", error);
-      console.error("Error creating Submiting:", error.message);
-      // toast.error('Error: Failed to create Challenge.');
-      toast.error("Failed to submit quiz.");
+      toast.error("Submission failed.");
     } finally {
       setIsLoading(false);
     }
@@ -168,67 +140,44 @@ function Page({ params }) {
 
   if (isLoading || !isAuthenticated) {
     return (
-      <div className="h-screen flex items-center justify-center text-white">
-        <div>
-          <div className="font-semibold">
-            <LoadingOverlay loadText={"Loading..."} />
-          </div>
-        </div>
+      <div className="h-screen flex items-center justify-center text-gray-700 bg-opacity-70">
+        <LoadingOverlay loadText="Loading..." />
       </div>
     );
   }
 
   if (quizCompleted) {
     return (
-      <div className="h-screen flex items-center justify-center text-white text-center">
-        <div>
-          <div className="text-4xl font-semibold">
-          Personality Assessment Test
-          </div>
-
-          <p className="mt-4">
-            Navigating to the Test page in {secondsRemaining} seconds
-          </p>
-        </div>
+      <div className="h-screen flex flex-col items-center justify-center text-center text-gray-700">
+        <h2 className="text-4xl font-semibold">Personality Assessment Test</h2>
+        <p className="mt-4">Redirecting to the Test page in {secondsRemaining} seconds</p>
       </div>
     );
   }
 
   return (
-    <div className="h-screen">
+    <div className="min-h-screen">
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="bg-[#009be8] h-20 my-4 justify-center items-center flex">
-        <p className="text-white uppercase font-bold text-center">
-        Personality Assessment Test
-        </p>
+      <div className="bg-gradient-to-r from-orange-200 via-white to-orange-100 rounded-lg shadow-md my-4 flex justify-center items-center py-4">
+        <p className="text-gray-800 font-semibold text-lg">Personality Assessment Test</p>
       </div>
       {showAlert && <QuizProgressAlert />}
-      <div className="mx-3 flex justify-center items-center">
+      <div className="flex justify-center items-center px-4">
         {questions.length > 0 && (
-          <div className="mt-4 pt-5 min-h-[20rem] flex flex-col gap-4 justify-center items-center mx-auto sm:w-4/5 w-full max-w-[800px] text-white rounded-2xl p-[1px] bg-[#0097b2]">
-            <div className="">
-              <p className="font-extrabold text-center">
-                {" "}
-                {currentQuestionIndex + 1}/12
-              </p>
-            </div>
+          <div className="mt-8 py-6 flex flex-col gap-6 items-center w-full max-w-xl bg-white shadow-lg rounded-xl text-gray-700 p-6">
+            <h3 className="text-xl font-semibold">{currentQuestionIndex + 1}/12</h3>
             {!progressLoading ? (
-              <div className="bg-[#1b143a] w-full p-3 rounded-2xl pt-6 ">
-                <div>
-                  <p className="font-bold p-2 text-xl max-sm:text-lg text-center mb-6">
-                    {questions[currentQuestionIndex]?.question}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-5 w-full text-white">
+              <div className="w-full bg-orange-50 p-4 rounded-lg shadow-md">
+                <p className="font-bold text-center mb-4">{questions[currentQuestionIndex]?.question}</p>
+                <div className="flex flex-col gap-4">
                   {shuffledChoices.map((choice, index) => (
                     <button
                       key={index}
                       className={cn(
-                        `sm:py-5 p-3 sm:px-4 rounded-full hover:cursor-pointer
-                    hover:text-black  transition duration-300 ease-in-out max-sm:text-xs `,
+                        "p-3 rounded-lg hover:scale-105 transition-transform",
                         selectedChoice?.id === choice.id
-                          ? "bg-green-500"
-                          : "bg-[#0070c0] hover:bg-green-500"
+                          ? "bg-orange-400 text-white"
+                          : "bg-orange-200 hover:bg-orange-300"
                       )}
                       onClick={() => handleChoiceSelect(choice)}
                     >
@@ -236,35 +185,23 @@ function Page({ params }) {
                     </button>
                   ))}
                 </div>
-                <div className="w-full justify-center items-center flex my-5">
-                  <div>
-                    {/* <button
-                      className={`bg-[#7824f6] py-2 px-10 rounded-full text-white ${
-                        selectedChoice ? "" : "opacity-50 cursor-not-allowed"
-                      }`}
-                      onClick={handleNext}
-                      disabled={!selectedChoice}
-                    >
-                      Next
-                    </button> */}
-                    <button
-                      className={`bg-[#7824f6] py-2 px-10 rounded-full text-white ${
-                        selectedChoice ? "" : "opacity-50 cursor-not-allowed"
-                      }`}
-                      onClick={handleNext}
-                      disabled={!selectedChoice}
-                    >
-                      Next
-                    </button>
-                  </div>
+                <div className="w-full mt-6 flex justify-center">
+                  <button
+                    className={cn(
+                      "py-2 px-8 rounded-lg text-white font-semibold bg-orange-400 hover:bg-orange-500",
+                      { "opacity-50 cursor-not-allowed": !selectedChoice }
+                    )}
+                    onClick={handleNext}
+                    disabled={!selectedChoice}
+                  >
+                    Next
+                  </button>
                 </div>
               </div>
             ) : (
-              <div className="inset-0 flex items-center my-16 justify-center z-50">
-                <div className="flex items-center space-x-2">
-                  <LoaderIcon className="w-10 h-10 text-white text-4xl animate-spin" />
-                  <span className="text-white">Loading...</span>
-                </div>
+              <div className="flex items-center space-x-2">
+                <LoaderIcon className="animate-spin" />
+                <span>Loading...</span>
               </div>
             )}
           </div>

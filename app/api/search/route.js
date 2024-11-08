@@ -59,14 +59,23 @@ export async function POST(request) {
     if (existingCourse.length > 0) {
       const course = existingCourse[0];
       const courseData = JSON.parse(course.chapter_content || "{}");
-
-      // Structure response based on course type
+    
+      // Retrieve existing activities for the course
+      const existingActivities = await db
+        .select()
+        .from(ACTIVITIES)
+        .where(eq(ACTIVITIES.course_id, course.id))
+        .execute();
+    
+      // Map activity data if it exists in the database, or fall back to default structure from courseData
+      const activityData =  {
+            title: courseData.activities?.title,
+            content: courseData.activities?.content,
+          };
+    
+      // Structure response based on course type and include activity data
       let structuredResponse;
-      if (
-        ["story", "bedtime story", "informative story", "podcast"].includes(
-          type
-        )
-      ) {
+      if (["story", "bedtime story", "informative story", "podcast"].includes(type)) {
         structuredResponse = {
           courseName,
           genre,
@@ -78,10 +87,11 @@ export async function POST(request) {
           title: courseData.title,
           introduction: { content: courseData.introduction?.content },
           body:
-            courseData.body?.map((paragraph) => ({
+            courseData.body?.map(paragraph => ({
               content: paragraph.content,
             })) || [],
           conclusion: { content: courseData.conclusion?.content },
+          activities: activityData,
         };
       } else if (type === "poem") {
         structuredResponse = {
@@ -92,7 +102,8 @@ export async function POST(request) {
           type,
           title: courseData.title,
           verses:
-            courseData.verses?.map((verse) => ({ line: verse.line })) || [],
+            courseData.verses?.map(verse => ({ line: verse.line })) || [],
+          activities: activityData,
         };
       } else if (type === "presentation") {
         structuredResponse = {
@@ -104,16 +115,17 @@ export async function POST(request) {
           presentation: {
             title: courseData.presentation?.title,
             slides:
-              courseData.presentation?.slides?.map((slide) => ({
+              courseData.presentation?.slides?.map(slide => ({
                 slide_number: slide.slide_number,
                 content:
-                  slide.content?.map((item) => ({
+                  slide.content?.map(item => ({
                     content: item.content,
                     image_suggestion: item.image_suggestion,
                     additional_resources: item.additional_resources,
                   })) || [],
               })) || [],
           },
+          activities: activityData,
         };
       } else if (type === "course") {
         structuredResponse = {
@@ -126,17 +138,18 @@ export async function POST(request) {
             introduction: { content: courseData.introduction?.content },
             body: {
               modules:
-                courseData.body?.modules?.map((module) => ({
+                courseData.body?.modules?.map(module => ({
                   module_number: module.module_number,
                   title: module.title,
                   subtopics:
-                    module.subtopics?.map((subtopic) => ({
+                    module.subtopics?.map(subtopic => ({
                       title: subtopic.title,
                     })) || [],
                 })) || [],
             },
             conclusion: { content: courseData.conclusion?.content },
           },
+          activities: activityData,
         };
       } else {
         structuredResponse = {
@@ -149,11 +162,11 @@ export async function POST(request) {
             introduction: { content: courseData.introduction?.content },
             body: {
               sections:
-                courseData.body?.sections?.map((section) => ({
+                courseData.body?.sections?.map(section => ({
                   title: section.title,
                   content: section.content,
                   subtopics:
-                    section.subtopics?.map((subtopic) => ({
+                    section.subtopics?.map(subtopic => ({
                       title: subtopic.title,
                       content: subtopic.content,
                     })) || [],
@@ -161,9 +174,10 @@ export async function POST(request) {
             },
             conclusion: { content: courseData.conclusion?.content },
           },
+          activities: activityData,
         };
       }
-
+    
       return NextResponse.json(
         {
           message: "Course already exists for this user",
@@ -172,6 +186,7 @@ export async function POST(request) {
         { status: 200 }
       );
     }
+    
 
     // Check for the OpenAI API key
     if (!process.env.OPENAI_API_KEY) {

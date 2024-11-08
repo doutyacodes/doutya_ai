@@ -32,6 +32,7 @@ const Home = () => {
   const [age, setAge] = useState(2); // New state for age input
   const [error, setError] = useState("");
   const [latestCourse, setLatestCourse] = useState(null);
+  const [base64Image, setBase64Image] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
   const { selectedChildId, selectedAge } = useChildren(); // Accessing selected child ID from context
@@ -449,30 +450,59 @@ const Home = () => {
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
-
+  
     // Check if the selected file is an image
     if (selectedFile && selectedFile.type.startsWith("image/")) {
       setFile(selectedFile); // Store the file for later use
       setImage(URL.createObjectURL(selectedFile)); // Preview the image (optional)
+      
+      // Convert the image to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBase64Image(reader.result); // Save base64 encoded image
+      };
+      reader.readAsDataURL(selectedFile);
+  
       console.log("Image uploaded:", selectedFile);
     } else {
       alert("Please upload a valid image file.");
     }
   };
+  
 
-  const submitUpload = () => {
-    // Check if an image exists
-    if (file) {
-      // Call your desired function here
-      console.log("Image exists, calling the upload function...");
-      // Here you can call an upload function, for example:
-      // uploadImage(file);
-      setHideActivity(false);
-      toast.success("Image uploaded successfully!");
-    } else {
-      toast.error("No image uploaded. Please upload an image first.");
+  async function submitUpload() {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const formData = {
+      child_id: selectedChildId,
+      token: token,
+      course_id: 1,
+      image: base64Image, // assuming `image` is in base64 format after `handleFileChange`
+    };
+  
+    try {
+      const response = await fetch('/api/activityUpload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+  
+      // Log the raw response text to understand what the server is sending
+      const responseText = await response.data; // Read response as text
+      console.log("Raw response text:", responseText);
+  
+      // Check if the response is empty or not JSON
+      const result = JSON.parse(responseText); // Parse the text as JSON
+      if (response.ok) {
+        console.log(result.message);
+      } else {
+        console.error(result.error);
+      }
+    } catch (error) {
+      console.error('Upload failed:', error);
     }
-  };
+  }
+  
+  
   if (isLoading) {
     return <LoadingSpinner />;
   }
