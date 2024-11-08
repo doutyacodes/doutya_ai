@@ -42,7 +42,7 @@ const CommunityList = () => {
       ) : (
         <div className="w-full grid gap-2 md:grid-cols-2">
           {posts.length > 0 ? (
-            posts.map((post) => <PostComponent post={post} />)
+            posts.map((post) => <PostComponent key={post.postId} post={post} />)
           ) : (
             <p className="text-gray-600">No posts found for this community.</p>
           )}
