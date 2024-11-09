@@ -62,6 +62,7 @@ const RightSideBar = () => {
   if (!childrenData || childrenData.length === 0) {
     return <p></p>;
   }
+  console.log("selectedGender",selectedGender)
   return (
     <>
       {isAuthenticated ? (
@@ -75,7 +76,7 @@ const RightSideBar = () => {
                 : "hidden"
             )}
           >
-            {selectedGender && (
+            {/* {selectedGender && ( */}
               <div className="flex flex-col w-fit gap-[1px] items-center md:hidden">
                 <Image
                   src={
@@ -88,7 +89,7 @@ const RightSideBar = () => {
                   alt={selectedGender || "gender"}
                 />
               </div>
-            )}
+            {/* )} */}
           </div>
           {!isCollapsed && (
             <div

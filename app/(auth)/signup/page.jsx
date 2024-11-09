@@ -174,7 +174,7 @@ export function Signup() {
                     <FormItem>
                       <FormLabel>Age</FormLabel>
                       <FormControl>
-                        <Input type="number" min={2} max={10} placeholder="Child's Age" {...field} />
+                        <Input type="number" min={2} max={12} placeholder="Child's Age" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

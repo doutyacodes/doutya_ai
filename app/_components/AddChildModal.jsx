@@ -9,7 +9,7 @@ const AddChildModal = () => {
   const [newChildName, setNewChildName] = useState("");
   const [newChildGender, setNewChildGender] = useState("");
   const [newChildAge, setNewChildAge] = useState("");
-  const { updateChildrenData, selectChild, selectChildAge } = useChildren();
+  const { updateChildrenData, selectChild } = useChildren();
 
   const handleAddChild = async () => {
     if (newChildAge < 2 || newChildAge > 12) {
@@ -36,7 +36,7 @@ const AddChildModal = () => {
       const response = await GlobalApi.GetUserChildren();
       updateChildrenData(response.data.data);
       selectChild(response.data.data[0].id);
-      selectChildAge(response.data.data[0].age);
+      // selectChildAge(response.data.data[0].age);
     } catch (error) {
       console.error("Failed to add child", error);
       toast.error("Failed to add child. Please try again.");

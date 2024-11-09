@@ -33,7 +33,8 @@ function Banner({
     const getQuizData = async () => {
       setLoading(true);
       try {
-        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+        const token =
+          typeof window !== "undefined" ? localStorage.getItem("token") : null;
         const resp = await GlobalApi.GetDashboarCheck(selectedChildId);
         setDashboardData(resp.data);
 
@@ -63,7 +64,13 @@ function Banner({
     );
   }
 
-  const renderTestCard = (quizId, gradient, titleKey, descriptionKey, route) => {
+  const renderTestCard = (
+    quizId,
+    gradient,
+    titleKey,
+    descriptionKey,
+    route
+  ) => {
     const isCompleted = getQuizStatus(quizId).isCompleted;
     return (
       <motion.div
@@ -101,7 +108,7 @@ function Banner({
       </motion.div>
     );
   };
-
+// console.log("selectedAge",selectedAge)
   return (
     <div className="max-md:pb-14 bg-gradient-to-r from-orange-100 via-white to-orange-50 min-h-screen">
       <motion.div
@@ -114,8 +121,20 @@ function Banner({
       <div className="p-4">
         <div className="mt-8 md:flex hidden md:flex-row justify-evenly gap-10 w-full">
           {!isTest1Completed &&
-            renderTestCard(1, "#FFA500, #FFCC80", "findStrength", "personalityTestDescription", "/quiz-section/1")}
-          {renderTestCard(2, "#FF7043, #FFB74D", "followCareer", "interestTestDescription", "/CareerQuizSection/2")}
+            renderTestCard(
+              1,
+              "#FFA500, #FFCC80",
+              "findStrength",
+              "personalityTestDescription",
+              "/quiz-section/1"
+            )}
+          {renderTestCard(
+            2,
+            "#FF7043, #FFB74D",
+            "followCareer",
+            "interestTestDescription",
+            "/CareerQuizSection/2"
+          )}
         </div>
 
         <div className="mt-8 md:hidden">
@@ -128,11 +147,27 @@ function Banner({
             className="pb-12"
           >
             {!isTest1Completed && (
-              <SwiperSlide>{renderTestCard(1, "#FFA500, #FFCC80", "findStrength", "personalityTestDescription", "/quiz-section/1")}</SwiperSlide>
+              <SwiperSlide>
+                {renderTestCard(
+                  1,
+                  "#FFA500, #FFCC80",
+                  "findStrength",
+                  "personalityTestDescription",
+                  "/quiz-section/1"
+                )}
+              </SwiperSlide>
             )}
-            <SwiperSlide>
-              {renderTestCard(2, "#FF7043, #FFB74D", "followCareer", "interestTestDescription", "/CareerQuizSection/2")}
-            </SwiperSlide>
+            {selectedAge >= 10 && (
+              <SwiperSlide>
+                {renderTestCard(
+                  2,
+                  "#FF7043, #FFB74D",
+                  "followCareer",
+                  "interestTestDescription",
+                  "/CareerQuizSection/2"
+                )}
+              </SwiperSlide>
+            )}
           </Swiper>
 
           <div className="flex justify-center space-x-2 gap-2 mt-4 mb-16">
