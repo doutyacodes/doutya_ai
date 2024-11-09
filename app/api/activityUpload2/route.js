@@ -10,8 +10,8 @@ import { db } from '@/utils';
 import { eq } from 'drizzle-orm';
 
 export async function POST(request) {
-  const { child_id, token, course_id, image } = await request.json();
-
+  const { child_id, token, course_id, image ,finalActivityId} = await request.json();
+console.log("child_id",child_id)
   // Define the local temp directory dynamically based on platform
   const localTempDir = os.tmpdir();
   const fileName = `${Date.now()}-${child_id}-${course_id}.png`;
@@ -36,27 +36,7 @@ export async function POST(request) {
       { status: 401 }
     );
   }
-  let finalActivityId;
-  if(userId)
-  {
-
-      const firstActivity = await db
-        .select()
-        .from(ACTIVITIES)
-        .where(eq(ACTIVITIES.course_id, course_id))
-        .limit(1)
-        .execute();
   
-      if (firstActivity.length > 0) {
-        finalActivityId = firstActivity[0].id; // Assuming 'id' is the identifier for CHILDREN
-      } else {
-        return NextResponse.json(
-          { error: "No children found for the user." },
-          { status: 404 }
-        );
-      }
-    
-  }
 
   try {
     if (!fs.existsSync(localTempDir)) {

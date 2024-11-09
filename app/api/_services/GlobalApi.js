@@ -151,6 +151,26 @@ const FetchCourses = async (data) => {
 };
 
 // New function to fetch courses
+const FetchActivities = async (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(`/api/fetchActivities`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
+const submitImage = async (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(`/api/activityUpload2`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
+
+// New function to fetch courses
 const FetchSubtopics = async (data) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
@@ -468,4 +488,6 @@ export default {
   SaveCarrierQuizProgress,
   SaveCareerQuizResult,
   GetIndustry,
+  FetchActivities,
+  submitImage
 };

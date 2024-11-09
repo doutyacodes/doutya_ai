@@ -475,7 +475,7 @@ const Home = () => {
     const formData = {
       child_id: selectedChildId,
       token: token,
-      course_id: 1,
+      course_id: 213,
       image: base64Image, // assuming `image` is in base64 format after `handleFileChange`
     };
   
@@ -487,16 +487,15 @@ const Home = () => {
       });
   
       // Log the raw response text to understand what the server is sending
-      const responseText = await response.data; // Read response as text
-      console.log("Raw response text:", responseText);
+      // const responseText = await response.data; // Read response as text
+      console.log("response",response)
+      // console.log("Raw response text:", responseText);
   
-      // Check if the response is empty or not JSON
-      const result = JSON.parse(responseText); // Parse the text as JSON
+      // // Check if the response is empty or not JSON
+      // const result = JSON.parse(responseText); // Parse the text as JSON
       if (response.ok) {
-        console.log(result.message);
-      } else {
-        console.error(result.error);
-      }
+        setHideActivity(false)
+      } 
     } catch (error) {
       console.error('Upload failed:', error);
     }
@@ -728,6 +727,7 @@ const Home = () => {
             className="bg-orange-500  p-2 rounded-full"
           >
             <ChevronLeft />
+            {console.log(latestCourse?.activities)}
           </div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
