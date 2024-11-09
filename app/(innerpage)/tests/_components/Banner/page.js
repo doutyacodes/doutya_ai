@@ -93,9 +93,9 @@ function Banner({
         </h3>
         <div className="bg-orange-50 rounded-lg p-3 flex flex-col justify-between shadow-md">
           {(selectedAge < 6 || (selectedAge < 10 && quizId == 2)) && (
-          <div className="w-full my-7 relative">
-            <div className=" absolute -top-5 left-0 z-[88888] w-full bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-3 rounded mb-3 flex items-center">
-              <span className="text-xs">
+          <div className="absolute -top-5 left-0 z-[88888] w-full flex justify-center items-center h-full ">
+            <div className=" w-full bg-[#167dc6] text-white p-5 rounded mb-3 flex items-center">
+              <span className="text-lg font-bold text-center">
                 {selectedAge < 10 && quizId == 2
                   ? "Your child should be at least 10 years old to take the test"
                   : selectedAge < 6 &&
