@@ -108,9 +108,9 @@ function Banner({
       </motion.div>
     );
   };
-// console.log("selectedAge",selectedAge)
+  // console.log("selectedAge",selectedAge)
   return (
-    <div className="max-md:pb-14 bg-gradient-to-r from-orange-100 via-white to-orange-50 min-h-screen">
+    <div className="max-md:pb-14 bg-gradient-to-r from-orange-100 via-white to-orange-50 min-h-screen max-w-[100vw] max-md:pr-4">
       <motion.div
         className="w-full py-8 md:text-3xl text-xl font-semibold text-orange-800 text-center "
         initial={{ opacity: 0 }}
@@ -128,16 +128,17 @@ function Banner({
               "personalityTestDescription",
               "/quiz-section/1"
             )}
-          {renderTestCard(
-            2,
-            "#FF7043, #FFB74D",
-            "followCareer",
-            "interestTestDescription",
-            "/CareerQuizSection/2"
-          )}
+          {selectedAge >= 10 &&
+            renderTestCard(
+              2,
+              "#FF7043, #FFB74D",
+              "followCareer",
+              "interestTestDescription",
+              "/CareerQuizSection/2"
+            )}
         </div>
 
-        <div className="mt-8 md:hidden">
+        <div className="mt-8 md:hidden ">
           <Swiper
             modules={[Navigation]}
             spaceBetween={10}
