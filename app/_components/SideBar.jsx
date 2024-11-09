@@ -41,7 +41,6 @@ const SideBar = () => {
     // { label: "My Badges", links: "/badges", icon: FaMedal },
     // { label: "My Searches", links: "/my-search", icon: FaHistory },
     // { label: "My Profile", links: "/my-profile", icon: FaUser },
-    { label: "Settings", links: "/settings", icon: FaCog },
   ];
 
   return (

@@ -69,7 +69,7 @@ const Page = () => {
   const isBadgeCompleted = badgeData && badgeData.completed;
 
   return (
-    <div className="bg-[#0f6574] w-full min-h-screen p-3 flex justify-center items-center">
+    <div className=" w-full min-h-screen p-3 flex justify-center items-center">
       <div
         ref={certificateRef}
         className="w-full h-full p-3 bg-[#ffefca] rounded-md max-w-sm relative"
