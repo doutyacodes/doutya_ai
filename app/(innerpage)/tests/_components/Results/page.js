@@ -1,13 +1,15 @@
 "use client";
-import GlobalApi from "@/app/api/_services/GlobalApi";
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useChildren } from "@/context/CreateContext";
+import GlobalApi from "@/app/api/GlobalApi";
 
 function Results() {
   const [resultData, setResultData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [alertMessage, setAlertMessage] = useState("");
   const t = useTranslations("ResultsPage");
+  const { selectedChildId, selectedAge } = useChildren(); // Accessing selected child ID from context
 
   useEffect(() => {
     async function fetchResults() {
@@ -16,9 +18,10 @@ function Results() {
         const token =
           typeof window !== "undefined" ? localStorage.getItem("token") : null;
         const language = localStorage.getItem("language") || "en";
-        const response = await GlobalApi.GetUserId(token, language);
+        const response = await GlobalApi.GetUserId(token, language,selectedChildId);
+        console.log("response.data",response.data.updatedResults[0])
         if (response.status === 200) {
-          setResultData(response.data.data[0]);
+          setResultData(response.data.updatedResults[0]);
         } else if (response.status === 202) {
           setAlertMessage(response.data.message || "Please complete the personality test first.");
         }
@@ -29,7 +32,7 @@ function Results() {
       }
     }
     fetchResults();
-  }, []);
+  }, [selectedChildId]);
 
   const {
     description,
@@ -60,7 +63,7 @@ function Results() {
     );
   }
 
-  if (!resultData || Object.keys(resultData).length === 0) {
+  if (!resultData) {
     return (
       <div className="flex justify-center items-center w-full h-full px-3">
         <div className="bg-[#fffbf2] text-gray-800 text-center py-10 px-6 rounded-xl w-full min-h-[60vh] flex justify-center items-center shadow-lg">

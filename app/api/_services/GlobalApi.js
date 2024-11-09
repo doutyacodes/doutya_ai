@@ -100,12 +100,19 @@ const AddChild = async (data) => {
     },
   });
 };
-const GetQuizData = (id, token) => {
-  return axios.get(`/api/getQuizData/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+const GetQuizData = (id, token, selectedChildId) => {
+  return axios.post(
+    `/api/getQuizData`,
+    {
+      id: id,
+      childId: selectedChildId,
     },
-  });
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 // const GetQuizData = async (data) => {
 //   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
@@ -193,21 +200,25 @@ const getPostBySlug = async (data) => {
 const GetDashboarCheck = (selectedChildId) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
-  return axios.post(`/api/getDashboardCheckData`,{
-    childId:selectedChildId
-  } ,{
-    headers: {
-      Authorization: `Bearer ${token}`,
+  return axios.post(
+    `/api/getDashboardCheckData`,
+    {
+      childId: selectedChildId,
     },
-  });
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
-const SaveQuizProgress = (data, quizId,selectedChildId) => {
+const SaveQuizProgress = (data, quizId, selectedChildId) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
   const payload = {
     quizId,
-    childId:selectedChildId,
+    childId: selectedChildId,
     results: data,
   };
   return axios.post(`/api/quizProgress`, payload, {
@@ -223,7 +234,7 @@ const SaveQuizResult = (selectedChildId) => {
   return axios.post(
     "/api/quizResult",
     {
-      childId:selectedChildId
+      childId: selectedChildId,
     },
     {
       headers: {
@@ -361,11 +372,15 @@ const GetCareerPath = (id, token, language) => {
 const GetCareerQuiz = () => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
-  return axios.post(`/api/getPersonalityDataKids`,{}, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  return axios.post(
+    `/api/getPersonalityDataKids`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 const GetCareerQuizKids = (id, token) => {
   return axios.get(`/api/getPersonalityDataKids/${id}`, {
@@ -375,13 +390,13 @@ const GetCareerQuizKids = (id, token) => {
   });
 };
 
-const SaveCarrierQuizProgress = (data, quizId,selectedChildId) => {
+const SaveCarrierQuizProgress = (data, quizId, selectedChildId) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
   const payload = {
     quizId,
     results: data,
-    childId:selectedChildId
+    childId: selectedChildId,
   };
 
   return axios.post(`/api/carrierQuizProgress`, payload, {
@@ -394,15 +409,11 @@ const SaveCarrierQuizProgress = (data, quizId,selectedChildId) => {
 const SaveCareerQuizResult = (data) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
-  return axios.post(
-    `/api/CareerQuizResult`,
-    data,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  return axios.post(`/api/CareerQuizResult`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 const GetIndustry = (token, language) => {
@@ -456,5 +467,5 @@ export default {
   getPostBySlug,
   SaveCarrierQuizProgress,
   SaveCareerQuizResult,
-  GetIndustry
+  GetIndustry,
 };

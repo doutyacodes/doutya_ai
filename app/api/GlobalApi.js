@@ -114,13 +114,19 @@ const InterestResult = (data) =>
     },
   });
 
-const GetUserId = (token, language) =>
-  axios.get("/api/getUserId", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Accept-Language": language,
+const GetUserId = (token, language, selectedChildId) =>
+  axios.post(
+    "/api/getUserId",
+    {
+      childId: selectedChildId,
     },
-  });
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Accept-Language": language,
+      },
+    }
+  );
 
 const GetDashboarCheck = (token) => {
   return axios.get(`/api/getDashboardCheckData`, {
@@ -571,7 +577,6 @@ const AddPostComment = (token, data) => {
   });
 };
 
-
 /* Certification */
 const GetCertificationTest = (id, token) => {
   return axios.get(`/api/getCertificationTest/${id}`, {
@@ -622,7 +627,6 @@ const GetCourseOverview = (id, token) => {
     },
   });
 };
-
 
 /* Certification */
 const GetCertificationCourse = (id, token) => {
@@ -716,6 +720,5 @@ export default {
   GetCertificationResult,
   GetCertificationCourse,
   GetCourseOverview,
-  UpdateCertificationStatus
-
+  UpdateCertificationStatus,
 };

@@ -1,11 +1,11 @@
 import { db } from '@/utils';
-import { ANALYTICS_QUESTION, ANSWERS, OPTIONS, QUESTIONS, QUIZ_SEQUENCES, TASKS, USER_DETAILS, USER_PROGRESS, USER_TASKS } from '@/utils/schema';
+import { ANALYTICS_QUESTION, ANSWERS, CHILDREN, OPTIONS, QUESTIONS, QUIZ_SEQUENCES, TASKS, USER_DETAILS, USER_PROGRESS, USER_TASKS } from '@/utils/schema';
 import { NextResponse } from 'next/server';
 import { and, eq, inArray, sql } from 'drizzle-orm'; // Ensure these imports match your ORM version
 import { authenticate } from '@/lib/jwtMiddleware';
 
 
-export async function GET(req, { params }) {
+export async function POST(req) {
 
     const authResult = await authenticate(req);
     if (!authResult.authenticated) {
@@ -14,8 +14,30 @@ export async function GET(req, { params }) {
 
     const userData = authResult.decoded_Data;
     const userId = userData.id;  
-    const { quizId } = await params;
+    const { id,childId } = await req.json();
+const quizId = id
+let finalChildId = childId;
+  if(userId)
+  {
 
+    if (!childId) {
+      const firstChild = await db
+        .select()
+        .from(CHILDREN)
+        .where(eq(CHILDREN.user_id, userId))
+        .limit(1)
+        .execute();
+  
+      if (firstChild.length > 0) {
+        finalChildId = firstChild[0].id; // Assuming 'id' is the identifier for CHILDREN
+      } else {
+        return NextResponse.json(
+          { error: "No children found for the user." },
+          { status: 404 }
+        );
+      }
+    }
+  }
     if (!quizId) {
         return NextResponse.json({ message: 'Invalid QuizId' }, { status: 400 });
     }
@@ -32,7 +54,8 @@ export async function GET(req, { params }) {
                             .where(
                                 and(
                                     eq(QUIZ_SEQUENCES.user_id, userId),
-                                    eq(QUIZ_SEQUENCES.quiz_id, quizId)
+                                    eq(QUIZ_SEQUENCES.quiz_id, quizId),
+                                    eq(QUIZ_SEQUENCES.child_id, finalChildId)
                                 )
                             )
                             .execute();
@@ -45,7 +68,7 @@ export async function GET(req, { params }) {
                 countQuestionIds: sql`COUNT(${USER_PROGRESS.question_id})`
             })
             .from(USER_PROGRESS)
-            .where(eq(USER_PROGRESS.user_id, userId))
+            .where(eq(USER_PROGRESS.child_id, finalChildId))
             .execute();
 
             // The total number of questions answered

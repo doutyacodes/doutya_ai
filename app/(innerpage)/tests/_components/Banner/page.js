@@ -13,6 +13,7 @@ import { Navigation } from "swiper/modules";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useChildren } from "@/context/CreateContext";
+import { redirect } from "next/navigation";
 
 function Banner({
   onToggleResults,
@@ -47,7 +48,7 @@ function Banner({
       }
     };
     getQuizData();
-  }, [setIsTest2Completed]);
+  }, [setIsTest2Completed,selectedChildId]);
 
   const getQuizStatus = (quizId) => {
     const quiz = dashboardData.find((q) => q.quiz_id === quizId);
@@ -109,6 +110,7 @@ function Banner({
     );
   };
   // console.log("selectedAge",selectedAge)
+  
   return (
     <div className="max-md:pb-14 bg-gradient-to-r from-orange-100 via-white to-orange-50 min-h-screen max-w-[100vw] max-md:pr-4">
       <motion.div
@@ -118,6 +120,9 @@ function Banner({
       >
         {t("careerAssesment")}
       </motion.div>
+      {
+        isTest1Completed && selectedAge <9 && redirect("/tests/myResults")
+      }
       <div className="p-4">
         <div className="mt-8 md:flex hidden md:flex-row justify-evenly gap-10 w-full">
           {!isTest1Completed &&

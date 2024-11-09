@@ -44,7 +44,7 @@ function Page() {
       setIsLoading(true);
       try {
         const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-        const resp = await GlobalApi.GetQuizData(quizId, token);
+        const resp = await GlobalApi.GetQuizData(quizId, token,selectedChildId);
         setCurrentQuestionIndex(resp.data.quizProgress);
         if (resp.data.quizProgress > 0) {
           setShowAlert(true);
@@ -67,7 +67,7 @@ function Page() {
       }, 1000);
 
       const timer = setTimeout(() => {
-        router.replace("/tests");
+        router.replace("/tests/myResults");
       }, 5000);
 
       return () => {
