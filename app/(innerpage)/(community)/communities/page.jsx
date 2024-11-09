@@ -40,7 +40,7 @@ const CommunityList = () => {
       {loading ? (
         <AiOutlineLoading3Quarters className="animate-spin text-4xl text-orange-500" />
       ) : (
-        <div className="w-full grid gap-2 md:grid-cols-2">
+        <div className="w-full flex flex-col gap-2 justify-center items-center ">
           {posts.length > 0 ? (
             posts.map((post) => <PostComponent key={post.postId} post={post} />)
           ) : (
