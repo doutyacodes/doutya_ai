@@ -57,6 +57,7 @@ function Banner({
   };
 
   const isTest1Completed = getQuizStatus(1).isCompleted;
+  const isTest4Completed = getQuizStatus(4).isCompleted;
 
   if (loading) {
     return (
@@ -84,7 +85,7 @@ function Banner({
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        {(selectedAge < 6 || (selectedAge < 10 && quizId == 2)) && (
+        {((selectedAge < 3 && quizId==4) || selectedAge < 6 || (selectedAge < 10 && quizId == 2)) && (
           <div className="w-full h-full absolute bg-white/50 top-0 left-0" />
         )}
 
@@ -92,13 +93,13 @@ function Banner({
           {t("followCareer")}
         </h3>
         <div className="bg-orange-50 rounded-lg p-3 flex flex-col justify-between shadow-md">
-          {(selectedAge < 6 || (selectedAge < 10 && quizId == 2)) && (
+          {((selectedAge < 3 && quizId==4) || selectedAge < 6 || (selectedAge < 10 && quizId == 2)) && (
           <div className="absolute -top-5 left-0 z-[88888] w-full flex justify-center items-center h-full ">
             <div className=" w-full bg-[#167dc6] text-white p-5 rounded mb-3 flex items-center">
               <span className="text-lg font-bold text-center">
                 {selectedAge < 10 && quizId == 2
                   ? "Your child should be at least 10 years old to take the test"
-                  : selectedAge < 6 &&
+                  :(selectedAge < 3 && quizId==4)  ? "Your child should be at least 3 years old to take the test": selectedAge < 6 &&
                     "Your child should be at least 6 years old to take the test"}
               </span>
             </div>
@@ -155,7 +156,7 @@ function Banner({
       >
         {t("careerAssesment")}
       </motion.div>
-      {isTest1Completed && (selectedAge < 9 && selectedAge > 5) && redirect("/tests/myResults")}
+      {/* {isTest1Completed && (selectedAge < 9 && selectedAge > 5) && redirect("/tests/myResults")} */}
       <div className="p-4">
         <div className="mt-8 md:flex hidden md:flex-row justify-evenly gap-10 w-full">
           {!isTest1Completed &&
@@ -173,6 +174,14 @@ function Banner({
             "followCareer",
             "interestTestDescription",
             "/CareerQuizSection/2",
+            selectedAge
+          )}
+          {renderTestCard(
+            4,
+            "#FF7043, #FFB74D",
+            "followCareer",
+            "interestTestDescription",
+            "/quiz/knowledge-evaluation/4",
             selectedAge
           )}
         </div>
@@ -205,6 +214,16 @@ function Banner({
                 "followCareer",
                 "interestTestDescription",
                 "/CareerQuizSection/2",
+                selectedAge
+              )}
+            </SwiperSlide>
+            <SwiperSlide>
+              {renderTestCard(
+                4,
+                "#FF7043, #FFB74D",
+                "followCareer",
+                "interestTestDescription",
+                "/quiz/knowledge-evaluation/4",
                 selectedAge
               )}
             </SwiperSlide>

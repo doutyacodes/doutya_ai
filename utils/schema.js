@@ -1186,3 +1186,34 @@ export const USER_COURSE_PROGRESS = mysqlTable("user_course_progress", {
   enrolled_date: timestamp("enrolled_date").defaultNow(), // timestamp for when the course was enrolled
   completion_date: timestamp("completion_date").defaultNow().onUpdateNow(), // Timestamp for updates
 });
+
+export const COMMON_QUESTIONS = mysqlTable("common_questions", {
+  id: int("id").primaryKey().autoincrement(),
+  question: text("question").notNull(),
+  quiz_id: int("quiz_id").notNull(), // No foreign key relation specified
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+// Common Options Table
+export const COMMON_OPTIONS = mysqlTable("common_options", {
+  id: int("id").primaryKey().autoincrement(),
+  quiz_id: int("quiz_id").notNull(), // No foreign key relation specified
+  question_id: int("question_id").notNull(), // Should refer to `common_questions.id` if needed
+  option: text("option").notNull(),
+  option_letter: varchar("option_letter", { length: 1 }).default(null),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+// Children Progress Table
+export const CHILDREN_PROGRESS = mysqlTable("children_progress", {
+  id: int("id").primaryKey().autoincrement(),
+  child_id: int("child_id").notNull().references(() => CHILDREN.id), // Foreign key to CHILDREN table
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id), // Foreign key to USER_DETAILS table
+  question_id: int("question_id").notNull().references(() => COMMON_QUESTIONS.id), // Foreign key to COMMON_QUESTIONS table
+  option_id: int("option_id").notNull().references(() => COMMON_OPTIONS.id), // Foreign key to COMMON_OPTIONS table
+  option_letter: varchar("option_letter", { length: 1 }).default(null),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});

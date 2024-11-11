@@ -114,6 +114,20 @@ const GetQuizData = (id, token, selectedChildId) => {
     }
   );
 };
+const GetQuizData2 = (id, token, selectedChildId) => {
+  return axios.post(
+    `/api/getQuizData2`,
+    {
+      id: id,
+      childId: selectedChildId,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
 // const GetQuizData = async (data) => {
 //   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 //   return axios.post("/api/learn/quiz", data, {
@@ -248,11 +262,42 @@ const SaveQuizProgress = (data, quizId, selectedChildId) => {
   });
 };
 
+const SaveQuizProgress2 = (data, quizId, selectedChildId) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  const payload = {
+    quizId,
+    childId: selectedChildId,
+    results: data,
+  };
+  return axios.post(`/api/commonProgress`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 const SaveQuizResult = (selectedChildId) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
   return axios.post(
     "/api/quizResult",
+    {
+      childId: selectedChildId,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+const SaveQuizResult2 = (selectedChildId) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(
+    "/api/quizResult2",
     {
       childId: selectedChildId,
     },
@@ -456,12 +501,14 @@ export default {
   GetLearnTopics,
   GetLearnTopicsData,
   GetQuizData,
+  GetQuizData2,
   SubmitQuizAnswers,
   getChildBadges,
   getSingleBadge,
   GetDashboarCheck,
   SaveQuizProgress,
   SaveQuizResult,
+  SaveQuizResult2,
   SaveCarrerData,
   GetCarrerData,
   SaveInterestedCareer,
@@ -489,5 +536,6 @@ export default {
   SaveCareerQuizResult,
   GetIndustry,
   FetchActivities,
-  submitImage
+  submitImage,
+  SaveQuizProgress2
 };

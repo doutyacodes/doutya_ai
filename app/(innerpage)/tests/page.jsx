@@ -102,8 +102,8 @@ export default function Dashboard() {
           />
           <br />
           <br />
-          {showResults && <Results />}
-          {showQuiz2Results && redirect("/tests/careers/career-suggestions")}
+          {/* {showResults && <Results />} */}
+          {/* {showQuiz2Results && redirect("/tests/careers/career-suggestions")} */}
         </>
       )
     } 
