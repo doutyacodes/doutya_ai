@@ -5,7 +5,6 @@ import { useChildren } from "@/context/CreateContext";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import ChildSelector from "@/app/_components/ChildSelecter";
 
 const CourseList = () => {
@@ -45,38 +44,33 @@ const CourseList = () => {
   return (
     <div className="w-full min-h-screen p-8 bg-gradient-to-b from-orange-100 to-orange-50 flex flex-col items-center">
       <motion.h1
-        className="text-4xl font-bold mb-6 text-orange-700"
+        className="text-5xl font-extrabold mb-8 text-orange-600"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        Topics
+        Explore Topics
       </motion.h1>
 
-      {/* <div className="w-full flex justify-end items-center my-4 max-w-3xl">
-        <ChildSelector />
-      </div> */}
-
-      <div className="flex flex-wrap justify-center items-center gap-6 mb-8">
+      <div className="flex flex-wrap justify-center items-center gap-6 mb-10">
         <div className="flex items-center gap-2">
-          <label className="font-semibold text-orange-700">Filter by Type:</label>
+          <label className="font-semibold text-orange-700">Type:</label>
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="border rounded-lg px-3 py-2 shadow-md focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
             <option value="story">Story</option>
             <option value="poem">Poem</option>
-            <option value="bedtime story">Bedtime Story</option>
             <option value="podcast">Podcast</option>
             <option value="explanation">Explanation</option>
           </select>
         </div>
         <div className="flex items-center gap-2">
-          <label className="font-semibold text-orange-700">Sort By:</label>
+          <label className="font-semibold text-orange-700">Sort:</label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="border rounded px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="border rounded-lg px-3 py-2 shadow-md focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
             <option value="latest">Latest</option>
             <option value="oldest">Oldest</option>
@@ -85,14 +79,11 @@ const CourseList = () => {
       </div>
 
       {loading ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center text-xl h-[50vh] flex justify-center items-center"
-        >
-          <AiOutlineLoading3Quarters className="animate-spin text-5xl text-orange-700 mx-auto" />
-          Loading...
-        </motion.div>
+        <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 animate-pulse">
+          {[...Array(6)].map((_, index) => (
+            <div key={index} className="bg-gray-200 rounded-lg h-40"></div>
+          ))}
+        </div>
       ) : courses.length === 0 ? (
         <motion.p
           className="text-center text-orange-700 mt-16 text-lg"
@@ -110,13 +101,14 @@ const CourseList = () => {
           {courses.map((course) => (
             <motion.div
               key={course.id}
-              className="bg-white shadow-lg rounded-lg overflow-hidden transform transition-transform duration-300 cursor-pointer"
-              whileHover={{ scale: 1.05 }}
+              className="bg-white shadow-xl rounded-lg overflow-hidden transform transition duration-300 cursor-pointer hover:shadow-2xl hover:scale-105"
               onClick={() => router.push(`/topic/${course.slug}`)}
             >
               <div className="p-6">
-                <h2 className="text-xl font-semibold text-orange-600">{course.name}</h2>
-                <p className="text-orange-700 mt-2">{course.type}</p>
+                <h2 className="text-2xl font-semibold text-orange-600 mb-2">
+                  {course.name}
+                </h2>
+                <p className="text-orange-700">{course.type}</p>
               </div>
             </motion.div>
           ))}
@@ -127,18 +119,18 @@ const CourseList = () => {
         <button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
-          className={`px-4 py-2 bg-orange-500 text-white rounded-lg ${
+          className={`px-6 py-2 bg-orange-500 text-white rounded-lg ${
             page === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-orange-400"
-          } transition-colors duration-300`}
+          } transition duration-300 ease-in-out transform hover:scale-105`}
         >
           Previous
         </button>
         <button
           onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={page === totalPages}
-          className={`px-4 py-2 bg-orange-500 text-white rounded-lg ${
+          className={`px-6 py-2 bg-orange-500 text-white rounded-lg ${
             page === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-orange-400"
-          } transition-colors duration-300`}
+          } transition duration-300 ease-in-out transform hover:scale-105`}
         >
           Next
         </button>

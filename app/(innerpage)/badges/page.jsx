@@ -7,7 +7,6 @@ import Link from "next/link";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import { useChildren } from "@/context/CreateContext";
-import toast from "react-hot-toast";
 
 const Badges = () => {
   const [badgesData, setBadgesData] = useState(null);
@@ -46,23 +45,21 @@ const Badges = () => {
   };
 
   return (
-    <div className=" bg-gradient-to-br from-orange-50 to-orange-100 min-h-screen p-3 space-y-7">
+    <div className="bg-gradient-to-br from-orange-50 to-orange-100 min-h-screen p-5 space-y-10">
       <motion.div
         className="flex items-center justify-center flex-col gap-7"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <h4 className="text-center font-bold text-2xl underline-offset-1 underline text-gray-900">
-          Badge
+        <h4 className="text-center font-extrabold text-3xl text-gray-900 underline underline-offset-2">
+          Badges
         </h4>
       </motion.div>
 
-      <div>
-        <p className="text-gray-800 uppercase text-center font-semibold">
-          Earn this cool badge by completing all the challenges below!
-        </p>
-      </div>
+      <p className="text-gray-800 uppercase text-center font-semibold">
+        Earn badges by completing all the challenges below!
+      </p>
 
       {/* Render each badge group */}
       {Object.entries(groupedBadges).map(
@@ -76,7 +73,7 @@ const Badges = () => {
                   ? "Knowledge Badges"
                   : "Achievement Badges"}
               </h5>
-              <div className="grid md:grid-cols-4 grid-cols-2 gap-3">
+              <div className="grid md:grid-cols-4 grid-cols-2 gap-6">
                 {badges.map((badge, index) => (
                   <motion.div
                     className="flex items-center justify-center flex-col gap-3"
@@ -106,13 +103,7 @@ const Badges = () => {
                           />
                         </Link>
                       ) : (
-                        <button
-                          onClick={() =>
-                            toast.error(
-                              "You need to finish the task to earn the badge"
-                            )
-                          }
-                        >
+                        <div className="relative cursor-not-allowed">
                           <Image
                             src={`/images/${
                               badge.image || "default-badge.png"
@@ -120,9 +111,14 @@ const Badges = () => {
                             width={130}
                             height={130}
                             alt={badge.title}
-                            className="rounded-xl border-2 border-transparent hover:border-[#7824f6] transition-all"
+                            className="rounded-xl border-2 border-transparent opacity-60 filter blur-sm"
                           />
-                        </button>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <p className="text-sm text-white bg-black bg-opacity-60 px-2 py-1 rounded-md">
+                              Not Completed
+                            </p>
+                          </div>
+                        </div>
                       )}
                     </motion.div>
                     <h4 className="text-center font-bold text-lg uppercase text-gray-900">
