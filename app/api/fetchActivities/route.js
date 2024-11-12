@@ -19,7 +19,21 @@ export async function POST(req) {
       { status: 400 }
     );
   }
+  function calculateAge(dob) {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
 
+    // Adjust age if the birth date hasn't occurred yet this year
+    if (
+        today.getMonth() < birthDate.getMonth() ||
+        (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())
+    ) {
+        age--;
+    }
+
+    return age;
+}
   // Determine child ID and age if not provided
   let finalChildId = childId;
   let finalAge = age;
@@ -40,6 +54,7 @@ export async function POST(req) {
         { status: 404 }
       );
     }
+    finalAge = calculateAge(finalAge)
   }
 
   try {

@@ -3,34 +3,62 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
+import { format } from "date-fns";
 import { toast, Toaster } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Calendar } from "@/components/ui/calendar"; // Import Calendar
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import GlobalApi from "@/app/api/_services/GlobalApi";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import jwt from "jsonwebtoken"; // Import jwt
+import jwt from "jsonwebtoken";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Define Zod schema for validation
 const childSchema = z.object({
   name: z.string().min(1, { message: "Child's name is required." }),
-  gender: z.enum(['male', 'female', 'other'], { message: "Select a gender." }),
+  gender: z.enum(["male", "female", "other"], { message: "Select a gender." }),
   age: z.any()
-// Age must be between 2 and 10
 });
 
-const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  username: z.string().min(2, { message: "Username must be at least 2 characters." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-  confirmPassword: z.string().min(6, { message: "Please confirm your password." }),
-  mobile: z.string().regex(/^\d{10}$/, { message: "Mobile number must be 10 digits." }),
-  children: z.array(childSchema).min(1, { message: "At least one child is required." }), // At least one child
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match.",
-  path: ["confirmPassword"],
-});
+const formSchema = z
+  .object({
+    name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+    username: z
+      .string()
+      .min(2, { message: "Username must be at least 2 characters." }),
+    password: z
+      .string()
+      .min(6, { message: "Password must be at least 6 characters." }),
+    confirmPassword: z
+      .string()
+      .min(6, { message: "Please confirm your password." }),
+    mobile: z
+      .string()
+      .regex(/^\d{10}$/, { message: "Mobile number must be 10 digits." }),
+    children: z
+      .array(childSchema)
+      .min(1, { message: "At least one child is required." }),
+    dob: z.any(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
 
 export function Signup() {
   const form = useForm({
@@ -41,7 +69,7 @@ export function Signup() {
       password: "",
       confirmPassword: "",
       mobile: "",
-      children: [{ name: "", gender: 'male', age: 2 }], // Default child with minimum age
+      children: [{ name: "", gender: "male", age: new Date() }],
     },
   });
 
@@ -53,14 +81,12 @@ export function Signup() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("token"); // Check local storage for the token
+    const token = localStorage.getItem("token");
     if (token) {
       try {
-        // Verify the token (ensure it's valid and not expired)
-        const decoded = jwt.decode(token); // Decode without verifying for client-side check
+        const decoded = jwt.decode(token);
         if (decoded) {
-          // User is logged in, redirect to the desired page (e.g., homepage)
-          router.push("/"); // Redirect to home or another page
+          router.push("/");
         }
       } catch (error) {
         console.error("Invalid token", error);
@@ -70,7 +96,6 @@ export function Signup() {
 
   const onSubmit = async (data) => {
     try {
-      // Call SignUpUser from GlobalApi and wait for response
       const response = await GlobalApi.SignUpUser(data);
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
@@ -78,9 +103,9 @@ export function Signup() {
       }
       toast.success("Account created successfully!");
     } catch (error) {
-      // Display error toast with the error message
       toast.error(
-        error.response?.data?.message || "Failed to create account. Please try again."
+        error.response?.data?.message ||
+          "Failed to create account. Please try again."
       );
     }
   };
@@ -93,96 +118,193 @@ export function Signup() {
         <p className="text-center mb-6">Create an account to get started</p>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField control={form.control} name="name" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Full Name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            {/* Other Fields */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Full Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <FormField control={form.control} name="username" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input placeholder="yourusername" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="yourusername" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <FormField control={form.control} name="password" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="Your password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Your password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <FormField control={form.control} name="confirmPassword" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="Confirm your password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Confirm your password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <FormField control={form.control} name="mobile" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Mobile</FormLabel>
-                <FormControl>
-                  <Input placeholder="1234567890" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-
+            <FormField
+              control={form.control}
+              name="mobile"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Mobile</FormLabel>
+                  <FormControl>
+                    <Input placeholder="1234567890" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             {/* Children Fields */}
             <div>
               <h2 className="text-xl font-semibold mb-4">Children</h2>
               {fields.map((field, index) => (
                 <div key={field.id} className="mb-4">
-                  <FormField control={form.control} name={`children.${index}.name`} render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Child&apos;s Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Child's Name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name={`children.${index}.gender`} render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Gender</FormLabel>
-                      <FormControl>
-                        <select {...field} className="w-full border rounded p-2 bg-white">
-                          <option value="male">Male</option>
-                          <option value="female">Female</option>
-                          <option value="other">Other</option>
-                        </select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name={`children.${index}.age`} render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Age</FormLabel>
-                      <FormControl>
-                        <Input type="number" min={2} max={12} placeholder="Child's Age" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <Button type="button" onClick={() => remove(index)} variant="outline" className="mt-2">Remove Child</Button>
+                  <FormField
+                    control={form.control}
+                    name={`children.${index}.name`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Child's Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Child's Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`children.${index}.gender`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <FormControl>
+                          <select
+                            {...field}
+                            className="w-full border rounded p-2 bg-white"
+                          >
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                          </select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`children.${index}.age`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date of Birth</FormLabel>
+                        <br />
+                        {/* <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-[240px] pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date > new Date() ||
+                                date < new Date("1900-01-01")
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover> */}
+                        <input
+                          type="date"
+                          value={form.value}
+                          placeholder="Enter your Date of Birth"
+                          onChange={field.onChange}
+                          max={new Date().toISOString().split("T")[0]}
+                          className="mt-1 block w-full min-w-72 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          required
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {index != 0 && (
+                    <Button
+                      type="button"
+                      onClick={() => remove(index)}
+                      variant="outline"
+                      className="mt-2"
+                    >
+                      Remove Child
+                    </Button>
+                  )}
                 </div>
               ))}
-              <Button type="button" onClick={() => append({ name: "", gender: 'male', age: 2 })} className="mt-4">
+              <Button
+                type="button"
+                onClick={() =>
+                  append({ name: "", gender: "male", age: new Date() })
+                }
+                className="mt-4"
+              >
                 Add Another Child
               </Button>
             </div>

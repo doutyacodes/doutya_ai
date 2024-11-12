@@ -22,7 +22,21 @@ export async function POST(req) {
   const { age } = await req.json();
 
   let finalAge = age;
+  function calculateAge(dob) {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
 
+    // Adjust age if the birth date hasn't occurred yet this year
+    if (
+        today.getMonth() < birthDate.getMonth() ||
+        (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())
+    ) {
+        age--;
+    }
+
+    return age;
+}
   if (!age) {
     const firstChild = await db
       .select()
@@ -39,6 +53,7 @@ export async function POST(req) {
         { status: 404 }
       );
     }
+    finalAge =calculateAge(finalAge)
   }
 
   const existing_kids_community = await db

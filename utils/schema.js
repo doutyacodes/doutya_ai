@@ -81,7 +81,7 @@ export const CHILDREN = mysqlTable("children", {
   user_id: int("user_id").references(() => USER_DETAILS.id), // Foreign key referencing the user
   name: varchar("name", { length: 255 }).notNull(),
   gender: mysqlEnum("gender", ["male", "female", "other"]).notNull(), // Enum for gender
-  age: int("age").notNull(),
+  age: date("age").notNull(),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });

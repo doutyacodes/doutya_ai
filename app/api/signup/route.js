@@ -49,11 +49,12 @@ export async function POST(req) {
 
     // Insert children into the database
     for (const child of children) {
+      const dob = new Date(child.age).toISOString().split('T')[0];
       await db.insert(CHILDREN).values({
         user_id: newUser[0].insertId, // Assuming CHILDREN has a user_id foreign key
         name: child.name,
         gender: child.gender,
-        age: child.age,
+        age: dob,
       });
     }
 
