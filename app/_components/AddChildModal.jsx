@@ -8,25 +8,35 @@ import toast from "react-hot-toast";
 const AddChildModal = () => {
   const [newChildName, setNewChildName] = useState("");
   const [newChildGender, setNewChildGender] = useState("");
-  const [newChildAge, setNewChildAge] = useState("");
+  const [newChildAge, setNewChildAge] = useState(""); // This now represents the date of birth
   const { updateChildrenData, selectChild } = useChildren();
 
   const handleAddChild = async () => {
-    if (newChildAge < 2 || newChildAge > 12) {
-      toast.error("Age must be between 2 and 12.");
-      return;
-    }
-
-    if (!newChildName || !newChildGender) {
+    if (!newChildName || !newChildGender || !newChildAge) {
       toast.error("Please fill all the fields to continue.");
       return;
     }
 
+    // Calculate the child's age from the selected date
+    const today = new Date();
+    const birthDate = new Date(newChildAge);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    if (age < 2 || age > 12) {
+      toast.error("Age must be between 2 and 12.");
+      return;
+    }
+    const formattedDate = new Date(newChildAge).toISOString().split("T")[0];
     try {
       await GlobalApi.AddChild({
         name: newChildName,
         gender: newChildGender,
-        age: parseInt(newChildAge),
+        age: formattedDate, // Send the date of birth directly
       });
 
       toast.success("Child created successfully");
@@ -36,7 +46,6 @@ const AddChildModal = () => {
       const response = await GlobalApi.GetUserChildren();
       updateChildrenData(response.data.data);
       selectChild(response.data.data[0].id);
-      // selectChildAge(response.data.data[0].age);
     } catch (error) {
       console.error("Failed to add child", error);
       toast.error("Failed to add child. Please try again.");
@@ -81,9 +90,9 @@ const AddChildModal = () => {
           </select>
         </div>
         <div className="mb-6">
-          <label className="block text-sm font-medium mb-1">Child&apos;s Age</label>
+          <label className="block text-sm font-medium mb-1">Child&apos;s Date of Birth</label>
           <input
-            type="number"
+            type="date"
             value={newChildAge}
             onChange={(e) => setNewChildAge(e.target.value)}
             className="border rounded-md p-2 w-full"

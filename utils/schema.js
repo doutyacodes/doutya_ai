@@ -40,6 +40,7 @@ export const COURSES = mysqlTable("courses", {
   label: text("label").notNull().default(""),
   created_at: timestamp("created_at").defaultNow(),
   age: int("age").notNull(),
+  weeks: int("weeks").notNull(),
   slug: text("slug").notNull().default(""),
   user_id: int("user_id").references(() => USER_DETAILS.id), // Foreign key referencing the user
   child_id: int("child_id").references(() => CHILDREN.id), // Foreign key referencing the child
@@ -1213,6 +1214,27 @@ export const CHILDREN_PROGRESS = mysqlTable("children_progress", {
   user_id: int("user_id").notNull().references(() => USER_DETAILS.id), // Foreign key to USER_DETAILS table
   question_id: int("question_id").notNull().references(() => COMMON_QUESTIONS.id), // Foreign key to COMMON_QUESTIONS table
   option_id: int("option_id").notNull().references(() => COMMON_OPTIONS.id), // Foreign key to COMMON_OPTIONS table
+  option_letter: varchar("option_letter", { length: 1 }).default(null),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const KNOWLEDGE_QUESTIONS = mysqlTable("knowledge_questions", {
+  id: int("id").primaryKey().autoincrement(),
+  question: text("question").notNull(),
+  quiz_id: int("quiz_id").notNull(), // No foreign key relation specified
+  age_years: int("age_years"), // Column to store age in years
+  age_weeks: int("age_weeks"), // Column to store age in weeks
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+// Common Options Table
+export const KNOWLEDGE_OPTIONS = mysqlTable("knowledge_options", {
+  id: int("id").primaryKey().autoincrement(),
+  quiz_id: int("quiz_id").notNull(), // No foreign key relation specified
+  question_id: int("question_id").notNull(), // Should refer to `common_questions.id` if needed
+  option: text("option").notNull(),
   option_letter: varchar("option_letter", { length: 1 }).default(null),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),

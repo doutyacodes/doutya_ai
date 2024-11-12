@@ -3,6 +3,7 @@ import { CHILDREN } from "@/utils/schema";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { authenticate } from "@/lib/jwtMiddleware";
+import { calculateAgeAndWeeks } from "@/app/hooks/CalculateAgeWeek";
 
 export async function GET(req) {
     const authResult = await authenticate(req);
@@ -26,6 +27,9 @@ export async function GET(req) {
     
         return age;
     }
+  
+    
+    
     try {
         const children = await db
             .select()
@@ -35,7 +39,10 @@ export async function GET(req) {
 
             const childrenWithAge = children.map(child => {
                 const age = calculateAge(child.age); // Call the function here to calculate the age
-                return { ...child, age }; // Add the calculated age to each child object
+                const dob = child.age;
+                const weekData = calculateAgeAndWeeks(child.age);
+                const weeks = weekData.weeks;
+                return { ...child, age ,dob,weeks}; // Add the calculated age to each child object
             });
 
         return NextResponse.json({ data: childrenWithAge });

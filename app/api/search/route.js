@@ -5,6 +5,7 @@ import { db } from "@/utils";
 import { generateUniqueSlug } from "@/lib/utils";
 import { authenticate } from "@/lib/jwtMiddleware";
 import { and, eq } from "drizzle-orm";
+import { calculateAgeAndWeeks } from "@/app/hooks/CalculateAgeWeek";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
@@ -21,14 +22,46 @@ export async function POST(request) {
       courseName,
       language,
       difficulty,
-      age,
+      ages,
       type,
       childId,
+      weekData,
       label,
       genre,
     } = await request.json();
-
+// console.log("weeks",weeks)
     // Basic validation
+
+    let finalChildId = childId;
+    let age = ages;
+    let weeks = weekData;
+    if(userId)
+    {
+
+      if (!childId || !weeks) {
+        const firstChild = await db
+          .select()
+          .from(CHILDREN)
+          .where(eq(CHILDREN.user_id, userId))
+          .limit(1)
+          .execute();
+    
+        if (firstChild.length > 0) {
+          
+          const  weekDatas = calculateAgeAndWeeks(firstChild[0].age)
+          // console.log("weeks",weekDatas.weeks)
+          finalChildId = firstChild[0].id; // Assuming 'id' is the identifier for CHILDREN
+          weeks = weekDatas.weeks;
+          age = weekDatas.age;
+        } else {
+          return NextResponse.json(
+            { error: "No children found for the user." },
+            { status: 404 }
+          );
+        }
+      }
+    }
+
     if (
       ![courseName, language, difficulty, age].every((field) =>
         field?.toString().trim()
@@ -39,7 +72,7 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-
+    
     // Check for existing course
     const existingCourse = await db
       .select()
@@ -50,6 +83,7 @@ export async function POST(request) {
           eq(COURSES.age, age),
           eq(COURSES.language, language),
           eq(COURSES.type, type),
+          eq(COURSES.weeks, weeks),
           type == "story" && type == "story" && eq(COURSES.genre, genre)
         )
       );
@@ -203,7 +237,8 @@ export async function POST(request) {
       age,
       type,
       genre,
-      label
+      label,
+      weeks
     );
     let chatGptResponse;
 
@@ -258,28 +293,7 @@ export async function POST(request) {
         { status: 500 }
       );
     }
-    let finalChildId = childId;
-    if(userId)
-    {
-
-      if (!childId) {
-        const firstChild = await db
-          .select()
-          .from(CHILDREN)
-          .where(eq(CHILDREN.user_id, userId))
-          .limit(1)
-          .execute();
     
-        if (firstChild.length > 0) {
-          finalChildId = firstChild[0].id; // Assuming 'id' is the identifier for CHILDREN
-        } else {
-          return NextResponse.json(
-            { error: "No children found for the user." },
-            { status: 404 }
-          );
-        }
-      }
-    }
 
     // Insert the new course into the database
     const courseInsert = await db.insert(COURSES).values({
@@ -287,6 +301,7 @@ export async function POST(request) {
       language,
       difficulty,
       age,
+      weeks,
       slug: generateUniqueSlug(),
       type,
       genre,
@@ -338,7 +353,8 @@ function generatePrompt(
   age,
   type,
   genre,
-  label
+  label,
+  weeks
 ) {
   if (
     ["story", "bedtime story", "poem", "informative story", "podcast"].includes(
@@ -348,7 +364,7 @@ function generatePrompt(
     return `
       Create a JSON object for a ${
         type === "poem" ? "poem" : type == "podcast" ? "transcript" : type
-      } on the topic of "${courseName}" in "${language}" for readers ${age} years old.
+      } on the topic of "${courseName}" in "${language}" for readers ${age} years and ${weeks} old.
       The ${type} should be engaging and age-appropriate${
       type == "informative story" &&
       " with the history and relevant facts about the topic"
@@ -367,6 +383,7 @@ function generatePrompt(
       "genre": "${genre}",
       "label": "${label}",
       "age": ${age},
+      "weeks": ${weeks},
       "type": ${type},
       "activities":{
           "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which can take picture and upload",
@@ -392,6 +409,7 @@ function generatePrompt(
       "language": "${language}",
       "difficulty": "${difficulty}",
       "age": ${age},
+      "weeks": ${weeks},
       "type": ${type},
       "activities":{
           "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
@@ -408,7 +426,7 @@ function generatePrompt(
   }
   if (["explanation"].includes(type)) {
     return `
-      Create a JSON object for an explanation on the topic of "${courseName}" in "${language}" for readers ${age} years old.
+      Create a JSON object for an explanation on the topic of "${courseName}" in "${language}" for readers ${age} years and ${weeks} old.
       The ${type} should be age-appropriate.
       
       Structure:
@@ -416,6 +434,7 @@ function generatePrompt(
       "language": "${language}",
       "difficulty": "${difficulty}",
       "age": ${age},
+      "weeks": ${weeks},
       "type": ${type},
       "activities":{
           "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
@@ -441,7 +460,7 @@ function generatePrompt(
 
   if (type == "presentation") {
     return `
-      Generate a detailed and comprehensive JSON object for a presentation on the topic of "${courseName}", written in "${language}" and tailored to a "${difficulty}" level for a reader ${age} years old.
+      Generate a detailed and comprehensive JSON object for a presentation on the topic of "${courseName}", written in "${language}" and tailored to a "${difficulty}" level for a reader ${age} years and ${weeks} old.
       The presentation should dynamically generate slides relevant to "${courseName}", with each slide tailored to provide a clear and engaging understanding of the subject. The presentation should contain at least 12 slides. Include relevant image suggestions and supporting materials wherever applicable.
   
       JSON Structure Example:
@@ -450,6 +469,7 @@ function generatePrompt(
         "language": "${language}",
         "difficulty": "${difficulty}",
         "age": ${age},
+        "weeks": ${weeks},
         "type": "${type}",
         "activities":{
           "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
@@ -478,7 +498,7 @@ function generatePrompt(
 
   if (type == "course") {
     return `
-     Generate a detailed and comprehensive JSON object for a course on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader ${age} years old.
+     Generate a detailed and comprehensive JSON object for a course on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader ${age} years and ${weeks} old.
     The ${type} should dynamically generate modules and subtopics relevant to "${courseName}", with each modules and subtopics tailored to provide a clear and engaging understanding of the subject. 
     Structure the ${type} in JSON format with an "introduction," a "body" containing "sections" and dynamically generated "subtopics" based on the modules's depth, and a "conclusion" to summarize key points.Ensure that the number of subtopics generated is not fixed for each module content. 
     
@@ -488,6 +508,7 @@ function generatePrompt(
       "language": "${language}",
       "difficulty": "${difficulty}",
       "age": ${age},
+      "weeks": ${weeks},
       "type": ${type},
       "activities":{
           "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
@@ -521,7 +542,7 @@ function generatePrompt(
   return `
     Generate a detailed and comprehensive JSON object for ${
       type == "essay" ? "an " + type : "a " + type
-    } on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader ${age} years old, making the tone age-appropriate and ${
+    } on the topic of "${courseName}," written in "${language}" and tailored to a "${difficulty}" level for a reader ${age} years and ${weeks} old, making the tone age-appropriate and ${
     age <= 8
       ? "playful and fun, often using exclamations or questions"
       : age <= 12

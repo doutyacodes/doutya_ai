@@ -35,7 +35,7 @@ const Home = () => {
   const [base64Image, setBase64Image] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
-  const { selectedChildId, selectedAge } = useChildren(); // Accessing selected child ID from context
+  const { selectedChildId, selectedAge,selectedWeeks } = useChildren(); // Accessing selected child ID from context
   const { isAuthenticated, loading, logout } = useAuth();
   const [image, setImage] = useState(null);
   const [file, setFile] = useState(null); // Track the uploaded file
@@ -99,7 +99,8 @@ const Home = () => {
           type === "story" && genre ? genre.label1 + " " + genre.label : null,
         genre: type === "story" && genre ? genre.value : null,
         difficulty,
-        age: isAuthenticated ? selectedAge : age,
+        ages: isAuthenticated ? selectedAge : age,
+        weekData: isAuthenticated ? selectedWeeks : 1,
         type,
         childId: selectedChildId || null, // Pass selected child ID
       });
