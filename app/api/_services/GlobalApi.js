@@ -114,6 +114,22 @@ const GetQuizData = (id, token, selectedChildId) => {
     }
   );
 };
+const GetQuizData3 = (id, token, selectedChildId, selectedAge,selectedWeeks ) => {
+  return axios.post(
+    `/api/GetQuizData3`,
+    {
+      id: id,
+      childId: selectedChildId,
+      ages: selectedAge,
+      weekData: selectedWeeks,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
 const GetQuizData2 = (id, token, selectedChildId) => {
   return axios.post(
     `/api/getQuizData2`,
@@ -231,13 +247,15 @@ const getPostBySlug = async (data) => {
   });
 };
 
-const GetDashboarCheck = (selectedChildId) => {
+const GetDashboarCheck = (selectedChildId,selectedAge,selectedWeeks) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
   return axios.post(
     `/api/getDashboardCheckData`,
     {
       childId: selectedChildId,
+      ages: selectedAge,
+      weeks: selectedWeeks,
     },
     {
       headers: {
@@ -256,6 +274,23 @@ const SaveQuizProgress = (data, quizId, selectedChildId) => {
     results: data,
   };
   return axios.post(`/api/quizProgress`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+const SaveQuizProgress3 = (data, quizId, selectedChildId,selectedWeeks,selectedAge) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  const payload = {
+    quizId,
+    childId: selectedChildId,
+    results: data,
+    ages: selectedAge,
+      weekData: selectedWeeks,
+  };
+  return axios.post(`/api/quizProgress3`, payload, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -284,6 +319,24 @@ const SaveQuizResult = (selectedChildId) => {
     "/api/quizResult",
     {
       childId: selectedChildId,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+const SaveQuizResult3 = (selectedChildId,datatoken,selectedAge,selectedWeeks) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(
+    "/api/quizResult3",
+    {
+      childId: selectedChildId,
+      ages: selectedAge,
+      weekData: selectedWeeks,
     },
     {
       headers: {
@@ -502,11 +555,14 @@ export default {
   GetLearnTopicsData,
   GetQuizData,
   GetQuizData2,
+  GetQuizData3,
+  SaveQuizResult3,
   SubmitQuizAnswers,
   getChildBadges,
   getSingleBadge,
   GetDashboarCheck,
   SaveQuizProgress,
+  SaveQuizProgress3,
   SaveQuizResult,
   SaveQuizResult2,
   SaveCarrerData,

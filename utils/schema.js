@@ -527,6 +527,8 @@ export const QUIZ_SEQUENCES = mysqlTable("quiz_sequences", {
   id: int("id").primaryKey().autoincrement(),
   type_sequence: text("type_sequence").notNull().default(""),
   user_id: int("user_id").notNull(),
+  age: int("age"),
+  weeks: int("weeks"),
   quiz_id: int("quiz_id").notNull(), // New column for quiz identification
   createddate: datetime("createddate").notNull(),
   isCompleted: boolean("isCompleted").notNull().default(false), // New boolean column
@@ -1215,6 +1217,7 @@ export const CHILDREN_PROGRESS = mysqlTable("children_progress", {
   question_id: int("question_id").notNull().references(() => COMMON_QUESTIONS.id), // Foreign key to COMMON_QUESTIONS table
   option_id: int("option_id").notNull().references(() => COMMON_OPTIONS.id), // Foreign key to COMMON_OPTIONS table
   option_letter: varchar("option_letter", { length: 1 }).default(null),
+  quiz_id: int("quiz_id").notNull(), // New column for quiz identification
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
@@ -1222,12 +1225,14 @@ export const CHILDREN_PROGRESS = mysqlTable("children_progress", {
 export const KNOWLEDGE_QUESTIONS = mysqlTable("knowledge_questions", {
   id: int("id").primaryKey().autoincrement(),
   question: text("question").notNull(),
-  quiz_id: int("quiz_id").notNull(), // No foreign key relation specified
+  quiz_id: int("quiz_id").notNull(), // New column for quiz identification
+  subject: varchar("subject", 250).notNull(), // New column for subject with a length of 250
   age_years: int("age_years"), // Column to store age in years
   age_weeks: int("age_weeks"), // Column to store age in weeks
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
+
 
 // Common Options Table
 export const KNOWLEDGE_OPTIONS = mysqlTable("knowledge_options", {
@@ -1235,7 +1240,21 @@ export const KNOWLEDGE_OPTIONS = mysqlTable("knowledge_options", {
   quiz_id: int("quiz_id").notNull(), // No foreign key relation specified
   question_id: int("question_id").notNull(), // Should refer to `common_questions.id` if needed
   option: text("option").notNull(),
-  option_letter: varchar("option_letter", { length: 1 }).default(null),
+  isAnswer: varchar("isAnswer", 8).notNull().default("no"), // New field to specify if this option is the answer
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
+export const KNOWLEDGE_PROGRESS = mysqlTable("knowledge_progress", {
+  id: int("id").primaryKey().autoincrement(),
+  quiz_id: int("quiz_id").notNull().default(5), // Default quiz_id is set to 5
+  question_id: int("question_id").notNull().references(() => KNOWLEDGE_QUESTIONS.id), // References `knowledge_questions` table
+  child_id: int("child_id").notNull().references(() => CHILDREN.id), // Foreign key to CHILDREN table
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id), // Foreign key to USER_DETAILS table
+  age_years: int("age_years").notNull(), // Stores the age in years
+  age_weeks: int("age_weeks").notNull(), // Stores additional age in weeks
+  answered_option_id: int("answered_option_id").references(() => KNOWLEDGE_OPTIONS.id), // References the chosen option in `knowledge_options`
+  is_correct: boolean("is_correct").notNull().default(false), // Indicates if the answer was correct
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
