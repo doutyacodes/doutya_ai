@@ -66,51 +66,57 @@ const Learn = () => {
           to earn the badge.
         </p>
       </div>
-      <div className="grid md:grid-cols-3 grid-cols-2 gap-5">
+      <div className="grid  grid-cols-2 gap-5">
         {learnData?.length > 0 &&
-          learnData.map((item, index) => (
-            <motion.div
-              className="flex items-center justify-center flex-col gap-3 p-4 bg-white rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105"
-              key={item.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.6,
-                ease: "easeOut",
-                delay: index * 0.1, // Staggered effect
-              }}
-            >
+          learnData.map((item, index) => {
+            if(
+              item.title=="Stars"
+            ){
+              return;
+            }else{return (
               <motion.div
-                whileHover={{ scale: 1.1 }}
-                transition={{ duration: 0.3 }}
+                className="flex items-center justify-center flex-col gap-3 p-4 bg-white rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105"
+                key={item.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.6,
+                  ease: "easeOut",
+                  delay: index * 0.1, // Staggered effect
+                }}
               >
-                {isAuthenticated ? (
-                  <Link href={`learn/${item.slug}`}>
-                    <Image
-                      src={`/images/${item.image}`}
-                      width={100}
-                      height={100}
-                      alt={item.title}
-                      className="rounded-lg shadow-md"
-                    />
-                  </Link>
-                ) : (
-                  <Link href={`/login`}>
-                    <Image
-                      src={`/images/${item.image}`}
-                      width={100}
-                      height={100}
-                      alt={item.title}
-                      className="rounded-lg shadow-md"
-                    />
-                  </Link>
-                )}
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {isAuthenticated ? (
+                    <Link href={`learn/${item.slug}`}>
+                      <Image
+                        src={`/images/${item.image}`}
+                        width={100}
+                        height={100}
+                        alt={item.title}
+                        className="rounded-lg shadow-md"
+                      />
+                    </Link>
+                  ) : (
+                    <Link href={`/login`}>
+                      <Image
+                        src={`/images/${item.image}`}
+                        width={100}
+                        height={100}
+                        alt={item.title}
+                        className="rounded-lg shadow-md"
+                      />
+                    </Link>
+                  )}
+                </motion.div>
+                <h4 className="text-center font-bold text-lg uppercase text-orange-700">
+                  {item.title}
+                </h4>
               </motion.div>
-              <h4 className="text-center font-bold text-lg uppercase text-orange-700">
-                {item.title}
-              </h4>
-            </motion.div>
-          ))}
+            )}
+          })}
       </div>
     </div>
   );

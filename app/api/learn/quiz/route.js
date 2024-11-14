@@ -1,7 +1,7 @@
 // app/api/quiz-section/route.js
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { LEARN_TOPICS, QUESTIONS, USER_PROGRESS, OPTIONS } from "@/utils/schema"; // Ensure the relevant schemas are imported
+import { LEARN_TOPICS, QUESTIONS, USER_PROGRESS, OPTIONS2 } from "@/utils/schema"; // Ensure the relevant schemas are imported
 import { authenticate } from "@/lib/jwtMiddleware";
 import { eq } from "drizzle-orm";
 
@@ -47,8 +47,8 @@ export async function POST(req) {
         questions.map(async (question) => {
           const options = await db
             .select()
-            .from(OPTIONS)
-            .where(eq(OPTIONS.question_id, question.id))
+            .from(OPTIONS2)
+            .where(eq(OPTIONS2.question_id, question.id))
             .execute();
   
           return {

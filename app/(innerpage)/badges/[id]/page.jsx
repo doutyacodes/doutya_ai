@@ -101,7 +101,7 @@ const Page = () => {
                 This badge was awarded to{" "}
                 <span className="underline font-bold">{selectedChild.name}</span>, for
                 successfully completing{" "}
-                <span className="font-bold">{badgeData.condition}</span> on Doutya Kids, on {formatDateToDDMMYYYY(badgeData.earned_at)}
+                <span className="font-bold">{badgeData.condition}</span> on Axara, on {formatDateToDDMMYYYY(badgeData.earned_at)}
                 <span className="font-bold">{badgeData.completionDate}</span>
               </>
             ) : (
