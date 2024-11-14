@@ -206,7 +206,7 @@ export function Signup() {
                     name={`children.${index}.name`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Child's Name</FormLabel>
+                        <FormLabel>Child Name</FormLabel>
                         <FormControl>
                           <Input placeholder="Child's Name" {...field} />
                         </FormControl>
