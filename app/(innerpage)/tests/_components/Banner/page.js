@@ -87,7 +87,7 @@ function Banner({
     return (
       <motion.div
         className={cn("pt-3 p-[1px] rounded-lg w-full  relative flex-1 h-full")}
-        style={{ backgroundImage: `linear-gradient(to right, ${gradient})` }}
+        style={{ backgroundColor: `${gradient}` }}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
@@ -193,10 +193,10 @@ function Banner({
       </motion.div>
 
       <div className="p-4">
-        <div className="mt-8 hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+        <div className="mt-8 hidden md:grid md:grid-cols-2  gap-6 w-full">
           {renderTestCard(
             1,
-            "#FFA500, #FFCC80",
+            "#9bcc61",
             "findStrength",
             "personalityTestDescription",
             isTest1Completed ? "/tests/myResults" : "/quiz-section/1",
@@ -204,7 +204,7 @@ function Banner({
           )}
           {renderTestCard(
             2,
-            "#FF7043, #FFB74D",
+            "#9bc9ff",
             "followCareer",
             "interestTestDescription",
             isTest2Completed
@@ -216,7 +216,7 @@ function Banner({
           )}
           {renderTestCard(
             4,
-            "#FF7043, #FFB74D",
+            "#ffb1cc",
             " Learning Style",
             "ake this fun and insightful test to determine the best way your child learns. Whether they’re a visual, auditory, or kinesthetic learner, understanding their learning style can help tailor educational approaches for better engagement and success.",
             isTest4Completed
@@ -227,7 +227,7 @@ function Banner({
           )}
           {renderTestCard(
             5,
-            "#FF7043, #FFB74D",
+            "#c8bbff",
             "Knowledge Evaluation Test",
             "The Knowledge Evaluation Test is a personalized quiz designed to assess a child's understanding and learning progress based on their age and developmental stage. It features a series of questions across various subjects, and it evaluates the child’s ability to process information, make decisions, and apply knowledge in a fun and interactive format.",
             "/knowledge-evaluation",
@@ -248,7 +248,7 @@ function Banner({
             <SwiperSlide>
               {renderTestCard(
                 1,
-                "#FFA500, #FFCC80",
+                "#9bcc61",
                 "findStrength",
                 "personalityTestDescription",
                 isTest1Completed ? "/tests/myResults" : "/quiz-section/1",
@@ -258,7 +258,7 @@ function Banner({
             <SwiperSlide>
               {renderTestCard(
                 2,
-                "#FF7043, #FFB74D",
+                "#9bc9ff",
                 "followCareer",
                 "interestTestDescription",
                 isTest2Completed
@@ -272,7 +272,7 @@ function Banner({
             <SwiperSlide>
               {renderTestCard(
                 4,
-                "#FF7043, #FFB74D",
+                "#ffb1cc",
                 " Learning Style",
                 "ake this fun and insightful test to determine the best way your child learns. Whether they’re a visual, auditory, or kinesthetic learner, understanding their learning style can help tailor educational approaches for better engagement and success.",
                 isTest4Completed
@@ -285,7 +285,7 @@ function Banner({
             <SwiperSlide>
               {renderTestCard(
                 5,
-                "#FF7043, #FFB74D",
+                "#c8bbff",
                 "Knowledge Evaluation Test",
                 "The Knowledge Evaluation Test is a personalized quiz designed to assess a child's understanding and learning progress based on their age and developmental stage. It features a series of questions across various subjects, and it evaluates the child’s ability to process information, make decisions, and apply knowledge in a fun and interactive format.",
                 "/knowledge-evaluation",

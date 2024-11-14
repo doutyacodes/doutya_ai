@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 export default function Features() {
   const features = [
@@ -83,6 +84,15 @@ export default function Features() {
       iconPath: "M19 11l-7-7-7 7",
     },
   ];
+  const [collapsedStates, setCollapsedStates] = useState(
+    features.map(() => true) // All features initially collapsed
+  );
+
+  const toggleCollapse = (index) => {
+    setCollapsedStates((prevStates) =>
+      prevStates.map((state, i) => (i === index ? !state : state))
+    );
+  };
 
   return (
     <section id="features" className="py-16 px-4 bg-white">
@@ -103,9 +113,10 @@ export default function Features() {
               animate={{ opacity: 1, y: 0 }}
               transition={{
                 duration: 0.6,
-                delay: index * 0.1, // Staggered animation effect
+                delay: index * 0.1,
               }}
-              className="bg-orange-100 p-6 rounded-lg shadow-lg transform hover:scale-105 transition-transform"
+              className="bg-orange-100 p-6 rounded-lg shadow-lg transform hover:scale-105 transition-transform cursor-pointer"
+              onClick={() => toggleCollapse(index)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -122,8 +133,20 @@ export default function Features() {
                   d={feature.iconPath}
                 />
               </svg>
-              <h3 className="text-xl font-semibold mt-4 text-gray-800">{feature.title}</h3>
-              <p className="mt-2 text-gray-600">{feature.description}</p>
+              <h3 className="text-xl font-semibold mt-4 text-gray-800">
+                {feature.title}
+              </h3>
+              {/* Show description based on collapse state */}
+              {!collapsedStates[index] && (
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-2 text-gray-600"
+                >
+                  {feature.description}
+                </motion.p>
+              )}
             </motion.div>
           ))}
         </div>
