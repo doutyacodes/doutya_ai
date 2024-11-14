@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useChildren } from "@/context/CreateContext";
 
-const page = () => {
+const ResulLearning = () => {
   const { selectedChildId } = useChildren();
   const [loading, setLoading] = useState (true);
   const [data, setData] = useState([]);
@@ -66,4 +66,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default ResulLearning;
