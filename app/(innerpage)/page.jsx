@@ -23,6 +23,9 @@ import { cn } from "@/lib/utils";
 import ChildSelector from "../_components/ChildSelecter";
 import { Button } from "@/components/ui/button";
 import { ArrowUpLeftFromSquare, ChevronLeft } from "lucide-react";
+import Features from "../_components/Features";
+import Pricing from "../_components/Pricing";
+import Contact from "../_components/Contact";
 
 const Home = () => {
   const [courseName, setCourseName] = useState("");
@@ -1168,6 +1171,12 @@ const Home = () => {
           </motion.div>
         </div>
       </section>
+
+     <div className="space-y-5">
+     <Features />
+      <Pricing />
+      <Contact />
+     </div>
 
       {/* Scroll Button with Animation */}
       {showButton && (
