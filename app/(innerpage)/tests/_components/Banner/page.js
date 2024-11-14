@@ -37,7 +37,11 @@ function Banner({
       try {
         const token =
           typeof window !== "undefined" ? localStorage.getItem("token") : null;
-        const resp = await GlobalApi.GetDashboarCheck(selectedChildId, selectedAge, selectedWeeks);
+        const resp = await GlobalApi.GetDashboarCheck(
+          selectedChildId,
+          selectedAge,
+          selectedWeeks
+        );
         console.log("resp.data", resp);
         setDashboardData(resp.data);
 
@@ -75,94 +79,111 @@ function Banner({
     descriptionKey,
     route,
     age,
-    existingfunction = false
+    existingfunction = false,
+    pro = false
   ) => {
     const isCompleted = getQuizStatus(quizId).isCompleted;
+  
     return (
       <motion.div
-  className={cn(
-    "pt-3 p-[1px] rounded-lg w-full md:w-[400px] relative flex-1 h-full"
-  )}
-  style={{ backgroundImage: `linear-gradient(to right, ${gradient})` }}
-  initial={{ opacity: 0, y: -20 }}
-  animate={{ opacity: 1, y: 0 }}
->
-  {/* Handle conditions for specific quizIds */}
-  {((selectedAge < 3 && quizId == 4) || 
-    (selectedAge < 6 && quizId != 5) || 
-    (selectedAge < 10 && quizId == 2) || 
-    (selectedAge < 3 && quizId == 5)) && (
-    <div className="w-full h-full absolute bg-white/50 top-0 left-0" />
-  )}
-
-  <h3 className="font-semibold text-center text-gray-700 text-md pb-2 uppercase">
-    {t("followCareer")}
-  </h3>
-  <div className="bg-orange-50 rounded-lg p-3 flex flex-col justify-between shadow-md h-full">
-    {/* Show restrictions based on age and quizId */}
-    {((selectedAge < 3 && quizId == 4) || 
-      (selectedAge < 6 && quizId != 5) || 
-      (selectedAge < 10 && quizId == 2) || 
-      (selectedAge < 3 && quizId == 5)) && (
-      <div className="absolute -top-5 left-0 z-[88888] w-full flex justify-center items-center h-full">
-        <div className="w-full bg-[#167dc6] text-white p-5 rounded mb-3 flex items-center">
-          <span className="text-lg font-bold text-center">
-            {selectedAge < 10 && quizId == 2
-              ? "Your child should be at least 10 years old to take the test"
-              : selectedAge < 3 && quizId == 4
-              ? "Your child should be at least 3 years old to take the test"
-              : selectedAge < 6 && quizId != 5
-              ? "Your child should be at least 6 years old to take the test"
-              : selectedAge < 3 && quizId == 5
-              ? "Your child should be at least 3 years old to take the test"
-              : ""}
-          </span>
+        className={cn(
+          "pt-3 p-[1px] rounded-lg w-full  relative flex-1 h-full"
+        )}
+        style={{ backgroundImage: `linear-gradient(to right, ${gradient})` }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        {/* Handle conditions for specific quizIds */}
+        {((selectedAge < 3 && quizId == 4) ||
+          (selectedAge < 6 && quizId != 5) ||
+          (selectedAge < 10 && quizId == 2) ||
+          (selectedAge < 3 && quizId == 5)) && (
+          <div className="w-full h-full absolute bg-white/50 top-0 left-0" />
+        )}
+  
+        <h3 className="font-semibold text-center text-gray-700 text-md pb-2 uppercase">
+          {t("followCareer")}
+        </h3>
+        <div className="bg-orange-50 rounded-lg p-3 flex flex-col justify-between shadow-md h-full">
+          {/* Show restrictions based on age and quizId */}
+          {((selectedAge < 3 && quizId == 4) ||
+            (selectedAge < 6 && quizId != 5) ||
+            (selectedAge < 10 && quizId == 2) ||
+            (selectedAge < 3 && quizId == 5)) && (
+            <div className="absolute -top-5 left-0 z-[88888] w-full flex justify-center items-center h-full">
+              <div className="w-full bg-[#167dc6] text-white p-5 rounded mb-3 flex items-center">
+                <span className="text-lg font-bold text-center">
+                  {selectedAge < 10 && quizId == 2
+                    ? "Your child should be at least 10 years old to take the test"
+                    : selectedAge < 3 && quizId == 4
+                    ? "Your child should be at least 3 years old to take the test"
+                    : selectedAge < 6 && quizId != 5
+                    ? "Your child should be at least 6 years old to take the test"
+                    : selectedAge < 3 && quizId == 5
+                    ? "Your child should be at least 3 years old to take the test"
+                    : ""}
+                </span>
+              </div>
+            </div>
+          )}
+  
+          <h3 className="font-semibold text-2xl text-center py-3 text-orange-800">
+            {existingfunction ? titleKey : t(titleKey)}
+          </h3>
+          <div className="bg-gray-300 p-[1px]" />
+          <p className="text-gray-700 text-justify text-md p-4">
+            {existingfunction ? descriptionKey : t(descriptionKey)}
+          </p>
+  
+          {/* Price section for 'pro' */}
+          {pro && (
+            <div className="text-center py-4">
+            <div className="flex justify-center items-center space-x-2">
+              <span className="font-bold text-lg text-gray-500 line-through transform scale-110">₹99</span>
+              <span className="font-bold text-xl text-green-600">₹0</span>
+            </div>
+            <p className="text-sm text-gray-600 mt-2">Pro Version</p>
+          </div>
+          
+          
+          )}
+  
+          <div className="flex justify-center items-center p-4 mt-auto">
+            {selectedAge < 3 ||
+            (selectedAge < 6 && quizId != 5) ||
+            (selectedAge < 10 && quizId == 2) ? (
+              <button
+                disabled
+                className={`hover:cursor-pointer p-3 rounded-full w-40 ${
+                  isCompleted
+                    ? "opacity-50 cursor-not-allowed bg-orange-300"
+                    : "bg-gradient-to-r from-orange-300 to-yellow-400 hover:scale-105 transition-transform duration-200"
+                }`}
+              >
+                <p className="text-white font-semibold text-lg text-center">
+                  {t("takeTest")}
+                </p>
+              </button>
+            ) : (
+              <Link
+                href={route}
+                className={`hover:cursor-pointer p-3 rounded-full w-40 ${
+                  isCompleted
+                    ? "opacity-50 cursor-not-allowed bg-orange-300"
+                    : "bg-gradient-to-r from-orange-300 to-yellow-400 hover:scale-105 transition-transform duration-200"
+                }`}
+              >
+                <p className="text-white font-semibold text-lg text-center">
+                  {t("takeTest")}
+                </p>
+              </Link>
+            )}
+          </div>
         </div>
-      </div>
-    )}
-
-    <h3 className="font-semibold text-2xl text-center py-3 text-orange-800">
-      {existingfunction ? titleKey : t(titleKey)}
-    </h3>
-    <div className="bg-gray-300 p-[1px]" />
-    <p className="text-gray-700 text-justify text-md p-4">
-      {existingfunction ? descriptionKey : t(descriptionKey)}
-    </p>
-
-    <div className="flex justify-center items-center p-4 mt-auto">
-      {selectedAge < 3 || (selectedAge < 6 && quizId != 5) || (selectedAge < 10 && quizId == 2) ? (
-        <button
-          disabled
-          className={`hover:cursor-pointer p-3 rounded-full w-40 ${
-            isCompleted
-              ? "opacity-50 cursor-not-allowed bg-orange-300"
-              : "bg-gradient-to-r from-orange-300 to-yellow-400 hover:scale-105 transition-transform duration-200"
-          }`}
-        >
-          <p className="text-white font-semibold text-lg text-center">
-            {t("takeTest")}
-          </p>
-        </button>
-      ) : (
-        <Link
-          href={route}
-          className={`hover:cursor-pointer p-3 rounded-full w-40 ${
-            isCompleted
-              ? "opacity-50 cursor-not-allowed bg-orange-300"
-              : "bg-gradient-to-r from-orange-300 to-yellow-400 hover:scale-105 transition-transform duration-200"
-          }`}
-        >
-          <p className="text-white font-semibold text-lg text-center">
-            {t("takeTest")}
-          </p>
-        </Link>
-      )}
-    </div>
-  </div>
-</motion.div>
-
+      </motion.div>
     );
   };
+  
 
   return (
     <div className="max-md:pb-14 bg-gradient-to-r from-orange-100 via-white to-orange-50 min-h-screen max-w-[100vw] max-md:pr-4">
@@ -175,30 +196,35 @@ function Banner({
       </motion.div>
 
       <div className="p-4">
-        <div className="mt-8 md:flex hidden flex-wrap justify-evenly gap-10 w-full">
-          {
-            renderTestCard(
-              1,
-              "#FFA500, #FFCC80",
-              "findStrength",
-              "personalityTestDescription",
-              isTest1Completed ? "/tests/myResults" :"/quiz-section/1",
-              selectedAge
-            )}
+        <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-6  w-full">
+          {renderTestCard(
+            1,
+            "#FFA500, #FFCC80",
+            "findStrength",
+            "personalityTestDescription",
+            isTest1Completed ? "/tests/myResults" : "/quiz-section/1",
+            selectedAge
+          )}
           {renderTestCard(
             2,
             "#FF7043, #FFB74D",
             "followCareer",
             "interestTestDescription",
-            isTest2Completed ? "/tests/careers/career-suggestions" : "/CareerQuizSection/2",
-            selectedAge
+            isTest2Completed
+              ? "/tests/careers/career-suggestions"
+              : "/CareerQuizSection/2",
+            selectedAge,
+            false,
+            true
           )}
           {renderTestCard(
             4,
             "#FF7043, #FFB74D",
             "followCareer",
             "interestTestDescription",
-            isTest4Completed ? "/tests/learning-style-results":"/quiz/learning-style/4",
+            isTest4Completed
+              ? "/tests/learning-style-results"
+              : "/quiz/learning-style/4",
             selectedAge
           )}
           {renderTestCard(
@@ -221,21 +247,22 @@ function Banner({
             onSwiper={(swiper) => (swiperRef.current = swiper)}
             className="w-full flex justify-center"
           >
-            {
-              renderTestCard(
-                1,
-                "#FFA500, #FFCC80",
-                "findStrength",
-                "personalityTestDescription",
-                isTest1Completed ? "/tests/myResults" :"/quiz-section/1",
-                selectedAge
-              )}
+            {renderTestCard(
+              1,
+              "#FFA500, #FFCC80",
+              "findStrength",
+              "personalityTestDescription",
+              isTest1Completed ? "/tests/myResults" : "/quiz-section/1",
+              selectedAge
+            )}
             {renderTestCard(
               2,
               "#FF7043, #FFB74D",
               "followCareer",
               "interestTestDescription",
-              isTest2Completed ? "/tests/careers/career-suggestions" : "/CareerQuizSection/2",
+              isTest2Completed
+                ? "/tests/careers/career-suggestions"
+                : "/CareerQuizSection/2",
               selectedAge
             )}
             {renderTestCard(
@@ -243,7 +270,9 @@ function Banner({
               "#FF7043, #FFB74D",
               "followCareer",
               "interestTestDescription",
-              isTest4Completed ? "/tests/learning-style-results":"/quiz/learning-style/4",
+              isTest4Completed
+                ? "/tests/learning-style-results"
+                : "/quiz/learning-style/4",
               selectedAge
             )}
             {renderTestCard(
