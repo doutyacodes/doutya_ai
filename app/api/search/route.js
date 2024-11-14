@@ -140,6 +140,7 @@ export async function POST(request) {
         title: courseData.activities?.title,
         content: courseData.activities?.content,
       };
+      const relatedTopics = courseData?.['related-topics'];
 
       // Structure response based on course type and include activity data
       let structuredResponse;
@@ -156,6 +157,7 @@ export async function POST(request) {
           difficulty,
           age,
           type,
+          "related-topics":relatedTopics,
           title: courseData.title,
           introduction: { content: courseData.introduction?.content },
           body:
@@ -172,6 +174,7 @@ export async function POST(request) {
           difficulty,
           age,
           type,
+          "related-topics":relatedTopics,
           title: courseData.title,
           verses:
             courseData.verses?.map((verse) => ({ line: verse.line })) || [],
@@ -184,6 +187,7 @@ export async function POST(request) {
           difficulty,
           age,
           type,
+          "related-topics":relatedTopics,
           presentation: {
             title: courseData.presentation?.title,
             slides:
@@ -230,6 +234,7 @@ export async function POST(request) {
           difficulty,
           age,
           type,
+          "related-topics":relatedTopics,
           essayContent: {
             introduction: { content: courseData.introduction?.content },
             body: {
