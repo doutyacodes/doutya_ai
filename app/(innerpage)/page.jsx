@@ -54,26 +54,38 @@ const Home = () => {
   }); // State for selected genre
   const [ageGenres, setAgeGenres] = useState([]);
   const [showButton, setShowButton] = useState(true);
+  const [showOurStory, setShowOurStory] = useState(true);
+  const [showFeatures, setShowFeatures] = useState(true);
 
-// Function to handle scroll to a specific section
-const scrollToSection = (sectionId) => {
-  const section = document.getElementById(sectionId);
-  if (section) {
-    section.scrollIntoView({ behavior: "smooth" });
-    setShowButton(false); // Hide button after click
-  }
-};
+  // Function to handle scroll to a specific section and update visibility
+  const scrollToSection = (sectionId) => {
+    // Update which sections to show based on the section clicked
+    if (sectionId === "our-story") {
+      setShowOurStory(true);
+      setShowFeatures(false);
+    } else if (sectionId === "features") {
+      setShowOurStory(false);
+      setShowFeatures(true);
+    }
 
-// Show button when the user scrolls back up
-useEffect(() => {
-  const handleScroll = () => {
-    if (window.scrollY < 100) {
-      setShowButton(true); // Show button when near the top
+    // Scroll to the selected section smoothly
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+      setShowButton(false); // Hide button after click
     }
   };
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, []);
+
+  // Show button when the user scrolls back up
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY < 100) {
+        setShowButton(true); // Show button when near the top
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   let speech = null;
   // const validateForm = () => {
   //   if (!courseName || !age) {
@@ -1195,55 +1207,55 @@ useEffect(() => {
       
 
      <div className="space-y-5">
-      <OurStory />
-     <Features />
-      {/* <Pricing /> */}
-      <Contact />
+     {showOurStory && <OurStory />}
+      {showFeatures && <Features />}
+     <Contact />
      </div>
 
       {/* Scroll Button with Animation */}
+      {/* Scroll Buttons with Animation */}
       {showButton && (
-  <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
-    <motion.button
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 10 }}
-      transition={{ duration: 0.5 }}
-      onClick={() => scrollToSection("our-story")}
-      className="bg-orange-500 text-white p-3 rounded-full shadow-lg flex items-center space-x-2"
-    >
-      <span>Our Story</span>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        className="w-5 h-5"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-      </svg>
-    </motion.button>
-    <motion.button
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 10 }}
-      transition={{ duration: 0.5 }}
-      onClick={() => scrollToSection("features")}
-      className="bg-orange-500 text-white p-3 rounded-full shadow-lg flex items-center space-x-2"
-    >
-      <span>Our Features</span>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        className="w-5 h-5"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-      </svg>
-    </motion.button>
-  </div>
-)}
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.5 }}
+            onClick={() => scrollToSection("our-story")}
+            className="bg-orange-500 text-white p-3 rounded-full shadow-lg flex items-center space-x-2"
+          >
+            <span>Our Story</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="w-5 h-5"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </motion.button>
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.5 }}
+            onClick={() => scrollToSection("features")}
+            className="bg-orange-500 text-white p-3 rounded-full shadow-lg flex items-center space-x-2"
+          >
+            <span>Our Features</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="w-5 h-5"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </motion.button>
+        </div>
+      )}
 
     </div>
   );

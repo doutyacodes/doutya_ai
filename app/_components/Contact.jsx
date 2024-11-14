@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function Contact() {
   return (
-    <footer id="contact-us" className=" bottom-0 left-0 w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 md:p-6">
+    <footer id="contact" className=" bottom-0 left-0 w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 md:p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
