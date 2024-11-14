@@ -13,7 +13,7 @@ import { Navigation } from "swiper/modules";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useChildren } from "@/context/CreateContext";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 function Banner({
@@ -31,6 +31,7 @@ function Banner({
   const t = useTranslations("Banner");
   const { selectedChildId, selectedAge, selectedWeeks } = useChildren(); // Accessing selected child ID from context
 
+  const router = useRouter()
   useEffect(() => {
     const getQuizData = async () => {
       setLoading(true);
@@ -86,55 +87,27 @@ function Banner({
 
     return (
       <motion.div
-        className={cn("pt-3 p-[1px] rounded-lg w-full  relative flex-1 h-full")}
-        style={{ backgroundColor: `${gradient}` }}
+      onClick={()=>router.push(`/tests/test-section/${quizId}`)}
+        className={cn(
+          "rounded-lg w-full relative flex-1 h-full max-md:col-span-4",
+          quizId == 1 || quizId == 5 ? "col-span-4" : "col-span-2"
+        )}
+        style={{ backgroundImage: `linear-gradient(to right, ${gradient})` }}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        {/* Handle conditions for specific quizIds */}
-        {((selectedAge < 3 && quizId == 4) ||
-          (selectedAge < 6 && quizId != 5) ||
-          (selectedAge < 10 && quizId == 2) ||
-          (selectedAge < 3 && quizId == 5)) && (
-          <div className="w-full h-full absolute bg-white/50 top-0 left-0" />
-        )}
-
-        <h3 className="font-semibold text-center text-gray-700 text-md pb-2 uppercase">
-          {t("followCareer")}
-        </h3>
-        <div className="bg-orange-50 rounded-lg p-3 flex flex-col justify-between shadow-md h-full">
+      
+        <div className="rounded-lg p-3 flex flex-col justify-between shadow-md h-full">
           {/* Show restrictions based on age and quizId */}
-          {((selectedAge < 3 && quizId == 4) ||
-            (selectedAge < 6 && quizId != 5) ||
-            (selectedAge < 10 && quizId == 2) ||
-            (selectedAge < 3 && quizId == 5)) && (
-            <div className="absolute -top-5 left-0 z-[88888] w-full flex justify-center items-center h-full">
-              <div className="w-full bg-[#167dc6] text-white p-5 rounded mb-3 flex items-center">
-                <span className="text-lg font-bold text-center">
-                  {selectedAge < 10 && quizId == 2
-                    ? "Your child should be at least 10 years old to take the test"
-                    : selectedAge < 3 && quizId == 4
-                    ? "Your child should be at least 3 years old to take the test"
-                    : selectedAge < 6 && quizId != 5
-                    ? "Your child should be at least 6 years old to take the test"
-                    : selectedAge < 3 && quizId == 5
-                    ? "Your child should be at least 3 years old to take the test"
-                    : ""}
-                </span>
-              </div>
-            </div>
-          )}
+         
 
-          <h3 className="font-semibold text-2xl text-center py-3 text-orange-800">
+          <h3 className="font-semibold text-2xl text-center py-3 text-white">
             {existingfunction ? titleKey : t(titleKey)}
           </h3>
-          <div className="bg-gray-300 p-[1px]" />
-          <p className="text-gray-700 text-justify text-md p-4">
-            {existingfunction ? descriptionKey : t(descriptionKey)}
-          </p>
+          {/* <div className="bg-gray-300 p-[1px]" /> */}
 
           {/* Price section for 'pro' */}
-          {pro && (
+          {/* {pro && (
             <div className="text-center py-4">
               <div className="flex justify-center items-center space-x-2">
                 <span className="font-bold text-lg text-gray-500 line-through transform scale-110">
@@ -144,46 +117,14 @@ function Banner({
               </div>
               <p className="text-sm text-gray-600 mt-2">Pro Version</p>
             </div>
-          )}
-
-          <div className="flex justify-center items-center p-4 mt-auto">
-            {selectedAge < 3 ||
-            (selectedAge < 6 && quizId != 5) ||
-            (selectedAge < 10 && quizId == 2) ? (
-              <button
-                disabled
-                className={`hover:cursor-pointer p-3 rounded-full w-40 ${
-                  isCompleted
-                    ? "opacity-50 cursor-not-allowed bg-orange-300"
-                    : "bg-gradient-to-r from-orange-300 to-yellow-400 hover:scale-105 transition-transform duration-200"
-                }`}
-              >
-                <p className="text-white font-semibold text-lg text-center">
-                  {t("takeTest")}
-                </p>
-              </button>
-            ) : (
-              <Link
-                href={route}
-                className={`hover:cursor-pointer p-3 rounded-full w-40 ${
-                  isCompleted
-                    ? "opacity-50 cursor-not-allowed bg-orange-300"
-                    : "bg-gradient-to-r from-orange-300 to-yellow-400 hover:scale-105 transition-transform duration-200"
-                }`}
-              >
-                <p className="text-white font-semibold text-lg text-center">
-                  {t("takeTest")}
-                </p>
-              </Link>
-            )}
-          </div>
+          )} */}
         </div>
       </motion.div>
     );
   };
 
   return (
-    <div className="max-md:pb-14 bg-gradient-to-r from-orange-100 via-white to-orange-50 min-h-screen max-w-[100vw] max-md:pr-4">
+    <div className="max-md:pb-14  min-h-screen max-w-[100vw] max-md:pr-4">
       <motion.div
         className="w-full py-8 md:text-3xl text-xl font-semibold text-orange-800 text-center"
         initial={{ opacity: 0 }}
@@ -193,10 +134,10 @@ function Banner({
       </motion.div>
 
       <div className="p-4">
-        <div className="mt-8 hidden md:grid md:grid-cols-2  gap-6 w-full">
+        <div className="mt-8 grid grid-cols-4 gap-6 w-full">
           {renderTestCard(
             1,
-            "#9bcc61",
+            "#9bc9ff, #9bc9ff",
             "findStrength",
             "personalityTestDescription",
             isTest1Completed ? "/tests/myResults" : "/quiz-section/1",
@@ -204,7 +145,7 @@ function Banner({
           )}
           {renderTestCard(
             2,
-            "#9bc9ff",
+            "#9bccb1, #9bccb1",
             "followCareer",
             "interestTestDescription",
             isTest2Completed
@@ -216,7 +157,7 @@ function Banner({
           )}
           {renderTestCard(
             4,
-            "#ffb1cc",
+            "#ffb1cc, #ffb1cc",
             " Learning Style",
             "ake this fun and insightful test to determine the best way your child learns. Whether they’re a visual, auditory, or kinesthetic learner, understanding their learning style can help tailor educational approaches for better engagement and success.",
             isTest4Completed
@@ -227,73 +168,13 @@ function Banner({
           )}
           {renderTestCard(
             5,
-            "#c8bbff",
+            "#c8bbff, #c8bbff",
             "Knowledge Evaluation Test",
             "The Knowledge Evaluation Test is a personalized quiz designed to assess a child's understanding and learning progress based on their age and developmental stage. It features a series of questions across various subjects, and it evaluates the child’s ability to process information, make decisions, and apply knowledge in a fun and interactive format.",
             "/knowledge-evaluation",
             selectedAge,
             true
           )}
-        </div>
-
-        <div className="mt-8 md:hidden ">
-          <Swiper
-            modules={[Navigation]}
-            spaceBetween={20}
-            slidesPerView={1}
-            onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
-            onSwiper={(swiper) => (swiperRef.current = swiper)}
-            className="w-full flex justify-center"
-          >
-            <SwiperSlide>
-              {renderTestCard(
-                1,
-                "#9bcc61",
-                "findStrength",
-                "personalityTestDescription",
-                isTest1Completed ? "/tests/myResults" : "/quiz-section/1",
-                selectedAge
-              )}
-            </SwiperSlide>
-            <SwiperSlide>
-              {renderTestCard(
-                2,
-                "#9bc9ff",
-                "followCareer",
-                "interestTestDescription",
-                isTest2Completed
-                  ? "/tests/careers/career-suggestions"
-                  : "/CareerQuizSection/2",
-                selectedAge,
-                false,
-                true
-              )}
-            </SwiperSlide>
-            <SwiperSlide>
-              {renderTestCard(
-                4,
-                "#ffb1cc",
-                " Learning Style",
-                "ake this fun and insightful test to determine the best way your child learns. Whether they’re a visual, auditory, or kinesthetic learner, understanding their learning style can help tailor educational approaches for better engagement and success.",
-                isTest4Completed
-                  ? "/tests/learning-style-results"
-                  : "/quiz/learning-style/4",
-                selectedAge,
-                true
-              )}
-            </SwiperSlide>
-            <SwiperSlide>
-              {renderTestCard(
-                5,
-                "#c8bbff",
-                "Knowledge Evaluation Test",
-                "The Knowledge Evaluation Test is a personalized quiz designed to assess a child's understanding and learning progress based on their age and developmental stage. It features a series of questions across various subjects, and it evaluates the child’s ability to process information, make decisions, and apply knowledge in a fun and interactive format.",
-                "/knowledge-evaluation",
-                selectedAge,
-                true
-              )}
-            </SwiperSlide>
-          </Swiper>
         </div>
       </div>
     </div>
