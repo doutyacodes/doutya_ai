@@ -57,7 +57,7 @@ const RightSideBar = () => {
       icon: FaUserPlus,
     },
     { label: "My Profile", links: "/my-profile", icon: FaUser },
-    { label: "Settings", links: "/settings", icon: FaCog },
+    // { label: "Settings", links: "/settings", icon: FaCog },
   ];
 
   if (!childrenData || childrenData.length === 0) {
