@@ -6,7 +6,7 @@ import { getLocale, getMessages } from "next-intl/server";
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"], // Choose the weights you want to include
+  weight: ["400", "500", "600", "700","800"], // Choose the weights you want to include
 });
 
 export const metadata = {
