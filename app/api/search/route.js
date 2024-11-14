@@ -385,6 +385,12 @@ function generatePrompt(
       "age": ${age},
       "weeks": ${weeks},
       "type": ${type},
+      "related-topics":[
+      {
+      topic:related topic 1,
+      },{
+      topic:related topic 2,
+      }],
       "activities":{
           "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which can take picture and upload",
           "content": "a description of the activity and be sure to mention to upload.",
@@ -411,6 +417,12 @@ function generatePrompt(
       "age": ${age},
       "weeks": ${weeks},
       "type": ${type},
+      "related-topics":[
+      {
+      topic:related topic 1,
+      },{
+      topic:related topic 2,
+      }],
       "activities":{
           "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
           "content": "a description of the activity",
@@ -436,6 +448,12 @@ function generatePrompt(
       "age": ${age},
       "weeks": ${weeks},
       "type": ${type},
+      "related-topics":[
+      {
+      topic:related topic 1,
+      },{
+      topic:related topic 2,
+      }],
       "activities":{
           "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
           "content": "a description of the activity",
@@ -471,6 +489,12 @@ function generatePrompt(
         "age": ${age},
         "weeks": ${weeks},
         "type": "${type}",
+        "related-topics":[
+      {
+      topic:related topic 1,
+      },{
+      topic:related topic 2,
+      }],
         "activities":{
           "title":"a heading for an activity the user can do related to the topic and it should be age appropriate which should be can take picture and upload",
           "content": "a description of the activity",

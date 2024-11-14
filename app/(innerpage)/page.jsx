@@ -137,19 +137,91 @@ const Home = () => {
         toast.error("No data found.");
       }
 
-      // Reset fields after search
-      setCourseName("");
-      setLanguage("english");
-      setDifficulty("basic");
-      setType("story");
-      setGenre({
-        value: "Any",
-        label1: "Any",
-        label: "A broad selection of age-appropriate stories for children.",
-      });
-      setHideActivity(true);
+      // // Reset fields after search
+      // setCourseName("");
+      // setLanguage("english");
+      // setDifficulty("basic");
+      // setType("story");
+      // setGenre({
+      //   value: "Any",
+      //   label1: "Any",
+      //   label: "A broad selection of age-appropriate stories for children.",
+      // });
+      // setHideActivity(true);
 
-      setAge(selectedAge ? selectedAge : 2);
+      // setAge(selectedAge ? selectedAge : 2);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      toast.error(
+        "Error: " + (err?.message || "An unexpected error occurred.")
+      );
+    } finally {
+      setIsLoading(false); // Ensure loading is stopped in all cases
+    }
+  };
+  const handleSearch2 = async (topic) => {
+
+
+    setIsLoading(true);
+
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+    if (!token) {
+      if (age > 12 || age < 2) {
+        toast.error("Age must be between 2 and 12.");
+        setIsLoading(false); // Ensure loading is stopped
+        return; // Early return if age is out of bounds
+      }
+    }
+  
+    if (type === "story") {
+      if (!genre) {
+        toast.error("Please select a genre to continue.");
+        setGenre({ value: "Any", label: "Any" });
+        setIsLoading(false); // Ensure loading is stopped
+        return;
+      }
+    }
+
+    try {
+      const response = await GlobalApi.SearchUser(token, {
+        courseName:topic,
+        language,
+        label:
+          type === "story" && genre ? genre.label1 + " " + genre.label : null,
+        genre: type === "story" && genre ? genre.value : null,
+        difficulty,
+        ages: isAuthenticated ? selectedAge : age,
+        weekData: isAuthenticated ? selectedWeeks : 1,
+        type,
+        childId: selectedChildId || null, // Pass selected child ID
+      });
+
+      console.log("API Response:", response.data.content);
+
+      const newCourse = response?.data?.content || {};
+      setLatestCourse(newCourse);
+
+      if (newCourse && Object.keys(newCourse).length > 0) {
+        // Optionally show success toast
+      } else {
+        toast.error("No data found.");
+      }
+
+      // // Reset fields after search
+      // setCourseName("");
+      // setLanguage("english");
+      // setDifficulty("basic");
+      // setType("story");
+      // setGenre({
+      //   value: "Any",
+      //   label1: "Any",
+      //   label: "A broad selection of age-appropriate stories for children.",
+      // });
+      // setHideActivity(true);
+
+      // setAge(selectedAge ? selectedAge : 2);
     } catch (err) {
       console.error("Error fetching data:", err);
       toast.error(
@@ -1104,12 +1176,13 @@ const Home = () => {
               </p>
 
               <div className="flex justify-between gap-3">
-                <div className="bg-yellow-400 p-3 rounded-md px-7 text-center uppercase font-semibold text-sm">
-                  Related Topics 1
-                </div>
-                <div className="bg-yellow-400 p-3 rounded-md px-7 text-center uppercase font-semibold text-sm">
-                  Related Topics 2
-                </div>
+                <button className="bg-yellow-400 p-3 rounded-md px-7 text-center uppercase font-semibold text-sm" onClick={()=>handleSearch2(latestCourse?.["related-topics"][0]?.topic)}>
+                {latestCourse?.["related-topics"]?.length > 0 && latestCourse?.["related-topics"][0]?.topic}
+
+                </button>
+                <button className="bg-yellow-400 p-3 rounded-md px-7 text-center uppercase font-semibold text-sm" onClick={()=>handleSearch2(latestCourse?.["related-topics"][1]?.topic)}>
+                {latestCourse?.["related-topics"]?.length > 0 && latestCourse?.["related-topics"][1]?.topic}
+                </button>
               </div>
             </div>
           </motion.div>
