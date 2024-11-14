@@ -1,14 +1,13 @@
-"use client";
-
+"use client"
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import GlobalApi from "@/app/api/_services/GlobalApi";
-import { useChildren } from "@/context/CreateContext";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useChildren } from "@/context/CreateContext";
 
 const page = () => {
   const { selectedChildId } = useChildren();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState (true);
   const [data, setData] = useState([]);
 
   const fetchResult = async () => {
@@ -35,7 +34,7 @@ const page = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-orange-100 via-white to-orange-50 p-6"
+      className="min-h-screen flex flex-col items-center justify-center  p-6"
     >
       <h1 className="text-3xl font-semibold text-orange-800 mb-6 text-center">
         Learning Style Profile
