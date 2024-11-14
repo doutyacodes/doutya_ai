@@ -26,6 +26,7 @@ import { ArrowUpLeftFromSquare, ChevronLeft } from "lucide-react";
 import Features from "../_components/Features";
 import Pricing from "../_components/Pricing";
 import Contact from "../_components/Contact";
+import OurStory from "../_components/OurStory";
 
 const Home = () => {
   const [courseName, setCourseName] = useState("");
@@ -54,27 +55,25 @@ const Home = () => {
   const [ageGenres, setAgeGenres] = useState([]);
   const [showButton, setShowButton] = useState(true);
 
-  // if (loading) {
-  //   return <LoadingSpinner />; // Or any loading indicator
-  // }
-  console.log("selectedAge",selectedAge)
-
-  // Function to handle scroll to "Our Story" section
-  const scrollToSection = () => {
-    document.getElementById("our-story").scrollIntoView({ behavior: "smooth" });
+// Function to handle scroll to a specific section
+const scrollToSection = (sectionId) => {
+  const section = document.getElementById(sectionId);
+  if (section) {
+    section.scrollIntoView({ behavior: "smooth" });
     setShowButton(false); // Hide button after click
-  };
+  }
+};
 
-  // Show button when the user scrolls back up
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY < 100) {
-        setShowButton(true); // Show button when near the top
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+// Show button when the user scrolls back up
+useEffect(() => {
+  const handleScroll = () => {
+    if (window.scrollY < 100) {
+      setShowButton(true); // Show button when near the top
+    }
+  };
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
   let speech = null;
   // const validateForm = () => {
   //   if (!courseName || !age) {
@@ -1193,64 +1192,10 @@ const Home = () => {
           </motion.div>
         )}
       </div>
-      <section id="our-story" className="mt-10 p-8">
-        <motion.h1
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-5xl font-bold text-center mb-8 mt-14 "
-        >
-          Our Story
-        </motion.h1>
-
-        <div className="text-lg text-justify mx-auto max-w-5xl  leading-relaxed space-y-6">
-          {/* First Paragraph */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeInOut", delay: 0.3 }}
-          >
-            Doutya Kids was born from a father’s journey to make learning
-            magical for his child. Our founder, like many parents, faced the
-            daily challenge of explaining complex ideas in a way his 3-year-old
-            could understand. Whether it was about stars, animals, or even
-            simple science, he constantly found himself reaching for ways to
-            make these ideas exciting, fun, and understandable. Bedtime was
-            another adventure—no matter how many stories he told, he was always
-            running out!
-          </motion.div>
-
-          {/* Second Paragraph */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeInOut", delay: 0.6 }}
-          >
-            With these challenges in mind, Doutya Kids came to life. We set out
-            to create a space where parents can effortlessly bring the world’s
-            wonders into a child’s hands. Doutya Kids is designed for children
-            aged 2-12, making learning feel like play through age-appropriate
-            stories, bedtime tales, and interactive poems on any topic. By
-            simply typing in a topic, parents can unlock stories that engage
-            their child’s imagination, simplify complex ideas, and turn learning
-            into a joyful experience.
-          </motion.div>
-
-          {/* Third Paragraph */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeInOut", delay: 0.9 }}
-          >
-            At Doutya Kids, we believe learning should be as unique as every
-            child. Inspired by a father’s wish to explain the world to his
-            child, we’ve created a platform that lets every family explore new
-            worlds, one story at a time.
-          </motion.div>
-        </div>
-      </section>
+      
 
      <div className="space-y-5">
+      <OurStory />
      <Features />
       {/* <Pricing /> */}
       <Contact />
@@ -1258,31 +1203,48 @@ const Home = () => {
 
       {/* Scroll Button with Animation */}
       {showButton && (
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          transition={{ duration: 0.5 }}
-          onClick={scrollToSection}
-          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white p-3 rounded-full shadow-lg flex items-center space-x-2"
-        >
-          <span>Our Story</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="w-5 h-5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </motion.button>
-      )}
+  <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+    <motion.button
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      transition={{ duration: 0.5 }}
+      onClick={() => scrollToSection("our-story")}
+      className="bg-orange-500 text-white p-3 rounded-full shadow-lg flex items-center space-x-2"
+    >
+      <span>Our Story</span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        className="w-5 h-5"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </motion.button>
+    <motion.button
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      transition={{ duration: 0.5 }}
+      onClick={() => scrollToSection("features")}
+      className="bg-orange-500 text-white p-3 rounded-full shadow-lg flex items-center space-x-2"
+    >
+      <span>Our Features</span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        className="w-5 h-5"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </motion.button>
+  </div>
+)}
+
     </div>
   );
 };

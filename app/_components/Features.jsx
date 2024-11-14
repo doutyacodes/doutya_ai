@@ -95,13 +95,13 @@ export default function Features() {
   };
 
   return (
-    <section id="features" className="py-16 px-4 bg-white">
+    <section id="features" className="py-16 px-4">
       <div className="max-w-7xl mx-auto text-center">
         <motion.h2
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="text-3xl font-bold text-gray-800"
+          className="text-2xl font-bold text-gray-800"
         >
           Axara Website Features
         </motion.h2>
@@ -133,7 +133,7 @@ export default function Features() {
                   d={feature.iconPath}
                 />
               </svg>
-              <h3 className="text-xl font-semibold mt-4 text-gray-800">
+              <h3 className="text-lg font-semibold mt-4 text-gray-800">
                 {feature.title}
               </h3>
               {/* Show description based on collapse state */}
@@ -142,7 +142,7 @@ export default function Features() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ duration: 0.3 }}
-                  className="mt-2 text-gray-600"
+                  className="mt-2 text-gray-600 text-sm"
                 >
                   {feature.description}
                 </motion.p>
