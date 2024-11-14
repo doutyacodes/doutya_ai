@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { USER_PROGRESS, QUESTIONS, OPTIONS, USER_BADGES, BADGES } from "@/utils/schema"; // Include the USER_BADGES and BADGES schemas
+import { USER_PROGRESS, QUESTIONS, OPTIONS2, USER_BADGES, BADGES } from "@/utils/schema"; // Include the USER_BADGES and BADGES schemas
 import { authenticate } from "@/lib/jwtMiddleware";
 import { eq } from "drizzle-orm";
 
@@ -28,8 +28,8 @@ export async function POST(req) {
       // Fetch correct options for the current question
       const correctOptions = await db
         .select()
-        .from(OPTIONS)
-        .where(eq(OPTIONS.question_id, questionId), eq(OPTIONS.is_answer, true))
+        .from(OPTIONS2)
+        .where(eq(OPTIONS2.question_id, questionId), eq(OPTIONS2.is_answer, true))
         .execute();
 
       const correctOptionIds = correctOptions.map(option => option.id);

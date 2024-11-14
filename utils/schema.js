@@ -220,17 +220,17 @@ export const QUESTIONS = mysqlTable("questions", {
 });
 
 // Options Table
-// export const OPTIONS = mysqlTable("options", {
-//   id: int("id").primaryKey().autoincrement(),
-//   question_id: int("question_id")
-//     .references(() => QUESTIONS.id)
-//     .notNull(), // Foreign key to 'questions' table
-//   learn_topic_id: int("learn_topic_id")
-//     .references(() => LEARN_TOPICS.id)
-//     .notNull(), // Foreign key to 'learn_topics' for redundancy
-//   option_text: text("option_text").notNull(), // Option text
-//   is_answer: boolean("is_answer").notNull().default(false), // Indicates if this option is the correct answer
-// });
+export const OPTIONS2 = mysqlTable("options2", {
+  id: int("id").primaryKey().autoincrement(),
+  question_id: int("question_id")
+    .references(() => QUESTIONS.id)
+    .notNull(), // Foreign key to 'questions' table
+  learn_topic_id: int("learn_topic_id")
+    .references(() => LEARN_TOPICS.id)
+    .notNull(), // Foreign key to 'learn_topics' for redundancy
+  option_text: text("option_text").notNull(), // Option text
+  is_answer: boolean("is_answer").notNull().default(false), // Indicates if this option is the correct answer
+});
 
 // User Progress Table
 // export const USER_PROGRESS = mysqlTable("user_progress", {
