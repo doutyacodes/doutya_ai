@@ -166,14 +166,14 @@ const GetQuizData2 = (id, token, selectedChildId) => {
     }
   );
 };
-// const GetQuizData = async (data) => {
-//   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
-//   return axios.post("/api/learn/quiz", data, {
-//     headers: {
-//       Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-//     },
-//   });
-// };
+const GetQuizData5 = async (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+  return axios.post("/api/learn/quiz", data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
 const GetLearnTopics = async (data) => {
   return axios.post("/api/learn", data);
 };
@@ -608,6 +608,7 @@ export default {
   learnStyleResult,
   GetLearnTopicsData,
   GetQuizData,
+  GetQuizData5,
   GetQuizData2,
   GetQuizData3,
   SaveQuizResult3,

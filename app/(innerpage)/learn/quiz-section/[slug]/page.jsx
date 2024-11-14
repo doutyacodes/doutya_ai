@@ -25,7 +25,7 @@ const QuizSection = () => {
     const fetchQuizData = async () => {
       setLoading(true);
       try {
-        const response = await GlobalApi.GetQuizData({ slug });
+        const response = await GlobalApi.GetQuizData5({ slug });
         setQuestions(response.data.questions);
         setCompleted(response.data.completed);
       } catch (error) {

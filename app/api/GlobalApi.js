@@ -266,13 +266,6 @@ const GetContests = (token) => {
   });
 };
 
-const GetContestData = (id, token) => {
-  return axios.get(`/api/getContestData/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-};
 
 const SaveContestProgress = (data, token, taskId) => {
   const payload = {
@@ -683,7 +676,6 @@ export default {
   GetTestResultData,
 
   GetContests,
-  GetContestData,
   SaveContestProgress,
   UpdateContestData,
   GetContestResultData,
