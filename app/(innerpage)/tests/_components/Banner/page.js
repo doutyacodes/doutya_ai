@@ -83,12 +83,10 @@ function Banner({
     pro = false
   ) => {
     const isCompleted = getQuizStatus(quizId).isCompleted;
-  
+
     return (
       <motion.div
-        className={cn(
-          "pt-3 p-[1px] rounded-lg w-full  relative flex-1 h-full"
-        )}
+        className={cn("pt-3 p-[1px] rounded-lg w-full  relative flex-1 h-full")}
         style={{ backgroundImage: `linear-gradient(to right, ${gradient})` }}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -100,7 +98,7 @@ function Banner({
           (selectedAge < 3 && quizId == 5)) && (
           <div className="w-full h-full absolute bg-white/50 top-0 left-0" />
         )}
-  
+
         <h3 className="font-semibold text-center text-gray-700 text-md pb-2 uppercase">
           {t("followCareer")}
         </h3>
@@ -126,7 +124,7 @@ function Banner({
               </div>
             </div>
           )}
-  
+
           <h3 className="font-semibold text-2xl text-center py-3 text-orange-800">
             {existingfunction ? titleKey : t(titleKey)}
           </h3>
@@ -134,20 +132,20 @@ function Banner({
           <p className="text-gray-700 text-justify text-md p-4">
             {existingfunction ? descriptionKey : t(descriptionKey)}
           </p>
-  
+
           {/* Price section for 'pro' */}
           {pro && (
             <div className="text-center py-4">
-            <div className="flex justify-center items-center space-x-2">
-              <span className="font-bold text-lg text-gray-500 line-through transform scale-110">₹99</span>
-              <span className="font-bold text-xl text-green-600">₹0</span>
+              <div className="flex justify-center items-center space-x-2">
+                <span className="font-bold text-lg text-gray-500 line-through transform scale-110">
+                  ₹99
+                </span>
+                <span className="font-bold text-xl text-green-600">₹0</span>
+              </div>
+              <p className="text-sm text-gray-600 mt-2">Pro Version</p>
             </div>
-            <p className="text-sm text-gray-600 mt-2">Pro Version</p>
-          </div>
-          
-          
           )}
-  
+
           <div className="flex justify-center items-center p-4 mt-auto">
             {selectedAge < 3 ||
             (selectedAge < 6 && quizId != 5) ||
@@ -183,7 +181,6 @@ function Banner({
       </motion.div>
     );
   };
-  
 
   return (
     <div className="max-md:pb-14 bg-gradient-to-r from-orange-100 via-white to-orange-50 min-h-screen max-w-[100vw] max-md:pr-4">
@@ -196,7 +193,7 @@ function Banner({
       </motion.div>
 
       <div className="p-4">
-        <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-md:hidden w-full">
+        <div className="mt-8 hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
           {renderTestCard(
             1,
             "#FFA500, #FFCC80",
@@ -242,52 +239,60 @@ function Banner({
         <div className="mt-8 md:hidden ">
           <Swiper
             modules={[Navigation]}
-            spaceBetween={10}
+            spaceBetween={20}
             slidesPerView={1}
             onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
             onSwiper={(swiper) => (swiperRef.current = swiper)}
             className="w-full flex justify-center"
           >
-            {renderTestCard(
-              1,
-              "#FFA500, #FFCC80",
-              "findStrength",
-              "personalityTestDescription",
-              isTest1Completed ? "/tests/myResults" : "/quiz-section/1",
-              selectedAge
-            )}
-           {renderTestCard(
-            2,
-            "#FF7043, #FFB74D",
-            "followCareer",
-            "interestTestDescription",
-            isTest2Completed
-              ? "/tests/careers/career-suggestions"
-              : "/CareerQuizSection/2",
-            selectedAge,
-            false,
-            true
-          )}
-           {renderTestCard(
-            4,
-            "#FF7043, #FFB74D",
-            " Learning Style",
-            "ake this fun and insightful test to determine the best way your child learns. Whether they’re a visual, auditory, or kinesthetic learner, understanding their learning style can help tailor educational approaches for better engagement and success.",
-            isTest4Completed
-              ? "/tests/learning-style-results"
-              : "/quiz/learning-style/4",
-            selectedAge,
-            true
-          )}
-            {renderTestCard(
-              5,
-              "#FF7043, #FFB74D",
-              "Knowledge Evaluation Test",
-              "The Knowledge Evaluation Test is a personalized quiz designed to assess a child's understanding and learning progress based on their age and developmental stage. It features a series of questions across various subjects, and it evaluates the child’s ability to process information, make decisions, and apply knowledge in a fun and interactive format.",
-              "/knowledge-evaluation",
-              selectedAge,
-              true
-            )}
+            <SwiperSlide>
+              {renderTestCard(
+                1,
+                "#FFA500, #FFCC80",
+                "findStrength",
+                "personalityTestDescription",
+                isTest1Completed ? "/tests/myResults" : "/quiz-section/1",
+                selectedAge
+              )}
+            </SwiperSlide>
+            <SwiperSlide>
+              {renderTestCard(
+                2,
+                "#FF7043, #FFB74D",
+                "followCareer",
+                "interestTestDescription",
+                isTest2Completed
+                  ? "/tests/careers/career-suggestions"
+                  : "/CareerQuizSection/2",
+                selectedAge,
+                false,
+                true
+              )}
+            </SwiperSlide>
+            <SwiperSlide>
+              {renderTestCard(
+                4,
+                "#FF7043, #FFB74D",
+                " Learning Style",
+                "ake this fun and insightful test to determine the best way your child learns. Whether they’re a visual, auditory, or kinesthetic learner, understanding their learning style can help tailor educational approaches for better engagement and success.",
+                isTest4Completed
+                  ? "/tests/learning-style-results"
+                  : "/quiz/learning-style/4",
+                selectedAge,
+                true
+              )}
+            </SwiperSlide>
+            <SwiperSlide>
+              {renderTestCard(
+                5,
+                "#FF7043, #FFB74D",
+                "Knowledge Evaluation Test",
+                "The Knowledge Evaluation Test is a personalized quiz designed to assess a child's understanding and learning progress based on their age and developmental stage. It features a series of questions across various subjects, and it evaluates the child’s ability to process information, make decisions, and apply knowledge in a fun and interactive format.",
+                "/knowledge-evaluation",
+                selectedAge,
+                true
+              )}
+            </SwiperSlide>
           </Swiper>
         </div>
       </div>
