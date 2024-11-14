@@ -1252,7 +1252,7 @@ const Home = () => {
 
      <div className="space-y-5">
      <Features />
-      <Pricing />
+      {/* <Pricing /> */}
       <Contact />
      </div>
 
