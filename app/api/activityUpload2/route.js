@@ -9,6 +9,9 @@ import os from 'os';
 import { db } from '@/utils';
 import { eq } from 'drizzle-orm';
 
+export const maxDuration = 60;
+export const dynamic = 'force-dynamic';
+
 export async function POST(request) {
   const { child_id, token, course_id, image ,finalActivityId} = await request.json();
 console.log("child_id",child_id)
