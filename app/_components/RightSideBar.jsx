@@ -11,6 +11,7 @@ import {
   FaUser,
   FaCog,
   FaSignOutAlt,
+  FaUserPlus,
 } from "react-icons/fa";
 import { GiTiedScroll } from "react-icons/gi";
 import { BsActivity } from "react-icons/bs";
@@ -51,9 +52,9 @@ const RightSideBar = () => {
     { label: "My Activities", links: "/activities", icon: BsActivity },
     { label: "My Badges", links: "/badges", icon: FaMedal },
     {
-      label: "My Certificates",
-      links: "/my-certificates",
-      icon: PiCertificateFill,
+      label: "Add Child",
+      links: "/add-child",
+      icon: FaUserPlus,
     },
     { label: "My Profile", links: "/my-profile", icon: FaUser },
     { label: "Settings", links: "/settings", icon: FaCog },

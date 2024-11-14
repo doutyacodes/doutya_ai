@@ -1,10 +1,16 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { ACTIVITIES, CHILDREN, COURSES } from "@/utils/schema";
+import {
+  ACTIVITIES,
+  BADGES,
+  CHILDREN,
+  COURSES,
+  USER_BADGES,
+} from "@/utils/schema";
 import { db } from "@/utils";
 import { generateUniqueSlug } from "@/lib/utils";
 import { authenticate } from "@/lib/jwtMiddleware";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { calculateAgeAndWeeks } from "@/app/hooks/CalculateAgeWeek";
 
 export const maxDuration = 60;
@@ -29,15 +35,13 @@ export async function POST(request) {
       label,
       genre,
     } = await request.json();
-// console.log("weeks",weeks)
+    // console.log("weeks",weeks)
     // Basic validation
 
     let finalChildId = childId;
     let age = ages;
     let weeks = weekData;
-    if(userId)
-    {
-
+    if (userId) {
       if (!childId || !weeks) {
         const firstChild = await db
           .select()
@@ -45,10 +49,9 @@ export async function POST(request) {
           .where(eq(CHILDREN.user_id, userId))
           .limit(1)
           .execute();
-    
+
         if (firstChild.length > 0) {
-          
-          const  weekDatas = calculateAgeAndWeeks(firstChild[0].age)
+          const weekDatas = calculateAgeAndWeeks(firstChild[0].age);
           // console.log("weeks",weekDatas.weeks)
           finalChildId = firstChild[0].id; // Assuming 'id' is the identifier for CHILDREN
           weeks = weekDatas.weeks;
@@ -61,6 +64,37 @@ export async function POST(request) {
         }
       }
     }
+    if (userId) {
+      const [{ countTotalData: totalCourses = 0 }] = await db
+        .select({ countTotalData: sql`COUNT(${COURSES.id})` })
+        .from(COURSES)
+        .where(eq(COURSES.child_id, finalChildId))
+        .execute();
+
+        console.log()
+      // Fetch eligible badge based on the number of answered courses
+      const badgeData = await db
+        .select()
+        .from(BADGES)
+        .where(
+          and(
+            eq(BADGES.badge_type, "search"),
+            eq(BADGES.search_count, totalCourses+1)
+          )
+        )
+        .limit(1)
+        .execute();
+
+      // If a badge is found, insert it into USER_BADGES
+      if (badgeData.length > 0) {
+        const badgeInsert = await db.insert(USER_BADGES).values({
+          badge_id: badgeData[0].id,
+          child_id: finalChildId,
+        });
+
+        console.log("Badge inserted:", badgeInsert);
+      } 
+    }
 
     if (
       ![courseName, language, difficulty, age].every((field) =>
@@ -72,8 +106,6 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-    
-    
 
     // Check for existing course
     const existingCourse = await db
@@ -95,23 +127,27 @@ export async function POST(request) {
     if (existingCourse.length > 0) {
       const course = existingCourse[0];
       const courseData = JSON.parse(course.chapter_content || "{}");
-    
+
       // Retrieve existing activities for the course
       const existingActivities = await db
         .select()
         .from(ACTIVITIES)
         .where(eq(ACTIVITIES.course_id, course.id))
         .execute();
-    
+
       // Map activity data if it exists in the database, or fall back to default structure from courseData
-      const activityData =  {
-            title: courseData.activities?.title,
-            content: courseData.activities?.content,
-          };
-    
+      const activityData = {
+        title: courseData.activities?.title,
+        content: courseData.activities?.content,
+      };
+
       // Structure response based on course type and include activity data
       let structuredResponse;
-      if (["story", "bedtime story", "informative story", "podcast"].includes(type)) {
+      if (
+        ["story", "bedtime story", "informative story", "podcast"].includes(
+          type
+        )
+      ) {
         structuredResponse = {
           courseName,
           genre,
@@ -123,7 +159,7 @@ export async function POST(request) {
           title: courseData.title,
           introduction: { content: courseData.introduction?.content },
           body:
-            courseData.body?.map(paragraph => ({
+            courseData.body?.map((paragraph) => ({
               content: paragraph.content,
             })) || [],
           conclusion: { content: courseData.conclusion?.content },
@@ -138,7 +174,7 @@ export async function POST(request) {
           type,
           title: courseData.title,
           verses:
-            courseData.verses?.map(verse => ({ line: verse.line })) || [],
+            courseData.verses?.map((verse) => ({ line: verse.line })) || [],
           activities: activityData,
         };
       } else if (type === "presentation") {
@@ -151,10 +187,10 @@ export async function POST(request) {
           presentation: {
             title: courseData.presentation?.title,
             slides:
-              courseData.presentation?.slides?.map(slide => ({
+              courseData.presentation?.slides?.map((slide) => ({
                 slide_number: slide.slide_number,
                 content:
-                  slide.content?.map(item => ({
+                  slide.content?.map((item) => ({
                     content: item.content,
                     image_suggestion: item.image_suggestion,
                     additional_resources: item.additional_resources,
@@ -174,11 +210,11 @@ export async function POST(request) {
             introduction: { content: courseData.introduction?.content },
             body: {
               modules:
-                courseData.body?.modules?.map(module => ({
+                courseData.body?.modules?.map((module) => ({
                   module_number: module.module_number,
                   title: module.title,
                   subtopics:
-                    module.subtopics?.map(subtopic => ({
+                    module.subtopics?.map((subtopic) => ({
                       title: subtopic.title,
                     })) || [],
                 })) || [],
@@ -198,11 +234,11 @@ export async function POST(request) {
             introduction: { content: courseData.introduction?.content },
             body: {
               sections:
-                courseData.body?.sections?.map(section => ({
+                courseData.body?.sections?.map((section) => ({
                   title: section.title,
                   content: section.content,
                   subtopics:
-                    section.subtopics?.map(subtopic => ({
+                    section.subtopics?.map((subtopic) => ({
                       title: subtopic.title,
                       content: subtopic.content,
                     })) || [],
@@ -213,7 +249,7 @@ export async function POST(request) {
           activities: activityData,
         };
       }
-    
+
       return NextResponse.json(
         {
           message: "Course already exists for this user",
@@ -222,7 +258,6 @@ export async function POST(request) {
         { status: 200 }
       );
     }
-    
 
     // Check for the OpenAI API key
     if (!process.env.OPENAI_API_KEY) {
@@ -295,7 +330,6 @@ export async function POST(request) {
         { status: 500 }
       );
     }
-    
 
     // Insert the new course into the database
     const courseInsert = await db.insert(COURSES).values({

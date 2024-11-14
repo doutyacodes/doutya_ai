@@ -66,7 +66,7 @@ const Badges = () => {
         ([type, badges]) =>
           badges.length > 0 && (
             <div key={type} className="space-y-5">
-              <h5 className="text-gray-900 text-xl font-semibold uppercase text-center">
+              <h5 className="text-gray-900 text-xl font-semibold uppercase text-left">
                 {type === "search"
                   ? "Search Badges"
                   : type === "knowledge"
@@ -76,7 +76,7 @@ const Badges = () => {
               <div className="grid md:grid-cols-4 grid-cols-2 gap-6">
                 {badges.map((badge, index) => (
                   <motion.div
-                    className="flex items-center justify-center flex-col gap-3"
+                    className="flex flex-col gap-3"
                     key={badge.id}
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -114,16 +114,16 @@ const Badges = () => {
                             className="rounded-xl border-2 border-transparent opacity-60 filter blur-sm"
                           />
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <p className="text-sm text-white bg-black bg-opacity-60 px-2 py-1 rounded-md">
+                            {/* <p className="text-sm text-white bg-black bg-opacity-60 px-2 py-1 rounded-md">
                               Not Completed
-                            </p>
+                            </p> */}
                           </div>
                         </div>
                       )}
                     </motion.div>
-                    <h4 className="text-center font-bold text-lg uppercase text-gray-900">
+                    {/* <h4 className="text-center font-bold text-lg uppercase text-gray-900">
                       {badge.title}
-                    </h4>
+                    </h4> */}
                   </motion.div>
                 ))}
               </div>
