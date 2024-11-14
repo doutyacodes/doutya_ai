@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
-import { IoChevronBackOutline, IoPlayCircle } from "react-icons/io5";
+import { IoChevronBackOutline, IoPlayCircle, IoPauseCircle, IoStopCircle } from "react-icons/io5";
 import Link from "next/link";
 
 const Chapter = () => {
@@ -16,14 +16,17 @@ const Chapter = () => {
   const [showTranscript, setShowTranscript] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0); // Track current playback position
-  let speech = null;
+  const [contentChunks, setContentChunks] = useState([]);
+  const utteranceRef = useRef(null); 
 
   useEffect(() => {
     const handleSlug = async () => {
       setLoading(true);
       try {
         const response = await GlobalApi.FetchSubtopics({ slug });
-        setLatestCourse(JSON.parse(response.data.course[0].chapter_content));
+        const courseContent = JSON.parse(response.data.course[0].chapter_content);
+        setLatestCourse(courseContent);
+        prepareContentChunks(courseContent);
       } catch (err) {
         console.error("Error fetching subtopic:", err);
         toast.error(
@@ -35,50 +38,80 @@ const Chapter = () => {
     };
 
     if (slug) handleSlug();
+
+    // Cleanup function to stop audio when component unmounts
+    return () => {
+        window.speechSynthesis.cancel();
+        setIsPlaying(false);
+        utteranceRef.current = null; // Clear the reference to remove it entirely
+      }
   }, [slug]);
+
+  const prepareContentChunks = (courseContent) => {
+    const content = courseContent.type === "poem"
+      ? courseContent.verses.map((verse) => verse.line).join(". ")
+      : courseContent.introduction?.content +
+        " " +
+        (courseContent.body?.map((paragraph) => paragraph.content).join(". ") || "");
+
+    const chunks = content.split(/(?<=[.!?])\s+/); // Split text by sentences or phrases
+    setContentChunks(chunks);
+  };
+
 
   const playContent = () => {
     if (isPlaying) {
-      window.speechSynthesis.cancel();
+      // If already playing, pause the speech synthesis and update state
+      window.speechSynthesis.pause();
       setIsPlaying(false);
     } else {
-      const content =
-        latestCourse.type === "poem"
-          ? latestCourse.verses.map((verse) => verse.line).join(" ")
-          : latestCourse.introduction?.content +
-              latestCourse.body
-                ?.map((paragraph) => paragraph.content)
-                .join(" ") || "";
-
-      const contentChunks = content.split(". "); // Split content into sentences
-
-      if (content) {
-        speech = new SpeechSynthesisUtterance();
-        speech.text = contentChunks.slice(currentIndex).join(". ");
-        switch (latestCourse.language) {
-          case "japanese":
-            speech.lang = "ja-JP";
-            break;
-          case "korean":
-            speech.lang = "ko-KR";
-            break;
-          default:
-            speech.lang = "en-US"; // Default to English if not Japanese or Korean
-        }
-        speech.rate = 1;
-        speech.pitch = 1.2;
-
-        window.speechSynthesis.speak(speech);
+      // If paused, resume without creating a new utterance
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
         setIsPlaying(true);
-
-        speech.onend = () => {
-          setCurrentIndex((prevIndex) => prevIndex + 1);
-          setIsPlaying(false);
-        };
+      } else {
+        // If not yet started, initialize the utterance and start playing
+        window.speechSynthesis.cancel(); // Stop any ongoing speech
+        utteranceRef.current = new SpeechSynthesisUtterance();
+        
+        // Set the text starting from the current chunk index
+        utteranceRef.current.text = contentChunks.slice(currentIndex).join(". ");
+        
+        // Set language based on the course content's language
+        utteranceRef.current.lang = latestCourse.language === "japanese"
+          ? "ja-JP"
+          : latestCourse.language === "korean"
+          ? "ko-KR"
+          : "en-US";
+          
+        utteranceRef.current.rate = 1;
+        utteranceRef.current.pitch = 1.2;
+  
+        // Update playback state and manage playback end
+        utteranceRef.current.onend = handleSpeechEnd;
+        window.speechSynthesis.speak(utteranceRef.current);
+        setIsPlaying(true);
       }
     }
   };
 
+  const handleSpeechEnd = () => {
+    const nextIndex = currentIndex + 1;
+    if (nextIndex < contentChunks.length) {
+      setCurrentIndex(nextIndex);
+      utteranceRef.current.text = contentChunks[nextIndex];
+      window.speechSynthesis.speak(utteranceRef.current);
+    } else {
+      setIsPlaying(false);
+      setCurrentIndex(0);
+    }
+  };
+
+  const stopContent = () => {
+    window.speechSynthesis.cancel();
+    setIsPlaying(false);
+    setCurrentIndex(0);
+  };
   if (loading) return <LoadingSpinner />;
 
   return (
@@ -167,13 +200,31 @@ const Chapter = () => {
               <>
                 <div className="flex flex-col items-center justify-center mt-4">
                   {latestCourse.language == "english" && (
-                    <button
-                      onClick={playContent}
-                      className="text-white bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
-                    >
-                      <IoPlayCircle className="text-3xl" />
-                      <span>{isPlaying ? "Pause" : "Play Podcast"}</span>
-                    </button>
+                        <div className="flex gap-2">
+                        <button
+                          onClick={playContent}
+                          className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center gap-2"
+                        >
+                          {isPlaying ? (
+                            <>
+                              <IoPauseCircle className="text-xl" /> Pause
+                            </>
+                          ) : (
+                            <>
+                              <IoPlayCircle className="text-xl" /> Play Podcast
+                            </>
+                          )}
+                        </button>
+                        <button
+                          onClick={stopContent}
+                          disabled={!isPlaying} // Disable when isPlaying is false
+                          className={`${
+                            isPlaying ? "bg-red-500 hover:bg-red-600" : "bg-gray-400 cursor-not-allowed"
+                          } text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center gap-2`}
+                        >
+                          <IoStopCircle className="text-xl" /> Stop
+                        </button>
+                      </div>
                   )}
 
                   <button
@@ -347,13 +398,33 @@ const Chapter = () => {
               latestCourse.type === "poem") && (
               <div className="text-center mt-4 absolute right-5 top-5">
                 {latestCourse.language == "english" && (
-                  <button
-                    onClick={playContent}
-                    className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all"
-                  >
-                    {isPlaying ? "Pause" : " Play As Audio"}
-                  </button>
+                  <div className="flex gap-2">
+                      <button
+                        onClick={playContent}
+                        className="bg-[#1e5f9f] hover:bg-[#40cb9f] text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center gap-2"
+                      >
+                        {isPlaying ? (
+                          <>
+                            <IoPauseCircle className="text-xl" /> Pause
+                          </>
+                        ) : (
+                          <>
+                            <IoPlayCircle className="text-xl" /> Play As Audio
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={stopContent}
+                        disabled={!isPlaying} // Disable when isPlaying is false
+                        className={`${
+                          isPlaying ? "bg-red-500 hover:bg-red-600" : "bg-gray-400 cursor-not-allowed"
+                        } text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center gap-2`}
+                      >
+                        <IoStopCircle className="text-xl" /> Stop
+                      </button>
+                    </div>
                 )}
+
               </div>
             )}
           </div>

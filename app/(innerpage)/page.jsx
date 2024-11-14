@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Toaster, toast } from "react-hot-toast";
 import LoadingSpinner from "../_components/LoadingSpinner";
-import { IoChevronBackOutline, IoPlayCircle } from "react-icons/io5";
+import { IoChevronBackOutline, IoPauseCircle, IoPlayCircle, IoStopCircle } from "react-icons/io5";
 import Link from "next/link";
 import Navbar from "../_components/Navbar";
 import GlobalApi from "../api/_services/GlobalApi";
@@ -73,7 +73,16 @@ const Home = () => {
       }
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    // return () => window.removeEventListener("scroll", handleScroll);
+
+    // Cleanup for both scroll listener and speech synthesis
+    return () => {
+      window.removeEventListener("scroll", handleScroll); // Remove scroll listener
+      
+      // Stop any ongoing speech synthesis and fully reset the utterance reference
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+    };
   }, []);
   let speech = null;
   // const validateForm = () => {
@@ -239,45 +248,60 @@ const Home = () => {
 
   const playContent = () => {
     if (isPlaying) {
-      window.speechSynthesis.cancel();
+      window.speechSynthesis.pause();
       setIsPlaying(false);
     } else {
-      const content =
-        latestCourse.type === "poem"
-          ? latestCourse.verses.map((verse) => verse.line).join(" ")
-          : latestCourse.introduction?.content +
-              latestCourse.body
-                ?.map((paragraph) => paragraph.content)
-                .join(" ") || "";
-
-      const contentChunks = content.split(". "); // Split content into sentences
-
-      if (content) {
-        speech = new SpeechSynthesisUtterance();
-        speech.text = contentChunks.slice(currentIndex).join(". ");
-        switch (latestCourse.language) {
-          case "japanese":
-            speech.lang = "ja-JP";
-            break;
-          case "korean":
-            speech.lang = "ko-KR";
-            break;
-          default:
-            speech.lang = "en-US"; // Default to English if not Japanese or Korean
-        }
-        speech.rate = 1;
-        speech.pitch = 1.2;
-
-        window.speechSynthesis.speak(speech);
+      // If paused, resume without creating a new utterance
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
         setIsPlaying(true);
+      } else {
+        // If not yet started, initialize the utterance and start playing
+          window.speechSynthesis.cancel(); // Stop any ongoing speech
+          const content =
+            latestCourse.type === "poem"
+              ? latestCourse.verses.map((verse) => verse.line).join(" ")
+              : latestCourse.introduction?.content +
+                  latestCourse.body
+                    ?.map((paragraph) => paragraph.content)
+                    .join(" ") || "";
 
-        speech.onend = () => {
-          setCurrentIndex((prevIndex) => prevIndex + 1);
-          setIsPlaying(false);
-        };
+        const contentChunks = content.split(". "); // Split content into sentences
+
+        if (content) {
+          speech = new SpeechSynthesisUtterance();
+          speech.text = contentChunks.slice(currentIndex).join(". ");
+          switch (latestCourse.language) {
+            case "japanese":
+              speech.lang = "ja-JP";
+              break;
+            case "korean":
+              speech.lang = "ko-KR";
+              break;
+            default:
+              speech.lang = "en-US"; // Default to English if not Japanese or Korean
+          }
+          speech.rate = 1;
+          speech.pitch = 1.2;
+
+          window.speechSynthesis.speak(speech);
+          setIsPlaying(true);
+
+          speech.onend = () => {
+            setCurrentIndex((prevIndex) => prevIndex + 1);
+            setIsPlaying(false);
+          };
+        }
       }
     }
   };
+
+  const stopContent = () => {
+    window.speechSynthesis.cancel();
+    setIsPlaying(false);
+    setCurrentIndex(0);
+  };
+
   const handleTypeChange = (newType) => {
     setType(newType);
     if (newType === "podcast") {
@@ -919,13 +943,31 @@ const Home = () => {
                 <>
                   <div className="flex flex-col items-center justify-center mt-4">
                     {latestCourse.language == "english" && (
-                      <button
-                        onClick={playContent}
-                        className=" bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
-                      >
-                        <IoPlayCircle className="text-3xl text-white" />
-                        <span>{isLoading ? "Pause" : "Play Podcast"}</span>
-                      </button>
+                      <div className="flex gap-2">
+                          <button
+                            onClick={playContent}
+                            className="bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
+                          >
+                            {isPlaying ? (
+                              <>
+                                <IoPauseCircle className="text-3xl text-white" /> Pause
+                              </>
+                            ) : (
+                              <>
+                                <IoPlayCircle className="text-3xl text-white" /> Play Podcast
+                              </>
+                            )}
+                          </button>
+                          <button
+                            onClick={stopContent}
+                            disabled={!isPlaying} // Disable when isPlaying is false
+                            className={`${
+                              isPlaying ? "bg-red-500 hover:bg-red-600" : "bg-gray-400 cursor-not-allowed"
+                            } text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center gap-2`}
+                          >
+                            <IoStopCircle className="text-xl" /> Stop
+                          </button>
+                        </div>
                     )}
                     <button
                       onClick={() => setShowTranscript(!showTranscript)}
