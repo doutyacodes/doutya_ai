@@ -1222,7 +1222,7 @@ const Home = () => {
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.5 }}
             onClick={() => scrollToSection("our-story")}
-            className="bg-orange-500 text-white p-3 rounded-full shadow-lg flex items-center space-x-2"
+            className="bg-orange-500 text-white text-xs p-3 rounded-full shadow-lg flex flex-col items-center"
           >
             <span>Our Story</span>
             <svg
@@ -1230,7 +1230,7 @@ const Home = () => {
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              className="w-5 h-5"
+              className="w-5 h-5 rotate-90"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -1241,7 +1241,7 @@ const Home = () => {
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.5 }}
             onClick={() => scrollToSection("features")}
-            className="bg-orange-500 text-white p-3 rounded-full shadow-lg flex items-center space-x-2"
+            className="bg-orange-500 text-white text-xs p-3 rounded-full shadow-lg flex flex-col items-center"
           >
             <span>Our Features</span>
             <svg
@@ -1249,7 +1249,7 @@ const Home = () => {
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              className="w-5 h-5"
+              className="w-5 h-5 rotate-90"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
