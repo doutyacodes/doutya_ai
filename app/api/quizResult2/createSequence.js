@@ -45,17 +45,17 @@ export const createSequence = async (resultDataArray, userId, quizId, finalChild
             secondaryStyle = sortedStyles[1][0];
         }
     } else if (!primaryStyle) {
-        // Handle hybrid learners if no dominant style
-        const closeStyles = sortedStyles.filter(([_, count]) => count >= sortedStyles[0][1] - 2);
-        if (closeStyles.length > 1) {
-            primaryStyle = 'Hybrid';
-        }
+        // List all styles with counts close to the top style count
+        const closeStyles = sortedStyles
+            .filter(([_, count]) => count >= sortedStyles[0][1] - 2)
+            .map(([style]) => style);
+        primaryStyle = closeStyles.join(" & ");
     }
 
     const finalProfile = primaryStyle
-    ? `${primaryStyle}${secondaryStyle ? ` & ${secondaryStyle}` : ''}`
-    : 'No clear dominant style';
-    console.log("finalProfile",finalProfile)
+        ? `${primaryStyle}${secondaryStyle ? ` & ${secondaryStyle}` : ''}`
+        : 'No clear dominant style';
+    console.log("finalProfile", finalProfile);
 
     try {
         // Save the final learning style profile in QUIZ_SEQUENCES

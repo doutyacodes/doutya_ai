@@ -1217,7 +1217,7 @@ export const CHILDREN_PROGRESS = mysqlTable("children_progress", {
   question_id: int("question_id").notNull().references(() => COMMON_QUESTIONS.id), // Foreign key to COMMON_QUESTIONS table
   option_id: int("option_id").notNull().references(() => COMMON_OPTIONS.id), // Foreign key to COMMON_OPTIONS table
   option_letter: varchar("option_letter", { length: 1 }).default(null),
-  quiz_id: int("quiz_id").notNull(), // New column for quiz identification
+  // quiz_id: int("quiz_id").notNull(), // New column for quiz identification
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });

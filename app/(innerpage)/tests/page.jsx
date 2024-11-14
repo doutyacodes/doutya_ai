@@ -31,22 +31,22 @@ export default function Dashboard() {
     authCheck()
   }, [router]);
 
-  useEffect(() => {
-    if (isTest2Completed) {
-      const interval = setInterval(() => {
-        setSecondsRemaining((prevSeconds) => prevSeconds - 1);
-      }, 1000);
+  // useEffect(() => {
+  //   if (isTest2Completed) {
+  //     const interval = setInterval(() => {
+  //       setSecondsRemaining((prevSeconds) => prevSeconds - 1);
+  //     }, 1000);
 
-      const timer = setTimeout(() => {
-        router.replace("/tests/careers/career-suggestions");
-      }, 5000);
+  //     // const timer = setTimeout(() => {
+  //     //   router.replace("/tests/careers/career-suggestions");
+  //     // }, 5000);
 
-      return () => {
-        clearInterval(interval);
-        clearTimeout(timer);
-      };
-    }
-  }, [isTest2Completed, router]);
+  //     return () => {
+  //       clearInterval(interval);
+  //       // clearTimeout(timer);
+  //     };
+  //   }
+  // }, [isTest2Completed, router]);
 
   const toggleResults = () => {
     setShowResults(prevState => !prevState);
@@ -70,27 +70,26 @@ export default function Dashboard() {
 
   const MobileNavigation = dynamic(() => import('./_components/Navbar/button.jsx'), { ssr: false });
   
-  if (isTest2Completed) {
-    return (
-      <div className="h-screen flex items-center justify-center text-white text-center">
-        <div>
-          <div className="text-4xl font-semibold">
-            All tests are completed!
-          </div>
+  // if (isTest2Completed) {
+  //   return (
+  //     <div className="h-screen flex items-center justify-center text-white text-center">
+  //       <div>
+  //         <div className="text-4xl font-semibold">
+  //           All tests are completed!
+  //         </div>
 
-          <p className="mt-4">
-            Redirecting to the career suggestions in {secondsRemaining} seconds...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  //         <p className="mt-4">
+  //           Redirecting to the career suggestions in {secondsRemaining} seconds...
+  //         </p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
 
   return (
     <div>
       
-     {!isTest2Completed && (
         <>
           <Banner
             onToggleResults={toggleResults}
@@ -105,8 +104,8 @@ export default function Dashboard() {
           {/* {showResults && <Results />} */}
           {/* {showQuiz2Results && redirect("/tests/careers/career-suggestions")} */}
         </>
-      )
-    } 
+      
+    
       {/* <MobileNavigation /> */}
     </div>
   )

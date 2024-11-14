@@ -71,23 +71,66 @@ export async function POST(req) {
       .execute();
 
     if (quizWithOption.length === 0) {
-      const prompt = `Generate a knowledge evaluation test for a child with age ${age} years and ${weeks} weeks, including 5 subjects with 5 multiple-choice questions each. Use this JSON structure for each subject.Ensure it is valid json data and dont return any comments or words.the data contains only json structure shown below:
-      [
-        {
-          "subject": "subject_1_name",
-          "questions": [
-            {
-              "question": "question",
-              "options": [
-                { "text": "option1", "isAnswer": true },
-                { "text": "option2", "isAnswer": false },
-                { "text": "option3", "isAnswer": false },
-                { "text": "option4", "isAnswer": false }
-              ]
-            }
-          ]
-        }
-      ]`;
+      const prompt = `Generate a knowledge evaluation test for a child with age ${age} years and ${weeks} weeks. Include exactly 5 subjects, each with 5 multiple-choice questions. Ensure the data follows this structure:
+[
+  {
+    "subject": "subject_1_name",
+    "questions": [
+      {
+        "question": "question_1",
+        "options": [
+          { "text": "option1", "isAnswer": true },
+          { "text": "option2", "isAnswer": false },
+          { "text": "option3", "isAnswer": false },
+          { "text": "option4", "isAnswer": false }
+        ]
+      },
+      {
+        "question": "question_2",
+        "options": [
+          { "text": "option1", "isAnswer": true },
+          { "text": "option2", "isAnswer": false },
+          { "text": "option3", "isAnswer": false },
+          { "text": "option4", "isAnswer": false }
+        ]
+      },
+      {
+        "question": "question_3",
+        "options": [
+          { "text": "option1", "isAnswer": true },
+          { "text": "option2", "isAnswer": false },
+          { "text": "option3", "isAnswer": false },
+          { "text": "option4", "isAnswer": false }
+        ]
+      },
+      {
+        "question": "question_4",
+        "options": [
+          { "text": "option1", "isAnswer": true },
+          { "text": "option2", "isAnswer": false },
+          { "text": "option3", "isAnswer": false },
+          { "text": "option4", "isAnswer": false }
+        ]
+      },
+      {
+        "question": "question_5",
+        "options": [
+          { "text": "option1", "isAnswer": true },
+          { "text": "option2", "isAnswer": false },
+          { "text": "option3", "isAnswer": false },
+          { "text": "option4", "isAnswer": false }
+        ]
+      }
+    ]
+  },
+  {
+    "subject": "subject_2_name",
+    "questions": [...similar structure as above...]
+  },
+  ...
+]
+Ensure that only 5 subjects are included, each with exactly 5 questions.`;
+
 
       const response = await axios.post(
         "https://api.openai.com/v1/chat/completions",

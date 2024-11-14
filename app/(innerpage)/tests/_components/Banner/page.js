@@ -176,13 +176,13 @@ function Banner({
 
       <div className="p-4">
         <div className="mt-8 md:flex hidden flex-wrap justify-evenly gap-10 w-full">
-          {!isTest1Completed &&
+          {
             renderTestCard(
               1,
               "#FFA500, #FFCC80",
               "findStrength",
               "personalityTestDescription",
-              "/quiz-section/1",
+              isTest1Completed ? "/tests/myResults" :"/quiz-section/1",
               selectedAge
             )}
           {renderTestCard(
@@ -190,7 +190,7 @@ function Banner({
             "#FF7043, #FFB74D",
             "followCareer",
             "interestTestDescription",
-            "/CareerQuizSection/2",
+            isTest2Completed ? "/tests/careers/career-suggestions" : "/CareerQuizSection/2",
             selectedAge
           )}
           {renderTestCard(
@@ -198,7 +198,7 @@ function Banner({
             "#FF7043, #FFB74D",
             "followCareer",
             "interestTestDescription",
-            "/quiz/learning-style/4",
+            isTest4Completed ? "/tests/learning-style-results":"/quiz/learning-style/4",
             selectedAge
           )}
           {renderTestCard(
@@ -221,13 +221,13 @@ function Banner({
             onSwiper={(swiper) => (swiperRef.current = swiper)}
             className="w-full flex justify-center"
           >
-            {!isTest1Completed &&
+            {
               renderTestCard(
                 1,
                 "#FFA500, #FFCC80",
                 "findStrength",
                 "personalityTestDescription",
-                "/quiz-section/1",
+                isTest1Completed ? "/tests/myResults" :"/quiz-section/1",
                 selectedAge
               )}
             {renderTestCard(
@@ -235,7 +235,7 @@ function Banner({
               "#FF7043, #FFB74D",
               "followCareer",
               "interestTestDescription",
-              "/CareerQuizSection/2",
+              isTest2Completed ? "/tests/careers/career-suggestions" : "/CareerQuizSection/2",
               selectedAge
             )}
             {renderTestCard(
@@ -243,7 +243,7 @@ function Banner({
               "#FF7043, #FFB74D",
               "followCareer",
               "interestTestDescription",
-              "/quiz/learning-style/4",
+              isTest4Completed ? "/tests/learning-style-results":"/quiz/learning-style/4",
               selectedAge
             )}
             {renderTestCard(

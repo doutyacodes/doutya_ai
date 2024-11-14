@@ -111,7 +111,7 @@ function Results() {
           </div>
         ))}
 
-        <div className="mt-10">
+        {/* <div className="mt-10">
           <p className="max-sm:mb-5 text-lg font-semibold">{t("careers")}</p>
           <div className="md:flex flex-wrap gap-4 max-md:space-y-4 text-sm">
             {most_suitable_careers ? (
@@ -133,7 +133,7 @@ function Results() {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { db } from "@/utils";
-import { CHILDREN } from "@/utils/schema";
+import { CHILDREN, USER_DETAILS } from "@/utils/schema";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { authenticate } from "@/lib/jwtMiddleware";
@@ -31,6 +31,17 @@ export async function GET(req) {
     
     
     try {
+        const userDetails = await db
+        .select()
+        .from(USER_DETAILS)
+        .where(eq(USER_DETAILS.id, userId))
+        .execute();
+
+    if (userDetails.length === 0) {
+        return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    const user = userDetails[0];
         const children = await db
             .select()
             .from(CHILDREN)
@@ -45,7 +56,7 @@ export async function GET(req) {
                 return { ...child, age ,dob,weeks}; // Add the calculated age to each child object
             });
 
-        return NextResponse.json({ data: childrenWithAge });
+        return NextResponse.json({ data: childrenWithAge,user });
     } catch (error) {
         console.error("Fetch Children Error:", error);
         return NextResponse.json({ message: "Server error" }, { status: 500 });

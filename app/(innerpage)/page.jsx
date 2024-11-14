@@ -35,7 +35,7 @@ const Home = () => {
   const [base64Image, setBase64Image] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
-  const { selectedChildId, selectedAge,selectedWeeks } = useChildren(); // Accessing selected child ID from context
+  const { selectedChildId, selectedAge, selectedWeeks } = useChildren(); // Accessing selected child ID from context
   const { isAuthenticated, loading, logout } = useAuth();
   const [image, setImage] = useState(null);
   const [file, setFile] = useState(null); // Track the uploaded file
@@ -49,6 +49,24 @@ const Home = () => {
     label: "A broad selection of age-appropriate stories for children.",
   }); // State for selected genre
   const [ageGenres, setAgeGenres] = useState([]);
+  const [showButton, setShowButton] = useState(true);
+
+  // Function to handle scroll to "Our Story" section
+  const scrollToSection = () => {
+    document.getElementById("our-story").scrollIntoView({ behavior: "smooth" });
+    setShowButton(false); // Hide button after click
+  };
+
+  // Show button when the user scrolls back up
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY < 100) {
+        setShowButton(true); // Show button when near the top
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   let speech = null;
   // const validateForm = () => {
   //   if (!courseName || !age) {
@@ -451,63 +469,67 @@ const Home = () => {
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
-  
+
     // Check if the selected file is an image
     if (selectedFile && selectedFile.type.startsWith("image/")) {
       setFile(selectedFile); // Store the file for later use
       setImage(URL.createObjectURL(selectedFile)); // Preview the image (optional)
-      
+
       // Convert the image to base64
       const reader = new FileReader();
       reader.onloadend = () => {
         setBase64Image(reader.result); // Save base64 encoded image
       };
       reader.readAsDataURL(selectedFile);
-  
+
       console.log("Image uploaded:", selectedFile);
     } else {
       alert("Please upload a valid image file.");
     }
   };
-  
 
   async function submitUpload() {
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
     const formData = {
       child_id: selectedChildId,
       token: token,
       course_id: 213,
       image: base64Image, // assuming `image` is in base64 format after `handleFileChange`
     };
-  
+
     try {
-      const response = await fetch('/api/activityUpload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/activityUpload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-  
+
       // Log the raw response text to understand what the server is sending
       // const responseText = await response.data; // Read response as text
-      console.log("response",response)
+      console.log("response", response);
       // console.log("Raw response text:", responseText);
-  
+
       // // Check if the response is empty or not JSON
       // const result = JSON.parse(responseText); // Parse the text as JSON
       if (response.ok) {
-        setHideActivity(false)
-      } 
+        setHideActivity(false);
+      }
     } catch (error) {
-      console.error('Upload failed:', error);
+      console.error("Upload failed:", error);
     }
   }
-  
-  
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
   return (
-    <div className={cn(" flex flex-col items-center justify-center  text-gray-800 p-5  pt-0",!latestCourse ? "md:pt-20":"md:pt-5")}>
+    <div
+      className={cn(
+        " flex flex-col items-center justify-center  text-gray-800 p-5  pt-0",
+        !latestCourse ? "md:pt-20" : "md:pt-5"
+      )}
+    >
       <Toaster />
 
       {!latestCourse && (
@@ -597,13 +619,13 @@ const Home = () => {
                     <SelectContent>
                       <SelectGroup className="max-md:w-screen pr-2">
                         {ageGenres.map((option) => (
-                          <SelectItem className="w-full" key={option.value} value={option.value}>
+                          <SelectItem
+                            className="w-full"
+                            key={option.value}
+                            value={option.value}
+                          >
                             <span className="w-full text-center">
                               {option.label1}
-                              <span className="max-md:hidden">
-                                {" - "}
-                                {option.label}
-                              </span>
                             </span>
                             {
                               <div className="text-[10px] md:hidden text-gray-500 pt-1 mt-1 w-full border-t-[1px]">
@@ -1074,7 +1096,9 @@ const Home = () => {
                   Back to Search
                 </motion.div> */}
             <div className="flex flex-col gap-5">
-              <p className="uppercase font-bold text-lg text-center">Related Topics</p>
+              <p className="uppercase font-bold text-lg text-center">
+                Related Topics
+              </p>
 
               <div className="flex justify-between gap-3">
                 <div className="bg-yellow-400 p-3 rounded-md px-7 text-center uppercase font-semibold text-sm">
@@ -1088,6 +1112,90 @@ const Home = () => {
           </motion.div>
         )}
       </div>
+      <section id="our-story" className="mt-10 p-8">
+        <motion.h1
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-5xl font-bold text-center mb-8 mt-14 "
+        >
+          Our Story
+        </motion.h1>
+
+        <div className="text-lg text-justify mx-auto max-w-5xl  leading-relaxed space-y-6">
+          {/* First Paragraph */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeInOut", delay: 0.3 }}
+          >
+            Doutya Kids was born from a father’s journey to make learning
+            magical for his child. Our founder, like many parents, faced the
+            daily challenge of explaining complex ideas in a way his 3-year-old
+            could understand. Whether it was about stars, animals, or even
+            simple science, he constantly found himself reaching for ways to
+            make these ideas exciting, fun, and understandable. Bedtime was
+            another adventure—no matter how many stories he told, he was always
+            running out!
+          </motion.div>
+
+          {/* Second Paragraph */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeInOut", delay: 0.6 }}
+          >
+            With these challenges in mind, Doutya Kids came to life. We set out
+            to create a space where parents can effortlessly bring the world’s
+            wonders into a child’s hands. Doutya Kids is designed for children
+            aged 2-12, making learning feel like play through age-appropriate
+            stories, bedtime tales, and interactive poems on any topic. By
+            simply typing in a topic, parents can unlock stories that engage
+            their child’s imagination, simplify complex ideas, and turn learning
+            into a joyful experience.
+          </motion.div>
+
+          {/* Third Paragraph */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeInOut", delay: 0.9 }}
+          >
+            At Doutya Kids, we believe learning should be as unique as every
+            child. Inspired by a father’s wish to explain the world to his
+            child, we’ve created a platform that lets every family explore new
+            worlds, one story at a time.
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Scroll Button with Animation */}
+      {showButton && (
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          transition={{ duration: 0.5 }}
+          onClick={scrollToSection}
+          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white p-3 rounded-full shadow-lg flex items-center space-x-2"
+        >
+          <span>Our Story</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            className="w-5 h-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </motion.button>
+      )}
     </div>
   );
 };

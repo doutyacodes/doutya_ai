@@ -37,6 +37,14 @@ const GetKidsPost = async (data) => {
   });
 };
 
+const UpdateUserData = async (token, data) => {
+  return axios.post("/api/updateUserData", data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
+
 const KidsLikes = async (data) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
@@ -114,7 +122,13 @@ const GetQuizData = (id, token, selectedChildId) => {
     }
   );
 };
-const GetQuizData3 = (id, token, selectedChildId, selectedAge,selectedWeeks ) => {
+const GetQuizData3 = (
+  id,
+  token,
+  selectedChildId,
+  selectedAge,
+  selectedWeeks
+) => {
   return axios.post(
     `/api/GetQuizData3`,
     {
@@ -247,7 +261,7 @@ const getPostBySlug = async (data) => {
   });
 };
 
-const GetDashboarCheck = (selectedChildId,selectedAge,selectedWeeks) => {
+const GetDashboarCheck = (selectedChildId, selectedAge, selectedWeeks) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
   return axios.post(
@@ -280,7 +294,13 @@ const SaveQuizProgress = (data, quizId, selectedChildId) => {
   });
 };
 
-const SaveQuizProgress3 = (data, quizId, selectedChildId,selectedWeeks,selectedAge) => {
+const SaveQuizProgress3 = (
+  data,
+  quizId,
+  selectedChildId,
+  selectedWeeks,
+  selectedAge
+) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
   const payload = {
@@ -288,7 +308,7 @@ const SaveQuizProgress3 = (data, quizId, selectedChildId,selectedWeeks,selectedA
     childId: selectedChildId,
     results: data,
     ages: selectedAge,
-      weekData: selectedWeeks,
+    weekData: selectedWeeks,
   };
   return axios.post(`/api/quizProgress3`, payload, {
     headers: {
@@ -328,7 +348,12 @@ const SaveQuizResult = (selectedChildId) => {
   );
 };
 
-const SaveQuizResult3 = (selectedChildId,datatoken,selectedAge,selectedWeeks) => {
+const SaveQuizResult3 = (
+  selectedChildId,
+  datatoken,
+  selectedAge,
+  selectedWeeks
+) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
   return axios.post(
@@ -534,6 +559,26 @@ const SaveCareerQuizResult = (data) => {
   });
 };
 
+const learnStyleResult = (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(`/api/learnStyleResult`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+const getQuizResults = (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(`/api/getQuizResults`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 const GetIndustry = (token, language) => {
   return axios.get(`/api/getIndustry`, {
     headers: {
@@ -552,6 +597,7 @@ export default {
   FetchCourses, // Export the new function
   FetchSubtopics,
   GetLearnTopics,
+  learnStyleResult,
   GetLearnTopicsData,
   GetQuizData,
   GetQuizData2,
@@ -559,10 +605,12 @@ export default {
   SaveQuizResult3,
   SubmitQuizAnswers,
   getChildBadges,
+  getQuizResults,
   getSingleBadge,
   GetDashboarCheck,
   SaveQuizProgress,
   SaveQuizProgress3,
+  UpdateUserData,
   SaveQuizResult,
   SaveQuizResult2,
   SaveCarrerData,
@@ -593,5 +641,5 @@ export default {
   GetIndustry,
   FetchActivities,
   submitImage,
-  SaveQuizProgress2
+  SaveQuizProgress2,
 };

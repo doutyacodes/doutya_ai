@@ -67,7 +67,7 @@ function Page() {
       }, 1000);
 
       const timer = setTimeout(() => {
-        router.replace("/tests");
+        router.replace("/knowledge-results");
       }, 5000);
 
       return () => {
