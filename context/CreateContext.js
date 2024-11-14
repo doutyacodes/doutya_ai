@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useRouter } from "next/navigation";
 import WelcomeCard from "@/app/_components/WelcomeCard";
+import LoadingSpinner from "@/app/_components/LoadingSpinner";
 
 const ChildrenContext = createContext();
 
@@ -16,7 +17,7 @@ export const ChildrenProvider = ({ children }) => {
   const [selectedDob, setSelectedDob] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showPopup, setShowPopup] = useState(false); // control popup visibility
+  const [showPopup, setShowPopup] = useState(false);
   const router = useRouter();
 
   const updateChildrenData = (data) => {
@@ -27,6 +28,7 @@ export const ChildrenProvider = ({ children }) => {
     const selectedChild = childrenData.find(
       (child) => child.id === parseInt(childId)
     );
+    console.log("selectedChild", selectedChild);
     if (selectedChild) {
       setSelectedChildId(selectedChild.id);
       setSelectedAge(selectedChild.age);
@@ -34,15 +36,15 @@ export const ChildrenProvider = ({ children }) => {
       setSelectedName(selectedChild.name);
       setSelectedWeeks(selectedChild.weeks);
       setSelectedDob(selectedChild.dob);
-      setShowPopup(true); // Show popup when child is selected
+      setShowPopup(true);
     }
   };
 
   useEffect(() => {
     if (showPopup) {
       const timer = setTimeout(() => {
-        setShowPopup(false); // Hide popup after 2 seconds
-        router.push("/"); // Redirect to homepage
+        setShowPopup(false);
+        router.push("/");
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -57,9 +59,6 @@ export const ChildrenProvider = ({ children }) => {
         const response = await GlobalApi.GetUserChildren(token);
         const children = response.data.data;
         setChildrenData(children);
-        if (children.length > 0) {
-          selectChild(children[0].id);
-        }
       }
     } catch (error) {
       console.error("Error fetching children:", error);
@@ -70,7 +69,16 @@ export const ChildrenProvider = ({ children }) => {
 
   useEffect(() => {
     fetchChildren();
-  }, []);
+  }, []); // Only fetch if childrenData is empty
+
+  useEffect(() => {
+    const handleSingleData = () => {
+      if (!selectedChildId && childrenData.length > 0) {
+        selectChild(childrenData[0].id);
+      }
+    };
+    handleSingleData();
+  }, [childrenData]);
 
   return (
     <ChildrenContext.Provider
@@ -87,9 +95,15 @@ export const ChildrenProvider = ({ children }) => {
         loading,
       }}
     >
-      {children}
+      {loading ? <LoadingSpinner /> : children}
       {showPopup && selectedName && selectedAge && (
-        <WelcomeCard  data={{name:selectedName,age:selectedAge,gender:selectedGender}}/>
+        <WelcomeCard
+          data={{
+            name: selectedName,
+            age: selectedAge,
+            gender: selectedGender,
+          }}
+        />
       )}
     </ChildrenContext.Provider>
   );
@@ -98,4 +112,3 @@ export const ChildrenProvider = ({ children }) => {
 export const useChildren = () => {
   return useContext(ChildrenContext);
 };
-

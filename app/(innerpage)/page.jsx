@@ -38,8 +38,8 @@ const Home = () => {
   const [base64Image, setBase64Image] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
-  const { selectedChildId, selectedAge, selectedWeeks } = useChildren(); // Accessing selected child ID from context
-  const { isAuthenticated, loading, logout } = useAuth();
+  const { selectedChildId, selectedAge, selectedWeeks,loading } = useChildren(); // Accessing selected child ID from context
+  const { isAuthenticated, logout } = useAuth();
   const [image, setImage] = useState(null);
   const [file, setFile] = useState(null); // Track the uploaded file
   const [isPlaying, setIsPlaying] = useState(false);
@@ -53,6 +53,11 @@ const Home = () => {
   }); // State for selected genre
   const [ageGenres, setAgeGenres] = useState([]);
   const [showButton, setShowButton] = useState(true);
+
+  // if (loading) {
+  //   return <LoadingSpinner />; // Or any loading indicator
+  // }
+  console.log("selectedAge",selectedAge)
 
   // Function to handle scroll to "Our Story" section
   const scrollToSection = () => {

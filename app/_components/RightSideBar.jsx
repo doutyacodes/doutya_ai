@@ -62,7 +62,7 @@ const RightSideBar = () => {
   if (!childrenData || childrenData.length === 0) {
     return <p></p>;
   }
-  console.log("selectedGender",selectedGender)
+  // console.log("selectedGender",selectedGender)
   return (
     <>
       {isAuthenticated ? (
