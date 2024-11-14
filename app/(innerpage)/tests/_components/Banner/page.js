@@ -220,12 +220,13 @@ function Banner({
           {renderTestCard(
             4,
             "#FF7043, #FFB74D",
-            "followCareer",
-            "interestTestDescription",
+            " Learning Style",
+            "ake this fun and insightful test to determine the best way your child learns. Whether they’re a visual, auditory, or kinesthetic learner, understanding their learning style can help tailor educational approaches for better engagement and success.",
             isTest4Completed
               ? "/tests/learning-style-results"
               : "/quiz/learning-style/4",
-            selectedAge
+            selectedAge,
+            true
           )}
           {renderTestCard(
             5,
@@ -255,26 +256,29 @@ function Banner({
               isTest1Completed ? "/tests/myResults" : "/quiz-section/1",
               selectedAge
             )}
-            {renderTestCard(
-              2,
-              "#FF7043, #FFB74D",
-              "followCareer",
-              "interestTestDescription",
-              isTest2Completed
-                ? "/tests/careers/career-suggestions"
-                : "/CareerQuizSection/2",
-              selectedAge
-            )}
-            {renderTestCard(
-              4,
-              "#FF7043, #FFB74D",
-              "followCareer",
-              "interestTestDescription",
-              isTest4Completed
-                ? "/tests/learning-style-results"
-                : "/quiz/learning-style/4",
-              selectedAge
-            )}
+           {renderTestCard(
+            2,
+            "#FF7043, #FFB74D",
+            "followCareer",
+            "interestTestDescription",
+            isTest2Completed
+              ? "/tests/careers/career-suggestions"
+              : "/CareerQuizSection/2",
+            selectedAge,
+            false,
+            true
+          )}
+           {renderTestCard(
+            4,
+            "#FF7043, #FFB74D",
+            " Learning Style",
+            "ake this fun and insightful test to determine the best way your child learns. Whether they’re a visual, auditory, or kinesthetic learner, understanding their learning style can help tailor educational approaches for better engagement and success.",
+            isTest4Completed
+              ? "/tests/learning-style-results"
+              : "/quiz/learning-style/4",
+            selectedAge,
+            true
+          )}
             {renderTestCard(
               5,
               "#FF7043, #FFB74D",
