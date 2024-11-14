@@ -196,7 +196,7 @@ function Banner({
       </motion.div>
 
       <div className="p-4">
-        <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-6  w-full">
+        <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-md:hidden w-full">
           {renderTestCard(
             1,
             "#FFA500, #FFCC80",
