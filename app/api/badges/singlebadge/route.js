@@ -45,7 +45,8 @@ export async function POST(req) {
         search_count: BADGES.search_count,
         condition: BADGES.condition,
         condition_title: BADGES.condition_title,
-        user_badge_id: USER_BADGES.id, // Check if there is a user badge entry
+        user_badge_id: USER_BADGES.id,
+        earned_at:USER_BADGES.earned_at
       })
       .from(BADGES)
       .leftJoin(
@@ -78,7 +79,8 @@ export async function POST(req) {
         search_count: badgeDetails.search_count,
         condition: badgeDetails.condition,
         condition_title: badgeDetails.condition_title,
-        completed: badgeDetails.completed,
+        earned_at:badgeDetails.earned_at,
+        completed: true,
       },
       message: "Badge details fetched successfully.",
     });

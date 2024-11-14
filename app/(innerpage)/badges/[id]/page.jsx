@@ -15,7 +15,7 @@ const Page = () => {
   const { id } = params;
   const certificateRef = useRef(null);
 
-  const { selectedChildId } = useChildren();
+  const { selectedChildId,selectedChild } = useChildren();
   const [isLoading, setLoading] = useState(true);
   const [badgeData, setBadgeData] = useState(null);
 
@@ -25,7 +25,8 @@ const Page = () => {
       setLoading(true);
       try {
         const response = await GlobalApi.getSingleBadge({ badgeId: id, childId: selectedChildId });
-        setBadgeData(response.badge);
+        setBadgeData(response.data.badge);
+        console.log(response.data.badge);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching badge data:", error);
@@ -67,7 +68,13 @@ const Page = () => {
 
   // If badge is not earned, display blurred effect with message
   const isBadgeCompleted = badgeData && badgeData.completed;
-
+  function formatDateToDDMMYYYY(date) {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
   return (
     <div className=" w-full min-h-screen p-3 flex justify-center items-center">
       <div
@@ -75,7 +82,7 @@ const Page = () => {
         className="w-full h-full p-3 bg-[#ffefca] rounded-md max-w-sm relative"
       >
         <motion.div
-          className="flex items-center justify-center flex-col gap-7 relative"
+          className="flex items-center justify-center flex-col gap-2 relative"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -85,16 +92,16 @@ const Page = () => {
             width={250}
             height={250}
             alt={"badge image"}
-            className={`${isBadgeCompleted ? '' : 'blur-sm'}`}
+            className={`mb-2 ${isBadgeCompleted ? '' : 'blur-sm'}`}
           />
 
           <div className="text-center text-lg w-[240px]">
             {isBadgeCompleted ? (
               <>
                 This badge was awarded to{" "}
-                <span className="underline font-bold">{badgeData.childName}</span>, for
+                <span className="underline font-bold">{selectedChild.name}</span>, for
                 successfully completing{" "}
-                <span className="font-bold">{badgeData.condition}</span> on Doutya Kids, on{" "}
+                <span className="font-bold">{badgeData.condition}</span> on Doutya Kids, on {formatDateToDDMMYYYY(badgeData.earned_at)}
                 <span className="font-bold">{badgeData.completionDate}</span>
               </>
             ) : (

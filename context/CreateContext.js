@@ -16,6 +16,7 @@ export const ChildrenProvider = ({ children }) => {
   const [selectedWeeks, setSelectedWeeks] = useState(null);
   const [selectedDob, setSelectedDob] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
+  const [selectedChild, setSelectedChild] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const router = useRouter();
@@ -75,6 +76,7 @@ export const ChildrenProvider = ({ children }) => {
     const handleSingleData = () => {
       if (!selectedChildId && childrenData.length > 0) {
         selectChild(childrenData[0].id);
+        setSelectedChild(childrenData[0]);
       }
     };
     handleSingleData();
@@ -93,6 +95,7 @@ export const ChildrenProvider = ({ children }) => {
         selectedWeeks,
         selectedDob,
         loading,
+        selectedChild
       }}
     >
       {loading ? <LoadingSpinner /> : children}
