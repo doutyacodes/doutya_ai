@@ -73,6 +73,8 @@ export async function POST(request) {
       );
     }
     
+    
+
     // Check for existing course
     const existingCourse = await db
       .select()
