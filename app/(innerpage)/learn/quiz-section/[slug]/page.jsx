@@ -19,7 +19,7 @@ const QuizSection = () => {
   const [completed, setCompleted] = useState(false);
   const [userAnswers, setUserAnswers] = useState({});
   const [isModalOpen, setModalOpen] = useState(false);
-
+  
   // Fetch quiz data on component mount
   useEffect(() => {
     const fetchQuizData = async () => {

@@ -38,7 +38,7 @@ export async function POST(req) {
         { status: 404 }
       );
     }
-
+    
     const topicId = topic[0].id; // Get the ID of the topic
 
     // Count the number of quizzes (questions) associated with the retrieved topic_id
@@ -71,7 +71,7 @@ export async function POST(req) {
         );
       }
     }
-
+    
     if (userId && finalChildId) {
       // Count the number of user progress entries associated with the retrieved topic_id
       const userProgress = await db

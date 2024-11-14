@@ -205,19 +205,19 @@ export const LEARN_DATA = mysqlTable("learn_data", {
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
-// export const QUESTIONS = mysqlTable("questions", {
-//   id: int("id").primaryKey().autoincrement(),
-//   learn_topic_id: int("learn_topic_id")
-//     .references(() => LEARN_TOPICS.id)
-//     .notNull(), // Foreign key to 'learn_topics' table
-//   question_text: text("question_text").notNull(), // Question text
-//   type: mysqlEnum("type", ["text", "image", "video", "audio"]).notNull(), // Type of question
-//   image: varchar("image", { length: 255 }), // Optional image URL
-//   video: varchar("video", { length: 255 }), // Optional video URL
-//   audio: varchar("audio", { length: 255 }), // Optional audio URL
-//   created_at: timestamp("created_at").defaultNow(),
-//   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
-// });
+export const QUESTIONS = mysqlTable("questions", {
+  id: int("id").primaryKey().autoincrement(),
+  learn_topic_id: int("learn_topic_id")
+    .references(() => LEARN_TOPICS.id)
+    .notNull(), // Foreign key to 'learn_topics' table
+  question_text: text("question_text").notNull(), // Question text
+  type: mysqlEnum("type", ["text", "image", "video", "audio"]).notNull(), // Type of question
+  image: varchar("image", { length: 255 }), // Optional image URL
+  video: varchar("video", { length: 255 }), // Optional video URL
+  audio: varchar("audio", { length: 255 }), // Optional audio URL
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
 
 // Options Table
 // export const OPTIONS = mysqlTable("options", {
@@ -302,20 +302,21 @@ export const PAGE = mysqlTable("page", {
   slug: varchar("slug", { length: 300 }).notNull(),
 });
 
-export const QUESTIONS = mysqlTable("questions", {
-  id: int("id").primaryKey().autoincrement(),
-  type: mysqlEnum("type", ["text", "audio", "video", "image"]).notNull(),
-  timer: int("timer").notNull(),
-  video: varchar("video", { length: 150 }),
-  audio: varchar("audio", { length: 150 }),
-  image: varchar("image", { length: 150 }),
-  question: text("question").notNull(),
-  challenge_id: int("challenge_id").notNull(),
-  task_id: int("task_id").notNull(),
-  option: mysqlEnum("option", ["normal", "poison", "bonus"]).notNull(),
-  stars: int("stars").notNull().default(0),
-  quiz_type: mysqlEnum("quiz_type", ["least", "most"]).notNull(),
-});
+// export const QUESTIONS = mysqlTable("questions", {
+//   id: int("id").primaryKey().autoincrement(),
+//   type: mysqlEnum("type", ["text", "audio", "video", "image"]).notNull(),
+//   timer: int("timer").notNull(),
+//   video: varchar("video", { length: 150 }),
+//   audio: varchar("audio", { length: 150 }),
+//   image: varchar("image", { length: 150 }),
+//   question: text("question").notNull(),
+//   learn_topic_id: int("learn_topic_id").references(() => LEARN_TOPICS.id).notNull(), // Foreign key to 'learn_topics' table
+//   challenge_id: int("challenge_id").notNull(),
+//   task_id: int("task_id").notNull(),
+//   option: mysqlEnum("option", ["normal", "poison", "bonus"]).notNull(),
+//   stars: int("stars").notNull().default(0),
+//   quiz_type: mysqlEnum("quiz_type", ["least", "most"]).notNull(),
+// });
 
 export const ANSWERS = mysqlTable("answers", {
   id: int("id").primaryKey().autoincrement(),
