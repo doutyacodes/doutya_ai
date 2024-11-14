@@ -80,6 +80,7 @@ export const COURSES_KEYWORDS = mysqlTable("courses_keywords", {
 export const CHILDREN = mysqlTable("children", {
   id: int("id").primaryKey().autoincrement(),
   user_id: int("user_id").references(() => USER_DETAILS.id), // Foreign key referencing the user
+  search_criteria: int("search_criteria").notNull(), 
   name: varchar("name", { length: 255 }).notNull(),
   gender: mysqlEnum("gender", ["male", "female", "other"]).notNull(), // Enum for gender
   age: date("age").notNull(),

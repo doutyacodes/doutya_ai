@@ -45,6 +45,14 @@ const UpdateUserData = async (token, data) => {
   });
 };
 
+const UpdateChildData = async (token, data) => {
+  return axios.post("/api/UpdateChildData", data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
+
 const KidsLikes = async (data) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
@@ -611,6 +619,7 @@ export default {
   SaveQuizProgress,
   SaveQuizProgress3,
   UpdateUserData,
+  UpdateChildData,
   SaveQuizResult,
   SaveQuizResult2,
   SaveCarrerData,

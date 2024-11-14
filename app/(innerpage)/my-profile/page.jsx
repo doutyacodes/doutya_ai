@@ -6,13 +6,12 @@ import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import toast from "react-hot-toast";
 
-
-
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [children, setChildren] = useState([]);
-  const [isEditing, setIsEditing] = useState(false); // To toggle editing mode for user info
-  const [loading, setLoading] = useState(true); // To toggle editing mode for user info
+  const [isEditing, setIsEditing] = useState(false); // Toggle editing mode for user info
+  const [loading, setLoading] = useState(true); // Toggle editing mode for user info
+  const [editingChild, setEditingChild] = useState(null); // To manage the child being edited
 
   const handleEditUser = (e) => {
     const { name, value } = e.target;
@@ -37,7 +36,6 @@ const Profile = () => {
         const response = await GlobalApi.GetUserChildren(token);
         const children = response.data.data;
         const users = response.data.user;
-        console.log("children", children);
         setChildren(children);
         setUser(users);
       }
@@ -47,6 +45,7 @@ const Profile = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchChildren();
   }, []);
@@ -57,26 +56,65 @@ const Profile = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Submit logic here (e.g., update data in your backend or state)
     console.log("User details updated:", user);
     console.log("Children details updated:", children);
   };
 
   const updateUserData = async () => {
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const token =
+        typeof window !== "undefined" ? localStorage.getItem("token") : null;
       if (token) {
-        await GlobalApi.UpdateUserData(token, user); // Send updated user data to the API
+        await GlobalApi.UpdateUserData(token, user);
         toast.success("User updated successfully!");
       }
     } catch (error) {
-        toast.error(
-            error.response?.data?.message ||
-              "Failed to update user data. Please try again."
-          );
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to update user data. Please try again."
+      );
+    }
+  };
+
+  const handleEditChildDetails = (child) => {
+    setEditingChild(child);
+  };
+
+  const handleSaveChildChanges = async () => {
+    try {
+      // Assuming GlobalApi.UpdateChildData is the API call to update a child's details.
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      if (token) {
+        await GlobalApi.UpdateChildData(token, editingChild); // Make the API call
+        toast.success(`${editingChild.name}'s details updated successfully!`);
+        setChildren((prevChildren) =>
+          prevChildren.map((child) =>
+            child.id === editingChild.id ? editingChild : child
+          )
+        );
+        setEditingChild(null); // Close the popup after successful update
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to update child's details. Please try again."
+      );
     }
   };
   
+
+  const handleSearchCriteriaChange = (e) => {
+    const newCriteria = parseInt(e.target.value);
+    const age = editingChild.age;
+
+    // Calculate the range for search_criteria based on the age
+    const minCriteria = age > 3 ? -(age - 3) : 0; // If age is 3, min = 0, if age is 4, min = -1, etc.
+    const maxCriteria = 12 - age; // Maximum limit based on the child's age
+
+    // Ensure the criteria is within the allowed range
+    if (newCriteria >= minCriteria && newCriteria <= maxCriteria) {
+      setEditingChild({ ...editingChild, search_criteria: newCriteria });
+    }
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -155,7 +193,7 @@ const Profile = () => {
             {isEditing && (
               <div className="flex justify-center mt-6">
                 <button
-                 onClick={updateUserData}
+                  onClick={updateUserData}
                   className="px-6 py-2 bg-blue-500 text-white rounded-md"
                 >
                   Save Changes
@@ -194,21 +232,15 @@ const Profile = () => {
                 <div className="flex-1 pl-4">
                   <div className="text-lg font-medium">{child.name}</div>
                   <div className="text-sm text-gray-500">
-                    Age:{" "}
-                    {child.age}{" "}
-                    years
+                    Age: {child.age} years
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    Search Criteria: {child.search_criteria}
                   </div>
                 </div>
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => {
-                      const newName = prompt("Edit Name:", child.name);
-                      if (newName) {
-                        handleEditChild(child.id, {
-                          target: { name: "name", value: newName },
-                        });
-                      }
-                    }}
+                    onClick={() => handleEditChildDetails(child)}
                     className="px-4 py-2 bg-blue-500 text-white rounded-md"
                   >
                     Edit
@@ -218,6 +250,62 @@ const Profile = () => {
             ))}
           </div>
         </motion.div>
+
+        {/* Edit Child Popup */}
+        {editingChild && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50"
+          >
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+              <h3 className="text-2xl font-semibold mb-4">
+                Edit {editingChild.name}'s Info
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium">Name:</label>
+                  <input
+                    type="text"
+                    value={editingChild.name}
+                    onChange={(e) =>
+                      setEditingChild({ ...editingChild, name: e.target.value })
+                    }
+                    className="border p-2 rounded-md w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium">
+                    Search Criteria (Age):
+                  </label>
+                  <input
+                    type="number"
+                    value={editingChild.search_criteria}
+                    onChange={handleSearchCriteriaChange}
+                    min={editingChild.age > 3 ? -(editingChild.age - 3) : 0} // Dynamic minimum
+                    max={12 - editingChild.age} // Dynamic maximum
+                    className="border p-2 rounded-md w-full"
+                  />
+                </div>
+
+                <div className="flex space-x-4 mt-4">
+                  <button
+                    onClick={handleSaveChildChanges}
+                    className="px-6 py-2 bg-green-500 text-white rounded-md"
+                  >
+                    Save Changes
+                  </button>
+                  <button
+                    onClick={() => setEditingChild(null)}
+                    className="px-6 py-2 bg-gray-500 text-white rounded-md"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
