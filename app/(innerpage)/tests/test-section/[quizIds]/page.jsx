@@ -170,13 +170,12 @@ function Banner({
               <Link
                 href={route}
                 className={`hover:cursor-pointer p-3 rounded-full w-40 ${
-                  isCompleted
-                    ? "opacity-50 cursor-not-allowed bg-orange-300"
-                    : "bg-gradient-to-r from-orange-300 to-yellow-400 hover:scale-105 transition-transform duration-200"
+                  
+                     "bg-gradient-to-r from-orange-300 to-yellow-400 hover:scale-105 transition-transform duration-200"
                 }`}
               >
                 <p className="text-white font-semibold text-lg text-center">
-                  {t("takeTest")}
+                  {isCompleted ?"See Results":t("takeTest")}
                 </p>
               </Link>
             )}
