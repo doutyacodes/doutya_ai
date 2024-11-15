@@ -111,79 +111,82 @@ const ActivitiesList = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        Activity of the Week
+        My Activities
       </motion.h1>
 
-      {weeklyActivity && (
-        <div className="w-full bg-[#e8f8ee] border-b-2 border-orange-500 p-3 flex max-md:flex-col gap-3">
-          <div className="w-full">
-            <p className="text-sm text-slate-500">{weeklyActivity.content}</p>
-          </div>
+      {
+      //   <>
+      //   {weeklyActivity && (
+      //   <div className="w-full bg-[#e8f8ee] border-b-2 border-orange-500 p-3 flex max-md:flex-col gap-3">
+      //     <div className="w-full">
+      //       <p className="text-sm text-slate-500">{weeklyActivity.content}</p>
+      //     </div>
 
-          {weeklyActivity.completed ? (
-            <p className="text-green-600 font-semibold">Already completed!</p>
-          ) : (
-            <div className="flex flex-col items-center gap-3">
-              <motion.label
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="cursor-pointer uppercase text-center px-6 py-3 rounded-md bg-orange-600 text-white text-sm text-nowrap w-full"
-              >
-                Upload Picture
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleWeeklyImageUpload}
-                  className="hidden"
-                />
-              </motion.label>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleWeeklySubmit(null, weeklyActivity.id)}
-                disabled={!image || isLoading}
-                className={`uppercase px-6 py-3 rounded-md text-sm w-full ${
-                  image ? "bg-green-600" : "bg-gray-400 cursor-not-allowed"
-                }`}
-              >
-                 {isLoading ? (
-              <div className="flex gap-3 items-center text-center text-white">
-                <div className="loader"></div>
-                <style jsx>{`
-                  .loader {
-                    border: 8px solid #f3f3f3; /* Light grey */
-                    border-top: 8px solid #ffffff; /* Orange */
-                    border-radius: 50%;
-                    width: 20px;
-                    height: 20px;
-                    animation: spin 1s linear infinite;
-                  }
+      //     {weeklyActivity.completed ? (
+      //       <p className="text-green-600 font-semibold">Already completed!</p>
+      //     ) : (
+      //       <div className="flex flex-col items-center gap-3">
+      //         <motion.label
+      //           whileHover={{ scale: 1.05 }}
+      //           whileTap={{ scale: 0.95 }}
+      //           className="cursor-pointer uppercase text-center px-6 py-3 rounded-md bg-orange-600 text-white text-sm text-nowrap w-full"
+      //         >
+      //           Upload Picture
+      //           <input
+      //             type="file"
+      //             accept="image/*"
+      //             onChange={handleWeeklyImageUpload}
+      //             className="hidden"
+      //           />
+      //         </motion.label>
+      //         <motion.button
+      //           whileHover={{ scale: 1.05 }}
+      //           whileTap={{ scale: 0.95 }}
+      //           onClick={() => handleWeeklySubmit(null, weeklyActivity.id)}
+      //           disabled={!image || isLoading}
+      //           className={`uppercase px-6 py-3 rounded-md text-sm w-full ${
+      //             image ? "bg-green-600" : "bg-gray-400 cursor-not-allowed"
+      //           }`}
+      //         >
+      //           {isLoading ? (
+      //             <div className="flex gap-3 items-center text-center text-white">
+      //               <div className="loader"></div>
+      //               <style jsx>{`
+      //                 .loader {
+      //                   border: 8px solid #f3f3f3; /* Light grey */
+      //                   border-top: 8px solid #ffffff; /* Orange */
+      //                   border-radius: 50%;
+      //                   width: 20px;
+      //                   height: 20px;
+      //                   animation: spin 1s linear infinite;
+      //                 }
 
-                  @keyframes spin {
-                    0% {
-                      transform: rotate(0deg);
-                    }
-                    100% {
-                      transform: rotate(360deg);
-                    }
-                  }
-                `}</style>{" "}
+      //                 @keyframes spin {
+      //                   0% {
+      //                     transform: rotate(0deg);
+      //                   }
+      //                   100% {
+      //                     transform: rotate(360deg);
+      //                   }
+      //                 }
+      //               `}</style>{" "}
+      //               Loading
+      //             </div>
+      //           ) : (
+      //             "Submit"
+      //           )}
+      //         </motion.button>
+      //       </div>
+      //     )}
+      //   </div>
+      // )}
+      //   </>
+      }
 
-                Loading
-              </div>
-            ) : (
-              "Submit"
-            )}
-              </motion.button>
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="mt-6 w-full">
-        <h2 className="text-2xl font-semibold text-center text-slate-800 uppercase mb-4">
+      <div className=" w-full">
+        {/* <h2 className="text-2xl font-semibold text-center text-slate-800 uppercase mb-4">
           My Activities
-        </h2>
+        </h2> */}
 
         {normalActivities && normalActivities.length > 0 ? (
           normalActivities.map((activity) => (
@@ -191,7 +194,6 @@ const ActivitiesList = () => {
               fetchActivities={fetchActivities}
               key={activity.id}
               activity={activity}
-              
             />
           ))
         ) : (
