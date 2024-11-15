@@ -105,7 +105,7 @@ const ActivityCard = ({ activity, fetchActivities }) => {
             }`}
           >
             {isLoading ? (
-              <>
+              <div className="flex gap-3 items-center text-center text-white">
                 <div className="loader"></div>
                 <style jsx>{`
                   .loader {
@@ -126,7 +126,9 @@ const ActivityCard = ({ activity, fetchActivities }) => {
                     }
                   }
                 `}</style>{" "}
-              </>
+
+                Loading
+              </div>
             ) : (
               "Submit"
             )}

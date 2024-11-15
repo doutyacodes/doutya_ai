@@ -146,7 +146,34 @@ const ActivitiesList = () => {
                   image ? "bg-green-600" : "bg-gray-400 cursor-not-allowed"
                 }`}
               >
-                Submit
+                 {isLoading ? (
+              <div className="flex gap-3 items-center text-center text-white">
+                <div className="loader"></div>
+                <style jsx>{`
+                  .loader {
+                    border: 8px solid #f3f3f3; /* Light grey */
+                    border-top: 8px solid #ffffff; /* Orange */
+                    border-radius: 50%;
+                    width: 20px;
+                    height: 20px;
+                    animation: spin 1s linear infinite;
+                  }
+
+                  @keyframes spin {
+                    0% {
+                      transform: rotate(0deg);
+                    }
+                    100% {
+                      transform: rotate(360deg);
+                    }
+                  }
+                `}</style>{" "}
+
+                Loading
+              </div>
+            ) : (
+              "Submit"
+            )}
               </motion.button>
             </div>
           )}
