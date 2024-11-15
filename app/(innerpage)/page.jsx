@@ -13,7 +13,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Toaster, toast } from "react-hot-toast";
 import LoadingSpinner from "../_components/LoadingSpinner";
-import { IoChevronBackOutline, IoPauseCircle, IoPlayCircle, IoStopCircle } from "react-icons/io5";
+import {
+  IoChevronBackOutline,
+  IoPauseCircle,
+  IoPlayCircle,
+  IoStopCircle,
+} from "react-icons/io5";
 import Link from "next/link";
 import Navbar from "../_components/Navbar";
 import GlobalApi from "../api/_services/GlobalApi";
@@ -39,7 +44,8 @@ const Home = () => {
   const [base64Image, setBase64Image] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
-  const { selectedChildId, selectedAge, selectedWeeks,loading } = useChildren(); // Accessing selected child ID from context
+  const { selectedChildId, selectedAge, selectedWeeks, loading } =
+    useChildren(); // Accessing selected child ID from context
   const { isAuthenticated, logout } = useAuth();
   const [image, setImage] = useState(null);
   const [file, setFile] = useState(null); // Track the uploaded file
@@ -89,7 +95,7 @@ const Home = () => {
     // Cleanup for both scroll listener and speech synthesis
     return () => {
       window.removeEventListener("scroll", handleScroll); // Remove scroll listener
-      
+
       // Stop any ongoing speech synthesis and fully reset the utterance reference
       window.speechSynthesis.cancel();
       setIsPlaying(false);
@@ -185,8 +191,6 @@ const Home = () => {
     }
   };
   const handleSearch2 = async (topic) => {
-
-
     setIsLoading(true);
 
     const token =
@@ -199,7 +203,7 @@ const Home = () => {
         return; // Early return if age is out of bounds
       }
     }
-  
+
     if (type === "story") {
       if (!genre) {
         toast.error("Please select a genre to continue.");
@@ -211,7 +215,7 @@ const Home = () => {
 
     try {
       const response = await GlobalApi.SearchUser(token, {
-        courseName:topic,
+        courseName: topic,
         language,
         label:
           type === "story" && genre ? genre.label1 + " " + genre.label : null,
@@ -268,14 +272,14 @@ const Home = () => {
         setIsPlaying(true);
       } else {
         // If not yet started, initialize the utterance and start playing
-          window.speechSynthesis.cancel(); // Stop any ongoing speech
-          const content =
-            latestCourse.type === "poem"
-              ? latestCourse.verses.map((verse) => verse.line).join(" ")
-              : latestCourse.introduction?.content +
-                  latestCourse.body
-                    ?.map((paragraph) => paragraph.content)
-                    .join(" ") || "";
+        window.speechSynthesis.cancel(); // Stop any ongoing speech
+        const content =
+          latestCourse.type === "poem"
+            ? latestCourse.verses.map((verse) => verse.line).join(" ")
+            : latestCourse.introduction?.content +
+                latestCourse.body
+                  ?.map((paragraph) => paragraph.content)
+                  .join(" ") || "";
 
         const contentChunks = content.split(". "); // Split content into sentences
 
@@ -955,30 +959,34 @@ const Home = () => {
                   <div className="flex flex-col items-center justify-center mt-4">
                     {latestCourse.language == "english" && (
                       <div className="flex gap-2">
-                          <button
-                            onClick={playContent}
-                            className="bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
-                          >
-                            {isPlaying ? (
-                              <>
-                                <IoPauseCircle className="text-3xl text-white" /> Pause
-                              </>
-                            ) : (
-                              <>
-                                <IoPlayCircle className="text-3xl text-white" /> Play Podcast
-                              </>
-                            )}
-                          </button>
-                          <button
-                            onClick={stopContent}
-                            disabled={!isPlaying} // Disable when isPlaying is false
-                            className={`${
-                              isPlaying ? "bg-red-500 hover:bg-red-600" : "bg-gray-400 cursor-not-allowed"
-                            } text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center gap-2`}
-                          >
-                            <IoStopCircle className="text-xl" /> Stop
-                          </button>
-                        </div>
+                        <button
+                          onClick={playContent}
+                          className="bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
+                        >
+                          {isPlaying ? (
+                            <>
+                              <IoPauseCircle className="text-3xl text-white" />{" "}
+                              Pause
+                            </>
+                          ) : (
+                            <>
+                              <IoPlayCircle className="text-3xl text-white" />{" "}
+                              Play Podcast
+                            </>
+                          )}
+                        </button>
+                        <button
+                          onClick={stopContent}
+                          disabled={!isPlaying} // Disable when isPlaying is false
+                          className={`${
+                            isPlaying
+                              ? "bg-red-500 hover:bg-red-600"
+                              : "bg-gray-400 cursor-not-allowed"
+                          } text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center gap-2`}
+                        >
+                          <IoStopCircle className="text-xl" /> Stop
+                        </button>
+                      </div>
                     )}
                     <button
                       onClick={() => setShowTranscript(!showTranscript)}
@@ -1234,37 +1242,48 @@ const Home = () => {
               </p>
 
               <div className="flex justify-between gap-3">
-                <button className="bg-yellow-400 p-3 rounded-md px-7 text-center uppercase font-semibold text-sm" onClick={()=>handleSearch2(latestCourse?.["related-topics"][0]?.topic)}>
-                {latestCourse?.["related-topics"]?.length > 0 && latestCourse?.["related-topics"][0]?.topic}
-
+                <button
+                  className="bg-yellow-400 p-3 rounded-md px-7 text-center uppercase font-semibold text-sm"
+                  onClick={() =>
+                    handleSearch2(latestCourse?.["related-topics"][0]?.topic)
+                  }
+                >
+                  {latestCourse?.["related-topics"]?.length > 0 &&
+                    latestCourse?.["related-topics"][0]?.topic}
                 </button>
-                <button className="bg-yellow-400 p-3 rounded-md px-7 text-center uppercase font-semibold text-sm" onClick={()=>handleSearch2(latestCourse?.["related-topics"][1]?.topic)}>
-                {latestCourse?.["related-topics"]?.length > 0 && latestCourse?.["related-topics"][1]?.topic}
+                <button
+                  className="bg-yellow-400 p-3 rounded-md px-7 text-center uppercase font-semibold text-sm"
+                  onClick={() =>
+                    handleSearch2(latestCourse?.["related-topics"][1]?.topic)
+                  }
+                >
+                  {latestCourse?.["related-topics"]?.length > 0 &&
+                    latestCourse?.["related-topics"][1]?.topic}
                 </button>
               </div>
             </div>
           </motion.div>
         )}
       </div>
-      
 
-     <div className="space-y-5">
-     {showOurStory && <OurStory />}
-      {showFeatures && <Features />}
-     <Contact />
-     </div>
+      <div className="space-y-5">
+        {showOurStory && <OurStory />}
+        {showFeatures && <Features />}
+        <Contact />
+      </div>
 
       {/* Scroll Button with Animation */}
       {/* Scroll Buttons with Animation */}
       {showButton && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 px-3 w-full">
+        <div className=" flex space-x-4 bg-orange-500 justify-between rounded-full shadow-lg px-2 max-sm:w-full">
           <motion.button
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.5 }}
             onClick={() => scrollToSection("our-story")}
-            className="bg-orange-500 text-white text-xs p-3 rounded-full shadow-lg flex flex-col items-center"
+            className=" text-white text-xs p-3  flex flex-col items-center justify-center w-full"
           >
             <span>Our Story</span>
             <svg
@@ -1274,7 +1293,12 @@ const Home = () => {
               stroke="currentColor"
               className="w-5 h-5 rotate-90"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </motion.button>
           <motion.button
@@ -1283,7 +1307,7 @@ const Home = () => {
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.5 }}
             onClick={() => scrollToSection("features")}
-            className="bg-orange-500 text-white text-xs p-3 rounded-full shadow-lg flex flex-col items-center"
+            className=" text-white text-xs p-3  flex flex-col items-center justify-center w-full"
           >
             <span>Our Features</span>
             <svg
@@ -1293,12 +1317,17 @@ const Home = () => {
               stroke="currentColor"
               className="w-5 h-5 rotate-90"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </motion.button>
         </div>
+        </div>
       )}
-
     </div>
   );
 };
