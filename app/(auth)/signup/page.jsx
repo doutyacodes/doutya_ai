@@ -124,7 +124,7 @@ export function Signup() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Parent Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Full Name" {...field} />
                   </FormControl>
@@ -140,7 +140,7 @@ export function Signup() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="yourusername" {...field} />
+                    <Input placeholder="username" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -156,7 +156,7 @@ export function Signup() {
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Your password"
+                      placeholder="password"
                       {...field}
                     />
                   </FormControl>
@@ -174,7 +174,7 @@ export function Signup() {
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Confirm your password"
+                      placeholder="Confirm password"
                       {...field}
                     />
                   </FormControl>

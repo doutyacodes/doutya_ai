@@ -32,6 +32,7 @@ import Features from "../_components/Features";
 import Pricing from "../_components/Pricing";
 import Contact from "../_components/Contact";
 import OurStory from "../_components/OurStory";
+import { useRouter } from "next/navigation";
 
 const Home = () => {
   const [courseName, setCourseName] = useState("");
@@ -63,6 +64,7 @@ const Home = () => {
   const [showOurStory, setShowOurStory] = useState(true);
   const [showFeatures, setShowFeatures] = useState(true);
 
+  const router = useRouter()
   // Function to handle scroll to a specific section and update visibility
   const scrollToSection = (sectionId) => {
     // Update which sections to show based on the section clicked
@@ -580,6 +582,10 @@ const Home = () => {
   }, [age, selectedAge]);
 
   const handleUpload = () => {
+    if(!isAuthenticated)
+      {
+        router.push("/login")
+      }
     // Open the file upload dialog
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -608,6 +614,10 @@ const Home = () => {
   };
 
   async function submitUpload(courseId) {
+    if(!isAuthenticated)
+    {
+      router.push("/login")
+    }
     const token =
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
     const formData = {
@@ -718,6 +728,7 @@ const Home = () => {
                   type="text"
                   placeholder="Type the topic name here"
                   value={courseName}
+                  maxlength="150"
                   onChange={(e) => setCourseName(e.target.value)}
                   className="w-full p-2 max-md:py-12 py-6 text-xl placeholder:text-lg focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-16 bg-[#ede7e7]"
                 />
