@@ -746,11 +746,11 @@ const Home = () => {
                             <span className="w-full text-center">
                               {option.label1}
                             </span>
-                            {
+                            {/* {
                               <div className="text-[10px] md:hidden text-gray-500 pt-1 mt-1 w-full border-t-[1px]">
                                 {option.label}
                               </div>
-                            }
+                            } */}
                           </SelectItem>
                         ))}
                       </SelectGroup>
