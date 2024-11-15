@@ -631,7 +631,10 @@ const Home = () => {
 
       // // Check if the response is empty or not JSON
       // const result = JSON.parse(responseText); // Parse the text as JSON
+      
       if (response.ok) {
+          toast.success("Activity completed successfully");
+         
         setHideActivity(false);
       }
     } catch (error) {
