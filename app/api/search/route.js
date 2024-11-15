@@ -71,46 +71,45 @@ export async function POST(request) {
         .where(eq(COURSES.child_id, finalChildId))
         .execute();
 
-        console.log()
+      console.log();
       // Fetch eligible badge based on the number of answered courses
       const badgeData = await db
-  .select()
-  .from(BADGES)
-  .where(
-    and(
-      eq(BADGES.badge_type, "search"),
-      eq(BADGES.search_count, totalCourses + 1)
-    )
-  )
-  .limit(1)
-  .execute();
+        .select()
+        .from(BADGES)
+        .where(
+          and(
+            eq(BADGES.badge_type, "search"),
+            eq(BADGES.search_count, totalCourses + 1)
+          )
+        )
+        .limit(1)
+        .execute();
 
-// If a badge is found, check if the user already has it
-if (badgeData.length > 0) {
-  const badgeId = badgeData[0].id;
+      // If a badge is found, check if the user already has it
+      if (badgeData.length > 0) {
+        const badgeId = badgeData[0].id;
 
-  // Check if the badge is already earned by the user
-  const existingBadge = await db
-    .select()
-    .from(USER_BADGES)
-    .where(
-      and(
-        eq(USER_BADGES.badge_id, badgeId),
-        eq(USER_BADGES.child_id, finalChildId)
-      )
-    )
-    .limit(1)
-    .execute();
+        // Check if the badge is already earned by the user
+        const existingBadge = await db
+          .select()
+          .from(USER_BADGES)
+          .where(
+            and(
+              eq(USER_BADGES.badge_id, badgeId),
+              eq(USER_BADGES.child_id, finalChildId)
+            )
+          )
+          .limit(1)
+          .execute();
 
-  // If the badge is not already earned, insert it
-  if (existingBadge.length === 0) {
-    await db.insert(USER_BADGES).values({
-      badge_id: badgeId,
-      child_id: finalChildId,
-    });
-  }
-}
- 
+        // If the badge is not already earned, insert it
+        if (existingBadge.length === 0) {
+          await db.insert(USER_BADGES).values({
+            badge_id: badgeId,
+            child_id: finalChildId,
+          });
+        }
+      }
     }
 
     if (
@@ -144,7 +143,7 @@ if (badgeData.length > 0) {
     if (existingCourse.length > 0) {
       const course = existingCourse[0];
       const courseData = JSON.parse(course.chapter_content || "{}");
-      const courseId = existingCourse[0].id
+      const courseId = existingCourse[0].id;
       // Retrieve existing activities for the course
       const existingActivities = await db
         .select()
@@ -157,7 +156,7 @@ if (badgeData.length > 0) {
         title: courseData.activities?.title,
         content: courseData.activities?.content,
       };
-      const relatedTopics = courseData?.['related-topics'];
+      const relatedTopics = courseData?.["related-topics"];
 
       // Structure response based on course type and include activity data
       let structuredResponse;
@@ -173,10 +172,10 @@ if (badgeData.length > 0) {
           label,
           language,
           difficulty,
-          activityId:existingActivities[0].id,
+          activityId: existingActivities[0].id,
           age,
           type,
-          "related-topics":relatedTopics,
+          "related-topics": relatedTopics,
           title: courseData.title,
           introduction: { content: courseData.introduction?.content },
           body:
@@ -193,9 +192,9 @@ if (badgeData.length > 0) {
           language,
           difficulty,
           age,
-          activityId:existingActivities[0].id,
+          activityId: existingActivities[0].id,
           type,
-          "related-topics":relatedTopics,
+          "related-topics": relatedTopics,
           title: courseData.title,
           verses:
             courseData.verses?.map((verse) => ({ line: verse.line })) || [],
@@ -207,10 +206,10 @@ if (badgeData.length > 0) {
           courseId,
           language,
           difficulty,
-          activityId:existingActivities[0].id,
+          activityId: existingActivities[0].id,
           age,
           type,
-          "related-topics":relatedTopics,
+          "related-topics": relatedTopics,
           presentation: {
             title: courseData.presentation?.title,
             slides:
@@ -259,7 +258,7 @@ if (badgeData.length > 0) {
           difficulty,
           age,
           type,
-          "related-topics":relatedTopics,
+          "related-topics": relatedTopics,
           essayContent: {
             introduction: { content: courseData.introduction?.content },
             body: {

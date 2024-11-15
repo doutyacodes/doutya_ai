@@ -925,7 +925,7 @@ const Home = () => {
             transition={{ duration: 1 }}
             className="flex flex-col items-center space-y-4 bg-[#f8f8f8] shadow-lg rounded-lg w-full max-w-4xl p-3 py-6 relative"
           >
-            <div className="mt-6 w-full text-left">
+            <div className="mt-2 w-full text-left">
               {/* <h3 className="text-2xl font-semibold mb-4">
               Latest Course Details
             </h3>
@@ -952,7 +952,7 @@ const Home = () => {
               latestCourse.type == "bedtime story" ||
               latestCourse.type == "informative story" ? (
                 <>
-                  <h2 className="text-3xl font-bold mb-6 mt-9 text-center text-black">
+                  <h2 className="text-3xl font-bold mb-6  text-center text-black">
                     {latestCourse.title}
                   </h2>
                   <p className="text-gray-700 mb-8">
@@ -1209,7 +1209,7 @@ const Home = () => {
                 <h4 className="uppercase font-semibold my-3 text-lg">
                   {latestCourse?.activities?.title}
                 </h4>
-                <h4 className="uppercase ">
+                <h4 className=" ">
                   {latestCourse?.activities?.content}
                 </h4>
                 <div className="w-full flex justify-between mt-5">
