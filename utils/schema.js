@@ -458,6 +458,16 @@ export const USER_PROGRESS = mysqlTable("user_progress", {
   user_id: int("user_id").notNull(),
   question_id: int("question_id").notNull(),
   option_id: int("option_id").notNull(),
+  analytic_id: int("analytic_id").notNull(),
+  created_at: datetime("created_at").notNull(),
+  child_id: int("child_id").references(() => CHILDREN.id), // Foreign key referencing the child
+});
+
+export const USER_LEARN_PROGRESS = mysqlTable("user_learn_progress", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull(),
+  question_id: int("question_id").notNull(),
+  option_id: int("option_id").notNull(),
   learn_topic_id: int("learn_topic_id").references(() => LEARN_TOPICS.id).notNull(), // Foreign key to 'learn_topics' table
   // analytic_id: int("analytic_id").notNull(),
   created_at: datetime("created_at").notNull(),
