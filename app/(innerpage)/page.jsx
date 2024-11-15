@@ -1275,8 +1275,8 @@ const Home = () => {
       {/* Scroll Button with Animation */}
       {/* Scroll Buttons with Animation */}
       {showButton && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 px-3 w-full">
-        <div className=" flex space-x-4 bg-orange-500 justify-between rounded-full shadow-lg px-2 max-sm:w-full">
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 px-3 w-full flex justify-center items-center">
+        <div className=" flex space-x-4 bg-orange-500 justify-between rounded-3xl shadow-lg px-2 max-sm:w-full w-72">
           <motion.button
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
