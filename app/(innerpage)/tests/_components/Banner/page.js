@@ -89,7 +89,7 @@ function Banner({
       <motion.div
       onClick={()=>router.push(`/tests/test-section/${quizId}`)}
         className={cn(
-          "rounded-lg w-full relative flex-1 h-full max-md:col-span-4",
+          "rounded-lg w-full relative flex-1 h-full max-md:col-span-4 shadow-sm hover:shadow-lg",
           quizId == 1 || quizId == 5 ? "col-span-4" : "col-span-2"
         )}
         style={{ backgroundImage: `linear-gradient(to right, ${gradient})` }}
