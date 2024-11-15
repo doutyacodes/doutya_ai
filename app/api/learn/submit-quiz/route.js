@@ -12,7 +12,7 @@ export async function POST(req) {
     }
 
     const userId = authResult.decoded_Data.id;
-    const { childId, answers } = await req.json(); // Expecting an array of answers in the request body
+    const { topicId, childId, answers } = await req.json(); // Expecting an array of answers in the request body
 
     if (!Array.isArray(answers) || answers.length === 0) {
       return NextResponse.json({ error: "No answers provided." }, { status: 400 });
@@ -41,12 +41,13 @@ export async function POST(req) {
       if (isCorrect) {
         correctAnswersCount++;
       }
-
       // Store the result for each question in the USER_PROGRESS table
       await db.insert(USER_PROGRESS).values({
         user_id: userId,
         child_id: childId,
         question_id: questionId,
+        option_id: selectedOptions[0],
+        learn_topic_id: topicId,
         completed: true,
         score: isCorrect ? 1 : 0,
         created_at: new Date(),

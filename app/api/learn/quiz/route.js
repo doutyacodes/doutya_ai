@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/utils";
 import { LEARN_TOPICS, QUESTIONS, USER_PROGRESS, OPTIONS2 } from "@/utils/schema"; // Ensure the relevant schemas are imported
 import { authenticate } from "@/lib/jwtMiddleware";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export async function POST(req) {
   try {
@@ -39,7 +39,7 @@ export async function POST(req) {
     // Fetch questions associated with the topic
     const questions = await db
       .select()
-      .from(QUESTIONS)
+      .from(QUESTIONS) 
       .where(eq(QUESTIONS.learn_topic_id, topicId))
       .execute();
 
@@ -62,7 +62,12 @@ export async function POST(req) {
     const userProgress = await db
       .select()
       .from(USER_PROGRESS)
-      .where(eq(USER_PROGRESS.child_id, childId))
+      .where(
+        and(
+          eq(USER_PROGRESS.learn_topic_id, topicId),
+          eq(USER_PROGRESS.child_id, childId)
+        )
+      )
       .execute();
 
     const completed = userProgress.length > 0;

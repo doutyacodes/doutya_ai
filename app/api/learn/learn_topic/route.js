@@ -79,7 +79,7 @@ export async function POST(req) {
         .from(USER_PROGRESS)
         .where(
           and(
-            eq(USER_PROGRESS.question_id, topicId),
+            eq(USER_PROGRESS.learn_topic_id, topicId),
             eq(USER_PROGRESS.child_id, finalChildId)
           )
         ) // Assuming you want to count progress on the questions for this topic

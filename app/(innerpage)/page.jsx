@@ -722,7 +722,8 @@ const Home = () => {
                   </h2>
                   <Select
                     onValueChange={(value) =>
-                      setGenre(
+                      
+                      (
                         ageGenres.find((option) => option.value === value)
                       )
                     }
