@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { USER_PROGRESS, QUESTIONS, OPTIONS2, USER_BADGES, BADGES } from "@/utils/schema"; // Include the USER_BADGES and BADGES schemas
+import { QUESTIONS, OPTIONS2, USER_BADGES, BADGES, USER_LEARN_PROGRESS } from "@/utils/schema"; // Include the USER_BADGES and BADGES schemas
 import { authenticate } from "@/lib/jwtMiddleware";
 import { eq } from "drizzle-orm";
 
@@ -41,8 +41,8 @@ export async function POST(req) {
       if (isCorrect) {
         correctAnswersCount++;
       }
-      // Store the result for each question in the USER_PROGRESS table
-      await db.insert(USER_PROGRESS).values({
+      // Store the result for each question in the USER_LEARN_PROGRESS table
+      await db.insert(USER_LEARN_PROGRESS).values({
         user_id: userId,
         child_id: childId,
         question_id: questionId,

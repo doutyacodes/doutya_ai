@@ -5,7 +5,7 @@ import {
   LEARN_DATA,
   LEARN_TOPICS,
   QUESTIONS,
-  USER_PROGRESS,
+  USER_LEARN_PROGRESS,
 } from "@/utils/schema"; // Ensure the relevant schemas are imported
 import { and, eq } from "drizzle-orm";
 import { authenticate } from "@/lib/jwtMiddleware";
@@ -76,11 +76,11 @@ export async function POST(req) {
       // Count the number of user progress entries associated with the retrieved topic_id
       const userProgress = await db
         .select()
-        .from(USER_PROGRESS)
+        .from(USER_LEARN_PROGRESS)
         .where(
           and(
-            eq(USER_PROGRESS.learn_topic_id, topicId),
-            eq(USER_PROGRESS.child_id, finalChildId)
+            eq(USER_LEARN_PROGRESS.learn_topic_id, topicId),
+            eq(USER_LEARN_PROGRESS.child_id, finalChildId)
           )
         ) // Assuming you want to count progress on the questions for this topic
         .execute();

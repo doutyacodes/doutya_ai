@@ -1,7 +1,7 @@
 // app/api/quiz-section/route.js
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { LEARN_TOPICS, QUESTIONS, USER_PROGRESS, OPTIONS2 } from "@/utils/schema"; // Ensure the relevant schemas are imported
+import { LEARN_TOPICS, QUESTIONS, OPTIONS2, USER_LEARN_PROGRESS } from "@/utils/schema"; // Ensure the relevant schemas are imported
 import { authenticate } from "@/lib/jwtMiddleware";
 import { and, eq } from "drizzle-orm";
 
@@ -61,11 +61,11 @@ export async function POST(req) {
     // Check user progress on this quiz
     const userProgress = await db
       .select()
-      .from(USER_PROGRESS)
+      .from(USER_LEARN_PROGRESS)
       .where(
         and(
-          eq(USER_PROGRESS.learn_topic_id, topicId),
-          eq(USER_PROGRESS.child_id, childId)
+          eq(USER_LEARN_PROGRESS.learn_topic_id, topicId),
+          eq(USER_LEARN_PROGRESS.child_id, childId)
         )
       )
       .execute();
