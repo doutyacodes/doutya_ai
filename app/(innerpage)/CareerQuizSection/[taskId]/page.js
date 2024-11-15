@@ -287,7 +287,7 @@ function Page() {
 
       {showAlert && <QuizProgressAlert />}
 
-      <div className="flex justify-center items-center px-4 w-full h-full">
+      <div className="flex justify-center items-center px-2 w-full h-full">
         {questions.length > 0 && (
           <div className="mt-4 pt-8 pb-6 px-6 w-full max-w-3xl flex flex-col gap-8 justify-center items-center bg-white/80 backdrop-blur-lg shadow-lg rounded-2xl">
             {/* Progress Indicator */}
@@ -296,7 +296,7 @@ function Page() {
             </div>
 
             {/* Question Text */}
-            <div className="bg-white/80 p-5 shadow-md rounded-xl text-center text-orange-900 text-2xl font-semibold">
+            <div className="bg-white/80 py-5 px-2 shadow-md rounded-xl text-center text-orange-900 text-2xl font-semibold">
               <p>{questions[currentQuestionIndex].question_text}</p>
             </div>
 
