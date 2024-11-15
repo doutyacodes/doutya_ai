@@ -62,8 +62,8 @@ const ActivityCard = ({ activity, fetchActivities,courses }) => {
     >
       <div className="flex-1 space-y-2">
         <p className="font-bold">{activity.title}</p>
-        {activity.genre && <p className="font-semibold">Genre - {activity.genre }</p>}
-        {activity.genre && <p className="font-semibold">Type - {courses.type }</p>}
+        {activity.genre && <p className="font-semibold text-sm">Genre - {activity.genre }</p>}
+        {activity.genre && <p className="font-semibold text-sm">Type - {courses.type }</p>}
         <p className="text-gray-700 text-sm">{activity.content}</p>
       </div>
 

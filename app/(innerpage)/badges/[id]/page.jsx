@@ -14,8 +14,9 @@ const Page = () => {
   const params = useParams();
   const { id } = params;
   const certificateRef = useRef(null);
+  const buttonRef = useRef(null);
 
-  const { selectedChildId,selectedChild } = useChildren();
+  const { selectedChildId, selectedChild } = useChildren();
   const [isLoading, setLoading] = useState(true);
   const [badgeData, setBadgeData] = useState(null);
 
@@ -24,13 +25,16 @@ const Page = () => {
     const fetchBadgeData = async () => {
       setLoading(true);
       try {
-        const response = await GlobalApi.getSingleBadge({ badgeId: id, childId: selectedChildId });
+        const response = await GlobalApi.getSingleBadge({
+          badgeId: id,
+          childId: selectedChildId,
+        });
         setBadgeData(response.data.badge);
         console.log(response.data.badge);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching badge data:", error);
         toast.error("Failed to fetch badge data.");
+      } finally {
         setLoading(false);
       }
     };
@@ -39,26 +43,32 @@ const Page = () => {
   }, [id, selectedChildId]);
 
   const handleDownload = async () => {
-    if (certificateRef.current === null) return;
+    if (!certificateRef.current) return;
 
     try {
-      // Hide the download button temporarily
-      const button = certificateRef.current.querySelector("button");
-      button.style.display = "none";
+      // Temporarily hide the button
+      if (buttonRef.current) {
+        buttonRef.current.style.display = "none";
+      }
 
-      // Convert the component to PNG format
+      // Convert the certificate component to a PNG
       const dataUrl = await toPng(certificateRef.current);
 
-      // Trigger download
+      // Trigger the download
       const link = document.createElement("a");
       link.href = dataUrl;
       link.download = "certificate.png";
       link.click();
 
-      // Re-show the button
-      button.style.display = "block";
+      // Restore the button's visibility
+      if (buttonRef.current) {
+        buttonRef.current.style.display = "block";
+      }
+
+      toast.success("Badge downloaded successfully!");
     } catch (error) {
-      console.error("Failed to download image:", error);
+      console.error("Failed to download the image:", error);
+      toast.error("Failed to download the badge.");
     }
   };
 
@@ -66,17 +76,20 @@ const Page = () => {
     return <LoadingSpinner />;
   }
 
-  // If badge is not earned, display blurred effect with message
   const isBadgeCompleted = badgeData && badgeData.completed;
-  function formatDateToDDMMYYYY(date) {
+
+  const formatDateToDDMMYYYY = (date) => {
     const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-    const year = d.getFullYear();
-    return `${day}-${month}-${year}`;
-  }
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }).format(d);
+  };
+  
+
   return (
-    <div className=" w-full min-h-screen p-3 flex justify-center items-center">
+    <div className="w-full min-h-screen p-3 flex flex-col justify-center items-center gap-3">
       <div
         ref={certificateRef}
         className="w-full h-full p-3 bg-[#ffefca] rounded-md max-w-sm relative"
@@ -88,45 +101,54 @@ const Page = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <Image
-            src={`/images/image1.png`}
+            src="/images/image1.png"
             width={250}
             height={250}
-            alt={"badge image"}
-            className={`mb-2 ${isBadgeCompleted ? '' : 'blur-sm'}`}
+            alt="badge image"
+            className={`mb-2 ${isBadgeCompleted ? "" : "blur-sm"}`}
           />
 
-          <div className="text-center text-lg w-[240px]">
+          <div className="text-center text-base w-[240px]">
             {isBadgeCompleted ? (
               <>
-                This badge was awarded to{" "}
-                <span className="underline font-bold">{selectedChild.name}</span>, for
-                successfully completing{" "}
-                <span className="font-bold">{badgeData.condition}</span> on Axara, on {formatDateToDDMMYYYY(badgeData.earned_at)}
-                <span className="font-bold">{badgeData.completionDate}</span>
+                <p className="text-sm">This badge was awarded to</p>
+                <p className="underline font-bold">{selectedChild.name},</p>
+                <p className="text-sm">for successfully completing</p>
+                <span className="font-bold">{badgeData.condition}</span> 
+                <p className="text-sm">
+                on Axara, on{" "}
+                <span className="font-bold text-base">
+                  {formatDateToDDMMYYYY(badgeData.earned_at)}
+                </span>
+                </p>
               </>
             ) : (
               <>
-                <span className="underline font-bold">Task Incomplete</span> - complete the task to earn this badge!
+                <span className="underline font-bold">Task Incomplete</span> - complete the task
+                to earn this badge!
               </>
             )}
           </div>
           <div className="flex items-center justify-center">
             <Image
-              src={"/images/logo.png"}
-              width={150}
-              height={150}
+              src="/images/logo2.png"
+              width={120}
+              height={120}
               alt="logo"
             />
           </div>
-          {isBadgeCompleted && (
-            <button
-              onClick={handleDownload}
-              className="w-fit absolute bottom-4 right-4"
-            >
-              <CircleArrowDown />
-            </button>
-          )}
         </motion.div>
+      </div>
+      <div className="w-full flex justify-center items-center">
+        {isBadgeCompleted && (
+          <button
+            ref={buttonRef}
+            onClick={handleDownload}
+            className="w-fit uppercase text-sm flex items-center gap-2 bg-[#f68c1f] rounded-2xl p-2 px-5"
+          >
+            Download this badge <CircleArrowDown className="text-[10px]" />
+          </button>
+        )}
       </div>
     </div>
   );

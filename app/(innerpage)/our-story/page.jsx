@@ -10,12 +10,12 @@ export default function OurStory() {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="text-5xl font-bold text-center mb-8 mt-14 text-white"
+        className="text-5xl font-bold text-center mb-8 mt-14"
       >
         Our Story
       </motion.h1>
 
-      <div className="text-lg text-justify mx-auto max-w-5xl text-white leading-relaxed space-y-6">
+      <div className="text-lg text-justify mx-auto max-w-5xl leading-relaxed space-y-6">
         
         {/* First Paragraph */}
         <motion.div

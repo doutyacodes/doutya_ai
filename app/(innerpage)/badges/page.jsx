@@ -97,8 +97,8 @@ const Badges = () => {
                             src={`/images/${
                               badge.image || "default-badge.png"
                             }`}
-                            width={130}
-                            height={130}
+                            width={90}
+                            height={90}
                             alt={badge.title}
                             className="rounded-xl border-2 border-transparent hover:border-[#7824f6] transition-all"
                           />
@@ -109,16 +109,16 @@ const Badges = () => {
                             src={`/images/${
                               badge.image || "default-badge.png"
                             }`}
-                            width={130}
-                            height={130}
+                            width={90}
+                            height={90}
                             alt={badge.title}
                             className="rounded-xl border-2 border-gray-400 opacity-50 grayscale"
                           />
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl">
-                            <p className="text-sm text-white font-bold px-2 py-1 rounded-md">
+                          {/* <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl">
+                            <p className="text-xs text-white px-2 py-1 rounded-md">
                               Not Completed
                             </p>
-                          </div>
+                          </div> */}
                         </div>
                       )}
                     </motion.div>

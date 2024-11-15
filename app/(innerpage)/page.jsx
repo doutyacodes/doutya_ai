@@ -728,7 +728,7 @@ const Home = () => {
                   type="text"
                   placeholder="Type the topic name here"
                   value={courseName}
-                  maxlength="150"
+                  maxLength="150"
                   onChange={(e) => setCourseName(e.target.value)}
                   className="w-full p-2 max-md:py-12 py-6 text-xl placeholder:text-lg focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-16 bg-[#ede7e7]"
                 />
@@ -1281,15 +1281,15 @@ const Home = () => {
         )}
       </div>
 
-      <div className="space-y-5">
+      {/* <div className="space-y-5">
         {showOurStory && <OurStory />}
         {showFeatures && <Features />}
         <Contact />
-      </div>
+      </div> */}
 
       {/* Scroll Button with Animation */}
       {/* Scroll Buttons with Animation */}
-      {showButton && (
+      {/* {showButton && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 px-3 w-full flex justify-center items-center">
         <div className=" flex space-x-4 bg-orange-500 justify-between rounded-3xl shadow-lg px-2 max-sm:w-full w-72">
           <motion.button
@@ -1342,7 +1342,7 @@ const Home = () => {
           </motion.button>
         </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
