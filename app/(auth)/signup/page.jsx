@@ -124,7 +124,7 @@ export function Signup() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Parent Name</FormLabel>
+                  <FormLabel>Parent&apos;s Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Full Name" {...field} />
                   </FormControl>

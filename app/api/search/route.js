@@ -74,26 +74,43 @@ export async function POST(request) {
         console.log()
       // Fetch eligible badge based on the number of answered courses
       const badgeData = await db
-        .select()
-        .from(BADGES)
-        .where(
-          and(
-            eq(BADGES.badge_type, "search"),
-            eq(BADGES.search_count, totalCourses+1)
-          )
-        )
-        .limit(1)
-        .execute();
+  .select()
+  .from(BADGES)
+  .where(
+    and(
+      eq(BADGES.badge_type, "search"),
+      eq(BADGES.search_count, totalCourses + 1)
+    )
+  )
+  .limit(1)
+  .execute();
 
-      // If a badge is found, insert it into USER_BADGES
-      if (badgeData.length > 0) {
-        const badgeInsert = await db.insert(USER_BADGES).values({
-          badge_id: badgeData[0].id,
-          child_id: finalChildId,
-        });
+// If a badge is found, check if the user already has it
+if (badgeData.length > 0) {
+  const badgeId = badgeData[0].id;
 
-        console.log("Badge inserted:", badgeInsert);
-      } 
+  // Check if the badge is already earned by the user
+  const existingBadge = await db
+    .select()
+    .from(USER_BADGES)
+    .where(
+      and(
+        eq(USER_BADGES.badge_id, badgeId),
+        eq(USER_BADGES.child_id, finalChildId)
+      )
+    )
+    .limit(1)
+    .execute();
+
+  // If the badge is not already earned, insert it
+  if (existingBadge.length === 0) {
+    await db.insert(USER_BADGES).values({
+      badge_id: badgeId,
+      child_id: finalChildId,
+    });
+  }
+}
+ 
     }
 
     if (
