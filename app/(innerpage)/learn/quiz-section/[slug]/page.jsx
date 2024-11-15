@@ -48,6 +48,7 @@ const QuizSection = () => {
 
     try {
       await GlobalApi.SubmitQuizAnswers({
+        topicId: questions[0].learn_topic_id,
         childId: selectedChildId,
         answers,
       });
