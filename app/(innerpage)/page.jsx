@@ -607,13 +607,13 @@ const Home = () => {
     }
   };
 
-  async function submitUpload() {
+  async function submitUpload(courseId) {
     const token =
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
     const formData = {
       child_id: selectedChildId,
       token: token,
-      course_id: 213,
+      course_id: courseId,
       image: base64Image, // assuming `image` is in base64 format after `handleFileChange`
     };
 
@@ -1213,7 +1213,7 @@ const Home = () => {
                   </Button>
                   <Button
                     className="bg-green-600 p-2 font-bold"
-                    onClick={submitUpload}
+                    onClick={()=>submitUpload(latestCourse?.courseId)}
                   >
                     Submit
                   </Button>

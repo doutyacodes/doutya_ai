@@ -127,7 +127,7 @@ export async function POST(request) {
     if (existingCourse.length > 0) {
       const course = existingCourse[0];
       const courseData = JSON.parse(course.chapter_content || "{}");
-
+      const courseId = existingCourse[0].id
       // Retrieve existing activities for the course
       const existingActivities = await db
         .select()
@@ -151,10 +151,12 @@ export async function POST(request) {
       ) {
         structuredResponse = {
           courseName,
+          courseId,
           genre,
           label,
           language,
           difficulty,
+          activityId:existingActivities[0].id,
           age,
           type,
           "related-topics":relatedTopics,
@@ -170,9 +172,11 @@ export async function POST(request) {
       } else if (type === "poem") {
         structuredResponse = {
           courseName,
+          courseId,
           language,
           difficulty,
           age,
+          activityId:existingActivities[0].id,
           type,
           "related-topics":relatedTopics,
           title: courseData.title,
@@ -183,8 +187,10 @@ export async function POST(request) {
       } else if (type === "presentation") {
         structuredResponse = {
           courseName,
+          courseId,
           language,
           difficulty,
+          activityId:existingActivities[0].id,
           age,
           type,
           "related-topics":relatedTopics,
@@ -206,6 +212,7 @@ export async function POST(request) {
       } else if (type === "course") {
         structuredResponse = {
           courseName,
+          courseId,
           language,
           difficulty,
           age,
@@ -230,6 +237,7 @@ export async function POST(request) {
       } else {
         structuredResponse = {
           courseName,
+          courseId,
           language,
           difficulty,
           age,
@@ -371,6 +379,7 @@ export async function POST(request) {
 
       // Include the ID in the response
       parsedData.activityId = activityId;
+      parsedData.courseId = courseId;
     } catch (dbError) {
       console.error("Database Insert Error:", dbError);
     }
