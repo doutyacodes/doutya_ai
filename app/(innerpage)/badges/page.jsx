@@ -45,7 +45,7 @@ const Badges = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-orange-50 to-orange-100 min-h-screen p-5 space-y-10">
+    <div className="bg-white min-h-screen p-5 space-y-10">
       <motion.div
         className="flex items-center justify-center flex-col gap-7"
         initial={{ opacity: 0, y: -50 }}
@@ -65,7 +65,7 @@ const Badges = () => {
       {Object.entries(groupedBadges).map(
         ([type, badges]) =>
           badges.length > 0 && (
-            <div key={type} className="space-y-5">
+            <div key={type} className="">
               <h5 className="text-gray-900 text-xl font-semibold uppercase text-left">
                 {type === "search"
                   ? "Search Badges"
@@ -73,10 +73,10 @@ const Badges = () => {
                   ? "Knowledge Badges"
                   : "Achievement Badges"}
               </h5>
-              <div className="grid md:grid-cols-4 grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-4 grid-cols-2 gap-6 bg-[#fffaea] py-5 mt-2">
                 {badges.map((badge, index) => (
                   <motion.div
-                    className="flex flex-col gap-3"
+                    className="flex flex-col items-center gap-3"
                     key={badge.id}
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -87,8 +87,9 @@ const Badges = () => {
                     }}
                   >
                     <motion.div
-                      whileHover={{ scale: 1.1 }}
+                      whileHover={badge.completed ? { scale: 1.1 } : {}}
                       transition={{ duration: 0.3 }}
+                      className="relative"
                     >
                       {badge.completed ? (
                         <Link href={`/badges/${badge.id}`}>
@@ -111,19 +112,19 @@ const Badges = () => {
                             width={130}
                             height={130}
                             alt={badge.title}
-                            className="rounded-xl border-2 border-transparent opacity-60 filter blur-sm"
+                            className="rounded-xl border-2 border-gray-400 opacity-50 grayscale"
                           />
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            {/* <p className="text-sm text-white bg-black bg-opacity-60 px-2 py-1 rounded-md">
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl">
+                            <p className="text-sm text-white font-bold px-2 py-1 rounded-md">
                               Not Completed
-                            </p> */}
+                            </p>
                           </div>
                         </div>
                       )}
                     </motion.div>
-                    {/* <h4 className="text-center font-bold text-lg uppercase text-gray-900">
+                    <h4 className="text-center font-bold text-sm uppercase text-gray-900">
                       {badge.title}
-                    </h4> */}
+                    </h4>
                   </motion.div>
                 ))}
               </div>

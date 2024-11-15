@@ -86,105 +86,85 @@ function Banner({
     pro = false
   ) => {
     const isCompleted = getQuizStatus(quizId).isCompleted;
-
+  
     return (
-        <div className="w-full flex justify-center items-center">
-      <motion.div
-        className={cn("pt-3 p-[1px] rounded-lg w-full  relative flex-1 max-w-3xl h-full")}
-        style={{ backgroundImage: `linear-gradient(to right, ${gradient})` }}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        {/* Handle conditions for specific quizIds */}
-        {((selectedAge < 3 && quizId == 4) ||
-          (selectedAge < 6 && quizId != 5) ||
-          (selectedAge < 10 && quizId == 2) ||
-          (selectedAge < 3 && quizId == 5)) && (
-          <div className="w-full h-full absolute bg-white/50 top-0 left-0" />
-        )}
-
-        <h3 className="font-semibold text-center text-gray-700 text-md pb-2 uppercase">
-          {existingfunction ? titleKey : t("followCareer")}
-        </h3>
-        <div className="bg-orange-50 rounded-lg p-3 flex flex-col justify-between shadow-md h-full">
-          {/* Show restrictions based on age and quizId */}
-          {((selectedAge < 3 && quizId == 4) ||
-            (selectedAge < 6 && quizId != 5) ||
-            (selectedAge < 10 && quizId == 2) ||
-            (selectedAge < 3 && quizId == 5)) && (
-            <div className="absolute -top-5 left-0 z-[88888] w-full flex justify-center items-center h-full">
-              <div className="w-full bg-[#167dc6] text-white p-5 rounded mb-3 flex items-center">
-                <span className="text-lg font-bold text-center">
-                  {selectedAge < 10 && quizId == 2
+      <div className="w-full flex justify-center items-center">
+        <motion.div
+          className="p-[1px] rounded-lg w-full relative flex-1 max-w-3xl shadow-lg bg-gradient-to-r"
+          style={{ backgroundImage: `linear-gradient(to right, ${gradient})` }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, type: "spring" }}
+        >
+          {/* Overlay for restrictions */}
+          {((selectedAge < 3 && quizId === 4) ||
+            (selectedAge < 6 && quizId !== 5) ||
+            (selectedAge < 10 && quizId === 2) ||
+            (selectedAge < 3 && quizId === 5)) && (
+            <div className="w-full h-full absolute bg-white/50 top-0 left-0 flex items-center justify-center">
+              <div className="bg-blue-500 text-white p-5 rounded-lg text-center">
+                <span className="text-lg font-bold">
+                  {selectedAge < 10 && quizId === 2
                     ? "Your child should be at least 10 years old to take the test"
-                    : selectedAge < 3 && quizId == 4
+                    : selectedAge < 3 && quizId === 4
                     ? "Your child should be at least 3 years old to take the test"
-                    : selectedAge < 6 && quizId != 5
+                    : selectedAge < 6 && quizId !== 5
                     ? "Your child should be at least 6 years old to take the test"
-                    : selectedAge < 3 && quizId == 5
+                    : selectedAge < 3 && quizId === 5
                     ? "Your child should be at least 3 years old to take the test"
                     : ""}
                 </span>
               </div>
             </div>
           )}
-
-          <h3 className="font-semibold text-2xl text-center py-3 text-orange-800">
-            {existingfunction ? titleKey : t(titleKey)}
-          </h3>
-          <div className="bg-gray-300 p-[1px]" />
-          <p className="text-gray-700 text-justify text-md p-4">
-            {existingfunction ? descriptionKey : t(descriptionKey)}
-          </p>
-
-          {/* Price section for 'pro' */}
-          {pro && (
-            <div className="text-center py-4">
-              <div className="flex justify-center items-center space-x-2">
-                <span className="font-bold text-lg text-gray-500 line-through transform scale-110">
-                  ₹99
-                </span>
-                <span className="font-bold text-xl text-green-600">₹0</span>
+  
+          <div className="bg-white rounded-lg p-6 flex flex-col justify-between shadow-lg h-full">
+            <h3 className="font-semibold text-2xl text-center text-orange-800 py-2">
+              {existingfunction ? titleKey : t(titleKey)}
+            </h3>
+            <div className="bg-gray-200 h-[1px] mb-4" />
+            <p className="text-gray-700 text-md text-justify">
+              {existingfunction ? descriptionKey : t(descriptionKey)}
+            </p>
+  
+            {pro && (
+              <div className="text-center py-4">
+                <div className="flex justify-center items-center space-x-2">
+                  <span className="font-bold text-lg text-gray-500 line-through">
+                    ₹99
+                  </span>
+                  <span className="font-bold text-xl text-green-600">₹0</span>
+                </div>
+                <p className="text-sm text-gray-600 mt-2">Pro Version</p>
               </div>
-              <p className="text-sm text-gray-600 mt-2">Pro Version</p>
-            </div>
-          )}
-
-          <div className="flex justify-center items-center p-4 mt-auto">
-            {selectedAge < 3 ||
-            (selectedAge < 6 && quizId != 5) ||
-            (selectedAge < 10 && quizId == 2) ? (
-              <button
-                disabled
-                className={`hover:cursor-pointer p-3 rounded-full w-40 ${
-                  isCompleted
-                    ? "opacity-50 cursor-not-allowed bg-orange-300"
-                    : "bg-gradient-to-r from-orange-300 to-yellow-400 hover:scale-105 transition-transform duration-200"
-                }`}
-              >
-                <p className="text-white font-semibold text-lg text-center">
-                  {t("takeTest")}
-                </p>
-              </button>
-            ) : (
-              <Link
-                href={route}
-                className={`hover:cursor-pointer p-3 rounded-full w-40 ${
-                  
-                     "bg-gradient-to-r from-orange-300 to-yellow-400 hover:scale-105 transition-transform duration-200"
-                }`}
-              >
-                <p className="text-white font-semibold text-lg text-center">
-                  {isCompleted ?"See Results":t("takeTest")}
-                </p>
-              </Link>
             )}
+  
+            <div className="flex justify-center mt-4">
+              {selectedAge < 3 ||
+              (selectedAge < 6 && quizId !== 5) ||
+              (selectedAge < 10 && quizId === 2) ? (
+                <motion.button
+                  disabled
+                  className="p-3 rounded-full w-40 bg-orange-300 text-white font-semibold text-lg opacity-50 cursor-not-allowed"
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {t("takeTest")}
+                </motion.button>
+              ) : (
+                <Link
+                  href={route}
+                  className="p-3 rounded-full w-40 bg-gradient-to-r from-orange-300 to-yellow-400 text-white font-semibold text-lg hover:scale-105 transition-transform duration-200 text-center"
+                >
+                  {isCompleted ? "View Results" : t("takeTest")}
+                </Link>
+              )}
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
       </div>
     );
   };
+  
 
   return (
     <div className="max-md:pb-14 bg-gradient-to-r from-orange-100 via-white to-orange-50 min-h-screen max-w-[100vw] max-md:pr-4">

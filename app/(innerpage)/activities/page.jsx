@@ -28,6 +28,8 @@ const ActivitiesList = () => {
         childId: selectedChildId || null,
         age: selectedAge,
       });
+      // console.log("response", response.data);
+
       setWeeklyActivity(response.data.weeklyActivity);
       setNormalActivities(response.data.normalActivities);
     } catch (error) {
@@ -63,7 +65,6 @@ const ActivitiesList = () => {
 
       // Log the raw response text to understand what the server is sending
       // const responseText = await response.data; // Read response as text
-      console.log("response", response);
       // console.log("Raw response text:", responseText);
 
       // // Check if the response is empty or not JSON
@@ -189,13 +190,17 @@ const ActivitiesList = () => {
         </h2> */}
 
         {normalActivities && normalActivities.length > 0 ? (
-          normalActivities.map((activity) => (
-            <ActivityCard
-              fetchActivities={fetchActivities}
-              key={activity.id}
-              activity={activity}
-            />
-          ))
+          normalActivities.map(({activities,courses}) => {
+            // console.log("activities",activities)
+            return (
+              <ActivityCard
+                fetchActivities={fetchActivities}
+                key={activities.id}
+                activity={activities}
+                courses={courses}
+              />
+            )
+          })
         ) : (
           <p className="text-center text-slate-500">No activities available.</p>
         )}

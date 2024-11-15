@@ -19,12 +19,12 @@ export async function POST(req) {
       { status: 400 }
     );
   }
+
   function calculateAge(dob) {
     const birthDate = new Date(dob);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
 
-    // Adjust age if the birth date hasn't occurred yet this year
     if (
         today.getMonth() < birthDate.getMonth() ||
         (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())
@@ -33,8 +33,8 @@ export async function POST(req) {
     }
 
     return age;
-}
-  // Determine child ID and age if not provided
+  }
+
   let finalChildId = childId;
   let finalAge = age;
   if (!childId) {
@@ -54,7 +54,7 @@ export async function POST(req) {
         { status: 404 }
       );
     }
-    finalAge = calculateAge(finalAge)
+    finalAge = calculateAge(finalAge);
   }
 
   try {
@@ -73,11 +73,13 @@ export async function POST(req) {
     const latestWeeklyActivity = await db
       .select()
       .from(ACTIVITIES)
+      .leftJoin(COURSES, eq(ACTIVITIES.course_id, COURSES.id))  // Join with COURSES to get title, genre, and type
       .where(and(eq(ACTIVITIES.age, finalAge), eq(ACTIVITIES.activity_type, "week")))
       .orderBy(desc(ACTIVITIES.created_at))
       .limit(1)
       .execute();
-      console.log("latestWeeklyActivity",latestWeeklyActivity)
+    
+    console.log("latestWeeklyActivity", latestWeeklyActivity);
 
     // Check if the weekly activity is completed by the user
     let weeklyActivityStatus = null;
@@ -97,10 +99,11 @@ export async function POST(req) {
       weeklyActivityStatus = completionCheck.length > 0;
     }
 
-    // Fetch normal activities that match the course IDs
+    // Fetch normal activities that match the course IDs and join with COURSES
     const normalActivities = await db
       .select()
       .from(ACTIVITIES)
+      .leftJoin(COURSES, eq(ACTIVITIES.course_id, COURSES.id))  // Join with COURSES to get title, genre, and type
       .where(
         and(
           eq(ACTIVITIES.activity_type, "normal"),
@@ -125,12 +128,24 @@ export async function POST(req) {
             )
           )
           .execute();
-        return { ...activity, completed: completionCheck.length > 0 };
+        return { 
+          ...activity, 
+          completed: completionCheck.length > 0,
+          courseTitle: activity.title,  // Adding course title
+          courseGenre: activity.genre,  // Adding course genre
+          courseType: activity.type    // Adding course type
+        };
       })
     );
 
     return NextResponse.json({
-      weeklyActivity: latestWeeklyActivity[0] ? { ...latestWeeklyActivity[0], completed: weeklyActivityStatus } : null,
+      weeklyActivity: latestWeeklyActivity[0] ? { 
+        ...latestWeeklyActivity[0], 
+        completed: weeklyActivityStatus,
+        courseTitle: latestWeeklyActivity[0].title,  // Adding course title
+        courseGenre: latestWeeklyActivity[0].genre,  // Adding course genre
+        courseType: latestWeeklyActivity[0].type    // Adding course type
+      } : null,
       normalActivities: normalActivitiesStatus,
     });
   } catch (error) {

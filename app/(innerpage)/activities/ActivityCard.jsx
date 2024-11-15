@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { useChildren } from "@/context/CreateContext";
 
-const ActivityCard = ({ activity, fetchActivities }) => {
+const ActivityCard = ({ activity, fetchActivities,courses }) => {
   const { selectedChildId } = useChildren();
   const [isLoading, setIsLoading] = useState(false);
   const [base64Image, setBase64Image] = useState(null);
@@ -60,7 +60,10 @@ const ActivityCard = ({ activity, fetchActivities }) => {
       transition={{ type: "spring", stiffness: 300 }}
       className="w-full bg-white p-6 shadow-md rounded-lg flex flex-col md:flex-row items-start md:items-center gap-4 mb-4"
     >
-      <div className="flex-1">
+      <div className="flex-1 space-y-2">
+        <p className="font-bold">{activity.title}</p>
+        {activity.genre && <p className="font-semibold">Genre - {activity.genre }</p>}
+        {activity.genre && <p className="font-semibold">Type - {courses.type }</p>}
         <p className="text-gray-700 text-sm">{activity.content}</p>
       </div>
 
