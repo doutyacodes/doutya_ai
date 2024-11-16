@@ -1,27 +1,32 @@
 "use client";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import GlobalApi from "@/app/api/_services/GlobalApi";
-import LoadingSpinner from "@/app/_components/LoadingSpinner";
-import useAuth from "@/app/hooks/useAuth";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import LoadingSpinner from "@/app/_components/LoadingSpinner";
+import GlobalApi from "@/app/api/_services/GlobalApi";
+import useAuth from "@/app/hooks/useAuth";
+import { useChildren } from "@/context/CreateContext";
 import toast from "react-hot-toast";
 
-const LearnPage = () => {
-  const { slug } = useParams();
-  const { isAuthenticated } = useAuth();
-  const [activeTab, setActiveTab] = useState("Explanation");
+export default function SubjectPage() {
+  const [activeTab, setActiveTab] = useState("explanation");
   const [learnData, setLearnData] = useState(null);
+  const params = useParams();
+  const { slug } = params;
   const [isLoading, setLoading] = useState(true);
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
+  const { selectedChildId } = useChildren();
 
   useEffect(() => {
     const fetchLearnTopicsData = async () => {
       setLoading(true);
 
       try {
-        const response = await GlobalApi.GetLearnTopicsData({ slug });
+        const response = await GlobalApi.GetLearnTopicsData({ slug,childId:selectedChildId });
+        console.log("response",response.data)
         setLearnData(response.data);
       } catch (error) {
         console.error("Error fetching learn topics data:", error);
@@ -33,10 +38,6 @@ const LearnPage = () => {
     fetchLearnTopicsData();
   }, [slug]);
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
   const handleTestClick = () => {
     if (!isAuthenticated) {
       toast("You must login to continue");
@@ -45,7 +46,6 @@ const LearnPage = () => {
 
     if (learnData?.status === "completed") {
       toast.success("You have already finished this test");
-      return router.replace("/login");
     }
 
     if (
@@ -56,109 +56,90 @@ const LearnPage = () => {
     }
   };
 
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
   return (
-    <div className="overflow-hidden bg-gradient-to-b from-orange-100 via-white to-orange-50 min-h-screen p-4 space-y-8">
-      {learnData ? (
-        <>
-          <motion.div
-            className="flex items-center justify-center flex-col gap-5"
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+    <div className="min-h-screen bg-gradient-to-b from-orange-100 via-white to-orange-50 text-gray-800 p-6">
+      <motion.header
+        className="text-center mb-8"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <h1 className="text-4xl font-bold text-orange-600">{learnData?.learnData.topic}</h1>
+        <p className="mt-2 text-lg text-gray-700">
+          Learn and Test your Knowledge!
+        </p>
+      </motion.header>
+
+      {/* Tabs Section */}
+      <section className="mb-6">
+        <div className="flex justify-center space-x-4">
+          <button
+            onClick={() => setActiveTab("explanation")}
+            className={`px-6 py-2 text-lg font-medium rounded-lg ${
+              activeTab === "explanation"
+                ? "bg-orange-500 text-white"
+                : "bg-white text-gray-700 shadow-md hover:bg-orange-100"
+            }`}
           >
-            <Image
-              src={`/images/${learnData?.topic[0]?.image}`}
-              width={250}
-              height={250}
-              alt="space"
-            />
-            <h4 className="text-center font-bold text-2xl uppercase text-orange-700">
-              {learnData?.topic[0]?.title}
-            </h4>
+            Explanation
+          </button>
+          <button
+            onClick={() => setActiveTab("test")}
+            className={`px-6 py-2 text-lg font-medium rounded-lg ${
+              activeTab === "test"
+                ? "bg-orange-500 text-white"
+                : "bg-white text-gray-700 shadow-md hover:bg-orange-100"
+            }`}
+          >
+            Test
+          </button>
+        </div>
+      </section>
+
+      {/* Content Section */}
+      <section>
+        {activeTab === "explanation" ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="bg-white shadow-md rounded-lg p-6"
+          >
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              {learnData?.learnData.topic}
+            </h2>
+            <p className="text-gray-700">{learnData?.learnData?.description}</p>
           </motion.div>
-
-          <div className="flex justify-center gap-8 bg-orange-200 p-4 rounded-md shadow-md">
-            {["Explanation", "Tests", "Activities"].map((tab) => (
-              <button
-                key={tab}
-                className={`text-orange-700 font-semibold ${
-                  activeTab === tab
-                    ? "border-b-2 border-orange-600"
-                    : "opacity-70"
-                } transition-all duration-200`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-
-          <div className="p-6 bg-white rounded-lg shadow-lg min-h-[300px] space-y-4">
-            {activeTab === "Explanation" && (
-              <p className="text-center text-lg text-orange-600">
-                {learnData?.learnData[0]?.explanation}
-              </p>
-            )}
-
-            {activeTab === "Tests" && (
-              <div>
-                <h5 className="text-center font-semibold text-lg text-orange-600">
-                  Quizzes
-                </h5>
-                <motion.div
-                  onClick={handleTestClick}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
-                  className="w-full p-4 bg-orange-100 shadow-md rounded-lg text-center mt-6 text-xl cursor-pointer text-orange-700 font-semibold"
-                >
-                  {learnData?.status === "incomplete"
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="bg-gradient-to-r from-orange-200 to-white shadow-md rounded-lg p-6"
+          >
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              Ready to Test?
+            </h2>
+            <p className="text-gray-700 mb-4">
+              Click below to start the test for this subject and challenge your
+              knowledge!
+            </p>
+            <button
+              onClick={handleTestClick}
+              className="inline-block px-6 py-3 bg-orange-500 text-white text-lg font-medium rounded-lg shadow-lg hover:bg-orange-600"
+            >
+              {learnData?.status === "incomplete"
                     ? "Start the test"
                     : learnData?.status === "continue"
                     ? "Continue"
                     : "Finished"}
-                </motion.div>
-              </div>
-            )}
-
-            {activeTab === "Activities" && (
-              <div className="space-y-3">
-                <h5 className="text-center font-semibold text-lg text-orange-600">
-                  Activities
-                </h5>
-                <h6 className="text-center text-lg text-orange-600 font-medium">
-                  {learnData?.learnData[0]?.activity_title}
-                </h6>
-                <p className="text-lg text-orange-600">
-                  {learnData?.learnData[0]?.activity_steps}
-                </p>
-                <h6 className="text-center text-lg text-orange-600 font-medium">
-                  Materials Needed:
-                </h6>
-                <ul className="list-disc pl-8 text-orange-600">
-                  {learnData?.learnData[0]?.activity_materials?.materials?.map(
-                    (material, index) => (
-                      <li key={index} className="text-lg">
-                        {material}
-                      </li>
-                    )
-                  )}
-                </ul>
-              </div>
-            )}
-          </div>
-        </>
-      ) : (
-        <motion.div
-          className="flex items-center justify-center flex-col gap-5 min-h-[40vh]"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <p className="text-slate-600">Oops! no data exist</p>
-        </motion.div>
-      )}
+            </button>
+          </motion.div>
+        )}
+      </section>
     </div>
   );
-};
-
-export default LearnPage;
+}

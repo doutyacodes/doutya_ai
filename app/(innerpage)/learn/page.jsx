@@ -1,125 +1,142 @@
 "use client";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import GlobalApi from "@/app/api/_services/GlobalApi";
+
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
-import Link from "next/link";
+import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
-import useAuth from "@/app/hooks/useAuth";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-const Learn = () => {
-  const [learnData, setLearnData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const { selectedChildId, selectedAge } = useChildren();
-  const { isAuthenticated } = useAuth();
 
-  const LoadData = async () => {
-    try {
-      const response = await GlobalApi.GetLearnTopics({
-        age: selectedAge ? selectedAge : null,
-      });
-      setLearnData(response.data.data);
-      console.log("response", response.data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+export default function Page() {
+const [subjects, setSubjects] = useState([])
+const [isLoading, setIsLoading] = useState(true)
+const { selectedAge ,selectedGrade} = useChildren(); 
 
-  useEffect(() => {
-    LoadData();
-  }, [selectedAge]);
+const fetchSubjects = async() =>{
+  try {
+    setIsLoading(true)
+    const response = await GlobalApi.FetchSubjects({age:selectedAge,grade:selectedGrade})
+    // console.log("response",response.data.learnSubjects)
+    setSubjects(response.data.learnSubjects)
+  } catch (error) {
+    console.log(error)
+  }finally{
+    setIsLoading(false)
 
-  if (isLoading) {
-    return <LoadingSpinner />;
   }
+}
+useEffect(() => {
+ fetchSubjects()
+}, [selectedAge])
+
+if(isLoading)
+{
+  return <LoadingSpinner />
+}
+
 
   return (
-    <div className="overflow-hidden bg-gradient-to-b from-orange-100 via-white to-orange-50 min-h-screen p-4 space-y-8">
-      <motion.div
-        className="flex items-center justify-center flex-col gap-5"
-        initial={{ opacity: 0, y: -50 }}
+    <div className="min-h-screen  text-gray-800 p-6">
+      <motion.header
+        className="text-center mb-8"
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.6 }}
       >
-        <h4 className="text-center font-bold text-2xl underline-offset-2 underline uppercase text-orange-700">
-          Lesson of the Week
-        </h4>
-        <Image src="/images/space.png" width={250} height={250} alt="space" />
-      </motion.div>
+        <h1 className="text-4xl font-bold text-orange-600">Welcome to the Learning Hub</h1>
+        <p className="mt-2 text-lg text-gray-700">Explore, Learn, and Activities!</p>
+      </motion.header>
 
-      <div>
-        <p className="text-orange-600 uppercase text-center font-semibold">
-          Complete all below topics to earn this cool badge & A certificate of
-          completion
-        </p>
-      </div>
-      <h4 className="text-center font-bold text-2xl my-3 uppercase text-orange-700">
-        Chapters
-      </h4>
-      <div className="flex justify-center">
-        <p className="text-orange-600 uppercase text-center font-semibold mb-3 max-w-3xl">
-          Each chapter contains a brief explanation, an activity and a test.You
-          will need to complete all the activities and pass the tests, inorder
-          to earn the badge.
-        </p>
-      </div>
-      <div className="grid  grid-cols-2 gap-5">
-        {learnData?.length > 0 &&
-          learnData.map((item, index) => {
-            if(
-              item.title=="Stars"
-            ){
-              return;
-            }else{return (
-              <motion.div
-                className="flex items-center justify-center flex-col gap-3 p-4 bg-white rounded-lg shadow-lg transition-transform duration-300 transform hover:scale-105"
-                key={item.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.6,
-                  ease: "easeOut",
-                  delay: index * 0.1, // Staggered effect
-                }}
+      {/* Subjects Section */}
+      <section className="mb-10">
+        <motion.div
+          className="mb-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <h2 className="text-2xl font-semibold text-gray-800">Subjects</h2>
+        </motion.div>
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+        >
+          { subjects?.length >0 && subjects?.map((subject) => (
+            <motion.div
+              key={subject.id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-white shadow-md p-4 rounded-lg hover:shadow-lg"
+            >
+              <Link
+                href={`/learn/${subject.slug}`}
+                className="text-xl font-medium text-orange-500 hover:underline"
               >
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {isAuthenticated ? (
-                    <Link href={`learn/${item.slug}`}>
-                      <Image
-                        src={`/images/${item.image}`}
-                        width={100}
-                        height={100}
-                        alt={item.title}
-                        className="rounded-lg shadow-md"
-                      />
-                    </Link>
-                  ) : (
-                    <Link href={`/login`}>
-                      <Image
-                        src={`/images/${item.image}`}
-                        width={100}
-                        height={100}
-                        alt={item.title}
-                        className="rounded-lg shadow-md"
-                      />
-                    </Link>
-                  )}
-                </motion.div>
-                <h4 className="text-center font-bold text-lg uppercase text-orange-700">
-                  {item.title}
-                </h4>
-              </motion.div>
-            )}
-          })}
-      </div>
+                {subject.subject}
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* Feedback Section */}
+      <section className="mb-10">
+        <motion.div
+          className="mb-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <h2 className="text-2xl font-semibold text-gray-800">Overall Feedback</h2>
+        </motion.div>
+        <motion.div
+          className="space-y-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          
+          <motion.div
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="bg-white shadow-md p-4 rounded-lg text-center"
+          >
+            <Link
+              href="/share"
+              className="text-lg font-medium text-orange-500 hover:underline"
+            >
+              Feedback
+            </Link>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Activity of the Week Section */}
+      <section>
+        <motion.div
+          className="mb-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          <h2 className="text-2xl font-semibold text-gray-800">Activity of the Week</h2>
+        </motion.div>
+        <motion.div
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className="bg-gradient-to-r from-orange-300 to-white shadow-md p-6 rounded-lg"
+        >
+          <Link
+            href="/activity-of-the-week"
+            className="text-lg font-medium text-orange-700 hover:underline"
+          >
+            View This Week's Activity
+          </Link>
+        </motion.div>
+      </section>
     </div>
   );
-};
-
-export default Learn;
+}

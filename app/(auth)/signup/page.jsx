@@ -7,7 +7,6 @@ import { format } from "date-fns";
 import { toast, Toaster } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar"; // Import Calendar
 import {
   Form,
   FormControl,
@@ -16,23 +15,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import GlobalApi from "@/app/api/_services/GlobalApi";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import GlobalApi from "@/app/api/_services/GlobalApi";
 
 // Define Zod schema for validation
 const childSchema = z.object({
   name: z.string().min(1, { message: "Child's name is required." }),
   gender: z.enum(["male", "female", "other"], { message: "Select a gender." }),
-  age: z.any()
+  age: z.any(),
+  grade: z.string().min(1, { message: "Select a grade." }),
 });
 
 const formSchema = z
@@ -69,7 +62,7 @@ export function Signup() {
       password: "",
       confirmPassword: "",
       mobile: "",
-      children: [{ name: "", gender: "male", age: new Date() }],
+      children: [{ name: "", gender: "male", age: new Date(), grade: "" }],
     },
   });
 
@@ -110,15 +103,28 @@ export function Signup() {
     }
   };
 
+  const gradeOptions = [
+    "Pre-School",
+    "Nursery",
+    "LKG (Lower Kindergarten)",
+    "UKG (Upper Kindergarten)",
+    "Grade 1",
+    "Grade 2",
+    "Grade 3",
+    "Grade 4",
+    "Grade 5",
+    "Grade 6",
+    "Grade 7",
+  ];
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-100 via-white to-orange-50 text-gray-800 p-5">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="w-full max-w-xl p-6 shadow-lg rounded-lg bg-white border border-slate-200">
         <h1 className="text-2xl font-semibold text-center mb-4">Sign Up</h1>
-        <p className="text-center mb-6">Create an account to get started</p>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Other Fields */}
+            {/* Parent Details */}
             <FormField
               control={form.control}
               name="name"
@@ -140,7 +146,7 @@ export function Signup() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="username" {...field} />
+                    <Input placeholder="Username" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -154,11 +160,7 @@ export function Signup() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="password"
-                      {...field}
-                    />
+                    <Input type="password" placeholder="Password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -174,7 +176,7 @@ export function Signup() {
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Confirm password"
+                      placeholder="Confirm Password"
                       {...field}
                     />
                   </FormControl>
@@ -196,7 +198,8 @@ export function Signup() {
                 </FormItem>
               )}
             />
-            {/* Children Fields */}
+
+            {/* Children Details */}
             <div>
               <h2 className="text-xl font-semibold mb-4">Children</h2>
               {fields.map((field, index) => (
@@ -286,7 +289,32 @@ export function Signup() {
                       </FormItem>
                     )}
                   />
-                  {index != 0 && (
+                  <FormField
+                    control={form.control}
+                    name={`children.${index}.grade`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Grade</FormLabel>
+                        <FormControl>
+                          <select
+                            {...field}
+                            className="w-full border rounded p-2 bg-white"
+                          >
+                            <option value="" disabled>
+                              Select Grade
+                            </option>
+                            {gradeOptions.map((grade) => (
+                              <option key={grade} value={grade}>
+                                {grade}
+                              </option>
+                            ))}
+                          </select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {index !== 0 && (
                     <Button
                       type="button"
                       onClick={() => remove(index)}
@@ -301,7 +329,7 @@ export function Signup() {
               <Button
                 type="button"
                 onClick={() =>
-                  append({ name: "", gender: "male", age: new Date() })
+                  append({ name: "", gender: "male", age: new Date(), grade: "" })
                 }
                 className="mt-4"
               >
@@ -309,7 +337,7 @@ export function Signup() {
               </Button>
             </div>
 
-            <Button type="submit" className="w-full bg-[#1e5f9f] text-white">
+            <Button type="submit" className="w-full bg-blue-600 text-white">
               Sign Up
             </Button>
           </form>

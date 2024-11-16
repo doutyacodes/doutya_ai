@@ -8,13 +8,11 @@ import jwt from "jsonwebtoken"; // Import jwt
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key'; // Replace with your actual secret key
 
-
-
 export async function POST(req) {
   try {
     const { name, username, password, mobile, children } = await req.json();
 
-    // Validate the input
+    // Validate the input (add validation if needed)
 
     // Check if username or mobile already exists in the database
     const existingUser = await db
@@ -55,12 +53,13 @@ export async function POST(req) {
         name: child.name,
         gender: child.gender,
         age: dob,
+        grade: child.grade || null, // Add grade field (optional, defaulting to null if not provided)
       });
     }
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: newUser[0].insertId, username: newUser.username }, // Include relevant user info in token
+      { id: newUser[0].insertId, username: username }, // Include relevant user info in token
       JWT_SECRET,
       //{ expiresIn: '1h' } // Token expiration time
     );

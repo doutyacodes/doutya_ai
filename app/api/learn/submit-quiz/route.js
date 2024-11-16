@@ -62,20 +62,20 @@ export async function POST(req) {
     const percentageScore = (totalScore / totalQuestions) * 100;
 
     // Check if the badge exists for this quiz
-    const badge = await db
-      .select()
-      .from(BADGES)
-      .where(eq(BADGES.badge_type, 'quiz'), eq(BADGES.learn_topic_id, 1)) // Replace 1 with the appropriate learn_topic_id
-      .execute();
+    // const badge = await db
+    //   .select()
+    //   .from(BADGES)
+    //   .where(eq(BADGES.badge_type, 'quiz'), eq(BADGES.learn_topic_id, 1)) // Replace 1 with the appropriate learn_topic_id
+    //   .execute();
 
-    if (badge.length > 0 && percentageScore > 40) {
-      // Insert into user_badges if the badge exists and score is above 40%
-      await db.insert(USER_BADGES).values({
-        child_id: childId,
-        badge_id: badge[0].id, // Assuming the badge has an 'id' column
-        earned_at: new Date(),
-      }).execute();
-    }
+    // if (badge.length > 0 && percentageScore > 40) {
+    //   // Insert into user_badges if the badge exists and score is above 40%
+    //   await db.insert(USER_BADGES).values({
+    //     child_id: childId,
+    //     badge_id: badge[0].id, // Assuming the badge has an 'id' column
+    //     earned_at: new Date(),
+    //   }).execute();
+    // }
 
     return NextResponse.json({
       message: "Quiz submitted successfully.",

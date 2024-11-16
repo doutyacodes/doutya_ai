@@ -17,6 +17,7 @@ export const ChildrenProvider = ({ children }) => {
   const [selectedDob, setSelectedDob] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
   const [selectedChild, setSelectedChild] = useState(null);
+  const [selectedGrade, setSelectedGrade] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const router = useRouter();
@@ -37,6 +38,7 @@ export const ChildrenProvider = ({ children }) => {
       setSelectedName(selectedChild.name);
       setSelectedWeeks(selectedChild.weeks);
       setSelectedDob(selectedChild.dob);
+      setSelectedGrade(selectedChild.grade);
       setShowPopup(true);
     }
   };
@@ -95,7 +97,8 @@ export const ChildrenProvider = ({ children }) => {
         selectedWeeks,
         selectedDob,
         loading,
-        selectedChild
+        selectedChild,
+        selectedGrade
       }}
     >
       {loading ? <LoadingSpinner /> : children}

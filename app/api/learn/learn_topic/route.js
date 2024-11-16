@@ -1,14 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import {
-  CHILDREN,
-  LEARN_DATA,
-  LEARN_TOPICS,
-  QUESTIONS,
-  USER_LEARN_PROGRESS,
-} from "@/utils/schema"; // Ensure the relevant schemas are imported
 import { and, eq } from "drizzle-orm";
 import { authenticate } from "@/lib/jwtMiddleware";
+import { CHILDREN, LEARN_DATAS, LEARN_SUBJECTS, QUESTIONS, USER_LEARN_PROGRESS } from "@/utils/schema";
 
 export async function POST(req) {
   try {
@@ -27,8 +21,8 @@ export async function POST(req) {
     // Fetch the learn topic ID associated with the provided slug
     const topic = await db
       .select()
-      .from(LEARN_TOPICS)
-      .where(eq(LEARN_TOPICS.slug, slug))
+      .from(LEARN_SUBJECTS)
+      .where(eq(LEARN_SUBJECTS.slug, slug))
       .execute();
 
     // Check if the topic was found
@@ -38,10 +32,12 @@ export async function POST(req) {
         { status: 404 }
       );
     }
-    
+
     const topicId = topic[0].id; // Get the ID of the topic
 
-    // Count the number of quizzes (questions) associated with the retrieved topic_id
+  
+
+ // Count the number of quizzes (questions) associated with the retrieved topic_id
     const quiz = await db
       .select()
       .from(QUESTIONS)
@@ -100,10 +96,14 @@ export async function POST(req) {
     } else {
       status = "unknown"; // Handle unexpected cases, if necessary
     }
+  
+
+
+   
     const learnData = await db
       .select()
-      .from(LEARN_DATA)
-      .where(eq(LEARN_DATA.learn_topic_id, topicId))
+      .from(LEARN_DATAS)
+      .where(eq(LEARN_DATAS.learn_subject_id, topicId))
       .execute();
 
     return NextResponse.json({
@@ -111,7 +111,7 @@ export async function POST(req) {
       userProgressCount,
       status,
       topic,
-      learnData,
+      learnData:learnData[0],
     });
   } catch (error) {
     console.error("Error fetching data:", error);

@@ -1,7 +1,7 @@
 // app/api/quiz-section/route.js
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { LEARN_TOPICS, QUESTIONS, OPTIONS2, USER_LEARN_PROGRESS } from "@/utils/schema"; // Ensure the relevant schemas are imported
+import { LEARN_SUBJECTS, QUESTIONS, OPTIONS2, USER_LEARN_PROGRESS } from "@/utils/schema"; // Ensure the relevant schemas are imported
 import { authenticate } from "@/lib/jwtMiddleware";
 import { and, eq } from "drizzle-orm";
 
@@ -22,8 +22,8 @@ export async function POST(req) {
     // Fetch the topic associated with the slug
     const topic = await db
       .select()
-      .from(LEARN_TOPICS)
-      .where(eq(LEARN_TOPICS.slug, slug))
+      .from(LEARN_SUBJECTS)
+      .where(eq(LEARN_SUBJECTS.slug, slug))
       .execute();
 
     // Check if the topic was found

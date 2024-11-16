@@ -727,3 +727,5 @@ export const QUIZ_PROGRESS = mysqlTable('quiz_progress', {
         enrolled_date: timestamp('enrolled_date').defaultNow(),// timestamp for when the course was enrolled
         completion_date: timestamp('completion_date').defaultNow().onUpdateNow(), // Timestamp for updates
     });
+
+  

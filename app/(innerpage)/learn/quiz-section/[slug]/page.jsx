@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import GlobalApi from "@/app/api/_services/GlobalApi";
@@ -9,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { useChildren } from "@/context/CreateContext";
 import { motion } from "framer-motion";
 
-
 const QuizSection = () => {
   const { slug } = useParams();
   const router = useRouter();
@@ -19,7 +19,8 @@ const QuizSection = () => {
   const [completed, setCompleted] = useState(false);
   const [userAnswers, setUserAnswers] = useState({});
   const [isModalOpen, setModalOpen] = useState(false);
-  
+  const [validationError, setValidationError] = useState(false); // New state for validation
+
   // Fetch quiz data on component mount
   useEffect(() => {
     const fetchQuizData = async () => {
@@ -41,6 +42,18 @@ const QuizSection = () => {
 
   // Function to handle submitting answers
   const handleSubmitQuiz = async () => {
+    // Check if all questions have been answered
+    const unansweredQuestions = questions.filter(
+      (question, index) => !userAnswers[index]
+    );
+
+    if (unansweredQuestions.length > 0) {
+      toast.error("Please answer all questions before submitting the quiz."); // Show validation error if any question is unanswered
+      return; // Prevent form submission
+    }
+
+    setValidationError(false); // Reset validation error if all questions are answered
+
     const answers = questions.map((question, index) => ({
       questionId: question.id,
       selectedOptions: userAnswers[index] ? [userAnswers[index]] : [],
@@ -87,12 +100,31 @@ const QuizSection = () => {
           </div>
         </Modal>
       )}
-      <h2 className="text-center text-2xl font-bold text-orange-800 mt-4">
+
+      <motion.h2
+        className="text-center text-2xl font-bold text-orange-800 mt-4"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         {completed ? "Continue your quiz" : "Start the quiz"}
-      </h2>
+      </motion.h2>
+
       <div className="mt-6 p-6 bg-white rounded-lg shadow-lg space-y-6">
+        {/* {validationError && (
+          <div className="text-red-600 text-center mb-4">
+            <span>Please answer all questions before submitting the quiz.</span>
+          </div>
+        )} */}
+
         {questions.map((question, index) => (
-          <div key={index} className="mb-6">
+          <motion.div
+            key={index}
+            className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-white rounded-lg shadow-md"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             <h4 className="font-semibold text-lg text-orange-800">{question.question_text}</h4>
             <div className="mt-2 space-y-2">
               {question.options.map((option) => (
@@ -113,12 +145,13 @@ const QuizSection = () => {
                 </label>
               ))}
             </div>
-          </div>
+          </motion.div>
         ))}
+
         <motion.button
           onClick={handleSubmitQuiz}
           whileHover={{ scale: 1.05 }}
-          className="w-full p-3 bg-orange-500 text-white font-semibold rounded-lg transition-all duration-200"
+          className="w-full p-3 bg-orange-500 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 hover:bg-orange-600"
         >
           Submit Quiz
         </motion.button>

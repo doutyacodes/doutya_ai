@@ -80,10 +80,11 @@ export const COURSES_KEYWORDS = mysqlTable("courses_keywords", {
 export const CHILDREN = mysqlTable("children", {
   id: int("id").primaryKey().autoincrement(),
   user_id: int("user_id").references(() => USER_DETAILS.id), // Foreign key referencing the user
-  search_criteria: int("search_criteria").notNull(), 
+  search_criteria: int("search_criteria").notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   gender: mysqlEnum("gender", ["male", "female", "other"]).notNull(), // Enum for gender
   age: date("age").notNull(),
+  grade: varchar("grade", { length: 255 }).default(null), // Grade field, nullable by default
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
@@ -468,7 +469,7 @@ export const USER_LEARN_PROGRESS = mysqlTable("user_learn_progress", {
   user_id: int("user_id").notNull(),
   question_id: int("question_id").notNull(),
   option_id: int("option_id").notNull(),
-  learn_topic_id: int("learn_topic_id").references(() => LEARN_TOPICS.id).notNull(), // Foreign key to 'learn_topics' table
+  learn_topic_id: int("learn_topic_id").references(() => LEARN_SUBJECTS.id).notNull(), // Foreign key to 'learn_topics' table
   // analytic_id: int("analytic_id").notNull(),
   created_at: datetime("created_at").notNull(),
   child_id: int("child_id").references(() => CHILDREN.id), // Foreign key referencing the child
@@ -687,13 +688,6 @@ export const TEMP_LEADER = mysqlTable("temp_leader", {
   userId: int("user_id").notNull(),
   challengeId: int("challenge_id").notNull(),
   taskId: int("task_id").notNull(),
-});
-
-export const SUBJECTS = mysqlTable("subjects", {
-  subject_id: int("subject_id").primaryKey().autoincrement(),
-  subject_name: varchar("subject_name", { length: 255 }).notNull().unique(),
-  min_age: int("min_age").notNull(),
-  max_age: int("max_age").notNull(),
 });
 
 export const CAREER_SUBJECTS = mysqlTable(
@@ -1271,3 +1265,37 @@ export const KNOWLEDGE_PROGRESS = mysqlTable("knowledge_progress", {
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
+export const SUBJECTS = mysqlTable("subjects", {
+  id: varchar("id", { length: 36 }).primaryKey(),   // UUID as primary key
+  subject: varchar("subject", { length: 255 }).notNull(), // Subject name
+  code: varchar("code", { length: 50 }).unique(),   // Unique code for the subject
+  created_at: timestamp("created_at").defaultNow(), // Timestamp for creation
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
+});
+
+export const LEARN_SUBJECTS = mysqlTable("learn_subjects", {
+  id: int("id").primaryKey().autoincrement(),     // Unique identifier for each record
+  subject_id: varchar("subject_id", { length: 36 }) // Foreign key referencing the subject's UUID
+    .references(() => SUBJECTS.id, { onDelete: "cascade" }), // Foreign key with cascade delete
+  subject: varchar("subject", { length: 255 }).notNull(),   // Subject name for reference
+  show_date: date("show_date").notNull(),          // Date when the subject should be shown
+  created_at: timestamp("created_at").defaultNow(), // Timestamp for when the record is created
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for when the record is updated
+  age: int("age").notNull(),                      // Age for which the subject is intended
+  slug: varchar("slug", { length: 255 }).unique(),  // Slug for the subject URL
+  grade: varchar("grade", { length: 255 }).default(null), // Grade field, nullable by default
+});
+
+export const LEARN_DATAS = mysqlTable("learn_datas", {
+  id: int("id").primaryKey().autoincrement(),      // Unique identifier for each record
+  learn_subject_id: int("learn_subject_id")        // Foreign key to learn_subjects table
+    .notNull()
+    .references(() => LEARN_SUBJECTS.id, { onDelete: "cascade" }), 
+  topic: varchar("topic", { length: 255 }).notNull(), // Topic of the learning material
+  image: varchar("image", { length: 255 }).default(null), // URL or path to the image (optional)
+  description:text('description').default(null),
+  created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
+  updated_at: timestamp("updated_at")
+    .defaultNow()
+    .onUpdateNow(),                               // Timestamp for record updates
+});

@@ -201,6 +201,16 @@ const FetchCourses = async (data) => {
     },
   });
 };
+// New function to fetch subjects
+const FetchSubjects = async (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(`/api/fetchSubjects`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
 
 // New function to fetch courses
 const FetchActivities = async (data) => {
@@ -603,6 +613,7 @@ export default {
   GetUserChildren, // Export the new function
   AddChild, // Export the new function
   FetchCourses, // Export the new function
+  FetchSubjects,
   FetchSubtopics,
   GetLearnTopics,
   learnStyleResult,
