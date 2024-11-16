@@ -115,7 +115,7 @@ export default function NewsSection() {
               <img
                 src={`https://wowfy.in/testusr/images/${article.image_url}`}
                 alt={article.title}
-                className="h-40 w-full object-cover"
+                className="max-h-40 w-full object-cover"
               />
               <div className="p-4">
                 <h3 className="text-lg font-medium text-gray-800 mb-2">
