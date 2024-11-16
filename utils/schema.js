@@ -471,8 +471,20 @@ export const USER_LEARN_PROGRESS = mysqlTable("user_learn_progress", {
   option_id: int("option_id").notNull(),
   learn_topic_id: int("learn_topic_id").references(() => LEARN_SUBJECTS.id).notNull(), // Foreign key to 'learn_topics' table
   // analytic_id: int("analytic_id").notNull(),
-  created_at: datetime("created_at").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
   child_id: int("child_id").references(() => CHILDREN.id), // Foreign key referencing the child
+});
+
+export const LEARN_TEST_SCORES= mysqlTable("learn_test_scores", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull(),
+  child_id: int("child_id").references(() => CHILDREN.id), 
+  total_percentage: float("total_percentage").notNull(),
+  total_score: int("total_score").notNull(),
+  subject_id: int("subject_id")
+    .notNull()
+    .references(() => LEARN_SUBJECTS.id),
+  created_at: timestamp("created_at").defaultNow(),
 });
 
 export const USER_CAREER_PROGRESS = mysqlTable("user_career_progress", {
@@ -1281,7 +1293,7 @@ export const LEARN_SUBJECTS = mysqlTable("learn_subjects", {
   show_date: date("show_date").notNull(),          // Date when the subject should be shown
   created_at: timestamp("created_at").defaultNow(), // Timestamp for when the record is created
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for when the record is updated
-  age: int("age").notNull(),                      // Age for which the subject is intended
+  age: int("age").notNull(),                        // Age for which the subject is intended
   slug: varchar("slug", { length: 255 }).unique(),  // Slug for the subject URL
   grade: varchar("grade", { length: 255 }).default(null), // Grade field, nullable by default
 });

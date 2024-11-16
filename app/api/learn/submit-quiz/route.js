@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { QUESTIONS, OPTIONS2, USER_BADGES, BADGES, USER_LEARN_PROGRESS } from "@/utils/schema"; // Include the USER_BADGES and BADGES schemas
+import { QUESTIONS, OPTIONS2, USER_BADGES, BADGES, USER_LEARN_PROGRESS, LEARN_TEST_SCORES } from "@/utils/schema"; // Include the USER_BADGES and BADGES schemas
 import { authenticate } from "@/lib/jwtMiddleware";
 import { eq } from "drizzle-orm";
 
@@ -60,6 +60,15 @@ export async function POST(req) {
     const totalQuestions = answers.length;
     const totalScore = correctAnswersCount;
     const percentageScore = (totalScore / totalQuestions) * 100;
+
+    await db.insert(LEARN_TEST_SCORES).values({
+      user_id: userId,
+      child_id: childId,
+      total_score: totalScore,
+      total_percentage: percentageScore,
+      subject_id: topicId,
+    });
+
 
     // Check if the badge exists for this quiz
     // const badge = await db
