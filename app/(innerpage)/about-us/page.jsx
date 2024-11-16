@@ -5,12 +5,12 @@ import { motion } from 'framer-motion';
 
 export default function AboutUs() {
   return (
-    <div className="container mx-auto py-12 px-4 bg-gradient-to-r from-orange-100 via-white to-orange-50 rounded-lg">
+    <div className="container mx-auto py-4 px-4 bg-gradient-to-r from-orange-100 via-white to-orange-50 rounded-lg">
       <motion.h1
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: 'easeOut' }}
-        className="text-5xl font-bold text-center mb-8 mt-14 text-orange-800"
+        className="text-5xl font-bold text-center mb-8 mt-5 text-orange-800"
       >
         About Us
       </motion.h1>

@@ -5,12 +5,12 @@ import { motion } from 'framer-motion';
 
 export default function OurStory() {
   return (
-    <div className="container mx-auto py-12 px-4">
+    <div className="container mx-auto py-8 px-4">
       <motion.h1
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="text-5xl font-bold text-center mb-8 mt-14"
+        className="text-5xl font-bold text-center mb-8 "
       >
         Our Story: The Birth of Axara
       </motion.h1>

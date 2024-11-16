@@ -96,7 +96,7 @@ export default function Features() {
   };
 
   return (
-    <section id="features" className="py-16 px-4">
+    <section id="features" className="py-10 px-4">
       <div className="max-w-7xl mx-auto text-center">
         <motion.h2
           initial={{ opacity: 0 }}
