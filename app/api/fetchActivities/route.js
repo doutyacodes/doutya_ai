@@ -115,8 +115,12 @@ export async function POST(req) {
       .execute();
 
     // Check completion status for each normal activity
+    // console.log("normalActivitiesStatus",normalActivities)
+    // console.log("finalChildId",finalChildId)
+
     const normalActivitiesStatus = await Promise.all(
       normalActivities.map(async (activity) => {
+        // console.log("activity",activity.activities.id)
         const completionCheck = await db
           .select()
           .from(USER_ACTIVITIES)
@@ -124,7 +128,7 @@ export async function POST(req) {
             and(
               eq(USER_ACTIVITIES.user_id, userId),
               eq(USER_ACTIVITIES.child_id, finalChildId),
-              eq(USER_ACTIVITIES.activity_id, activity.id)
+              eq(USER_ACTIVITIES.activity_id, activity.activities.id)
             )
           )
           .execute();

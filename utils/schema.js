@@ -1311,3 +1311,26 @@ export const LEARN_DATAS = mysqlTable("learn_datas", {
     .defaultNow()
     .onUpdateNow(),                               // Timestamp for record updates
 });
+
+
+export const NEWS_CATEGORIES = mysqlTable("news_categories", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(), // Category name
+  created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
+});
+
+
+export const NEWS = mysqlTable("news", {
+  id: int("id").primaryKey().autoincrement(),
+  news_category_id: int("news_category_id")
+    .notNull()
+    .references(() => NEWS_CATEGORIES.id), // Foreign key referencing NEWS_CATEGORIES table
+  title: varchar("title", { length: 255 }).notNull(), // Title of the news article
+  image_url: text("image_url").notNull(), // URL of the featured image
+  summary: text("summary"), // Brief summary, nullable
+  description: text("description").notNull(), // Detailed description of the article
+  age: int("age").notNull(), // Age-related parameter
+  created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
+});

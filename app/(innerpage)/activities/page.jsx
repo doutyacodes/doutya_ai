@@ -28,7 +28,7 @@ const ActivitiesList = () => {
         childId: selectedChildId || null,
         age: selectedAge,
       });
-      // console.log("response", response.data);
+      console.log("response", response.data);
 
       setWeeklyActivity(response.data.weeklyActivity);
       setNormalActivities(response.data.normalActivities);

@@ -12,6 +12,11 @@ const nextConfig = {
           hostname: 'images.pexels.com',
           pathname: '**',
         },
+        {
+          protocol: 'https',
+          hostname: 'wowfy.in',  // Added this line to allow images from wowfy.in
+          pathname: '**',
+        },
       ],
   },
 };
