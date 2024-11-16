@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { CHILDREN, LEARN_SUBJECTS } from "@/utils/schema";
+import { ACTIVITIES, CHILDREN, LEARN_SUBJECTS, USER_ACTIVITIES } from "@/utils/schema";
 import { authenticate } from "@/lib/jwtMiddleware";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { calculateAgeAndWeeks } from "@/app/hooks/CalculateAgeWeek";
 
 export async function POST(req) {
@@ -12,7 +12,7 @@ export async function POST(req) {
   }
 
   const userId = authResult.decoded_Data.id;
-  const { age, grade = null } = await req.json(); // Accept `limit` from the request, default to 10
+  const { age, grade = null,childId } = await req.json(); // Accept `limit` from the request, default to 10
 
   if (!userId) {
     return NextResponse.json(
@@ -23,8 +23,9 @@ export async function POST(req) {
 
   let finalAge = age;
   let finalGrade = grade;
+  let finalChildId = childId;
 
-  if (!finalAge || !finalGrade) {
+  if (!finalAge || !finalGrade||!finalChildId) {
     // If `age` is null, fetch the first child's age
     const firstChild = await db
       .select()
@@ -37,6 +38,7 @@ export async function POST(req) {
       const calculatedAge = calculateAgeAndWeeks(firstChild[0].age);
       finalAge = calculatedAge.age;
       finalGrade = firstChild[0].grade;
+      finalChildId = firstChild[0].id;
     } else {
       return NextResponse.json(
         { error: "No children found for the user." },
@@ -88,8 +90,41 @@ export async function POST(req) {
         .execute();
     }
 
+    // Fetch the latest weekly activity based on age
+    const latestWeeklyActivity = await db
+      .select()
+      .from(ACTIVITIES)
+      .where(and(eq(ACTIVITIES.age, finalAge), eq(ACTIVITIES.activity_type, "week")))
+      .orderBy(desc(ACTIVITIES.created_at))
+      .limit(1)
+      .execute();
+    
+    console.log("latestWeeklyActivity", latestWeeklyActivity);
+
+    // Check if the weekly activity is completed by the user
+    let weeklyActivityStatus = null;
+    if (latestWeeklyActivity.length > 0) {
+      const weeklyActivityId = latestWeeklyActivity[0].id;
+      const completionCheck = await db
+        .select()
+        .from(USER_ACTIVITIES)
+        .where(
+          and(
+            eq(USER_ACTIVITIES.user_id, userId),
+            eq(USER_ACTIVITIES.child_id, finalChildId),
+            eq(USER_ACTIVITIES.activity_id, weeklyActivityId)
+          )
+        )
+        .execute();
+      weeklyActivityStatus = completionCheck.length > 0;
+    }
+
     return NextResponse.json({
       learnSubjects,
+      weeklyActivity: latestWeeklyActivity[0] ? { 
+        ...latestWeeklyActivity[0], 
+        completed: weeklyActivityStatus,
+      } : null,
     });
   } catch (error) {
     console.error("Error fetching learn_subjects:", error);
