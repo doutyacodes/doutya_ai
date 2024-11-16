@@ -166,7 +166,7 @@ function Banner({
             selectedAge,
             true
           )}
-          {renderTestCard(
+          {/* {renderTestCard(
             5,
             "#c8bbff, #c8bbff",
             "Knowledge Evaluation Test",
@@ -174,7 +174,7 @@ function Banner({
             "/knowledge-evaluation",
             selectedAge,
             true
-          )}
+          )} */}
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@ import {
   FaSignOutAlt,
   FaInfoCircle,
   FaStar,
+  FaBuilding,
 } from "react-icons/fa";
 import Image from "next/image";
 import { ChevronRight, Menu } from "lucide-react";
@@ -42,6 +43,7 @@ const SideBar = () => {
     { label: "Communities", links: "/communities", icon: FaUserFriends },
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
     { label: "Our Features", links: "/our-features", icon: FaStar },
+    { label: "About Us", links: "/about-us", icon: FaBuilding },  // Changed to "FaBuilding" for About Us    
     // { label: "My Badges", links: "/badges", icon: FaMedal },
     // { label: "My Searches", links: "/my-search", icon: FaHistory },
     // { label: "My Profile", links: "/my-profile", icon: FaUser },
