@@ -16,14 +16,14 @@ const ChildSelector = () => {
     <div className="flex flex-col w-fit gap-[1px] items-center">
       <Image
         src={selectedGender === "male" ? "/images/boy.png" : "/images/girl.png"}
-        width={40}
-        height={40}
+        width={80}
+        height={80}
         alt={selectedGender || "gender"}
       />
       <select
         value={selectedChildId || ""}
         onChange={(e) => selectChild(e.target.value)}
-        className="bg-transparent text-xs rounded-md  mb-2 w-full"
+        className="bg-transparent max-md:text-sm text-xs rounded-md  mb-2 w-full"
       >
         {childrenData.map((child) => (
           <option className="text-black" key={child.id} value={child.id}>

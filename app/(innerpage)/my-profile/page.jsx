@@ -5,6 +5,7 @@ import { PencilIcon } from "lucide-react";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -83,7 +84,8 @@ const Profile = () => {
   const handleSaveChildChanges = async () => {
     try {
       // Assuming GlobalApi.UpdateChildData is the API call to update a child's details.
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const token =
+        typeof window !== "undefined" ? localStorage.getItem("token") : null;
       if (token) {
         await GlobalApi.UpdateChildData(token, editingChild); // Make the API call
         toast.success(`${editingChild.name}'s details updated successfully!`);
@@ -96,11 +98,11 @@ const Profile = () => {
       }
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to update child's details. Please try again."
+        error.response?.data?.message ||
+          "Failed to update child's details. Please try again."
       );
     }
   };
-  
 
   const handleSearchCriteriaChange = (e) => {
     const newCriteria = parseInt(e.target.value);
@@ -213,6 +215,14 @@ const Profile = () => {
           <h2 className="text-3xl font-semibold text-center mb-4">
             Children Information
           </h2>
+          <div className="w-full flex justify-end">
+            <Link
+              href={"/add-child"}
+              className="bg-blue-600 rounded-md px-3 py-2 text-white mb-4"
+            >
+              Add Child
+            </Link>
+          </div>
           <div className="space-y-4">
             {children.map((child) => (
               <motion.div

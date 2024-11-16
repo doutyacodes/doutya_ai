@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 const AddChildModal = () => {
   const [newChildName, setNewChildName] = useState("");
@@ -99,7 +100,12 @@ const AddChildModal = () => {
             required
           />
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <Link href={"/my-profile"}
+            className="bg-gray-600 text-white rounded-md px-4 py-2"
+          >
+            Cancel
+          </Link>
           <button
             onClick={handleAddChild}
             className="bg-blue-600 text-white rounded-md px-4 py-2"

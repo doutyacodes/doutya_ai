@@ -48,14 +48,14 @@ const RightSideBar = () => {
 
   const navLinks = [
     { label: "My Search history", links: "/my-search", icon: FaHistory },
-    { label: "My Lessons", links: "/learn", icon: GiTiedScroll },
+    // { label: "My Lessons", links: "/learn", icon: GiTiedScroll },
     { label: "My Activities", links: "/activities", icon: BsActivity },
     { label: "My Badges", links: "/badges", icon: FaMedal },
-    {
-      label: "Add Child",
-      links: "/add-child",
-      icon: FaUserPlus,
-    },
+    // {
+    //   label: "Add Child",
+    //   links: "/add-child",
+    //   icon: FaUserPlus,
+    // },
     { label: "My Profile", links: "/my-profile", icon: FaUser },
     // { label: "Settings", links: "/settings", icon: FaCog },
   ];
