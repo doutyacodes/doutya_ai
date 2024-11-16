@@ -174,7 +174,7 @@ export default function Page() {
             className="bg-white shadow-md p-4 rounded-lg text-center"
           >
             <Link
-              href="/share"
+              href="learn/feedback"
               className="text-lg font-medium text-orange-500 hover:underline"
             >
               Feedback

@@ -606,6 +606,27 @@ const GetIndustry = (token, language) => {
   });
 };
 
+const GetDaysData = (token, childId) => {
+  return axios.get(`/api/learn/getDaysData/${childId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+const GetFeedbacksData = (month, year, week, childId, token,) => {
+  return axios.get(`/api/learn/getFeedbackData/${childId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },params: {
+      month,
+      year,
+      week,
+    },
+  });
+};
+
+
 export default {
   SearchUser,
   SignUpUser,
@@ -662,5 +683,8 @@ export default {
   GetIndustry,
   FetchActivities,
   submitImage,
+
   SaveQuizProgress2,
+  GetFeedbacksData,
+  GetDaysData,
 };
