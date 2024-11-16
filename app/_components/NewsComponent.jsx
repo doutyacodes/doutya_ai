@@ -75,7 +75,7 @@ export default function NewsSection() {
 
       {/* Category Tabs */}
       <motion.div
-        className="flex justify-center space-x-4 mb-6"
+        className="flex justify-center space-x-4 mb-6 overflow-x-scroll"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
