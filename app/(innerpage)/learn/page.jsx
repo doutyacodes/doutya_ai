@@ -107,7 +107,7 @@ export default function Page() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="text-4xl font-bold text-orange-600">
+        <h1 className="text-4xl font-semibold text-orange-600">
           Welcome to the Learning Hub
         </h1>
         <p className="mt-2 text-lg text-gray-700">
