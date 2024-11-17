@@ -222,14 +222,18 @@ const FetchNews = async (data) => {
   });
 };
 
-const fetchNewsHome = async (data) => {
-  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+const fetchNewsHome = async (token,data) => {
 
-  return axios.post(`/api/fetchNewsHome`, data, {
-    headers: {
-      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-    },
-  });
+  if(token)
+  {
+    return axios.post(`/api/fetchNewsHome`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+      },
+    });
+  }else{
+    return axios.post(`/api/fetchNewsHome`, data);
+  }
 };
 
 // New function to fetch courses

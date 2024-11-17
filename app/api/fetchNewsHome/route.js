@@ -5,7 +5,7 @@ import { authenticate } from "@/lib/jwtMiddleware";
 import { eq, and } from "drizzle-orm";
 
 export async function POST(req) {
-  const authResult = await authenticate(req);
+  const authResult = await authenticate(req,true);
   if (!authResult.authenticated) {
     return authResult.response;
   }
@@ -13,12 +13,7 @@ export async function POST(req) {
   const userId = authResult.decoded_Data.id;
   const { age } = await req.json();
 
-  if (!userId) {
-    return NextResponse.json(
-      { error: "User ID is required." },
-      { status: 400 }
-    );
-  }
+ 
 
   if (!age) {
     return NextResponse.json(
@@ -54,8 +49,10 @@ export async function POST(req) {
       .leftJoin(NEWS_CATEGORIES, eq(NEWS.news_category_id, NEWS_CATEGORIES.id))
       .where(eq(NEWS.age, age))
       .execute();
-
-    const postsWithUserAndChild = await db
+let postsWithLikesAndComments= null
+    if(userId)
+    {
+      const postsWithUserAndChild = await db
       .select({
         postId: KIDS_POSTS.id,
         content: KIDS_POSTS.content,
@@ -72,7 +69,7 @@ export async function POST(req) {
       .where(eq(KIDS_POSTS.community_id, community_id))
       .execute();
 
-    const postsWithLikesAndComments = await Promise.all(
+     postsWithLikesAndComments = await Promise.all(
       postsWithUserAndChild.map(async (post) => {
         const [like] = await db
           .select()
@@ -91,10 +88,11 @@ export async function POST(req) {
         };
       })
     );
+    }
 
     return NextResponse.json({
       news,
-      posts: postsWithLikesAndComments,
+      posts: postsWithLikesAndComments ? postsWithLikesAndComments : [],
     });
   } catch (error) {
     console.error("Error fetching news or categories:", error);

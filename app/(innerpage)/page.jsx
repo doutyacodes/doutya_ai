@@ -57,6 +57,8 @@ const Home = () => {
   const fileInputRef = useRef(null); // Create a reference for the file input
   const [hideActivity, setHideActivity] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0); // Track current playback position
+  const [sampleAge, setSampleAge] = useState("");
+  const [childAge, setChildAge] = useState("");
   const [genre, setGenre] = useState({
     value: "Any",
     label1: "Any",
@@ -86,8 +88,12 @@ const Home = () => {
   };
   const fetchNews = async () => {
     try {
+      const token =
+        typeof window !== "undefined" ? localStorage.getItem("token") : null;
       setIsLoading(true);
-      const response = await GlobalApi.fetchNewsHome({ age: selectedAge });
+      const response = await GlobalApi.fetchNewsHome(token, {
+        age: isAuthenticated ? selectedAge : sampleAge,
+      });
       const news = response.data.news || [];
       // console.log("response", response.data);
       setNewsCategories(news);
@@ -100,10 +106,10 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (selectedAge) {
+    if (selectedAge || sampleAge) {
       fetchNews();
     }
-  }, [selectedAge]);
+  }, [selectedAge, sampleAge]);
   const scrollToSection = (sectionId) => {
     // Update which sections to show based on the section clicked
     if (sectionId === "our-story") {
@@ -891,7 +897,12 @@ const Home = () => {
                   </div>
                 </>
               ) : (
-                <div onClick={()=>setAdvanced(true)} className="text-center text-orange-200 font-semibold">Advannced Filter</div>
+                <div
+                  onClick={() => setAdvanced(true)}
+                  className="text-center text-orange-300 font-semibold"
+                >
+                  Advanced Filter
+                </div>
               )}
 
               {/* {age > 13 && (
@@ -1397,11 +1408,53 @@ const Home = () => {
               Todays News made age appropriate for Kids
             </span>
           </div>
-          <div className="w-full flex flex-col gap-2 h-56 overflow-y-auto">
+          <div className="w-full flex flex-col gap-2 h-56 overflow-y-auto relative">
+            {!isAuthenticated && !sampleAge && (
+              <div className="absolute top-0 left-0 bg-white w-full h-full z-[999999999] rounded-md opacity-95 flex justify-center items-center">
+                <div className="w-[90%] max-w-md bg-gray-100 p-6 rounded-lg shadow-lg text-center">
+                  <h2 className="text-xl font-semibold mb-4">
+                    Enter Your Child's Age
+                  </h2>
+                  <div>
+                    <input
+                      type="number"
+                      min="3"
+                      max="12"
+                      placeholder="Enter age (3-12)"
+                      className="w-full p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-500"
+                      value={childAge}
+                      onChange={(e) => setChildAge(e.target.value)}
+                    />
+                    <button
+                      onClick={() => {
+                        if (!childAge) {
+                          toast.error(
+                            "Please enter your child's age to continue"
+                          );
+                        } else if (childAge < 3 || childAge > 12) {
+                          toast.error(
+                            "Children from age 3 to 12 only can continue."
+                          );
+                        } else {
+                          setSampleAge(childAge);
+                        }
+                      }}
+                      className="bg-orange-500 text-white py-2 px-6 rounded-md hover:bg-orange-600"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {newsCategories?.length > 0 &&
               newsCategories?.map((item) => {
                 return (
-                  <div key={item.title} className="bg-white rounded-md p-2 flex items-center gap-3 w-full shadow-md">
+                  <div
+                    key={item.title}
+                    className="bg-white rounded-md p-2 flex items-center gap-3 w-full shadow-md"
+                  >
                     <div className="relative w-16 h-10">
                       <Image
                         src={`https://wowfy.in/testusr/images/${item.image_url}`}
@@ -1434,6 +1487,82 @@ const Home = () => {
                   </div>
                 );
               })}
+            {!isAuthenticated && !sampleAge && (
+              <>
+                <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
+                  <Image
+                    src={
+                      "https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
+                    }
+                    width={80}
+                    height={80}
+                    alt={"logo"}
+                  />
+                  <div className="h-full w-full">
+                    <p className=" text-xs text-red-500">International</p>
+                    <p className=" text-sm font-semibold">
+                      Lorem ipsum dolor sit amet consectetur...
+                    </p>
+                    <div className="w-full flex justify-between items-center">
+                      <span className="text-[9px] text-slate-500">
+                        Saturday, 16 Nov 2014 04:44 PM
+                      </span>
+                      <span className="text-[9px] text-slate-500">
+                        Read more...
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
+                  <Image
+                    src={
+                      "https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
+                    }
+                    width={80}
+                    height={80}
+                    alt={"logo"}
+                  />
+                  <div className="h-full w-full">
+                    <p className=" text-xs text-red-500">International</p>
+                    <p className=" text-sm font-semibold">
+                      Lorem ipsum dolor sit amet consectetur...
+                    </p>
+                    <div className="w-full flex justify-between items-center">
+                      <span className="text-[9px] text-slate-500">
+                        Saturday, 16 Nov 2014 04:44 PM
+                      </span>
+                      <span className="text-[9px] text-slate-500">
+                        Read more...
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
+                  <Image
+                    src={
+                      "https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
+                    }
+                    width={80}
+                    height={80}
+                    alt={"logo"}
+                  />
+                  <div className="h-full w-full">
+                    <p className=" text-xs text-red-500">International</p>
+                    <p className=" text-sm font-semibold">
+                      Lorem ipsum dolor sit amet consectetur...
+                    </p>
+                    <div className="w-full flex justify-between items-center">
+                      <span className="text-[9px] text-slate-500">
+                        Saturday, 16 Nov 2014 04:44 PM
+                      </span>
+                      <span className="text-[9px] text-slate-500">
+                        Read more...
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
         {/* Community */}
