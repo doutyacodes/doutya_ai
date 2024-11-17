@@ -25,11 +25,9 @@ export default function NewsDetails() {
           body: JSON.stringify({ id: parseInt(id) }), // Pass the 'id' in the request body
         });
         const data = await response.json();
-console.log(data)
+        console.log(data);
         if (response.ok) {
-          // Filter the result based on category (if necessary)
-          const newsItem = data;
-          setArticle(newsItem);
+          setArticle(data);
         } else {
           setError(data.error || "Failed to fetch news");
         }
@@ -70,13 +68,13 @@ console.log(data)
     );
   }
 
-  const { title, category, image_url, date, summary, description } = article;
+  const { title, category, image_url, date, summary, description, questions } = article;
 
   // Split description into paragraphs
   const paragraphs = description.split("\n\n");
 
   return (
-    <div className=" text-gray-800 p-6">
+    <div className="text-gray-800 p-6">
       {/* Header Section */}
       <motion.div
         className="mb-6"
@@ -98,7 +96,7 @@ console.log(data)
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
-        <Image src={`https://wowfy.in/testusr/images/${image_url}`} alt={title} width={800} height={300}  className="rounded-md"/>
+        <Image src={`https://wowfy.in/testusr/images/${image_url}`} alt={title} width={800} height={300} className="rounded-md" />
       </motion.div>
 
       {/* Summary Section */}
@@ -124,6 +122,25 @@ console.log(data)
           </p>
         ))}
       </motion.div>
+
+      {/* Questions Section */}
+      {questions && questions.length > 0 && (
+        <motion.div
+          className="mt-8 bg-gray-100 p-6 rounded-md shadow-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Questions</h2>
+          <ul className="list-disc list-inside space-y-2">
+            {questions.map((question, index) => (
+              <li key={index} className="text-lg text-gray-700">
+                {question}
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+      )}
     </div>
   );
 }

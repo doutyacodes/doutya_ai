@@ -1334,3 +1334,13 @@ export const NEWS = mysqlTable("news", {
   created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
 });
+
+export const NEWS_QUESTIONS = mysqlTable("news_questions", {
+  id: int("id").primaryKey().autoincrement(), // Primary key
+  news_id: int("news_id")
+    .notNull()
+    .references(() => NEWS.id), // Foreign key referencing NEWS table
+  questions: text("questions").notNull(), // The question text
+  created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
+});

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { NEWS } from "@/utils/schema";
+import { NEWS, NEWS_QUESTIONS } from "@/utils/schema";
 import { eq } from "drizzle-orm";
 
 export async function POST(req) {
@@ -14,21 +14,31 @@ export async function POST(req) {
   }
 
   try {
-    // Fetch the specific news based on the provided id
-    const news = await db
-      .select()
+    // Fetch the specific news and associated questions based on the provided id
+    const newsWithQuestions = await db
+      .select({
+        news: NEWS,
+        questions: NEWS_QUESTIONS.questions,
+      })
       .from(NEWS)
+      .leftJoin(NEWS_QUESTIONS, eq(NEWS.id, NEWS_QUESTIONS.news_id))
       .where(eq(NEWS.id, id))
       .execute();
 
-    if (news.length === 0) {
+    if (newsWithQuestions.length === 0) {
       return NextResponse.json(
         { error: "News not found." },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(news[0]); // Return the first (and only) news item
+    // Format the response to include news and its questions
+    const formattedResponse = {
+      ...newsWithQuestions[0].news,
+      questions: newsWithQuestions.map((item) => item.questions).filter(Boolean),
+    };
+
+    return NextResponse.json(formattedResponse); // Return the formatted response
   } catch (error) {
     console.error("Error fetching news by ID:", error);
     return NextResponse.json(
