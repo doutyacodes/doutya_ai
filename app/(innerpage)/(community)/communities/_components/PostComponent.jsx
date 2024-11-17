@@ -63,9 +63,9 @@ const PostComponent = ({ post }) => {
             {liked ? <FcLike /> : <FcLikePlaceholder />}
           </button>
 
-          <Link href={`/communities/comments/${post.slug}`} className="text-xl">
+          {/* <Link href={`/communities/comments/${post.slug}`} className="text-xl">
             <FaComment />
-          </Link>
+          </Link> */}
         </div>
 
         {post.caption && (

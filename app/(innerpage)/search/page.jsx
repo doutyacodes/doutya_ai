@@ -33,8 +33,6 @@ import Pricing from "../_components/Pricing";
 import Contact from "../_components/Contact";
 import OurStory from "../_components/OurStory";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import PostComponent from "./(community)/communities/_components/PostComponent";
 
 const Home = () => {
   const [courseName, setCourseName] = useState("");
@@ -65,44 +63,9 @@ const Home = () => {
   const [showButton, setShowButton] = useState(true);
   const [showOurStory, setShowOurStory] = useState(true);
   const [showFeatures, setShowFeatures] = useState(true);
-  const [posts, setPosts] = useState([]);
 
-  const router = useRouter();
+  const router = useRouter()
   // Function to handle scroll to a specific section and update visibility
-  const [newsCategories, setNewsCategories] = useState([]);
-  const formatDate = (date) => {
-    const options = {
-      weekday: "long",
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    };
-
-    return new Date(date).toLocaleString("en-US", options).replace(",", "");
-  };
-  const fetchNews = async () => {
-    try {
-      setIsLoading(true);
-      const response = await GlobalApi.fetchNewsHome({ age: selectedAge });
-      const news = response.data.news || [];
-      // console.log("response", response.data);
-      setNewsCategories(news);
-      setPosts(response.data.posts);
-    } catch (error) {
-      console.error("Error fetching news:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedAge) {
-      fetchNews();
-    }
-  }, [selectedAge]);
   const scrollToSection = (sectionId) => {
     // Update which sections to show based on the section clicked
     if (sectionId === "our-story") {
@@ -229,10 +192,6 @@ const Home = () => {
       setIsLoading(false); // Ensure loading is stopped in all cases
     }
   };
-
-  const truncateTitle = (title, length = 40) =>
-    title.length > length ? `${title.slice(0, length)}...` : title;
-
   const handleSearch2 = async (topic) => {
     setIsLoading(true);
 
@@ -623,9 +582,10 @@ const Home = () => {
   }, [age, selectedAge]);
 
   const handleUpload = () => {
-    if (!isAuthenticated) {
-      router.push("/login");
-    }
+    if(!isAuthenticated)
+      {
+        router.push("/login")
+      }
     // Open the file upload dialog
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -654,8 +614,9 @@ const Home = () => {
   };
 
   async function submitUpload(courseId) {
-    if (!isAuthenticated) {
-      router.push("/login");
+    if(!isAuthenticated)
+    {
+      router.push("/login")
     }
     const token =
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -680,10 +641,10 @@ const Home = () => {
 
       // // Check if the response is empty or not JSON
       // const result = JSON.parse(responseText); // Parse the text as JSON
-
+      
       if (response.ok) {
-        toast.success("Activity completed successfully");
-
+          toast.success("Activity completed successfully");
+         
         setHideActivity(false);
       }
     } catch (error) {
@@ -697,7 +658,8 @@ const Home = () => {
   return (
     <div
       className={cn(
-        " flex flex-col items-center justify-center  text-gray-800 p-5  pt-0"
+        " flex flex-col items-center justify-center  text-gray-800 p-5  pt-0",
+        !latestCourse ? "md:pt-20" : "md:pt-5"
       )}
     >
       <Toaster />
@@ -777,11 +739,11 @@ const Home = () => {
                     Select a Genre
                   </h2>
                   <Select
-                    onValueChange={(value) =>
-                      setGenre(
-                        ageGenres.find((option) => option.value === value)
-                      )
-                    }
+                   onValueChange={(value) =>
+                    setGenre(
+                      ageGenres.find((option) => option.value === value)
+                    )
+                  }
                     value={genre.value}
                   >
                     <SelectTrigger className="w-full border text-center focus-visible:ring-transparent  bg-[#ede7e7] border-[#f59e1e] rounded-lg p-2">
@@ -1246,7 +1208,9 @@ const Home = () => {
                 <h4 className="uppercase font-semibold my-3 text-lg">
                   {latestCourse?.activities?.title}
                 </h4>
-                <h4 className=" ">{latestCourse?.activities?.content}</h4>
+                <h4 className=" ">
+                  {latestCourse?.activities?.content}
+                </h4>
                 <div className="w-full flex justify-between mt-5">
                   <input
                     type="file"
@@ -1263,7 +1227,7 @@ const Home = () => {
                   </Button>
                   <Button
                     className="bg-green-600 p-2 font-bold"
-                    onClick={() => submitUpload(latestCourse?.courseId)}
+                    onClick={()=>submitUpload(latestCourse?.courseId)}
                   >
                     Submit
                   </Button>
@@ -1378,65 +1342,6 @@ const Home = () => {
         </div>
         </div>
       )} */}
-      <div className="grid md:grid-cols-2 grid-cols-1 gap-4 w-full">
-        <div className="w-full rounded-md bg-[#febd59]  p-2 space-y-4">
-          <div className="flex flex-col gap-2 text-center">
-            <h4 className=" text-center font-semibold text-2xl">NEWS</h4>
-            <span className="text-center text-slate-600 text-xs w-full">
-              Todays News made age appropriate for Kids
-            </span>
-          </div>
-          <div className="w-full flex flex-col gap-2 h-56 overflow-y-auto">
-            {newsCategories?.length > 0 &&
-              newsCategories?.map((item) => {
-                return (
-                  <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full shadow-md">
-                    <div className="relative w-16 h-10">
-                    <Image
-                      src={`https://wowfy.in/testusr/images/${item.image_url}`}
-                      fill
-                      objectFit="cover"
-                      alt={"logo"}
-                    />
-                    </div>
-                    <div className="h-full w-full">
-                      <p className=" text-xs text-red-500">{item.category_name}</p>
-                      <p className=" text-sm font-semibold">
-                        {truncateTitle(item.title)}
-                      </p>
-                      <div className="w-full flex justify-between items-center">
-                        <span className="text-[9px] text-slate-500">
-                          {formatDate(item.created_at)}
-                        </span>
-                        <Link
-                  href={`/news/${item.category_name.toLowerCase()}/${item.id}`}  className="text-[9px] text-slate-500">
-                          Read more...
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
-        {/* Community */}
-        <div className="w-full rounded-md bg-[#76e4e4]  p-2 space-y-4">
-          <div className="flex flex-col gap-2 text-center">
-            <h4 className=" text-center font-semibold text-2xl">COMMUNITY</h4>
-            <span className="text-center text-slate-600 text-xs w-full">
-              Age appropriate Social Media for Kids
-            </span>
-          </div>
-          <div className="w-full flex flex-col gap-2">
-            
-          {posts.length > 0 ? (
-            posts.map((post) => <PostComponent key={post.postId} post={post} />)
-          ) : (
-            <p className="text-gray-600">No posts found for this community.</p>
-          )}
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

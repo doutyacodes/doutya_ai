@@ -222,6 +222,16 @@ const FetchNews = async (data) => {
   });
 };
 
+const fetchNewsHome = async (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(`/api/fetchNewsHome`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
+
 // New function to fetch courses
 const FetchActivities = async (data) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
@@ -664,6 +674,7 @@ export default {
   UpdateUserData,
   UpdateChildData,
   FetchNews,
+  fetchNewsHome,
   SaveQuizResult,
   SaveQuizResult2,
   SaveCarrerData,
