@@ -1408,7 +1408,12 @@ const Home = () => {
               Todays News made age appropriate for Kids
             </span>
           </div>
-          <div className="w-full flex flex-col gap-2 h-56 overflow-y-auto relative">
+          <div
+            className={cn(
+              "w-full flex flex-col gap-2 h-56 relative",
+              newsCategories?.length > 0 && " overflow-y-auto"
+            )}
+          >
             {!isAuthenticated && !sampleAge && (
               <div className="absolute top-0 left-0 bg-white w-full h-full z-[999999999] rounded-md opacity-95 flex justify-center items-center">
                 <div className="w-[90%] max-w-md bg-gray-100 p-6 rounded-lg shadow-lg text-center">
