@@ -17,7 +17,6 @@ export default function NewsSection() {
   const [isLoading, setIsLoading] = useState(true);
   const { selectedAge } = useChildren(); // Assuming selectedAge is available in context
 
-  // Fetch news based on the selected age
   const fetchNews = async () => {
     try {
       setIsLoading(true);
@@ -31,16 +30,15 @@ export default function NewsSection() {
 
       setNewsCategories(categories);
 
-      // Group news by category using news_category_id
       const groupedNews = categories.reduce((acc, category) => {
-        // Filter news articles by category
-        acc[category.name] = news.filter((item) => item.news_category_id === category.id);
+        acc[category.name] = news.filter(
+          (item) => item.news_category_id === category.id
+        );
         return acc;
       }, {});
 
       setNewsByCategory(groupedNews);
 
-      // Set default category
       if (categories.length > 0) {
         setSelectedCategory(categories[0].name);
       }
@@ -55,7 +53,6 @@ export default function NewsSection() {
     fetchNews();
   }, [selectedAge]);
 
-  // Get current category news articles
   const currentCategoryNews = newsByCategory[selectedCategory] || [];
 
   if (isLoading) {
@@ -74,8 +71,9 @@ export default function NewsSection() {
       </motion.header>
 
       {/* Category Tabs */}
+      <div className="flex justify-center items-center">
       <motion.div
-        className="flex justify-center space-x-4 mb-6 overflow-x-scroll"
+        className="flex space-x-4 mb-6 overflow-x-auto scrollbar-hide py-2 px-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
@@ -85,7 +83,7 @@ export default function NewsSection() {
             <button
               key={category.name}
               onClick={() => setSelectedCategory(category.name)}
-              className={`px-4 py-2 text-lg font-medium rounded-lg ${
+              className={`flex-shrink-0 px-4 py-2 font-medium rounded-lg whitespace-nowrap ${
                 selectedCategory === category.name
                   ? "bg-orange-500 text-white"
                   : "bg-white text-gray-700 shadow-md hover:bg-orange-100"
@@ -95,13 +93,14 @@ export default function NewsSection() {
             </button>
           ))}
       </motion.div>
+      </div>
 
       {/* News Cards */}
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        key={selectedCategory} // Ensures animation when switching categories
+        key={selectedCategory}
         transition={{ duration: 0.8 }}
       >
         {currentCategoryNews.length > 0 ? (
@@ -131,7 +130,7 @@ export default function NewsSection() {
             </motion.div>
           ))
         ) : (
-          <p>No news available in this category.</p>
+          <p className="text-center col-span-full">No news available in this category.</p>
         )}
       </motion.div>
     </div>
