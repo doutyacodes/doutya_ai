@@ -1410,8 +1410,8 @@ const Home = () => {
           </div>
           <div
             className={cn(
-              "w-full flex flex-col gap-2 h-56 relative",
-              newsCategories?.length > 0 && " overflow-y-auto"
+              "w-full flex flex-col gap-2  relative",
+              newsCategories?.length > 0 ? " overflow-y-auto h-56" : "h-64"
             )}
           >
             {!isAuthenticated && !sampleAge && (
