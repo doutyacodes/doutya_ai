@@ -1401,7 +1401,7 @@ const Home = () => {
             {newsCategories?.length > 0 &&
               newsCategories?.map((item) => {
                 return (
-                  <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full shadow-md">
+                  <div key={item.title} className="bg-white rounded-md p-2 flex items-center gap-3 w-full shadow-md">
                     <div className="relative w-16 h-10">
                       <Image
                         src={`https://wowfy.in/testusr/images/${item.image_url}`}
