@@ -739,12 +739,11 @@ const Home = () => {
                     Select a Genre
                   </h2>
                   <Select
-                    onValueChange={(value) =>
-                      
-                      (
-                        ageGenres.find((option) => option.value === value)
-                      )
-                    }
+                   onValueChange={(value) =>
+                    setGenre(
+                      ageGenres.find((option) => option.value === value)
+                    )
+                  }
                     value={genre.value}
                   >
                     <SelectTrigger className="w-full border text-center focus-visible:ring-transparent  bg-[#ede7e7] border-[#f59e1e] rounded-lg p-2">
