@@ -1413,7 +1413,7 @@ const Home = () => {
               <div className="absolute top-0 left-0 bg-white w-full h-full z-[999999999] rounded-md opacity-95 flex justify-center items-center">
                 <div className="w-[90%] max-w-md bg-gray-100 p-6 rounded-lg shadow-lg text-center">
                   <h2 className="text-xl font-semibold mb-4">
-                    Enter Your Child's Age
+                    Enter Your Child&apos;s Age
                   </h2>
                   <div>
                     <input
