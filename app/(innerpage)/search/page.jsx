@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Toaster, toast } from "react-hot-toast";
-import LoadingSpinner from "../_components/LoadingSpinner";
+import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import {
   IoChevronBackOutline,
   IoPauseCircle,
@@ -20,18 +20,18 @@ import {
   IoStopCircle,
 } from "react-icons/io5";
 import Link from "next/link";
-import Navbar from "../_components/Navbar";
-import GlobalApi from "../api/_services/GlobalApi";
+import Navbar from "@/app/_components/Navbar";
+import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
-import useAuth from "../hooks/useAuth";
+import useAuth from "@/app/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import ChildSelector from "../_components/ChildSelecter";
+import ChildSelector from "@/app/_components/ChildSelecter";
 import { Button } from "@/components/ui/button";
 import { ArrowUpLeftFromSquare, ChevronLeft } from "lucide-react";
-import Features from "../_components/Features";
-import Pricing from "../_components/Pricing";
-import Contact from "../_components/Contact";
-import OurStory from "../_components/OurStory";
+import Features from "@/app/_components/Features";
+import Pricing from "@/app/_components/Pricing";
+import Contact from "@/app/_components/Contact";
+import OurStory from "@/app/_components/OurStory";
 import { useRouter } from "next/navigation";
 
 const Home = () => {

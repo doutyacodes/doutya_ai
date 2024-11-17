@@ -37,7 +37,7 @@ const SideBar = () => {
   };
 
   const navLinks = [
-    { label: "Search", links: "/", icon: FaSearch },
+    { label: "Search", links: "/search", icon: FaSearch },
     { label: "Learn", links: "/learn", icon: FaBook },
     { label: "Tests", links: "/tests", icon: FaTasks },
     { label: "Activities", links: "/activities", icon: FaUserFriends },

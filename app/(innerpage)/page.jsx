@@ -46,6 +46,7 @@ const Home = () => {
   const [latestCourse, setLatestCourse] = useState(null);
   const [base64Image, setBase64Image] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [advanced, setAdvanced] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
   const { selectedChildId, selectedAge, selectedWeeks, loading } =
     useChildren(); // Accessing selected child ID from context
@@ -771,89 +772,95 @@ const Home = () => {
                   className="w-full p-2 max-md:py-12 py-6 text-xl placeholder:text-lg focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-16 bg-[#ede7e7]"
                 />
               </div>
-              {ageGenres.length > 0 && type == "story" && (
-                <div className="w-full text-center mb-4">
-                  <h2 className="text-lg font-semibold mb-2 ">
-                    Select a Genre
-                  </h2>
-                  <Select
-                    onValueChange={(value) =>
-                      setGenre(
-                        ageGenres.find((option) => option.value === value)
-                      )
-                    }
-                    value={genre.value}
-                  >
-                    <SelectTrigger className="w-full border text-center focus-visible:ring-transparent  bg-[#ede7e7] border-[#f59e1e] rounded-lg p-2">
-                      <SelectValue placeholder={genre.label} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup className="max-md:w-screen pr-2">
-                        {ageGenres.map((option) => (
-                          <SelectItem
-                            className="w-full"
-                            key={option.value}
-                            value={option.value}
-                          >
-                            <span className="w-full text-center">
-                              {option.label1}
-                            </span>
-                            {/* {
+              {advanced ? (
+                <>
+                  {ageGenres.length > 0 && type == "story" && (
+                    <div className="w-full text-center mb-4">
+                      <h2 className="text-lg font-semibold mb-2 ">
+                        Select a Genre
+                      </h2>
+                      <Select
+                        onValueChange={(value) =>
+                          setGenre(
+                            ageGenres.find((option) => option.value === value)
+                          )
+                        }
+                        value={genre.value}
+                      >
+                        <SelectTrigger className="w-full border text-center focus-visible:ring-transparent  bg-[#ede7e7] border-[#f59e1e] rounded-lg p-2">
+                          <SelectValue placeholder={genre.label} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup className="max-md:w-screen pr-2">
+                            {ageGenres.map((option) => (
+                              <SelectItem
+                                className="w-full"
+                                key={option.value}
+                                value={option.value}
+                              >
+                                <span className="w-full text-center">
+                                  {option.label1}
+                                </span>
+                                {/* {
                               <div className="text-[10px] md:hidden text-gray-500 pt-1 mt-1 w-full border-t-[1px]">
                                 {option.label}
                               </div>
                             } */}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-              <div
-                className={cn(
-                  "grid gap-2 md:gap-8",
-                  isAuthenticated
-                    ? "grid-cols-1"
-                    : "grid-cols-2 max-md:grid-cols-1"
-                )}
-              >
-                {!isAuthenticated && (
-                  <div className="w-full text-center mb-4">
-                    <h2 className="text-lg font-semibold mb-2 ">Age</h2>
-                    <Input
-                      type="number"
-                      placeholder="Enter your child’s age (2-12)"
-                      value={age}
-                      onChange={(e) => setAge(e.target.value)}
-                      className="w-full p-2 placeholder:text-center  bg-[#ede7e7] focus-visible:ring-transparent border border-[#f59e1e] rounded-lg"
-                    />
-                  </div>
-                )}
-
-                <div className="w-full text-center mb-4">
-                  <h2 className="text-lg font-semibold mb-2 ">Language</h2>
-                  <Select onValueChange={setLanguage} value={language}>
-                    <SelectTrigger className="w-full border text-center  bg-[#ede7e7] focus-visible:ring-transparent border-[#f59e1e] rounded-lg p-2">
-                      <SelectValue
-                        className="w-full text-center"
-                        placeholder="English"
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="english">English</SelectItem>
-                          {type != "podcast" && (
-                            <>
-                              <SelectItem value="spanish">Spanish</SelectItem>
-                              <SelectItem value="french">French</SelectItem>
-                              <SelectItem value="german">German</SelectItem>
-                              <SelectItem value="italian">Italian</SelectItem>
-                              <SelectItem value="portuguese">
-                                Portuguese
                               </SelectItem>
-                              {/* <SelectItem value="dutch">Dutch</SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  <div
+                    className={cn(
+                      "grid gap-2 md:gap-8",
+                      isAuthenticated
+                        ? "grid-cols-1"
+                        : "grid-cols-2 max-md:grid-cols-1"
+                    )}
+                  >
+                    {!isAuthenticated && (
+                      <div className="w-full text-center mb-4">
+                        <h2 className="text-lg font-semibold mb-2 ">Age</h2>
+                        <Input
+                          type="number"
+                          placeholder="Enter your child’s age (2-12)"
+                          value={age}
+                          onChange={(e) => setAge(e.target.value)}
+                          className="w-full p-2 placeholder:text-center  bg-[#ede7e7] focus-visible:ring-transparent border border-[#f59e1e] rounded-lg"
+                        />
+                      </div>
+                    )}
+
+                    <div className="w-full text-center mb-4">
+                      <h2 className="text-lg font-semibold mb-2 ">Language</h2>
+                      <Select onValueChange={setLanguage} value={language}>
+                        <SelectTrigger className="w-full border text-center  bg-[#ede7e7] focus-visible:ring-transparent border-[#f59e1e] rounded-lg p-2">
+                          <SelectValue
+                            className="w-full text-center"
+                            placeholder="English"
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="english">English</SelectItem>
+                              {type != "podcast" && (
+                                <>
+                                  <SelectItem value="spanish">
+                                    Spanish
+                                  </SelectItem>
+                                  <SelectItem value="french">French</SelectItem>
+                                  <SelectItem value="german">German</SelectItem>
+                                  <SelectItem value="italian">
+                                    Italian
+                                  </SelectItem>
+                                  <SelectItem value="portuguese">
+                                    Portuguese
+                                  </SelectItem>
+                                  {/* <SelectItem value="dutch">Dutch</SelectItem>
                               <SelectItem value="russian">Russian</SelectItem>
                               <SelectItem value="chinese simplified">
                                 Chinese (Simplified)
@@ -864,9 +871,9 @@ const Home = () => {
                               <SelectItem value="japanese">Japanese</SelectItem>
                               <SelectItem value="korean">Korean</SelectItem>
                               <SelectItem value="arabic">Arabic</SelectItem> */}
-                            </>
-                          )}
-                          {/* {(type == "story" || type == "explanation") && (
+                                </>
+                              )}
+                              {/* {(type == "story" || type == "explanation") && (
                             <>
                               <SelectItem value="malayalam">
                                 Malayalam
@@ -876,12 +883,16 @@ const Home = () => {
                               <SelectItem value="hindi">Hindi</SelectItem>
                             </>
                           )} */}
-                        </SelectGroup>
-                      </SelectContent>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+                            </SelectGroup>
+                          </SelectContent>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div onClick={()=>setAdvanced(true)} className="text-center text-orange-200 font-semibold">Advannced Filter</div>
+              )}
 
               {/* {age > 13 && (
                 <div className="w-full text-center mb-4">
@@ -904,7 +915,7 @@ const Home = () => {
               <div className="w-full flex justify-center items-center mt-5">
                 <button
                   type="submit"
-                  className="bg-[#ea1b24] text-white rounded-full uppercase font-semibold py-4 md:py-2 text-lg px-4 transition-all max-md:w-full md:min-w-60"
+                  className="bg-green-600 text-white rounded-full uppercase font-semibold py-3 md:py-2 text-lg px-4 transition-all max-md:w-full md:min-w-60"
                 >
                   Submit
                 </button>
@@ -1392,15 +1403,17 @@ const Home = () => {
                 return (
                   <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full shadow-md">
                     <div className="relative w-16 h-10">
-                    <Image
-                      src={`https://wowfy.in/testusr/images/${item.image_url}`}
-                      fill
-                      objectFit="cover"
-                      alt={"logo"}
-                    />
+                      <Image
+                        src={`https://wowfy.in/testusr/images/${item.image_url}`}
+                        fill
+                        objectFit="cover"
+                        alt={"logo"}
+                      />
                     </div>
                     <div className="h-full w-full">
-                      <p className=" text-xs text-red-500">{item.category_name}</p>
+                      <p className=" text-xs text-red-500">
+                        {item.category_name}
+                      </p>
                       <p className=" text-sm font-semibold">
                         {truncateTitle(item.title)}
                       </p>
@@ -1409,7 +1422,11 @@ const Home = () => {
                           {formatDate(item.created_at)}
                         </span>
                         <Link
-                  href={`/news/${item.category_name.toLowerCase()}/${item.id}`}  className="text-[9px] text-slate-500">
+                          href={`/news/${item.category_name.toLowerCase()}/${
+                            item.id
+                          }`}
+                          className="text-[9px] text-slate-500"
+                        >
                           Read more...
                         </Link>
                       </div>
@@ -1428,12 +1445,15 @@ const Home = () => {
             </span>
           </div>
           <div className="w-full flex flex-col gap-2">
-            
-          {posts.length > 0 ? (
-            posts.map((post) => <PostComponent key={post.postId} post={post} />)
-          ) : (
-            <p className="text-gray-600">No posts found for this community.</p>
-          )}
+            {posts.length > 0 ? (
+              posts.map((post) => (
+                <PostComponent key={post.postId} post={post} />
+              ))
+            ) : (
+              <p className="text-gray-600">
+                No posts found for this community.
+              </p>
+            )}
           </div>
         </div>
       </div>
