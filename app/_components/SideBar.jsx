@@ -38,6 +38,7 @@ const SideBar = () => {
 
   const navLinks = [
     { label: "Search", links: "/search", icon: FaSearch },
+    { label: "News", links: "/news", icon: FaNewspaper  },  // Changed to "FaBuilding" for About Us    
     { label: "Learn", links: "/learn", icon: FaBook },
     { label: "Tests", links: "/tests", icon: FaTasks },
     { label: "Activities", links: "/activities", icon: FaUserFriends },
@@ -45,7 +46,6 @@ const SideBar = () => {
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
     { label: "Our Features", links: "/our-features", icon: FaStar },
     { label: "About Us", links: "/about-us", icon: FaBuilding },  // Changed to "FaBuilding" for About Us    
-    { label: "Axara News", links: "/news", icon: FaNewspaper  },  // Changed to "FaBuilding" for About Us    
     // { label: "My Badges", links: "/badges", icon: FaMedal },
     // { label: "My Searches", links: "/my-search", icon: FaHistory },
     // { label: "My Profile", links: "/my-profile", icon: FaUser },
@@ -95,7 +95,7 @@ const SideBar = () => {
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex-1 mt-8 space-y-4">
+        <nav className={cn("flex-1 mt-8 space-y-4")}>
           {navLinks.map(({ label, icon: Icon, links }, idx) => {
             const isActive =
               links === "/"
@@ -113,7 +113,7 @@ const SideBar = () => {
                   href={links || "/"}
                   className={cn(
                     "flex items-center p-2 hover:bg-blue-100 rounded-lg cursor-pointer",
-                    isCollapsed ? "flex-col justify-center gap-2" : "flex-row"
+                    isCollapsed ? "flex-col justify-center gap-2" : "flex-row pl-14"
                   )}
                 >
                   <Icon
