@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { CHILDREN, KIDS_COMMUNITY, KIDS_POSTS, NEWS, NEWS_CATEGORIES, USER_DETAILS, KIDS_LIKES } from "@/utils/schema";
+import { CHILDREN, KIDS_COMMUNITY, KIDS_POSTS, NEWS, NEWS_CATEGORIES, USER_DETAILS, KIDS_LIKES, USER_ACTIVITIES, ACTIVITIES } from "@/utils/schema";
 import { authenticate } from "@/lib/jwtMiddleware";
 import { eq, and } from "drizzle-orm";
 
@@ -55,6 +55,9 @@ let postsWithLikesAndComments= null
       const postsWithUserAndChild = await db
       .select({
         postId: KIDS_POSTS.id,
+        activity_id: KIDS_POSTS.activity_id,
+        activity: ACTIVITIES.title,
+        child_id: KIDS_POSTS.child_id,
         content: KIDS_POSTS.content,
         caption: KIDS_POSTS.caption,
         createdAt: KIDS_POSTS.created_at,
@@ -62,10 +65,21 @@ let postsWithLikesAndComments= null
         post_type: KIDS_POSTS.post_type,
         slug: KIDS_POSTS.slug,
         childname: CHILDREN.name,
+        gender:CHILDREN.gender,
+        activity_id: KIDS_POSTS.activity_id,
+        image: USER_ACTIVITIES.image,
       })
       .from(KIDS_POSTS)
       .leftJoin(USER_DETAILS, eq(KIDS_POSTS.user_id, USER_DETAILS.id))
+      .leftJoin(ACTIVITIES, eq(KIDS_POSTS.activity_id, ACTIVITIES.id))
       .leftJoin(CHILDREN, eq(KIDS_POSTS.child_id, CHILDREN.id))
+      .leftJoin(
+        USER_ACTIVITIES,
+        and(
+          eq(KIDS_POSTS.activity_id, USER_ACTIVITIES.activity_id), // match activity_id
+          eq(KIDS_POSTS.child_id, USER_ACTIVITIES.child_id) // match child_id
+        )
+      )
       .where(eq(KIDS_POSTS.community_id, community_id))
       .execute();
 

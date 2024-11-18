@@ -35,6 +35,7 @@ import OurStory from "../_components/OurStory";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import PostComponent from "./(community)/communities/_components/PostComponent";
+import PostData from "./(community)/communities/_components/PostData";
 
 const Home = () => {
   const [courseName, setCourseName] = useState("");
@@ -82,10 +83,12 @@ const Home = () => {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
+      timeZone: "Asia/Kolkata",
     };
 
-    return new Date(date).toLocaleString("en-US", options).replace(",", "");
+    return new Date(date).toLocaleString("en-IN", options).replace(",", "");
   };
+
   const fetchNews = async () => {
     try {
       const token =
@@ -1411,7 +1414,7 @@ const Home = () => {
           <div
             className={cn(
               "w-full flex flex-col gap-2  relative",
-              newsCategories?.length > 0 ? " overflow-y-auto h-56" : "h-64"
+              newsCategories?.length > 0 ? " overflow-y-auto h-72" : "h-64"
             )}
           >
             {!isAuthenticated && !sampleAge && (
@@ -1571,23 +1574,28 @@ const Home = () => {
           </div>
         </div>
         {/* Community */}
-        <div className="w-full rounded-md bg-[#76e4e4]  p-2 space-y-4">
+        <div className="w-full rounded-md bg-[#76e4e4] flex flex-col justify-center items-center p-2 space-y-4">
           <div className="flex flex-col gap-2 text-center">
             <h4 className=" text-center font-semibold text-2xl">COMMUNITY</h4>
             <span className="text-center text-slate-600 text-xs w-full">
               Age appropriate Social Media for Kids
             </span>
           </div>
-          <div className="w-full flex flex-col gap-2">
-            {posts.length > 0 ? (
-              posts.map((post) => (
-                <PostComponent key={post.postId} post={post} />
-              ))
-            ) : (
-              <p className="text-gray-600">
-                No posts found for this community.
-              </p>
-            )}
+          <div className="flex flex-col items-center justify-center">
+            <div
+              className={cn(
+                "w-full flex flex-col gap-2  relative",
+                posts?.length > 0 ? " overflow-y-auto h-72" : "h-64"
+              )}
+            >
+              {posts.length > 0 ? (
+                posts.map((post) => <PostData key={post.postId} post={post} />)
+              ) : (
+                <p className="text-gray-600">
+                  No posts found for this community.
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

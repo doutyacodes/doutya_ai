@@ -27,9 +27,12 @@ export default function NewsSection() {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
+      timeZone: "Asia/Kolkata",
     };
-    return new Date(date).toLocaleString("en-US", options).replace(",", "");
+  
+    return new Date(date).toLocaleString("en-IN", options).replace(",", "");
   };
+  
 
   const fetchNews = async () => {
     try {

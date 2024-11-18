@@ -8,7 +8,7 @@ import { FcLike, FcLikePlaceholder } from "react-icons/fc";
 import toast from "react-hot-toast";
 import { useState } from "react";
 
-const PostComponent = ({ post }) => {
+const PostData = ({ post }) => {
   const { selectedChildId } = useChildren();
   const [liked, setLiked] = useState(post.likedByUser);
 
@@ -30,12 +30,12 @@ const PostComponent = ({ post }) => {
 
   return (
     <motion.div
-      className="p-4 bg-white shadow-md rounded-lg max-w-xl"
+      className="p-2 bg-white shadow-md rounded-lg w-fit"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="space-y-2">
+      <div className="space-y-1">
         {post.childname && post.gender && (
           <div className="flex items-center space-x-1">
             <Image
@@ -64,16 +64,16 @@ const PostComponent = ({ post }) => {
           src={`https://wowfy.in/testusr/images/${
             post.post_type === "activity" ? post.image : post.content
           }`}
-          width={600}
-          height={300}
+          width={400}
+          height={200}
           alt={post.caption || "Post Image"}
         />
 
-        <div className="flex items-center gap-3">
-          <button onClick={() => handleLike("like")} className="text-xl">
+        <div className="flex items-center gap-2 text-sm">
+          <button onClick={() => handleLike("like")} className="text-lg">
             {liked ? <FcLike /> : <FcLikePlaceholder />}
           </button>
-          {/* <Link href={`/communities/comments/${post.slug}`} className="text-xl">
+          {/* <Link href={`/communities/comments/${post.slug}`} className="text-lg">
             <FaComment />
           </Link> */}
         </div>
@@ -103,4 +103,4 @@ const PostComponent = ({ post }) => {
   );
 };
 
-export default PostComponent;
+export default PostData;

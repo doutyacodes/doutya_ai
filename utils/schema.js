@@ -137,6 +137,7 @@ export const KIDS_POSTS = mysqlTable("kids_posts", {
   id: int("id").primaryKey().autoincrement(),
   user_id: int("user_id").notNull(), // Foreign Key to user_details table
   child_id: int("child_id"), // Foreign Key to children table (optional)
+  activity_id: int("activity_id"), // Foreign Key to children table (optional)
   post_type: mysqlEnum("post_type", [
     "badge",
     "activity",
