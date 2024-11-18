@@ -109,7 +109,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (selectedAge || sampleAge) {
+    if (selectedAge || (sampleAge && sampleAge!="")) {
       fetchNews();
     }
   }, [selectedAge, sampleAge]);
