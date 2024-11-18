@@ -27,7 +27,7 @@ const PostData = ({ post }) => {
       toast.error("Failed to update like status.");
     }
   };
-
+console.log(post)
   return (
     <motion.div
       className="p-2 bg-white shadow-md rounded-lg w-fit"
@@ -66,7 +66,7 @@ const PostData = ({ post }) => {
           }`}
           width={400}
           height={200}
-          alt={post.caption || "Post Image"}
+          alt={post.activity || "Post Image"}
         />
 
         <div className="flex items-center gap-2 text-sm">

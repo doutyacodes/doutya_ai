@@ -58,8 +58,8 @@ const Home = () => {
   const fileInputRef = useRef(null); // Create a reference for the file input
   const [hideActivity, setHideActivity] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0); // Track current playback position
-  const [sampleAge, setSampleAge] = useState("");
-  const [childAge, setChildAge] = useState("");
+  const [sampleAge, setSampleAge] = useState(null);
+  const [childAge, setChildAge] = useState(0);
   const [genre, setGenre] = useState({
     value: "Any",
     label1: "Any",
@@ -90,6 +90,7 @@ const Home = () => {
   };
 
   const fetchNews = async () => {
+    console.log(sampleAge,selectedAge)
     try {
       const token =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -109,7 +110,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (selectedAge || (sampleAge && sampleAge!="")) {
+    if ((selectedAge && selectedAge != "") || (sampleAge && sampleAge != "")) {
       fetchNews();
     }
   }, [selectedAge, sampleAge]);
