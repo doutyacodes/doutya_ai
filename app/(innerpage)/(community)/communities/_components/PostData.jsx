@@ -27,7 +27,7 @@ const PostData = ({ post }) => {
       toast.error("Failed to update like status.");
     }
   };
-console.log(post)
+// console.log(post)
   return (
     <motion.div
       className="p-2 bg-white shadow-md rounded-lg w-fit"

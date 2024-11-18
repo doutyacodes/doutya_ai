@@ -90,7 +90,7 @@ const Home = () => {
   };
 
   const fetchNews = async () => {
-    console.log(sampleAge,selectedAge)
+    // console.log(sampleAge,selectedAge)
     try {
       const token =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
