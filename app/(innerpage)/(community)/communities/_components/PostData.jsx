@@ -7,12 +7,18 @@ import { FaComment } from "react-icons/fa";
 import { FcLike, FcLikePlaceholder } from "react-icons/fc";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import useAuth from "@/app/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 const PostData = ({ post }) => {
   const { selectedChildId } = useChildren();
   const [liked, setLiked] = useState(post.likedByUser);
-
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
   const handleLike = async (action) => {
+    if (!isAuthenticated) {
+     return router.push("/login");
+    }
     try {
       const response = await GlobalApi.KidsLikes({
         postId: post.postId,
@@ -27,7 +33,7 @@ const PostData = ({ post }) => {
       toast.error("Failed to update like status.");
     }
   };
-// console.log(post)
+  // console.log(post)
   return (
     <motion.div
       className="p-2 bg-white shadow-md rounded-lg w-fit"

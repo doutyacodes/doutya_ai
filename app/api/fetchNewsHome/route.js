@@ -1,11 +1,21 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { CHILDREN, KIDS_COMMUNITY, KIDS_POSTS, NEWS, NEWS_CATEGORIES, USER_DETAILS, KIDS_LIKES, USER_ACTIVITIES, ACTIVITIES } from "@/utils/schema";
+import {
+  CHILDREN,
+  KIDS_COMMUNITY,
+  KIDS_POSTS,
+  NEWS,
+  NEWS_CATEGORIES,
+  USER_DETAILS,
+  KIDS_LIKES,
+  USER_ACTIVITIES,
+  ACTIVITIES,
+} from "@/utils/schema";
 import { authenticate } from "@/lib/jwtMiddleware";
 import { eq, and } from "drizzle-orm";
 
 export async function POST(req) {
-  const authResult = await authenticate(req,true);
+  const authResult = await authenticate(req, true);
   if (!authResult.authenticated) {
     return authResult.response;
   }
@@ -13,13 +23,8 @@ export async function POST(req) {
   const userId = authResult.decoded_Data.id;
   const { age } = await req.json();
 
- 
-
   if (!age) {
-    return NextResponse.json(
-      { error: "Age is required." },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Age is required." }, { status: 400 });
   }
 
   const existing_kids_community = await db
@@ -49,10 +54,9 @@ export async function POST(req) {
       .leftJoin(NEWS_CATEGORIES, eq(NEWS.news_category_id, NEWS_CATEGORIES.id))
       .where(eq(NEWS.age, age))
       .execute();
-let postsWithLikesAndComments= null
-    if(userId)
-    {
-      const postsWithUserAndChild = await db
+    let postsWithLikesAndComments = null;
+
+    const postsWithUserAndChild = await db
       .select({
         postId: KIDS_POSTS.id,
         activity_id: KIDS_POSTS.activity_id,
@@ -65,7 +69,7 @@ let postsWithLikesAndComments= null
         post_type: KIDS_POSTS.post_type,
         slug: KIDS_POSTS.slug,
         childname: CHILDREN.name,
-        gender:CHILDREN.gender,
+        gender: CHILDREN.gender,
         activity_id: KIDS_POSTS.activity_id,
         image: USER_ACTIVITIES.image,
       })
@@ -82,26 +86,37 @@ let postsWithLikesAndComments= null
       )
       .where(eq(KIDS_POSTS.community_id, community_id))
       .execute();
-
-     postsWithLikesAndComments = await Promise.all(
-      postsWithUserAndChild.map(async (post) => {
-        const [like] = await db
-          .select()
-          .from(KIDS_LIKES)
-          .where(
-            and(
-              eq(KIDS_LIKES.post_id, post.postId),
-              eq(KIDS_LIKES.user_id, userId)
+    if (userId) {
+      postsWithLikesAndComments = await Promise.all(
+        postsWithUserAndChild.map(async (post) => {
+          const [like] = await db
+            .select()
+            .from(KIDS_LIKES)
+            .where(
+              and(
+                eq(KIDS_LIKES.post_id, post.postId),
+                eq(KIDS_LIKES.user_id, userId)
+              )
             )
-          )
-          .execute();
+            .execute();
 
-        return {
-          ...post,
-          likedByUser: like ? true : false,
-        };
-      })
-    );
+          return {
+            ...post,
+            likedByUser: like ? true : false,
+          };
+        })
+      );
+    } else {
+      postsWithLikesAndComments = await Promise.all(
+        postsWithUserAndChild.map(async (post) => {
+          
+
+          return {
+            ...post,
+            likedByUser: false,
+          };
+        })
+      );
     }
 
     return NextResponse.json({
