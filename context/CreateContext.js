@@ -5,6 +5,8 @@ import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useRouter } from "next/navigation";
 import WelcomeCard from "@/app/_components/WelcomeCard";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
+import AgeSelectionPopup from "@/app/_components/AgeSelectionPopup"; // Create this component
+import useAuth from "@/app/hooks/useAuth";
 
 const ChildrenContext = createContext();
 
@@ -20,7 +22,9 @@ export const ChildrenProvider = ({ children }) => {
   const [selectedGrade, setSelectedGrade] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [showAgePopup, setShowAgePopup] = useState(false); // For unauthenticated age selection
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
   const updateChildrenData = (data) => {
     setChildrenData(data);
@@ -30,7 +34,6 @@ export const ChildrenProvider = ({ children }) => {
     const selectedChild = childrenData.find(
       (child) => child.id === parseInt(childId)
     );
-    console.log("selectedChild", selectedChild);
     if (selectedChild) {
       setSelectedChildId(selectedChild.id);
       setSelectedAge(selectedChild.age);
@@ -71,8 +74,28 @@ export const ChildrenProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchChildren();
-  }, []); // Only fetch if childrenData is empty
+    const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (token) {
+      fetchChildren();
+    } else {
+      // Check localStorage for age data when not authenticated
+      const storedAge = localStorage.getItem("selectedAge");
+      if (storedAge) {
+        setSelectedAge(Number(storedAge));
+      } else {
+        setShowAgePopup(true); // Show popup for age selection
+      }
+    }
+  }, [isAuthenticated]);
+
+  const handleAgeSubmit = (age) => {
+    if (age >= 3 && age <= 12) {
+      setSelectedAge(age);
+      localStorage.setItem("selectedAge", age); // Store age in localStorage
+      setShowAgePopup(false); // Close the popup
+    }
+  };
 
   useEffect(() => {
     const handleSingleData = () => {
@@ -98,7 +121,7 @@ export const ChildrenProvider = ({ children }) => {
         selectedDob,
         loading,
         selectedChild,
-        selectedGrade
+        selectedGrade,
       }}
     >
       {loading ? <LoadingSpinner /> : children}
@@ -109,6 +132,12 @@ export const ChildrenProvider = ({ children }) => {
             age: selectedAge,
             gender: selectedGender,
           }}
+        />
+      )}
+      {showAgePopup && (
+        <AgeSelectionPopup
+          onSubmit={handleAgeSubmit}
+          onClose={() => setShowAgePopup(false)}
         />
       )}
     </ChildrenContext.Provider>

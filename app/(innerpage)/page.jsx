@@ -70,7 +70,7 @@ const Home = () => {
   const [showOurStory, setShowOurStory] = useState(true);
   const [showFeatures, setShowFeatures] = useState(true);
   const [posts, setPosts] = useState([]);
-
+console.log("selectedAge",selectedAge)
   const router = useRouter();
   // Function to handle scroll to a specific section and update visibility
   const [newsCategories, setNewsCategories] = useState([]);
@@ -96,7 +96,7 @@ const Home = () => {
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
       setIsLoading(true);
       const response = await GlobalApi.fetchNewsHome(token, {
-        age: isAuthenticated ? selectedAge : sampleAge,
+        age: isAuthenticated ? selectedAge : selectedAge,
       });
       const news = response.data.news || [];
       // console.log("response", response.data);
@@ -1418,7 +1418,7 @@ const Home = () => {
               newsCategories?.length > 0 ? " overflow-y-auto h-72" : "h-64"
             )}
           >
-            {!isAuthenticated && !sampleAge && (
+            {!selectedAge && !sampleAge && (
               <div className="absolute top-0 left-0 bg-white w-full h-full z-[999999999] rounded-md opacity-95 flex justify-center items-center">
                 <div className="w-[90%] max-w-md bg-gray-100 p-6 rounded-lg shadow-lg text-center">
                   <h2 className="text-xl font-semibold mb-4">
@@ -1496,7 +1496,7 @@ const Home = () => {
                   </div>
                 );
               })}
-            {!isAuthenticated && !sampleAge && (
+            {!selectedAge && !sampleAge && (
               <>
                 <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
                   <Image
