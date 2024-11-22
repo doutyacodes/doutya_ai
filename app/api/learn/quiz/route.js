@@ -13,34 +13,34 @@ export async function POST(req) {
     }
 
     const userId = authResult.decoded_Data.id;
-    const { slug, childId } = await req.json(); // Assume slug is passed as a query parameter
+    const { slug, childId, testId } = await req.json(); // Assume slug is passed as a query parameter
 
     if (!slug) {
       return NextResponse.json({ error: "slug is required." }, { status: 400 });
     }
     
-    // Fetch the topic associated with the slug
-    const topic = await db
+    // Fetch the subject associated with the slug
+    const subject = await db
       .select()
       .from(LEARN_SUBJECTS)
       .where(eq(LEARN_SUBJECTS.slug, slug))
       .execute();
 
-    // Check if the topic was found
-    if (topic.length === 0) {
+    // Check if the subject was found
+    if (subject.length === 0) {
       return NextResponse.json(
-        { error: "No topic found for the given slug." },
+        { error: "No subject found for the given slug." },
         { status: 404 }
       );
     }
 
-    const topicId = topic[0].id;
+    const subjectId = subject[0].id;
 
-    // Fetch questions associated with the topic
+    // Fetch questions associated with the subject
     const questions = await db
       .select()
       .from(QUESTIONS) 
-      .where(eq(QUESTIONS.learn_topic_id, topicId))
+      .where(eq(QUESTIONS.learn_test_id, testId))
       .execute();
 
       const questionsWithOptions = await Promise.all(
@@ -64,7 +64,7 @@ export async function POST(req) {
       .from(USER_LEARN_PROGRESS)
       .where(
         and(
-          eq(USER_LEARN_PROGRESS.learn_topic_id, topicId),
+          eq(USER_LEARN_PROGRESS.learn_test_id, testId),
           eq(USER_LEARN_PROGRESS.child_id, childId)
         )
       )

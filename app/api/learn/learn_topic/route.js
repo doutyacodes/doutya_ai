@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { and, eq } from "drizzle-orm";
+import { and, eq, gte, lte } from "drizzle-orm";
 import { authenticate } from "@/lib/jwtMiddleware";
-import { CHILDREN, LEARN_DATAS, LEARN_SUBJECTS, QUESTIONS, USER_LEARN_PROGRESS } from "@/utils/schema";
+import { CHILDREN, LEARN_DATAS, LEARN_SUBJECTS, LEARN_TESTS, QUESTIONS, USER_LEARN_PROGRESS } from "@/utils/schema";
 
 export async function POST(req) {
   try {
@@ -17,38 +17,6 @@ export async function POST(req) {
     if (!slug) {
       return NextResponse.json({ error: "slug is required." }, { status: 400 });
     }
-
-    // Fetch the learn topic ID associated with the provided slug
-    const topic = await db
-      .select()
-      .from(LEARN_SUBJECTS)
-      .where(eq(LEARN_SUBJECTS.slug, slug))
-      .execute();
-
-    // Check if the topic was found
-    if (topic.length === 0) {
-      return NextResponse.json(
-        { error: "No topic found for the given slug." },
-        { status: 404 }
-      );
-    }
-
-    const topicId = topic[0].id; // Get the ID of the topic
-
-  
-
- // Count the number of quizzes (questions) associated with the retrieved topic_id
-    const quiz = await db
-      .select()
-      .from(QUESTIONS)
-      .where(eq(QUESTIONS.learn_topic_id, topicId))
-      .execute();
-    const quizCountResult = quiz.length;
-    const quizCount = quizCountResult || 0;
-
-    let userProgressCountResult = 0;
-
-    let finalChildId = childId;
 
     if (!childId && userId) {
       const firstChild = await db
@@ -67,6 +35,92 @@ export async function POST(req) {
         );
       }
     }
+
+    // Fetch the learn subject ID associated with the provided slug
+    const subject = await db
+      .select()
+      .from(LEARN_SUBJECTS)
+      .where(eq(LEARN_SUBJECTS.slug, slug))
+      .execute();
+
+    // Check if the topic was found
+    if (subject.length === 0) {
+      return NextResponse.json(
+        { error: "No subject found for the given slug." },
+        { status: 404 }
+      );
+    }
+
+    const subjectId = subject[0].id; // Get the ID of the subject
+
+
+    // // Get the start date of the current week (Sunday)
+    // const now = new Date();
+    // const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())); // Set date to Sunday
+    // startOfWeek.setHours(0, 0, 0, 0); // Reset time to midnight
+
+    // // Fetch the test for the given subject and the start date of the week
+    // const test = await db
+    //   .select()
+    //   .from(LEARN_TESTS)
+    //   .where(
+    //     and(
+    //       eq(LEARN_TESTS.learn_subject_id, subjectId),
+    //       eq(LEARN_TESTS.show_date, startOfWeek.toISOString().split("T")[0]) // Format to 'YYYY-MM-DD'
+    //     )
+    //   )
+    //   .execute();
+
+
+    // Get the start date (Sunday) and end date (Saturday) of the current week
+    // Get the current date in local time
+    const now = new Date();
+
+    // Calculate the start of the week (Sunday, local timezone)
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay()); // Set to Sunday
+    startOfWeek.setHours(0, 0, 0, 0); // Midnight
+
+    // Calculate the end of the week (Saturday, local timezone)
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // Add 6 days to get Saturday
+    endOfWeek.setHours(23, 59, 59, 999); // End of day
+    console.log("startOfWeek", startOfWeek, "endOfWeek", endOfWeek)
+
+    // Fetch the test for the given subject and check if show_date is within the week range
+    const test = await db
+      .select()
+      .from(LEARN_TESTS)
+      .where(
+        and(
+          eq(LEARN_TESTS.learn_subject_id, subjectId),
+          gte(LEARN_TESTS.show_date, startOfWeek.toISOString().split("T")[0]), // >= startOfWeek
+          lte(LEARN_TESTS.show_date, endOfWeek.toISOString().split("T")[0])  // <= endOfWeek
+        )
+      )
+      .execute();
+
+    if (test.length === 0) {
+      return NextResponse.json(
+        { error: "No test found for the current week." },
+        { status: 404 }
+      );
+    }
+
+    const testId = test[0].id;
+
+ // Count the number of quizzes (questions) associated with the retrieved topic_id
+    const quiz = await db
+      .select()
+      .from(QUESTIONS)
+      .where(eq(QUESTIONS.learn_test_id, testId))
+      .execute();
+    const quizCountResult = quiz.length;
+    const quizCount = quizCountResult || 0;
+
+    let userProgressCountResult = 0;
+
+    let finalChildId = childId;
     
     if (userId && finalChildId) {
       // Count the number of user progress entries associated with the retrieved topic_id
@@ -75,7 +129,7 @@ export async function POST(req) {
         .from(USER_LEARN_PROGRESS)
         .where(
           and(
-            eq(USER_LEARN_PROGRESS.learn_topic_id, topicId),
+            eq(USER_LEARN_PROGRESS.learn_test_id, testId),
             eq(USER_LEARN_PROGRESS.child_id, finalChildId)
           )
         ) // Assuming you want to count progress on the questions for this topic
@@ -97,21 +151,19 @@ export async function POST(req) {
       status = "unknown"; // Handle unexpected cases, if necessary
     }
   
-
-
-   
     const learnData = await db
       .select()
       .from(LEARN_DATAS)
-      .where(eq(LEARN_DATAS.learn_subject_id, topicId))
+      .where(eq(LEARN_DATAS.learn_test_id, testId))
       .execute();
 
     return NextResponse.json({
       quizCount,
       userProgressCount,
       status,
-      topic,
+      subject,
       learnData:learnData[0],
+      testId,
     });
   } catch (error) {
     console.error("Error fetching data:", error);
