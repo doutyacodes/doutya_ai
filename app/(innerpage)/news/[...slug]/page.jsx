@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import LoadingSpinner from "@/app/_components/LoadingSpinner";
 
 export default function NewsDetails() {
   const pathname = usePathname();
@@ -14,18 +15,14 @@ export default function NewsDetails() {
   useEffect(() => {
     const [, , category, id] = pathname.split("/");
 
-    // Fetch the news data from the backend API
     const fetchArticle = async () => {
       try {
         const response = await fetch("/api/fetchNews/news", {
-          method: "POST", // Send a POST request
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: parseInt(id) }), // Pass the 'id' in the request body
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: parseInt(id) }),
         });
         const data = await response.json();
-        console.log(data);
         if (response.ok) {
           setArticle(data);
         } else {
@@ -44,9 +41,7 @@ export default function NewsDetails() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-100 via-white to-orange-50 flex items-center justify-center">
-        <h2 className="text-2xl font-bold text-gray-700">Loading...</h2>
-      </div>
+      <LoadingSpinner />
     );
   }
 
@@ -68,10 +63,24 @@ export default function NewsDetails() {
     );
   }
 
-  const { title, category, image_url, date, summary, description, questions } = article;
+  const { title, category, image_url, date, summary, description, questions, meanings } = article;
 
-  // Split description into paragraphs
-  const paragraphs = description.split("\n\n");
+  // Replace words with hoverable bolded spans
+  const replaceWordsWithHover = (text) => {
+    return meanings.reduce((acc, { word, description }) => {
+      const regex = new RegExp(`\\b(${word})\\b`, "gi");
+      return acc.replace(
+        regex,
+        `<span class="group font-bold cursor-pointer relative hover:text-orange-500">${word}
+          <div class="absolute left-0 bottom-full mb-2 hidden group-hover:flex w-64 p-2 bg-white shadow-md border rounded-lg z-10 text-sm text-gray-700">${description}</div>
+        </span>`
+      );
+    }, text);
+  };
+
+  // Process summary and paragraphs
+  const processedSummary = replaceWordsWithHover(summary);
+  const processedParagraphs = description.split("\n\n").map((para) => replaceWordsWithHover(para));
 
   return (
     <div className="text-gray-800 p-6">
@@ -105,9 +114,8 @@ export default function NewsDetails() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-      >
-        <p className="text-lg font-medium text-gray-700">{summary}</p>
-      </motion.div>
+        dangerouslySetInnerHTML={{ __html: processedSummary }}
+      ></motion.div>
 
       {/* Content Section */}
       <motion.div
@@ -116,10 +124,8 @@ export default function NewsDetails() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
-        {paragraphs.map((paragraph, index) => (
-          <p key={index} className="indent-8">
-            {paragraph}
-          </p>
+        {processedParagraphs.map((paragraph, index) => (
+          <p key={index} className="indent-8" dangerouslySetInnerHTML={{ __html: paragraph }}></p>
         ))}
       </motion.div>
 

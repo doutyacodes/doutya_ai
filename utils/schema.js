@@ -112,8 +112,7 @@ export const USER_ACTIVITIES = mysqlTable("user_activities", {
   child_id: int("child_id")
     .references(() => CHILDREN.id)
     .notNull(),
-  course_id: int("course_id")
-    .references(() => COURSES.id),
+  course_id: int("course_id").references(() => COURSES.id),
   activity_id: int("activity_id")
     .references(() => ACTIVITIES.id)
     .notNull(),
@@ -366,76 +365,6 @@ export const TASKS = mysqlTable("tasks", {
   rank: int("rank").notNull().default(10),
 });
 
-// Define the schema for the 'challenges' table
-export const CHALLENGES_MAIN = mysqlTable("challenges_main", {
-  challenge_id: int("challenge_id").primaryKey().autoincrement(),
-  page_id: int("page_id").notNull(),
-  career_group_id: int("career_group_id").references(() => CAREER_GROUP.id),
-  title: varchar("title", { length: 100 }).notNull(),
-  description: text("description").notNull(),
-  challenge_type: mysqlEnum("challenge_type", [
-    "ordered",
-    "unordered",
-  ]).notNull(),
-  frequency: mysqlEnum("frequency", [
-    "challenges",
-    "daily",
-    "bootcamp",
-    "contest",
-    "treasure",
-    "referral",
-    "streak",
-    "refer",
-    "quiz",
-    "food",
-    "experience",
-  ]).notNull(),
-  start_date: datetime("start_date").notNull(),
-  start_time: time("start_time").notNull(),
-  end_date: datetime("end_date").notNull(),
-  end_time: time("end_time").notNull(),
-  entry_points: int("entry_points").notNull(),
-  reward_points: int("reward_points").notNull(),
-  level: int("level").default(1).notNull(),
-  created_by: varchar("created_by", { length: 100 }).notNull(),
-  created_date: datetime("created_date").notNull(),
-  participants_count: int("participants_count").default(0).notNull(),
-  removed_date: datetime("removed_date"),
-  removed_by: varchar("removed_by", { length: 100 }),
-  arena: mysqlEnum("arena", ["no", "yes"]).notNull(),
-  district_id: int("district_id"),
-  visit: mysqlEnum("visit", ["no", "yes"]).notNull(),
-  active: mysqlEnum("active", ["no", "yes"]).notNull(),
-  days: int("days").default(0).notNull(),
-  referral_count: int("referral_count").default(0).notNull(),
-  open_for: mysqlEnum("open_for", [
-    "everyone",
-    "location",
-    "specific",
-  ]).notNull(),
-  like_based: mysqlEnum("like_based", ["no", "yes"]).notNull(),
-  live: mysqlEnum("live", ["no", "yes"]).notNull(),
-  questions: int("questions").default(0).notNull(),
-  exp_type: mysqlEnum("exp_type", [
-    "biriyani",
-    "arts",
-    "breakfast",
-    "entertainment",
-  ]).notNull(),
-  rewards: mysqlEnum("rewards", ["no", "yes"]).notNull(),
-  dep_id: int("dep_id").notNull(),
-  page_type: mysqlEnum("page_type", [
-    "job",
-    "internship",
-    "tests",
-    "language",
-    "compatibility",
-  ]).notNull(),
-  rounds: int("rounds").notNull(),
-  start_datetime: datetime("start_datetime").default(new Date()).notNull(),
-  language_id: int("language_id").notNull(),
-});
-
 export const ANALYTICS_QUESTION = mysqlTable("analytics_question", {
   id: int("id").primaryKey().autoincrement(),
   question_text: varchar("question_text", { length: 300 }).notNull(),
@@ -470,16 +399,18 @@ export const USER_LEARN_PROGRESS = mysqlTable("user_learn_progress", {
   user_id: int("user_id").notNull(),
   question_id: int("question_id").notNull(),
   option_id: int("option_id").notNull(),
-  learn_topic_id: int("learn_topic_id").references(() => LEARN_SUBJECTS.id).notNull(), // Foreign key to 'learn_topics' table
+  learn_topic_id: int("learn_topic_id")
+    .references(() => LEARN_SUBJECTS.id)
+    .notNull(), // Foreign key to 'learn_topics' table
   // analytic_id: int("analytic_id").notNull(),
   created_at: timestamp("created_at").defaultNow(),
   child_id: int("child_id").references(() => CHILDREN.id), // Foreign key referencing the child
 });
 
-export const LEARN_TEST_SCORES= mysqlTable("learn_test_scores", {
+export const LEARN_TEST_SCORES = mysqlTable("learn_test_scores", {
   id: int("id").primaryKey().autoincrement(),
   user_id: int("user_id").notNull(),
-  child_id: int("child_id").references(() => CHILDREN.id), 
+  child_id: int("child_id").references(() => CHILDREN.id),
   total_percentage: float("total_percentage").notNull(),
   total_score: int("total_score").notNull(),
   subject_id: int("subject_id")
@@ -826,16 +757,7 @@ export const SCHOOL = mysqlTable("school", {
   type: mysqlEnum("type", ["paid", "free", "disabled"]).notNull(),
 });
 
-export const CHALLENGES = mysqlTable("challenges", {
-  id: int("id").notNull().primaryKey().autoincrement(),
-  age: int("age").notNull(),
-  country: varchar("country", 255).notNull(),
-  career_id: int("career_id").notNull(),
-  week: int("week").notNull(),
-  created_at: timestamp("created_at").defaultNow().notNull(),
-  challenge: varchar("challenge", 255).notNull(),
-  verification: varchar("verification", 255).notNull(),
-});
+
 export const Moderator = mysqlTable("Moderator", {
   id: int("id").notNull().primaryKey().autoincrement(),
   school_id: int("school_id")
@@ -845,25 +767,6 @@ export const Moderator = mysqlTable("Moderator", {
   name: varchar("name", 255).notNull(),
 });
 
-export const CHALLENGE_PROGRESS = mysqlTable("challenge_progress", {
-  id: int("id").notNull().primaryKey().autoincrement(),
-  user_id: int("user_id")
-    .notNull()
-    .references(() => USER_DETAILS.id),
-  challenge_id: int("challenge_id")
-    .notNull()
-    .references(() => CHALLENGES.id),
-  image: varchar("image", 255).notNull(),
-  status: mysqlEnum("status", ["pending", "approved", "rejected"]).notNull(),
-  created_at: timestamp("created_at").defaultNow(),
-  age: int("age").notNull(),
-  school_id: int("school_id").notNull(),
-  week: int("week").notNull(),
-});
-export const MILESTONE_CATEGORIES = mysqlTable("milestone_categories", {
-  id: int("id").notNull().autoincrement().primaryKey(),
-  name: varchar("name", { length: 255 }).notNull().unique(),
-});
 
 export const MILESTONE_SUBCATEGORIES = mysqlTable("milestone_subcategories", {
   id: int("id").notNull().autoincrement().primaryKey(),
@@ -1232,10 +1135,18 @@ export const COMMON_OPTIONS = mysqlTable("common_options", {
 // Children Progress Table
 export const CHILDREN_PROGRESS = mysqlTable("children_progress", {
   id: int("id").primaryKey().autoincrement(),
-  child_id: int("child_id").notNull().references(() => CHILDREN.id), // Foreign key to CHILDREN table
-  user_id: int("user_id").notNull().references(() => USER_DETAILS.id), // Foreign key to USER_DETAILS table
-  question_id: int("question_id").notNull().references(() => COMMON_QUESTIONS.id), // Foreign key to COMMON_QUESTIONS table
-  option_id: int("option_id").notNull().references(() => COMMON_OPTIONS.id), // Foreign key to COMMON_OPTIONS table
+  child_id: int("child_id")
+    .notNull()
+    .references(() => CHILDREN.id), // Foreign key to CHILDREN table
+  user_id: int("user_id")
+    .notNull()
+    .references(() => USER_DETAILS.id), // Foreign key to USER_DETAILS table
+  question_id: int("question_id")
+    .notNull()
+    .references(() => COMMON_QUESTIONS.id), // Foreign key to COMMON_QUESTIONS table
+  option_id: int("option_id")
+    .notNull()
+    .references(() => COMMON_OPTIONS.id), // Foreign key to COMMON_OPTIONS table
   option_letter: varchar("option_letter", { length: 1 }).default(null),
   // quiz_id: int("quiz_id").notNull(), // New column for quiz identification
   created_at: timestamp("created_at").defaultNow(),
@@ -1253,7 +1164,6 @@ export const KNOWLEDGE_QUESTIONS = mysqlTable("knowledge_questions", {
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
-
 // Common Options Table
 export const KNOWLEDGE_OPTIONS = mysqlTable("knowledge_options", {
   id: int("id").primaryKey().autoincrement(),
@@ -1267,52 +1177,57 @@ export const KNOWLEDGE_OPTIONS = mysqlTable("knowledge_options", {
 export const KNOWLEDGE_PROGRESS = mysqlTable("knowledge_progress", {
   id: int("id").primaryKey().autoincrement(),
   quiz_id: int("quiz_id").notNull().default(5), // Default quiz_id is set to 5
-  question_id: int("question_id").notNull().references(() => KNOWLEDGE_QUESTIONS.id), // References `knowledge_questions` table
-  child_id: int("child_id").notNull().references(() => CHILDREN.id), // Foreign key to CHILDREN table
-  user_id: int("user_id").notNull().references(() => USER_DETAILS.id), // Foreign key to USER_DETAILS table
+  question_id: int("question_id")
+    .notNull()
+    .references(() => KNOWLEDGE_QUESTIONS.id), // References `knowledge_questions` table
+  child_id: int("child_id")
+    .notNull()
+    .references(() => CHILDREN.id), // Foreign key to CHILDREN table
+  user_id: int("user_id")
+    .notNull()
+    .references(() => USER_DETAILS.id), // Foreign key to USER_DETAILS table
   age_years: int("age_years").notNull(), // Stores the age in years
   age_weeks: int("age_weeks").notNull(), // Stores additional age in weeks
-  answered_option_id: int("answered_option_id").references(() => KNOWLEDGE_OPTIONS.id), // References the chosen option in `knowledge_options`
+  answered_option_id: int("answered_option_id").references(
+    () => KNOWLEDGE_OPTIONS.id
+  ), // References the chosen option in `knowledge_options`
   is_correct: boolean("is_correct").notNull().default(false), // Indicates if the answer was correct
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
 export const SUBJECTS = mysqlTable("subjects", {
-  id: varchar("id", { length: 36 }).primaryKey(),   // UUID as primary key
+  id: varchar("id", { length: 36 }).primaryKey(), // UUID as primary key
   subject: varchar("subject", { length: 255 }).notNull(), // Subject name
-  code: varchar("code", { length: 50 }).unique(),   // Unique code for the subject
+  code: varchar("code", { length: 50 }).unique(), // Unique code for the subject
   created_at: timestamp("created_at").defaultNow(), // Timestamp for creation
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
 });
 
 export const LEARN_SUBJECTS = mysqlTable("learn_subjects", {
-  id: int("id").primaryKey().autoincrement(),     // Unique identifier for each record
+  id: int("id").primaryKey().autoincrement(), // Unique identifier for each record
   subject_id: varchar("subject_id", { length: 36 }) // Foreign key referencing the subject's UUID
     .references(() => SUBJECTS.id, { onDelete: "cascade" }), // Foreign key with cascade delete
-  subject: varchar("subject", { length: 255 }).notNull(),   // Subject name for reference
-  show_date: date("show_date").notNull(),          // Date when the subject should be shown
+  subject: varchar("subject", { length: 255 }).notNull(), // Subject name for reference
+  show_date: date("show_date").notNull(), // Date when the subject should be shown
   created_at: timestamp("created_at").defaultNow(), // Timestamp for when the record is created
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for when the record is updated
-  age: int("age").notNull(),                        // Age for which the subject is intended
-  slug: varchar("slug", { length: 255 }).unique(),  // Slug for the subject URL
+  age: int("age").notNull(), // Age for which the subject is intended
+  slug: varchar("slug", { length: 255 }).unique(), // Slug for the subject URL
   grade: varchar("grade", { length: 255 }).default(null), // Grade field, nullable by default
 });
 
 export const LEARN_DATAS = mysqlTable("learn_datas", {
-  id: int("id").primaryKey().autoincrement(),      // Unique identifier for each record
-  learn_subject_id: int("learn_subject_id")        // Foreign key to learn_subjects table
+  id: int("id").primaryKey().autoincrement(), // Unique identifier for each record
+  learn_subject_id: int("learn_subject_id") // Foreign key to learn_subjects table
     .notNull()
-    .references(() => LEARN_SUBJECTS.id, { onDelete: "cascade" }), 
+    .references(() => LEARN_SUBJECTS.id, { onDelete: "cascade" }),
   topic: varchar("topic", { length: 255 }).notNull(), // Topic of the learning material
   image: varchar("image", { length: 255 }).default(null), // URL or path to the image (optional)
-  description:text('description').default(null),
+  description: text("description").default(null),
   created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
-  updated_at: timestamp("updated_at")
-    .defaultNow()
-    .onUpdateNow(),                               // Timestamp for record updates
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for record updates
 });
-
 
 export const NEWS_CATEGORIES = mysqlTable("news_categories", {
   id: int("id").primaryKey().autoincrement(),
@@ -1320,7 +1235,6 @@ export const NEWS_CATEGORIES = mysqlTable("news_categories", {
   created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
 });
-
 
 export const NEWS = mysqlTable("news", {
   id: int("id").primaryKey().autoincrement(),
@@ -1344,4 +1258,72 @@ export const NEWS_QUESTIONS = mysqlTable("news_questions", {
   questions: text("questions").notNull(), // The question text
   created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
+});
+
+export const WORDS_MEANINGS = mysqlTable("words_meanings", {
+  id: int("id").primaryKey().autoincrement(), // Primary key
+  news_id: int("news_id")
+    .notNull()
+    .references(() => NEWS.id), // Foreign key referencing NEWS table
+  word: varchar("word", { length: 255 }).notNull(),
+  description: text("description").notNull().default(""),
+  created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
+});
+
+export const CHALLENGES = mysqlTable("challenges", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").default(null),
+  show_date: date("show_date").notNull(),
+  challenge_type: mysqlEnum("challenge_type", ["upload", "quiz"]).notNull(),
+  slug:varchar("slug", { length: 350 }), // UUID for unique challenge identification
+  image: varchar("image", { length: 255 }).default(null),
+  entry_fee: int("entry_fee").default(0),
+  age: int("age"),
+  entry_type: mysqlEnum("entry_type", ["nill", "points", "fee"]).default("nill"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const CHALLENGE_PROGRESS = mysqlTable("challenge_progress", {
+  id: int("id").primaryKey().autoincrement(),
+  challenge_id: int("challenge_id").references(() => CHALLENGES.id),
+  user_id: int("user_id").references(() => USER_DETAILS.id),
+  child_id: int("child_id").references(() => CHILDREN.id),
+  challenge_type: mysqlEnum("challenge_type", ["upload", "quiz"]).notNull(),
+  image: varchar("image", { length: 255 }).default(null), // Only for 'upload' challenge type
+  is_started: boolean("is_started").default(false),
+  is_completed: boolean("is_completed").default(false),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const CHALLENGE_QUESTIONS = mysqlTable("challenge_questions", {
+  id: int("id").primaryKey().autoincrement(),
+  challenge_id: int("challenge_id").references(() => CHALLENGES.id),
+  question: text("question").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const CHALLENGE_OPTIONS = mysqlTable("challenge_options", {
+  id: int("id").primaryKey().autoincrement(),
+  challenge_id: int("challenge_id").references(() => CHALLENGES.id),
+  question_id: int("question_id").references(() => CHALLENGE_QUESTIONS.id),
+  option: varchar("option", { length: 255 }).notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+
+export const CHALLENGE_USER_QUIZ = mysqlTable("challenge_user_quiz", {
+  id: int("id").primaryKey().autoincrement(),
+  challenge_id: int("challenge_id").references(() => CHALLENGES.id),
+  user_id: int("user_id").references(() => USER_DETAILS.id),
+  child_id: int("child_id").references(() => CHILDREN.id),
+  question_id: int("question_id").references(() => CHALLENGE_QUESTIONS.id),
+  option_id: int("option_id").references(() => CHALLENGE_OPTIONS.id),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });

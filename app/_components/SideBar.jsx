@@ -38,14 +38,15 @@ const SideBar = () => {
 
   const navLinks = [
     { label: "Search", links: "/search", icon: FaSearch },
-    { label: "News", links: "/news", icon: FaNewspaper  },  // Changed to "FaBuilding" for About Us    
+    { label: "News", links: "/news", icon: FaNewspaper  },      
     { label: "Learn", links: "/learn", icon: FaBook },
     { label: "Tests", links: "/tests", icon: FaTasks },
     { label: "Activities", links: "/activities", icon: FaUserFriends },
     { label: "Communities", links: "/communities", icon: FaUserFriends },
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
     { label: "Our Features", links: "/our-features", icon: FaStar },
-    { label: "About Us", links: "/about-us", icon: FaBuilding },  // Changed to "FaBuilding" for About Us    
+    { label: "About Us", links: "/about-us", icon: FaBuilding },      
+    { label: "Challenges", links: "/challenges", icon: FaBuilding },      
     // { label: "My Badges", links: "/badges", icon: FaMedal },
     // { label: "My Searches", links: "/my-search", icon: FaHistory },
     // { label: "My Profile", links: "/my-profile", icon: FaUser },

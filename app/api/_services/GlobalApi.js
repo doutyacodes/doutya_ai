@@ -201,6 +201,36 @@ const FetchCourses = async (data) => {
     },
   });
 };
+
+const FetchChallenges = async (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(`/api/fetchChallenges`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
+
+const FetchChallengesOne = async (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(`/api/fetchChallenges/challenges`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
+
+const submitQuizAnswer = async (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(`/api/fetchChallenges/challenges/submitQuizAnswer`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
 // New function to fetch subjects
 const FetchSubjects = async (data) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
@@ -658,6 +688,8 @@ export default {
   GetUserChildren, // Export the new function
   AddChild, // Export the new function
   FetchCourses, // Export the new function
+  FetchChallenges,
+  FetchChallengesOne,
   FetchSubjects,
   FetchSubtopics,
   GetLearnTopics,
@@ -709,7 +741,7 @@ export default {
   GetIndustry,
   FetchActivities,
   submitImage,
-
+  submitQuizAnswer,
   SaveQuizProgress2,
   GetFeedbacksData,
   GetDaysData,
