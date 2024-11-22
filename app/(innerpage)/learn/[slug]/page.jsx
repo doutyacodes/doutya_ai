@@ -19,6 +19,7 @@ export default function SubjectPage() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { selectedChildId } = useChildren();
+  const [isTestsFound, setIsTestsFound] = useState(true)
 
   useEffect(() => {
     const fetchLearnTopicsData = async () => {
@@ -29,7 +30,17 @@ export default function SubjectPage() {
         console.log("response",response.data)
         setLearnData(response.data);
       } catch (error) {
-        console.error("Error fetching learn topics data:", error);
+        if (error.response?.status === 404 && error.response?.data?.error) { // Match 'error' key from backend
+          const errorMsg = error.response.data.error; // Use 'error' key
+          if (errorMsg.includes("week")) {
+            setIsTestsFound(false)
+          } else {
+            toast.error(`Error: ${errorMsg}`);
+          }
+        } else {
+          toast.error(`Error: ${error.message}`);
+        }
+        console.error("Error fetching learn Subjects data:", error);
       } finally {
         setLoading(false);
       }
@@ -52,7 +63,7 @@ export default function SubjectPage() {
       learnData?.status === "incomplete" ||
       learnData?.status === "continue"
     ) {
-      return router.push(`/learn/quiz-section/${slug}`);
+      return router.push(`/learn/quiz-section/${slug}/${learnData.testId}`);
     }
   };
 
@@ -72,74 +83,87 @@ export default function SubjectPage() {
           Learn and Test your Knowledge!
         </p>
       </motion.header>
+      {
+        isTestsFound ? (
 
-      {/* Tabs Section */}
-      <section className="mb-6">
-        <div className="flex justify-center space-x-4">
-          <button
-            onClick={() => setActiveTab("explanation")}
-            className={`px-6 py-2 text-lg font-medium rounded-lg ${
-              activeTab === "explanation"
-                ? "bg-orange-500 text-white"
-                : "bg-white text-gray-700 shadow-md hover:bg-orange-100"
-            }`}
-          >
-            Explanation
-          </button>
-          <button
-            onClick={() => setActiveTab("test")}
-            className={`px-6 py-2 text-lg font-medium rounded-lg ${
-              activeTab === "test"
-                ? "bg-orange-500 text-white"
-                : "bg-white text-gray-700 shadow-md hover:bg-orange-100"
-            }`}
-          >
-            Test
-          </button>
-        </div>
-      </section>
+          <>
+            {/* Tabs Section */}
+            <section className="mb-6">
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={() => setActiveTab("explanation")}
+                  className={`px-6 py-2 text-lg font-medium rounded-lg ${
+                    activeTab === "explanation"
+                      ? "bg-orange-500 text-white"
+                      : "bg-white text-gray-700 shadow-md hover:bg-orange-100"
+                  }`}
+                >
+                  Explanation
+                </button>
+                <button
+                  onClick={() => setActiveTab("test")}
+                  className={`px-6 py-2 text-lg font-medium rounded-lg ${
+                    activeTab === "test"
+                      ? "bg-orange-500 text-white"
+                      : "bg-white text-gray-700 shadow-md hover:bg-orange-100"
+                  }`}
+                >
+                  Test
+                </button>
+              </div>
+            </section>
 
-      {/* Content Section */}
-      <section>
-        {activeTab === "explanation" ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="bg-white shadow-md rounded-lg p-6"
-          >
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              {learnData?.learnData.topic}
-            </h2>
-            <p className="text-gray-700">{learnData?.learnData?.description}</p>
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="bg-gradient-to-r from-orange-200 to-white shadow-md rounded-lg p-6"
-          >
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Ready to Test?
-            </h2>
-            <p className="text-gray-700 mb-4">
-              Click below to start the test for this subject and challenge your
-              knowledge!
-            </p>
-            <button
-              onClick={handleTestClick}
-              className="inline-block px-6 py-3 bg-orange-500 text-white text-lg font-medium rounded-lg shadow-lg hover:bg-orange-600"
-            >
-              {learnData?.status === "incomplete"
-                    ? "Start the test"
-                    : learnData?.status === "continue"
-                    ? "Continue"
-                    : "Finished"}
-            </button>
-          </motion.div>
-        )}
-      </section>
+            {/* Content Section */}
+            <section>
+              {activeTab === "explanation" ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="bg-white shadow-md rounded-lg p-6"
+                >
+                  <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                    {learnData?.learnData.topic}
+                  </h2>
+                  <p className="text-gray-700">{learnData?.learnData?.description}</p>
+                </motion.div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="bg-gradient-to-r from-orange-200 to-white shadow-md rounded-lg p-6"
+                >
+                  <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                    Ready to Test?
+                  </h2>
+                  <p className="text-gray-700 mb-4">
+                    Click below to start the test for this subject and challenge your
+                    knowledge!
+                  </p>
+                  <button
+                    onClick={handleTestClick}
+                    className="inline-block px-6 py-3 bg-orange-500 text-white text-lg font-medium rounded-lg shadow-lg hover:bg-orange-600"
+                  >
+                    {learnData?.status === "incomplete"
+                          ? "Start the test"
+                          : learnData?.status === "continue"
+                          ? "Continue"
+                          : "Finished"}
+                  </button>
+                </motion.div>
+              )}
+            </section>
+          </>
+          ) : (
+            <div className="min-h-[200px] h-full w-full flex items-center justify-center rounded-lg bg-gray-50 p-6">
+              <div className="text-center space-y-3">
+                <p className="text-gray-500 text-lg font-medium">No Tests Available This Week</p>
+                <p className="text-gray-400 text-sm">Check back later for upcoming tests and assessments.</p>
+              </div>
+            </div>
+          )
+      }
     </div>
   );
 }

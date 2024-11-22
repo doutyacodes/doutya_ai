@@ -65,26 +65,44 @@ export async function POST(req) {
   try {
     let learnSubjects;
     if (finalGrade) {
+      // learnSubjects = await db
+      //   .select()
+      //   .from(LEARN_SUBJECTS)
+      //   .where(
+      //     and(
+      //       eq(LEARN_SUBJECTS.show_date, todayDate),
+      //       eq(LEARN_SUBJECTS.grade, finalGrade)
+      //     )
+      //   )
+      //   .limit()
+      //   .execute();
+
+
       learnSubjects = await db
-        .select()
-        .from(LEARN_SUBJECTS)
-        .where(
-          and(
-            eq(LEARN_SUBJECTS.show_date, todayDate),
-            eq(LEARN_SUBJECTS.grade, finalGrade)
-          )
-        )
-        .limit()
-        .execute();
+      .select()
+      .from(LEARN_SUBJECTS)
+      .where(
+          eq(LEARN_SUBJECTS.grade, finalGrade)
+      )
+      .limit()
+      .execute();
     } else {
+      // learnSubjects = await db
+      //   .select()
+      //   .from(LEARN_SUBJECTS)
+      //   .where(
+      //     and(
+      //       eq(LEARN_SUBJECTS.show_date, todayDate),
+      //       eq(LEARN_SUBJECTS.age, finalAge)
+      //     )
+      //   )
+      //   .limit()
+      //   .execute();
       learnSubjects = await db
         .select()
         .from(LEARN_SUBJECTS)
         .where(
-          and(
-            eq(LEARN_SUBJECTS.show_date, todayDate),
             eq(LEARN_SUBJECTS.age, finalAge)
-          )
         )
         .limit()
         .execute();

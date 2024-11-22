@@ -12,7 +12,7 @@ export async function POST(req) {
     }
 
     const userId = authResult.decoded_Data.id;
-    const { topicId, childId, answers } = await req.json(); // Expecting an array of answers in the request body
+    const { testId, childId, answers } = await req.json(); // Expecting an array of answers in the request body
 
     if (!Array.isArray(answers) || answers.length === 0) {
       return NextResponse.json({ error: "No answers provided." }, { status: 400 });
@@ -47,7 +47,7 @@ export async function POST(req) {
         child_id: childId,
         question_id: questionId,
         option_id: selectedOptions[0],
-        learn_topic_id: topicId,
+        learn_test_id: testId,
         completed: true,
         score: isCorrect ? 1 : 0,
         created_at: new Date(),
@@ -66,7 +66,7 @@ export async function POST(req) {
       child_id: childId,
       total_score: totalScore,
       total_percentage: percentageScore,
-      subject_id: topicId,
+      test_id:testId,
     });
 
 

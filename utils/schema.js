@@ -207,33 +207,6 @@ export const LEARN_DATA = mysqlTable("learn_data", {
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
-export const QUESTIONS = mysqlTable("questions", {
-  id: int("id").primaryKey().autoincrement(),
-  learn_topic_id: int("learn_topic_id")
-    .references(() => LEARN_TOPICS.id)
-    .notNull(), // Foreign key to 'learn_topics' table
-  question_text: text("question_text").notNull(), // Question text
-  type: mysqlEnum("type", ["text", "image", "video", "audio"]).notNull(), // Type of question
-  image: varchar("image", { length: 255 }), // Optional image URL
-  video: varchar("video", { length: 255 }), // Optional video URL
-  audio: varchar("audio", { length: 255 }), // Optional audio URL
-  created_at: timestamp("created_at").defaultNow(),
-  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
-});
-
-// Options Table
-export const OPTIONS2 = mysqlTable("options2", {
-  id: int("id").primaryKey().autoincrement(),
-  question_id: int("question_id")
-    .references(() => QUESTIONS.id)
-    .notNull(), // Foreign key to 'questions' table
-  learn_topic_id: int("learn_topic_id")
-    .references(() => LEARN_TOPICS.id)
-    .notNull(), // Foreign key to 'learn_topics' for redundancy
-  option_text: text("option_text").notNull(), // Option text
-  is_answer: boolean("is_answer").notNull().default(false), // Indicates if this option is the correct answer
-});
-
 // User Progress Table
 // export const USER_PROGRESS = mysqlTable("user_progress", {
 //   id: int("id").primaryKey().autoincrement(),
@@ -470,8 +443,10 @@ export const USER_LEARN_PROGRESS = mysqlTable("user_learn_progress", {
   user_id: int("user_id").notNull(),
   question_id: int("question_id").notNull(),
   option_id: int("option_id").notNull(),
-  learn_topic_id: int("learn_topic_id").references(() => LEARN_SUBJECTS.id).notNull(), // Foreign key to 'learn_topics' table
-  // analytic_id: int("analytic_id").notNull(),
+  learn_subject_id: int("learn_topic_id").references(() => LEARN_SUBJECTS.id).notNull(), // Foreign key to 'learn_topics' table
+  learn_test_id: int("learn_test_id")
+    .references(() => LEARN_TESTS.id)
+    .notNull(), // Foreign key to 'learn_tests' table
   created_at: timestamp("created_at").defaultNow(),
   child_id: int("child_id").references(() => CHILDREN.id), // Foreign key referencing the child
 });
@@ -482,9 +457,9 @@ export const LEARN_TEST_SCORES= mysqlTable("learn_test_scores", {
   child_id: int("child_id").references(() => CHILDREN.id), 
   total_percentage: float("total_percentage").notNull(),
   total_score: int("total_score").notNull(),
-  subject_id: int("subject_id")
+  test_id: int("test_id")
     .notNull()
-    .references(() => LEARN_SUBJECTS.id),
+    .references(() => LEARN_TESTS.id), // Reference to LEARN_TESTS table
   created_at: timestamp("created_at").defaultNow(),
 });
 
@@ -1299,11 +1274,48 @@ export const LEARN_SUBJECTS = mysqlTable("learn_subjects", {
   grade: varchar("grade", { length: 255 }).default(null), // Grade field, nullable by default
 });
 
+export const LEARN_TESTS = mysqlTable("learn_tests", {
+  id: int("id").primaryKey().autoincrement(), // Unique identifier for each test
+  learn_subject_id: int("learn_subject_id") // Foreign key referencing 'learn_subjects' table
+    .references(() => LEARN_SUBJECTS.id, { onDelete: "cascade" })
+    .notNull(),
+  show_date: date("show_date").notNull(), // Date when the test is visible
+  created_at: timestamp("created_at").defaultNow(), // Timestamp for when the record is created
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for when the record is updated
+});
+
+export const QUESTIONS = mysqlTable("questions", {
+  id: int("id").primaryKey().autoincrement(),
+  learn_test_id: int("learn_test_id") // Reference to 'learn_tests' table
+    .references(() => LEARN_TESTS.id)
+    .notNull(),
+  question_text: text("question_text").notNull(), // Question text
+  type: mysqlEnum("type", ["text", "image", "video", "audio"]).notNull(), // Type of question
+  image: varchar("image", { length: 255 }), // Optional image URL
+  video: varchar("video", { length: 255 }), // Optional video URL
+  audio: varchar("audio", { length: 255 }), // Optional audio URL
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+// Options Table
+export const OPTIONS2 = mysqlTable("options2", {
+  id: int("id").primaryKey().autoincrement(),
+  question_id: int("question_id")
+    .references(() => QUESTIONS.id)
+    .notNull(), // Foreign key to 'questions' table
+    learn_test_id: int("learn_test_id") // Reference to 'learn_tests' table
+    .references(() => LEARN_TESTS.id)
+    .notNull(),
+  option_text: text("option_text").notNull(), // Option text
+  is_answer: boolean("is_answer").notNull().default(false), // Indicates if this option is the correct answer
+});
+
 export const LEARN_DATAS = mysqlTable("learn_datas", {
   id: int("id").primaryKey().autoincrement(),      // Unique identifier for each record
-  learn_subject_id: int("learn_subject_id")        // Foreign key to learn_subjects table
+  learn_test_id: int("learn_test_id") // Foreign key to learn_tests table
     .notNull()
-    .references(() => LEARN_SUBJECTS.id, { onDelete: "cascade" }), 
+    .references(() => LEARN_TESTS.id, { onDelete: "cascade" }),
   topic: varchar("topic", { length: 255 }).notNull(), // Topic of the learning material
   image: varchar("image", { length: 255 }).default(null), // URL or path to the image (optional)
   description:text('description').default(null),
