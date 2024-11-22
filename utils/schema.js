@@ -443,7 +443,6 @@ export const USER_LEARN_PROGRESS = mysqlTable("user_learn_progress", {
   user_id: int("user_id").notNull(),
   question_id: int("question_id").notNull(),
   option_id: int("option_id").notNull(),
-  learn_subject_id: int("learn_topic_id").references(() => LEARN_SUBJECTS.id).notNull(), // Foreign key to 'learn_topics' table
   learn_test_id: int("learn_test_id")
     .references(() => LEARN_TESTS.id)
     .notNull(), // Foreign key to 'learn_tests' table
