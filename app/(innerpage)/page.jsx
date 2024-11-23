@@ -782,7 +782,13 @@ console.log("selectedAge",selectedAge)
                   className="w-full p-2 max-md:py-12 py-6 text-xl placeholder:text-lg focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-16 bg-[#ede7e7]"
                 />
               </div>
-              {advanced ? (
+              <div
+                  onClick={() => setAdvanced((!advanced))}
+                  className="text-center text-orange-300 font-semibold"
+                >
+                  Advanced Filter
+                </div>
+              {advanced && (
                 <>
                   {ageGenres.length > 0 && type == "story" && (
                     <div className="w-full text-center mb-4">
@@ -900,14 +906,7 @@ console.log("selectedAge",selectedAge)
                     </div>
                   </div>
                 </>
-              ) : (
-                <div
-                  onClick={() => setAdvanced(true)}
-                  className="text-center text-orange-300 font-semibold"
-                >
-                  Advanced Filter
-                </div>
-              )}
+              ) }
 
               {/* {age > 13 && (
                 <div className="w-full text-center mb-4">
