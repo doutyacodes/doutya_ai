@@ -1269,6 +1269,7 @@ export const NEWS_QUESTIONS = mysqlTable("news_questions", {
 
 export const WORDS_MEANINGS = mysqlTable("words_meanings", {
   id: int("id").primaryKey().autoincrement(), // Primary key
+  age: int("age"), // Primary key
   news_id: int("news_id")
     .notNull()
     .references(() => NEWS.id), // Foreign key referencing NEWS table

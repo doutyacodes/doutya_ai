@@ -5,12 +5,14 @@ import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
+import { useChildren } from "@/context/CreateContext";
 
 export default function NewsDetails() {
   const pathname = usePathname();
   const [article, setArticle] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { selectedAge } = useChildren();
 
   useEffect(() => {
     const [, , category, id] = pathname.split("/");
@@ -20,7 +22,7 @@ export default function NewsDetails() {
         const response = await fetch("/api/fetchNews/news", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: parseInt(id) }),
+          body: JSON.stringify({ id: parseInt(id) ,age:selectedAge}),
         });
         const data = await response.json();
         if (response.ok) {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -10,31 +10,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Toaster, toast } from "react-hot-toast";
-import LoadingSpinner from "../_components/LoadingSpinner";
-import {
-  IoChevronBackOutline,
-  IoPauseCircle,
-  IoPlayCircle,
-  IoStopCircle,
-} from "react-icons/io5";
-import Link from "next/link";
-import Navbar from "../_components/Navbar";
-import GlobalApi from "../api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
-import useAuth from "../hooks/useAuth";
 import { cn } from "@/lib/utils";
-import ChildSelector from "../_components/ChildSelecter";
-import { Button } from "@/components/ui/button";
-import { ArrowUpLeftFromSquare, ChevronLeft } from "lucide-react";
-import Features from "../_components/Features";
-import Pricing from "../_components/Pricing";
-import Contact from "../_components/Contact";
-import OurStory from "../_components/OurStory";
-import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
-import PostComponent from "./(community)/communities/_components/PostComponent";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { Toaster, toast } from "react-hot-toast";
+import { IoPauseCircle, IoPlayCircle, IoStopCircle } from "react-icons/io5";
+import LoadingSpinner from "../_components/LoadingSpinner";
+import GlobalApi from "../api/_services/GlobalApi";
+import useAuth from "../hooks/useAuth";
 import PostData from "./(community)/communities/_components/PostData";
 
 const Home = () => {
@@ -42,15 +30,15 @@ const Home = () => {
   const [language, setLanguage] = useState("english");
   const [difficulty, setDifficulty] = useState("basic");
   const [type, setType] = useState("story");
-  const [age, setAge] = useState(2); // New state for age input
+  const { selectedChildId, selectedAge, selectedWeeks, loading } =
+    useChildren(); // Accessing selected child ID from context
+  const [age, setAge] = useState(selectedAge ? selectedAge : 2); // New state for age input
   const [error, setError] = useState("");
   const [latestCourse, setLatestCourse] = useState(null);
   const [base64Image, setBase64Image] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [advanced, setAdvanced] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
-  const { selectedChildId, selectedAge, selectedWeeks, loading } =
-    useChildren(); // Accessing selected child ID from context
   const { isAuthenticated, logout } = useAuth();
   const [image, setImage] = useState(null);
   const [file, setFile] = useState(null); // Track the uploaded file
@@ -70,7 +58,12 @@ const Home = () => {
   const [showOurStory, setShowOurStory] = useState(true);
   const [showFeatures, setShowFeatures] = useState(true);
   const [posts, setPosts] = useState([]);
-console.log("selectedAge",selectedAge)
+  console.log("selectedAge", selectedAge);
+  useEffect(() => {
+    if (selectedAge) {
+      setAge(selectedAge);
+    }
+  }, [selectedAge]);
   const router = useRouter();
   // Function to handle scroll to a specific section and update visibility
   const [newsCategories, setNewsCategories] = useState([]);
@@ -734,12 +727,18 @@ console.log("selectedAge",selectedAge)
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
+            className="rounded-md flex justify-center items-center border border-orange-400/40 mt-4 py-3 w-full bg-white p-3"
+          >
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
             className="flex flex-col items-center space-y-4 rounded-lg w-full max-w-4xl p-1 py-4"
           >
             {/* <div className="w-full flex justify-end items-center">
               <ChildSelector />
             </div> */}
-            <form onSubmit={handleSearch} className="w-full ">
+            <form onSubmit={handleSearch} className="w-full">
               <div className="w-full text-center mb-4">
                 <h2 className="text-xl font-semibold max-md:w-full mb-8 items-center justify-center flex flex-wrap  gap-3 ">
                   <div>I want </div>
@@ -779,15 +778,15 @@ console.log("selectedAge",selectedAge)
                   value={courseName}
                   maxLength="150"
                   onChange={(e) => setCourseName(e.target.value)}
-                  className="w-full p-2 max-md:py-12 py-6 text-xl placeholder:text-lg focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-16 bg-[#ede7e7]"
+                  className="w-full p-2 max-md:py-12 py-6 text-xl placeholder:text-lg focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-4 bg-[#ede7e7]"
                 />
               </div>
               <div
-                  onClick={() => setAdvanced((!advanced))}
-                  className="text-center text-orange-300 font-semibold"
-                >
-                  Advanced Filter
-                </div>
+                onClick={() => setAdvanced(!advanced)}
+                className="cursor-pointer text-center text-orange-600 font-semibold mb-2 hover:underline"
+              >
+                {advanced ? "Hide Advanced Filter" : "Show Advanced Filter"}
+              </div>
               {advanced && (
                 <>
                   {ageGenres.length > 0 && type == "story" && (
@@ -906,7 +905,7 @@ console.log("selectedAge",selectedAge)
                     </div>
                   </div>
                 </>
-              ) }
+              )}
 
               {/* {age > 13 && (
                 <div className="w-full text-center mb-4">
@@ -936,6 +935,7 @@ console.log("selectedAge",selectedAge)
               </div>
             </form>
             {error && <p className="text-red-500">{error}</p>}
+          </motion.div>
           </motion.div>
         </>
       )}
@@ -1404,16 +1404,16 @@ console.log("selectedAge",selectedAge)
         </div>
       )} */}
       <div className="grid md:grid-cols-2 grid-cols-1 gap-4 w-full">
-        <div className="w-full rounded-md bg-[#febd59]  p-2 space-y-4">
+        <div className="w-full rounded-md bg-[#febd59] space-y-4">
           <div className="flex flex-col gap-2 text-center">
-            <h4 className=" text-center font-semibold text-2xl">NEWS</h4>
+            <h4 className=" text-center font-semibold text-2xl bg-[#f68c1f] rounded-md">NEWS</h4>
             <span className="text-center text-slate-600 text-xs w-full">
               Todays News made age appropriate for Kids
             </span>
           </div>
           <div
             className={cn(
-              "w-full flex flex-col gap-2  relative",
+              "w-full flex flex-col gap-2  relative p-2",
               newsCategories?.length > 0 ? " overflow-y-auto h-72" : "h-64"
             )}
           >

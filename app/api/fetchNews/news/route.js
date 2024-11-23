@@ -4,7 +4,7 @@ import { NEWS, NEWS_QUESTIONS, WORDS_MEANINGS } from "@/utils/schema";
 import { eq } from "drizzle-orm";
 
 export async function POST(req) {
-  const { id } = await req.json(); // Extract 'id' from the request body
+  const { id ,age} = await req.json(); // Extract 'id' from the request body
 
   if (!id) {
     return NextResponse.json(
@@ -39,6 +39,7 @@ export async function POST(req) {
         description: WORDS_MEANINGS.description,
       })
       .from(WORDS_MEANINGS)
+      .where(eq(WORDS_MEANINGS.age, age))
       .execute();
 
     // Format the response to include news, questions, and all meanings
