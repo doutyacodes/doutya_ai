@@ -65,7 +65,7 @@ export default function NewsDetails() {
     );
   }
 
-  const { title, category, image_url, date, summary, description, questions, meanings } = article;
+  const { title, category, image_url, date, description, questions, meanings } = article;
 
   // Replace words with hoverable bolded spans
   const replaceWordsWithHover = (text) => {
@@ -81,7 +81,7 @@ export default function NewsDetails() {
   };
 
   // Process summary and paragraphs
-  const processedSummary = replaceWordsWithHover(summary);
+  // const processedSummary = replaceWordsWithHover(summary);
   const processedParagraphs = description.split("\n\n").map((para) => replaceWordsWithHover(para));
 
   return (
@@ -111,13 +111,13 @@ export default function NewsDetails() {
       </motion.div>
 
       {/* Summary Section */}
-      <motion.div
+      {/* <motion.div
         className="bg-orange-50 border-l-4 border-orange-400 p-4 mb-6 rounded-md shadow-sm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         dangerouslySetInnerHTML={{ __html: processedSummary }}
-      ></motion.div>
+      ></motion.div> */}
 
       {/* Content Section */}
       <motion.div
