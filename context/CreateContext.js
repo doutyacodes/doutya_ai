@@ -118,6 +118,7 @@ export const ChildrenProvider = ({ children }) => {
         selectedGender,
         selectedName,
         selectedWeeks,
+        setSelectedAge,
         selectedDob,
         loading,
         selectedChild,

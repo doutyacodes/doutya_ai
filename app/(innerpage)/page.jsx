@@ -941,7 +941,7 @@ console.log("selectedAge",selectedAge)
         </>
       )}
       {latestCourse && (
-        <div className="flex items-start justify-between bg-white rounded-lg w-full shadow-md max-md:mt-4 p-6 relative font-bold text-xl">
+        <div className="flex items-start justify-between bg-white rounded-lg w-full shadow-md mt-4 p-6 relative font-bold text-xl">
           <div
             onClick={() => setLatestCourse(null)}
             className="bg-orange-500  p-2 rounded-full"
@@ -1424,7 +1424,7 @@ console.log("selectedAge",selectedAge)
                   <h2 className="text-xl font-semibold mb-4">
                     Enter Your Child&apos;s Age
                   </h2>
-                  <div>
+                  {/* <div>
                     <input
                       type="number"
                       min="3"
@@ -1452,7 +1452,7 @@ console.log("selectedAge",selectedAge)
                     >
                       Submit
                     </button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             )}
