@@ -7,7 +7,7 @@ import RightSideBar from "../_components/RightSideBar";
 
 const ProtectLayout = ({ children }) => {
   return (
-    <ProtectedRoute allowedRoutes={["/", "/our-story", "/about-us","/our-features","/about-us"]}>
+    <ProtectedRoute allowedRoutes={["/", "/our-story", "/about-us","/our-features","/about-us","/news"]}>
       <ChildrenProvider>
         <div className="relative min-h-screen flex bg-gradient-to-br from-orange-100 via-white to-orange-50">
           <SideBar />

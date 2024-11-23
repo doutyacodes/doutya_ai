@@ -12,10 +12,13 @@ const Navbar = () => {
 
   return (
     <nav className="w-full bg-transparent min-h-12 border-b-4 border-[#f59e1e]">
-      <div className="max-w-7xl mx-auto pr-1">
+      <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between w-full">
           <div className="block absolute top-10 left-2 z-[999999999] md:hidden opacity-0">
             <Menu />
+          </div>
+          <div className="opacity-0">
+          Login
           </div>
           <Link href={"/"} className="mx-auto flex justify-center items-center">
             <Image

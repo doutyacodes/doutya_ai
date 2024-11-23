@@ -1,152 +1,194 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
-import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import { useChildren } from "@/context/CreateContext";
+import LoadingSpinner from "@/app/_components/LoadingSpinner";
+import GlobalApi from "@/app/api/_services/GlobalApi";
+import NewsDetails from "@/app/_components/NewsComponent";
+import { usePathname } from "next/navigation";
 
-export default function NewsDetails() {
-  const pathname = usePathname();
-  const [article, setArticle] = useState(null);
+const truncateTitle = (title, length = 40) =>
+  title.length > length ? `${title.slice(0, length)}...` : title;
+
+export default function NewsSection() {
+  const [newsCategories, setNewsCategories] = useState([]);
+  const [newsByCategory, setNewsByCategory] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [showNews, setShowNews] = useState(false);
+  const [showId, setShowId] = useState(null);
   const { selectedAge } = useChildren();
+  const pathname = usePathname();
 
+  const [, , category, id] = pathname.split("/");
   useEffect(() => {
-    const [, , category, id] = pathname.split("/");
-
-    const fetchArticle = async () => {
-      try {
-        const response = await fetch("/api/fetchNews/news", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: parseInt(id) ,age:selectedAge}),
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setArticle(data);
-        } else {
-          setError(data.error || "Failed to fetch news");
-        }
-      } catch (err) {
-        console.error("Error fetching news:", err);
-        setError("Failed to fetch news");
-      } finally {
-        setIsLoading(false);
-      }
+    setShowId(id);
+    setShowNews(true);
+  }, [id]);
+  const formatDate = (date) => {
+    const options = {
+      weekday: "long",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
     };
 
-    fetchArticle();
-  }, [pathname]);
-
-  if (isLoading) {
-    return (
-      <LoadingSpinner />
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-100 via-white to-orange-50 flex items-center justify-center">
-        <h2 className="text-2xl font-bold text-gray-700">{error}</h2>
-      </div>
-    );
-  }
-
-  if (!article) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-100 via-white to-orange-50 flex items-center justify-center">
-        <h2 className="text-2xl font-bold text-gray-700">
-          Article not found. Please try another one!
-        </h2>
-      </div>
-    );
-  }
-
-  const { title, category, image_url, date, description, questions, meanings } = article;
-
-  // Replace words with hoverable bolded spans
-  const replaceWordsWithHover = (text) => {
-    return meanings.reduce((acc, { word, description }) => {
-      const regex = new RegExp(`\\b(${word})\\b`, "gi");
-      return acc.replace(
-        regex,
-        `<span class="group font-bold cursor-pointer relative hover:text-orange-500">${word}
-          <div class="absolute left-0 bottom-full mb-2 hidden group-hover:flex w-64 p-2 bg-white shadow-md border rounded-lg z-10 text-sm text-gray-700">${description}</div>
-        </span>`
-      );
-    }, text);
+    return new Date(date).toLocaleString("en-IN", options).replace(",", "");
   };
 
-  // Process summary and paragraphs
-  // const processedSummary = replaceWordsWithHover(summary);
-  const processedParagraphs = description.split("\n\n").map((para) => replaceWordsWithHover(para));
+  const fetchNews = async () => {
+    try {
+      setIsLoading(true);
+      const response = await GlobalApi.FetchNews({ age: selectedAge });
+      const categories = response.data.categories || [];
+      const news = response.data.news || [];
+
+      // Add "All" category
+      setNewsCategories([{ name: "All" }, ...categories]);
+
+      // Group news by categories
+      const groupedNews = categories.reduce((acc, category) => {
+        acc[category.name] = news.filter(
+          (item) => item.news_category_id === category.id
+        );
+        return acc;
+      }, {});
+
+      // Add "All" category news (all news combined)
+      groupedNews["All"] = news;
+
+      setNewsByCategory(groupedNews);
+
+      // Default to "All" category
+      setSelectedCategory("All");
+    } catch (error) {
+      console.error("Error fetching news:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNews();
+  }, [selectedAge]);
+
+  const currentCategoryNews = newsByCategory[selectedCategory] || [];
+  function getCategoryNameById(id) {
+    const category = newsCategories.find((cat) => cat.id === id);
+    return category ? category.name : null; // Returns null if no matching id is found
+  }
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
-    <div className="text-gray-800 p-6">
-      {/* Header Section */}
-      <motion.div
-        className="mb-6"
+    <div className="p-3 text-gray-800 w-full">
+      {/* Header */}
+      <motion.header
+        className="text-center mb-8"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="text-sm text-orange-500 uppercase font-medium mb-2">
-          {category}
+        <h1 className="text-4xl font-bold text-orange-600">News</h1>
+      </motion.header>
+
+      {/* Category Tabs */}
+      <div className="w-full max-w-[82vw]">
+        <div className="flex space-x-4 overflow-x-auto pb-2 my-2 scrollbar-hide">
+          {newsCategories.map((category) => (
+            <button
+              key={category.name}
+              onClick={() => {
+                setSelectedCategory(category.name);
+                setShowId(null);
+                setShowNews(false);
+              }}
+              className={`whitespace-nowrap px-4 py-2 font-medium rounded-full ${
+                selectedCategory === category.name
+                  ? "bg-orange-500 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
         </div>
-        <h1 className="text-4xl font-bold text-gray-800">{title}</h1>
-        <p className="text-sm text-gray-500 mt-2">{date}</p>
-      </motion.div>
+      </div>
 
-      {/* Image Section */}
-      <motion.div
-        className="w-fit rounded-lg shadow-lg mb-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        <Image src={`https://wowfy.in/testusr/images/${image_url}`} alt={title} width={800} height={300} className="rounded-md" />
-      </motion.div>
-
-      {/* Summary Section */}
-      {/* <motion.div
-        className="bg-orange-50 border-l-4 border-orange-400 p-4 mb-6 rounded-md shadow-sm"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        dangerouslySetInnerHTML={{ __html: processedSummary }}
-      ></motion.div> */}
-
-      {/* Content Section */}
-      <motion.div
-        className="text-lg text-gray-700 space-y-6 leading-relaxed"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        {processedParagraphs.map((paragraph, index) => (
-          <p key={index} className="indent-8" dangerouslySetInnerHTML={{ __html: paragraph }}></p>
-        ))}
-      </motion.div>
-
-      {/* Questions Section */}
-      {questions && questions.length > 0 && (
+      {/* News Cards */}
+      {showNews && showId ? (
+        <NewsDetails id={showId} />
+      ) : (
         <motion.div
-          className="mt-8 bg-gray-100 p-6 rounded-md shadow-sm"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+          key={selectedCategory}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Questions</h2>
-          <ul className="list-disc list-inside space-y-2">
-            {questions.map((question, index) => (
-              <li key={index} className="text-lg text-gray-700">
-                {question}
-              </li>
-            ))}
-          </ul>
+          {currentCategoryNews.length > 0 ? (
+            currentCategoryNews.map((article) => (
+              <motion.div
+                key={article.id}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col"
+                onClick={() => {
+                  setShowId(article.id);
+                  setShowNews(true);
+                }}
+              >
+                {/* Image with fixed height */}
+                <div className="h-48 w-full">
+                  <Image
+                    src={`https://wowfy.in/testusr/images/${article.image_url}`}
+                    alt={article.title}
+                    width={400}
+                    height={300}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Content Area */}
+                <div className="flex flex-col flex-grow p-4">
+                  {/* Title */}
+                  <h3 className="text-lg font-medium text-gray-800 mb-2">
+                    {truncateTitle(article.title)}
+                  </h3>
+
+                  {/* Spacer to push the button to the bottom */}
+                  <div className="flex justify-between items-center mt-auto">
+                    <span className="text-[9px] text-slate-500">
+                      {formatDate(article.created_at)}
+                    </span>
+                    <div>
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="text-xs font-medium text-orange-500 px-4 py-2 relative"
+                      >
+                        <span className="pb-1 ">
+                          {getCategoryNameById(article.news_category_id)}
+                        </span>
+                      </motion.div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))
+          ) : (
+            <p className="text-center col-span-full text-gray-600">
+              No news available in this category.
+            </p>
+          )}
         </motion.div>
       )}
     </div>
