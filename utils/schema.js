@@ -1192,7 +1192,9 @@ export const LEARN_TESTS = mysqlTable("learn_tests", {
   learn_subject_id: int("learn_subject_id") // Foreign key referencing 'learn_subjects' table
     .references(() => LEARN_SUBJECTS.id, { onDelete: "cascade" })
     .notNull(),
-  show_date: date("show_date").notNull(), // Date when the test is visible
+  // show_date: date("show_date").notNull(),
+  start_date: date("start_date").notNull(), // Start date of the test
+  end_date: date("end_date").notNull(), // End date of the test
   created_at: timestamp("created_at").defaultNow(), // Timestamp for when the record is created
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for when the record is updated
 });
@@ -1225,15 +1227,18 @@ export const OPTIONS2 = mysqlTable("options2", {
 });
 
 export const LEARN_DATAS = mysqlTable("learn_datas", {
-  id: int("id").primaryKey().autoincrement(), // Unique identifier for each record
-  learn_test_id: int("learn_test_id") // Foreign key to learn_tests table
+  id: int("id").primaryKey().autoincrement(),      // Unique identifier for each record
+  learn_subject_id: int("learn_subject_id") 
     .notNull()
-    .references(() => LEARN_TESTS.id, { onDelete: "cascade" }),
+    .references(() => LEARN_SUBJECTS.id, { onDelete: "cascade" }),
+  show_date: date("show_date").notNull(),
   topic: varchar("topic", { length: 255 }).notNull(), // Topic of the learning material
   image: varchar("image", { length: 255 }).default(null), // URL or path to the image (optional)
-  description: text("description").default(null),
+  description:text('description').default(null),
   created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
-  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for record updates
+  updated_at: timestamp("updated_at")
+    .defaultNow()
+    .onUpdateNow(),                               // Timestamp for record updates
 });
 
 export const NEWS_CATEGORIES = mysqlTable("news_categories", {
