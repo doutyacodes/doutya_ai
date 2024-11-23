@@ -11,7 +11,7 @@ const Navbar = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <nav className="w-full bg-transparent min-h-16 border-b-4 border-[#f59e1e]">
+    <nav className="w-full bg-transparent min-h-12 border-b-4 border-[#f59e1e]">
       <div className="max-w-7xl mx-auto pr-1">
         <div className="flex items-center justify-between w-full">
           <div className="block absolute top-10 left-2 z-[999999999] md:hidden opacity-0">
@@ -20,7 +20,7 @@ const Navbar = () => {
           <Link href={"/"} className="mx-auto flex justify-center items-center">
             <Image
               src={"/images/logo2.png"}
-              width={120}
+              width={90}
               height={120}
               alt="logo"
             />

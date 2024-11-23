@@ -701,7 +701,7 @@ const Home = () => {
   return (
     <div
       className={cn(
-        " flex flex-col items-center justify-center  text-gray-800 p-5  pt-0"
+        " flex flex-col items-center justify-center  text-gray-800 p-1  pt-0"
       )}
     >
       <Toaster />
@@ -741,13 +741,13 @@ const Home = () => {
             <form onSubmit={handleSearch} className="w-full">
               <div className="w-full text-center mb-4">
                 <h2 className="text-xl font-semibold max-md:w-full mb-8 items-center justify-center flex flex-wrap  gap-3 ">
-                  <div>I want </div>
+                  <div className="max-md:text-sm">I want </div>
                   <Select
                     onValueChange={handleTypeChange}
                     value={type}
                     className="bg-transparent ring-transparent border  bg-[#ede7e7] focus:ring-0 focus-visible:ring-0 border-[#f59e1e] underline decoration-2  max-md:w-full" // Thicker underline with offset
                   >
-                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-[29px] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0  underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
+                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-xl uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0  underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
                       <SelectValue
                         placeholder="Story"
                         className="text-black w-full"
@@ -770,7 +770,7 @@ const Home = () => {
                       </SelectGroup>
                     </SelectContent>
                   </Select>{" "}
-                  <div>about</div>
+                  <div className="text-sm">about</div>
                 </h2>
                 <Input
                   type="text"
@@ -778,12 +778,12 @@ const Home = () => {
                   value={courseName}
                   maxLength="150"
                   onChange={(e) => setCourseName(e.target.value)}
-                  className="w-full p-2 max-md:py-12 py-6 text-xl placeholder:text-lg focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-4 bg-[#ede7e7]"
+                  className="w-full p-2 max-md:py-5 py-6 text-xl placeholder:text-sm focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-4 bg-[#ede7e7]"
                 />
               </div>
               <div
                 onClick={() => setAdvanced(!advanced)}
-                className="cursor-pointer text-center text-orange-600 font-semibold mb-2 hover:underline"
+                className="cursor-pointer text-center text-orange-600 font-semibold mb-2 hover:underline max-md:text-xs"
               >
                 {advanced ? "Hide Advanced Filter" : "Show Advanced Filter"}
               </div>
@@ -928,7 +928,7 @@ const Home = () => {
               <div className="w-full flex justify-center items-center mt-5">
                 <button
                   type="submit"
-                  className="bg-green-600 text-white rounded-full uppercase font-semibold py-3 md:py-2 text-lg px-4 transition-all max-md:w-full md:min-w-60"
+                  className="bg-green-600 rounded-full uppercase font-semibold py-2 max-md:max-w-40 md:py-2 text-lg max-md:text-base text-black px-4 transition-all max-md:w-full md:min-w-60 "
                 >
                   Submit
                 </button>
@@ -1404,10 +1404,10 @@ const Home = () => {
         </div>
       )} */}
       <div className="grid md:grid-cols-2 grid-cols-1 gap-4 w-full">
-        <div className="w-full rounded-md bg-[#febd59] space-y-4">
+        <div className="w-full rounded-md bg-[#febd59] space-y-2">
           <div className="flex flex-col gap-2 text-center">
-            <h4 className=" text-center font-semibold text-2xl bg-[#f68c1f] rounded-md">NEWS</h4>
-            <span className="text-center text-slate-600 text-xs w-full">
+            <h4 className=" text-center font-semibold text-2xl max-md:text-xl bg-[#f68c1f] rounded-md">NEWS</h4>
+            <span className="text-center text-slate-600 text-xs max-md:text-[9px] w-full">
               Todays News made age appropriate for Kids
             </span>
           </div>
@@ -1420,9 +1420,9 @@ const Home = () => {
             {!selectedAge && !sampleAge && (
               <div className="absolute top-0 left-0 bg-white w-full h-full z-[999999999] rounded-md opacity-95 flex justify-center items-center">
                 <div className="w-[90%] max-w-md bg-gray-100 p-6 rounded-lg shadow-lg text-center">
-                  <h2 className="text-xl font-semibold mb-4">
+                  {/* <h2 className="text-xl font-semibold mb-4">
                     Enter Your Child&apos;s Age
-                  </h2>
+                  </h2> */}
                   {/* <div>
                     <input
                       type="number"
@@ -1472,21 +1472,21 @@ const Home = () => {
                       />
                     </div>
                     <div className="h-full w-full">
-                      <p className=" text-xs text-red-500">
+                      <p className=" max-md:text-[9px] text-xs text-red-500">
                         {item.category_name}
                       </p>
-                      <p className=" text-sm font-semibold">
+                      <p className=" max-md:text-[9px] text-xs font-semibold">
                         {truncateTitle(item.title)}
                       </p>
                       <div className="w-full flex justify-between items-center">
-                        <span className="text-[9px] text-slate-500">
+                        <span className="max-md:text-[7px] text-[9px] text-slate-500">
                           {formatDate(item.created_at)}
                         </span>
                         <Link
                           href={`/news/${item.category_name.toLowerCase()}/${
                             item.id
                           }`}
-                          className="text-[9px] text-slate-500"
+                          className="max-md:text-[7px] text-[9px] text-slate-500"
                         >
                           Read more...
                         </Link>

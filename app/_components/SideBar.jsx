@@ -59,7 +59,7 @@ const SideBar = () => {
         className={cn(
           "",
           isCollapsed
-            ? "block absolute top-7 left-3 z-[999999999] md:hidden"
+            ? "block absolute top-5 left-3 z-[999999999] md:hidden"
             : "hidden"
         )}
       >

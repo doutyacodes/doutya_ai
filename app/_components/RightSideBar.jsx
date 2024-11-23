@@ -32,7 +32,7 @@ const RightSideBar = () => {
   const {
     selectedAge,
     selectedChildId,
-    selectChild,
+    selectedChild,
     selectedGender,
     selectedName,
     childrenData,
@@ -63,7 +63,7 @@ const RightSideBar = () => {
   if (!childrenData || childrenData.length === 0) {
     return <p></p>;
   }
-  // console.log("selectedGender",selectedGender)
+  console.log("selectedChild",selectedChild)
   return (
     <>
       {isAuthenticated ? (
@@ -73,7 +73,7 @@ const RightSideBar = () => {
             className={cn(
               "",
               isCollapsed
-                ? "block absolute top-5 right-3 z-[999999999]"
+                ? "block absolute top-2 right-3 z-[999999999]"
                 : "hidden"
             )}
           >
@@ -85,10 +85,13 @@ const RightSideBar = () => {
                       ? "/images/boy.png"
                       : "/images/girl.png"
                   }
-                  width={40}
-                  height={40}
+                  width={26}
+                  height={26}
                   alt={selectedGender || "gender"}
                 />
+              <span className="text-[9px] text-blue-600" >
+           {selectedChild.name.split(" ")[0]}, {selectedChild.age}
+          </span>
               </div>
             {/* )} */}
           </div>
