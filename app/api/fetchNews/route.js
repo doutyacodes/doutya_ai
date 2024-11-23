@@ -5,20 +5,20 @@ import { authenticate } from "@/lib/jwtMiddleware";
 import { eq } from "drizzle-orm";
 
 export async function POST(req) {
-  const authResult = await authenticate(req);
-  if (!authResult.authenticated) {
-    return authResult.response;
-  }
+  // const authResult = await authenticate(req,true);
+  // if (!authResult.authenticated) {
+  //   return authResult.response;
+  // }
 
-  const userId = authResult.decoded_Data.id;
+  // const userId = authResult.decoded_Data.id;
   const { age } = await req.json();
 
-  if (!userId) {
-    return NextResponse.json(
-      { error: "User ID is required." },
-      { status: 400 }
-    );
-  }
+  // if (!userId) {
+  //   return NextResponse.json(
+  //     { error: "User ID is required." },
+  //     { status: 400 }
+  //   );
+  // }
 
   if (!age) {
     return NextResponse.json(

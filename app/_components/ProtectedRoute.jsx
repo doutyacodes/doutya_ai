@@ -12,7 +12,8 @@ const ProtectedRoute = ({ children, allowedRoutes = [] }) => {
 
   useEffect(() => {
     const isAllowed = 
-      allowedRoutes.includes(pathname) || pathname.startsWith("/learn/");
+      allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/news/");
+
 
     if (!loading && !isAuthenticated && !isAllowed) {
       router.replace("/login"); // Redirect to login page
@@ -24,7 +25,7 @@ const ProtectedRoute = ({ children, allowedRoutes = [] }) => {
   }
 
   const isAllowed = 
-    allowedRoutes.includes(pathname) || pathname.startsWith("/learn/");
+    allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/news/");
 
   return isAuthenticated || isAllowed ? children : null;
 };

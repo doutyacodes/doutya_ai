@@ -32,10 +32,15 @@ const Navbar = () => {
             <p>Loading...</p>
           ) : (
             <div>
-              {!isAuthenticated && (
+              {/* {!isAuthenticated && (
                 <Link href={"/login"} className="font-semibold">
                   Login
                 </Link>
+              )} */}
+              {!isAuthenticated && (
+                <div  className="font-semibold opacity-0">
+                  Login
+                </div>
               )}
             </div>
           )}

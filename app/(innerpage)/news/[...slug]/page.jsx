@@ -22,7 +22,7 @@ export default function NewsSection() {
   const [showId, setShowId] = useState(null);
   const { selectedAge } = useChildren();
   const pathname = usePathname();
-
+// console.log("selectedAge",selectedAge)
   const [, , category, id] = pathname.split("/");
   useEffect(() => {
     setShowId(id);

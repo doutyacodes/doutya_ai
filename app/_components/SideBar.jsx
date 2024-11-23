@@ -40,16 +40,16 @@ const SideBar = () => {
 
   const navLinks = [
     { label: "Home", links: "/", icon: FaHome },
-    { label: "Search", links: "/search", icon: FaSearch },
+    // { label: "Search", links: "/search", icon: FaSearch },
     { label: "News", links: "/news", icon: FaNewspaper },      
-    { label: "Learn", links: "/learn", icon: FaBook },
-    { label: "Tests", links: "/tests", icon: FaTasks },
-    { label: "Activities", links: "/activities", icon: FaTasks },
-    { label: "Communities", links: "/communities", icon: FaUserFriends },
-    { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
-    { label: "Our Features", links: "/our-features", icon: FaStar },
-    { label: "About Us", links: "/about-us", icon: FaBuilding },      
-    { label: "Challenges", links: "/challenges", icon: FaTrophy },      
+    // { label: "Learn", links: "/learn", icon: FaBook },
+    // { label: "Tests", links: "/tests", icon: FaTasks },
+    // { label: "Activities", links: "/activities", icon: FaTasks },
+    // { label: "Communities", links: "/communities", icon: FaUserFriends },
+    // { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
+    // { label: "Our Features", links: "/our-features", icon: FaStar },
+    // { label: "About Us", links: "/about-us", icon: FaBuilding },      
+    // { label: "Challenges", links: "/challenges", icon: FaTrophy },      
   ];
 
   return (
