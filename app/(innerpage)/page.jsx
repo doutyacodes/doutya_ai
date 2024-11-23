@@ -1403,7 +1403,7 @@ const Home = () => {
         </div>
         </div>
       )} */}
-      <div className="grid md:grid-cols-2 grid-cols-1 gap-4 w-full">
+      <div className="grid  grid-cols-1 gap-4 w-full">
         <div className="w-full rounded-md bg-[#febd59] space-y-2">
           <div className="flex flex-col gap-2 text-center">
             <h4 className=" text-center font-semibold text-2xl max-md:text-xl bg-[#f68c1f] rounded-md">NEWS</h4>
@@ -1414,7 +1414,7 @@ const Home = () => {
           <div
             className={cn(
               "w-full flex flex-col gap-2  relative p-2",
-              newsCategories?.length > 0 ? " overflow-y-auto h-72" : "h-64"
+              newsCategories?.length > 0 ? " overflow-y-auto h-96" : "h-64"
             )}
           >
             {!selectedAge && !sampleAge && (
@@ -1456,45 +1456,48 @@ const Home = () => {
               </div>
             )}
 
+            <div className="grid grid-cols-1 gap-2">
             {newsCategories?.length > 0 &&
               newsCategories?.map((item) => {
                 return (
                   <div
-                    key={item.title}
-                    className="bg-white rounded-md p-2 flex items-center gap-3 w-full shadow-md"
-                  >
-                    <div className="relative w-16 h-10">
-                      <Image
-                        src={`https://wowfy.in/testusr/images/${item.image_url}`}
-                        fill
-                        objectFit="cover"
-                        alt={"logo"}
-                      />
-                    </div>
-                    <div className="h-full w-full">
-                      <p className=" max-md:text-[9px] text-xs text-red-500">
-                        {item.category_name}
-                      </p>
-                      <p className=" max-md:text-[9px] text-xs font-semibold">
-                        {truncateTitle(item.title)}
-                      </p>
-                      <div className="w-full flex justify-between items-center">
-                        <span className="max-md:text-[7px] text-[9px] text-slate-500">
-                          {formatDate(item.created_at)}
-                        </span>
-                        <Link
-                          href={`/news/${item.category_name.toLowerCase()}/${
-                            item.id
-                          }`}
-                          className="max-md:text-[7px] text-[9px] text-slate-500"
-                        >
-                          Read more...
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+  key={item.title}
+  className="bg-white rounded-md p-2 flex items-center gap-3 w-full shadow-md"
+>
+  <div className="relative w-32 h-16 md:w-40 md:h-20">
+    <Image
+      src={`https://wowfy.in/testusr/images/${item.image_url}`}
+      fill
+      objectFit="cover"
+      alt={"logo"}
+    />
+  </div>
+  <div className="h-full w-full flex flex-col justify-between space-y-[1px]">
+    <div>
+      <p className="text-sm text-red-500">
+        {item.category_name}
+      </p>
+      <p className="text-sm md:text-lg font-semibold">
+        {truncateTitle(item.title)}
+      </p>
+    </div>
+    <div className="flex justify-between items-center mt-auto">
+      <span className="text-[10px] md:text-sm text-slate-500">
+        {formatDate(item.created_at)}
+      </span>
+      <Link
+        href={`/news/${item.category_name.toLowerCase()}/${item.id}`}
+        className="text-[10px] md:text-sm text-slate-500"
+      >
+        Read more...
+      </Link>
+    </div>
+  </div>
+</div>
+
                 );
               })}
+            </div>
             {!selectedAge && !sampleAge && (
               <>
                 <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
@@ -1574,7 +1577,7 @@ const Home = () => {
           </div>
         </div>
         {/* Community */}
-        <div className="w-full rounded-md bg-[#76e4e4] flex flex-col justify-center items-center p-2 space-y-4">
+        {/* <div className="w-full rounded-md bg-[#76e4e4] flex flex-col justify-center items-center p-2 space-y-4">
           <div className="flex flex-col gap-2 text-center">
             <h4 className=" text-center font-semibold text-2xl">COMMUNITY</h4>
             <span className="text-center text-slate-600 text-xs w-full">
@@ -1597,7 +1600,7 @@ const Home = () => {
               )}
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
