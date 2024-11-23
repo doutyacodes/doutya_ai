@@ -783,7 +783,7 @@ const Home = () => {
               </div>
               <div
                 onClick={() => setAdvanced(!advanced)}
-                className="cursor-pointer text-center text-orange-600 font-semibold mb-2 hover:underline max-md:text-xs"
+                className="cursor-pointer text-center text-orange-600 mb-2 hover:underline max-md:text-xs"
               >
                 {advanced ? "Hide Advanced Filter" : "Show Advanced Filter"}
               </div>
