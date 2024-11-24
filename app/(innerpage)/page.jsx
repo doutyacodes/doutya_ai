@@ -831,12 +831,12 @@ const Home = () => {
                     <div
                       className={cn(
                         "grid gap-2 md:gap-8",
-                        isAuthenticated
+                        selectedAge
                           ? "grid-cols-1"
                           : "grid-cols-2 max-md:grid-cols-1"
                       )}
                     >
-                      {!isAuthenticated && (
+                      {!isAuthenticated && !selectedAge && (
                         <div className="w-full text-center mb-4">
                           <h2 className="text-lg font-semibold mb-2 ">Age</h2>
                           <Input
