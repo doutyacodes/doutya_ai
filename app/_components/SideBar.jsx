@@ -96,7 +96,7 @@ const SideBar = () => {
         </div>
 
         {/* Navigation Links */}
-        <nav className={cn("flex-1 mt-12 space-y-4")}>
+        <nav className={cn("flex-1 mt-20 space-y-4")}>
           {navLinks.map(({ label, icon: Icon, links }, idx) => {
             const isActive =
               links === "/"

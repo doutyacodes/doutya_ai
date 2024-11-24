@@ -5,13 +5,15 @@ import Image from "next/image";
 import { Menu } from "lucide-react";
 import { useChildren } from "@/context/CreateContext";
 import useAuth from "../hooks/useAuth";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const { childrenData, showPopupForUser,selectedAge, loading } = useChildren();
   const { isAuthenticated, } = useAuth();
-
+const pathname = usePathname()
   return (
-    <nav className="w-full bg-transparent min-h-16 ">
+    <nav className={cn("w-full bg-transparent ",pathname!=="/" ? "min-h-24 border-b-4 border-orange-600" : "min-h-16")}>
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between w-full">
           <div className="block absolute top-10 left-2 z-[999999999] md:hidden opacity-0">
@@ -23,8 +25,8 @@ const Navbar = () => {
           <Link href={"/"} className="mx-auto flex justify-center items-center">
             <Image
               src={"/images/logo2.png"}
-              width={120}
-              height={120}
+              width={135}
+              height={135}
               alt="logo"
             />
           </Link>
@@ -44,11 +46,11 @@ const Navbar = () => {
                     "/images/boy.png"
                       
                   }
-                  width={40}
-                  height={40}
+                  width={50}
+                  height={50}
                   alt={ "gender"}
                 />
-                <span className="text-[9px] text-blue-600">
+                <span className="text-xs text-blue-600">
                   Guest, {selectedAge}
                 </span>
               </div>
