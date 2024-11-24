@@ -234,7 +234,7 @@ const Home = () => {
     }
   };
 
-  const truncateTitle = (title, length = 40) =>
+  const truncateTitle = (title, length = 60) =>
     title.length > length ? `${title.slice(0, length)}...` : title;
 
   const handleSearch2 = async (topic) => {
@@ -727,7 +727,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-            className="rounded-md flex justify-center items-center border-[2px] border-orange-500/70 mt-4 py-3 w-full bg-white p-3"
+            className="rounded-md flex justify-center items-center border-[3px] border-orange-500/70 mt-4 py-3 w-full bg-white p-3"
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}

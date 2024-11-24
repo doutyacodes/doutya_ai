@@ -140,7 +140,7 @@ export default function NewsSection() {
                 key={article.id}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col"
+                className="bg-white cursor-pointer shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col"
                 onClick={() => {
                   setShowId(article.id);
                   setShowNews(true);
