@@ -701,33 +701,20 @@ const Home = () => {
   return (
     <div
       className={cn(
-        " flex flex-col items-center justify-center  text-gray-800 p-1  pt-0"
+        " flex flex-col items-center justify-center  text-gray-800 p-1  pt-0 relative"
       )}
     >
       <Toaster />
 
       {!latestCourse && (
         <>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center mt-2"
-          >
-            {/* <h1 className="text-5xl font-bold  mb-4">
-              Learn Anything, Anytime, Your Way
-            </h1>
-            <p className="text-lg text-gray-200 max-w-lg mx-auto">
-              Customized courses, adaptive learning, and flexible schedules
-              crafted by you for your unique journey.
-            </p> */}
-          </motion.div>
+          
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-            className="rounded-md flex justify-center items-center border-[3px] border-orange-500/70 mt-4 py-3 w-full bg-white p-3"
+            className="rounded-md flex justify-center items-center border-[3px] border-orange-500/70 mt-0 py-3 w-full bg-white p-3"
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -945,8 +932,9 @@ const Home = () => {
           </motion.div>
         </>
       )}
+        {latestCourse && (  <div className="h-1 bg-orange-600 w-full absolute top-0 left-0 z-[99999999999999999]" />)}
       {latestCourse && (
-        <div className="flex items-start justify-between bg-white rounded-lg w-full shadow-md mt-4 p-6 relative font-bold text-xl">
+        <div className="flex items-start justify-between bg-white rounded-lg w-full shadow-md p-6 relative font-bold text-xl mt-4">
           <div
             onClick={() => setLatestCourse(null)}
             className="bg-orange-500  p-2 rounded-full"

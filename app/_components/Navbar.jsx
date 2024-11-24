@@ -13,7 +13,7 @@ const Navbar = () => {
   const { isAuthenticated, } = useAuth();
 const pathname = usePathname()
   return (
-    <nav className={cn("w-full bg-transparent ",pathname!=="/" ? "min-h-24 border-b-4 border-orange-600" : "min-h-16")}>
+    <nav className={cn("w-full bg-transparent ",pathname!=="/" ? "min-h-24 border-b-4 border-orange-600" : "min-h-24")}>
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between w-full">
           <div className="block absolute top-10 left-2 z-[999999999] md:hidden opacity-0">
