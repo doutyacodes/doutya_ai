@@ -234,7 +234,7 @@ const Home = () => {
     }
   };
 
-  const truncateTitle = (title, length = 50) =>
+  const truncateTitle = (title, length = 53) =>
     title.length > length ? `${title.slice(0, length)}...` : title;
 
   const handleSearch2 = async (topic) => {
