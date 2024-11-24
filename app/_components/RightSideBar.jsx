@@ -63,7 +63,7 @@ const RightSideBar = () => {
   if (!childrenData || childrenData.length === 0) {
     return <p></p>;
   }
-  console.log("selectedChild",selectedChild)
+  console.log("selectedChild", selectedChild);
   return (
     <>
       {isAuthenticated ? (
@@ -78,21 +78,21 @@ const RightSideBar = () => {
             )}
           >
             {/* {selectedGender && ( */}
-              <div className="flex flex-col w-fit gap-[1px] items-center md:hidden">
-                <Image
-                  src={
-                    selectedGender === "male"
-                      ? "/images/boy.png"
-                      : "/images/girl.png"
-                  }
-                  width={26}
-                  height={26}
-                  alt={selectedGender || "gender"}
-                />
-              <span className="text-[9px] text-blue-600" >
-           {selectedChild.name.split(" ")[0]}, {selectedChild.age}
-          </span>
-              </div>
+            <div className="flex flex-col w-fit gap-[1px] items-center md:hidden">
+              <Image
+                src={
+                  selectedGender === "male"
+                    ? "/images/boy.png"
+                    : "/images/girl.png"
+                }
+                width={26}
+                height={26}
+                alt={selectedGender || "gender"}
+              />
+              <span className="text-[9px] text-blue-600">
+                {selectedChild.name.split(" ")[0]}, {selectedChild.age}
+              </span>
+            </div>
             {/* )} */}
           </div>
           {!isCollapsed && (

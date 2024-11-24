@@ -46,7 +46,7 @@ const SideBar = () => {
     // { label: "Tests", links: "/tests", icon: FaTasks },
     // { label: "Activities", links: "/activities", icon: FaTasks },
     // { label: "Communities", links: "/communities", icon: FaUserFriends },
-    // { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
+    { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
     // { label: "Our Features", links: "/our-features", icon: FaStar },
     // { label: "About Us", links: "/about-us", icon: FaBuilding },      
     // { label: "Challenges", links: "/challenges", icon: FaTrophy },      
@@ -59,7 +59,7 @@ const SideBar = () => {
         className={cn(
           "",
           isCollapsed
-            ? "block absolute top-5 left-3 z-[999999999] md:hidden"
+            ? "block absolute top-7 left-3 z-[999999999] md:hidden"
             : "hidden"
         )}
       >
@@ -96,7 +96,7 @@ const SideBar = () => {
         </div>
 
         {/* Navigation Links */}
-        <nav className={cn("flex-1 mt-8 space-y-4")}>
+        <nav className={cn("flex-1 mt-12 space-y-4")}>
           {navLinks.map(({ label, icon: Icon, links }, idx) => {
             const isActive =
               links === "/"

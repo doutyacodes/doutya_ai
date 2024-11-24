@@ -97,6 +97,10 @@ export const ChildrenProvider = ({ children }) => {
     }
   };
 
+  const showPopupForUser = () =>{
+    setShowAgePopup(true)
+  }
+
   useEffect(() => {
     const handleSingleData = () => {
       if (!selectedChildId && childrenData.length > 0) {
@@ -123,6 +127,7 @@ export const ChildrenProvider = ({ children }) => {
         loading,
         selectedChild,
         selectedGrade,
+        showPopupForUser
       }}
     >
       {loading ? <LoadingSpinner /> : children}
