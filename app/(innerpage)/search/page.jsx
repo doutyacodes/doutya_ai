@@ -691,48 +691,48 @@ const Home = () => {
               <ChildSelector />
             </div> */}
             <form onSubmit={handleSearch} className="w-full ">
-              <div className="w-full text-center mb-4">
-                <h2 className="text-xl font-semibold max-md:w-full mb-8 items-center justify-center flex flex-wrap  gap-3 ">
-                  <div>I want </div>
-                  <Select
-                    onValueChange={handleTypeChange}
-                    value={type}
-                    className="bg-transparent ring-transparent border  bg-[#ede7e7] focus:ring-0 focus-visible:ring-0 border-[#f59e1e] underline decoration-2  max-md:w-full" // Thicker underline with offset
-                  >
-                    <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-[29px] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0  underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
-                      <SelectValue
-                        placeholder="Story"
-                        className="text-black w-full"
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="story">a Story</SelectItem>
-                        {/* <SelectItem value="bedtime story">
+            <div className="w-full text-center mb-4">
+                  <h2 className="text-xl font-semibold max-md:w-full mb-8 items-center justify-center flex flex-wrap  gap-3 ">
+                    <div className="max-md:text-sm">I want </div>
+                    <Select
+                      onValueChange={handleTypeChange}
+                      value={type}
+                      className="bg-transparent ring-transparent border  bg-[#ede7e7] focus:ring-0 focus-visible:ring-0 border-[#f59e1e] underline decoration-2  max-md:w-full" // Thicker underline with offset
+                    >
+                      <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-xl uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0  underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
+                        <SelectValue
+                          placeholder="Story"
+                          className="text-black w-full"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="story">a Story</SelectItem>
+                          {/* <SelectItem value="bedtime story">
                           a Bedtime Story
                         </SelectItem> */}
-                        <SelectItem value="explanation">
-                          an Explanation
-                        </SelectItem>
-                        {/* <SelectItem value="informative story">
+                          <SelectItem value="explanation">
+                            an Explanation
+                          </SelectItem>
+                          {/* <SelectItem value="informative story">
                           an Informative Story
                         </SelectItem> */}
-                        <SelectItem value="podcast">a Podcast</SelectItem>
-                        <SelectItem value="poem">a Poem</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>{" "}
-                  <div>about</div>
-                </h2>
-                <Input
-                  type="text"
-                  placeholder="Type the topic name here"
-                  value={courseName}
-                  maxLength="150"
-                  onChange={(e) => setCourseName(e.target.value)}
-                  className="w-full p-2 max-md:py-12 py-6 text-xl placeholder:text-lg focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-16 bg-[#ede7e7]"
-                />
-              </div>
+                          <SelectItem value="podcast">a Podcast</SelectItem>
+                          <SelectItem value="poem">a Poem</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>{" "}
+                    <div className="text-sm">about</div>
+                  </h2>
+                  <Input
+                    type="text"
+                    placeholder="Type the topic name here"
+                    value={courseName}
+                    maxLength="150"
+                    onChange={(e) => setCourseName(e.target.value)}
+                    className="w-full p-2 max-md:py-5 py-6 text-xl placeholder:text-sm focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-4 bg-[#ede7e7]"
+                  />
+                </div>
               {ageGenres.length > 0 && type == "story" && (
                 <div className="w-full text-center mb-4">
                   <h2 className="text-lg font-semibold mb-2 ">
@@ -864,13 +864,13 @@ const Home = () => {
                 </div>
               )} */}
               <div className="w-full flex justify-center items-center mt-5">
-                <button
-                  type="submit"
-                  className="bg-[#ea1b24] text-white rounded-full uppercase font-semibold py-4 md:py-2 text-lg px-4 transition-all max-md:w-full md:min-w-60"
-                >
-                  Submit
-                </button>
-              </div>
+                  <button
+                    type="submit"
+                    className="bg-green-600 rounded-full uppercase font-semibold py-2 max-md:max-w-40 md:py-2 text-lg max-md:text-base text-white px-4 transition-all max-md:w-full md:min-w-60 "
+                  >
+                    Submit
+                  </button>
+                </div>
             </form>
             {error && <p className="text-red-500">{error}</p>}
           </motion.div>

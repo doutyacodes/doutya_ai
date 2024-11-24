@@ -1409,208 +1409,210 @@ const Home = () => {
         </div>
         </div>
       )} */}
-      <div className="grid  grid-cols-1 gap-4 w-full">
-        <div className="w-full rounded-md bg-[#febd59] space-y-2">
-          <div className="flex flex-col gap-2 text-center">
-            <h4 className=" text-center font-semibold text-3xl py-1 max-md:text-2xl bg-[#f68c1f] rounded-md">
-              NEWS
-            </h4>
-            <span className="text-center text-slate-600 text-sm max-md:text-xs w-full">
-              Todays News made age appropriate for Kids
-            </span>
-          </div>
-          <div
-            className={cn(
-              "w-full flex flex-col gap-2  relative p-2",
-              newsCategories?.length > 0 ? " overflow-y-auto h-96" : "h-64"
-            )}
-          >
-            {!selectedAge && !sampleAge && (
-              <div className="absolute top-0 left-0 bg-white w-full h-full z-[999999999] rounded-md opacity-95 flex justify-center items-center">
-                <div className="w-[90%] max-w-md bg-gray-100 p-6 rounded-lg shadow-lg text-center">
-                  {/* <h2 className="text-xl font-semibold mb-4">
-                    Enter Your Child&apos;s Age
-                  </h2> */}
-                  {/* <div>
-                    <input
-                      type="number"
-                      min="3"
-                      max="12"
-                      placeholder="Enter age (3-12)"
-                      className="w-full p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-500"
-                      value={childAge}
-                      onChange={(e) => setChildAge(e.target.value)}
-                    />
-                    <button
-                      onClick={() => {
-                        if (!childAge) {
-                          toast.error(
-                            "Please enter your child's age to continue"
-                          );
-                        } else if (childAge < 3 || childAge > 12) {
-                          toast.error(
-                            "Children from age 3 to 12 only can continue."
-                          );
-                        } else {
-                          setSampleAge(childAge);
-                        }
-                      }}
-                      className="bg-orange-500 text-white py-2 px-6 rounded-md hover:bg-orange-600"
-                    >
-                      Submit
-                    </button>
-                  </div> */}
-                </div>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 gap-2">
-              {newsCategories?.length > 0 &&
-                newsCategories?.map((item) => {
-                  return (
-                    <div
-                      key={item.title}
-                      className="bg-white rounded-md p-2 flex items-center gap-3 w-full shadow-md"
-                    >
-                      <div className="relative w-36 h-20 md:w-40 md:h-20">
-                        <Image
-                          src={`https://wowfy.in/testusr/images/${item.image_url}`}
-                          fill
-                          objectFit="cover"
-                          alt={"logo"}
-                        />
-                      </div>
-                      <div className="h-full w-full flex flex-col justify-between max-h-20 md:max-h-20">
-                        <div className="leading-5">
-                          <p className="text-sm max-md:text-[11.5px] text-red-500">
-                            {item.category_name}
-                          </p>
-                          <p className="text-[15px] md:text-lg font-semibold">
-                            {truncateTitle(item.title)}
-                          </p>
-                        </div>
-                        <div className="flex justify-between items-center w-full">
-                          <span className="text-[10px] md:text-sm text-slate-500">
-                            {formatDate(item.created_at)}
-                          </span>
-                          <Link
-                            href={`/news/${item.category_name.toLowerCase()}/${
-                              item.id
-                            }`}
-                            className="text-[10px] md:text-sm text-slate-500"
-                          >
-                            Read more...
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+      {
+        !latestCourse && (<div className="grid  grid-cols-1 gap-4 w-full mt-2">
+          <div className="w-full rounded-md bg-[#febd59] space-y-2">
+            <div className="flex flex-col gap-2 text-center">
+              <h4 className=" text-center font-semibold text-3xl py-1 max-md:text-2xl bg-[#f68c1f] rounded-md">
+                NEWS
+              </h4>
+              <span className="text-center text-slate-600 text-sm max-md:text-xs w-full">
+                Todays News made age appropriate for Kids
+              </span>
             </div>
-            {!selectedAge && !sampleAge && (
-              <>
-                <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
-                  <Image
-                    src={
-                      "https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
-                    }
-                    width={80}
-                    height={80}
-                    alt={"logo"}
-                  />
-                  <div className="h-full w-full">
-                    <p className=" text-xs text-red-500">International</p>
-                    <p className=" text-sm font-semibold">
-                      Lorem ipsum dolor sit amet consectetur...
-                    </p>
-                    <div className="w-full flex justify-between items-center">
-                      <span className="text-[9px] text-slate-500">
-                        Saturday, 16 Nov 2014 04:44 PM
-                      </span>
-                      <span className="text-[9px] text-slate-500">
-                        Read more...
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
-                  <Image
-                    src={
-                      "https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
-                    }
-                    width={80}
-                    height={80}
-                    alt={"logo"}
-                  />
-                  <div className="h-full w-full">
-                    <p className=" text-xs text-red-500">International</p>
-                    <p className=" text-sm font-semibold">
-                      Lorem ipsum dolor sit amet consectetur...
-                    </p>
-                    <div className="w-full flex justify-between items-center">
-                      <span className="text-[9px] text-slate-500">
-                        Saturday, 16 Nov 2014 04:44 PM
-                      </span>
-                      <span className="text-[9px] text-slate-500">
-                        Read more...
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
-                  <Image
-                    src={
-                      "https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
-                    }
-                    width={80}
-                    height={80}
-                    alt={"logo"}
-                  />
-                  <div className="h-full w-full">
-                    <p className=" text-xs text-red-500">International</p>
-                    <p className=" text-sm font-semibold">
-                      Lorem ipsum dolor sit amet consectetur...
-                    </p>
-                    <div className="w-full flex justify-between items-center">
-                      <span className="text-[9px] text-slate-500">
-                        Saturday, 16 Nov 2014 04:44 PM
-                      </span>
-                      <span className="text-[9px] text-slate-500">
-                        Read more...
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-        {/* Community */}
-        {/* <div className="w-full rounded-md bg-[#76e4e4] flex flex-col justify-center items-center p-2 space-y-4">
-          <div className="flex flex-col gap-2 text-center">
-            <h4 className=" text-center font-semibold text-2xl">COMMUNITY</h4>
-            <span className="text-center text-slate-600 text-xs w-full">
-              Age appropriate Social Media for Kids
-            </span>
-          </div>
-          <div className="flex flex-col items-center justify-center">
             <div
               className={cn(
-                "w-full flex flex-col gap-2  relative",
-                posts?.length > 0 ? " overflow-y-auto h-72" : "h-64"
+                "w-full flex flex-col gap-2  relative p-2",
+                newsCategories?.length > 0 ? " overflow-y-auto h-96" : "h-64"
               )}
             >
-              {posts.length > 0 ? (
-                posts.map((post) => <PostData key={post.postId} post={post} />)
-              ) : (
-                <p className="text-gray-600">
-                  No posts found for this community.
-                </p>
+              {!selectedAge && !sampleAge && (
+                <div className="absolute top-0 left-0 bg-white w-full h-full z-[999999999] rounded-md opacity-95 flex justify-center items-center">
+                  <div className="w-[90%] max-w-md bg-gray-100 p-6 rounded-lg shadow-lg text-center">
+                    {/* <h2 className="text-xl font-semibold mb-4">
+                      Enter Your Child&apos;s Age
+                    </h2> */}
+                    {/* <div>
+                      <input
+                        type="number"
+                        min="3"
+                        max="12"
+                        placeholder="Enter age (3-12)"
+                        className="w-full p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-500"
+                        value={childAge}
+                        onChange={(e) => setChildAge(e.target.value)}
+                      />
+                      <button
+                        onClick={() => {
+                          if (!childAge) {
+                            toast.error(
+                              "Please enter your child's age to continue"
+                            );
+                          } else if (childAge < 3 || childAge > 12) {
+                            toast.error(
+                              "Children from age 3 to 12 only can continue."
+                            );
+                          } else {
+                            setSampleAge(childAge);
+                          }
+                        }}
+                        className="bg-orange-500 text-white py-2 px-6 rounded-md hover:bg-orange-600"
+                      >
+                        Submit
+                      </button>
+                    </div> */}
+                  </div>
+                </div>
+              )}
+  
+              <div className="grid grid-cols-1 gap-2">
+                {newsCategories?.length > 0 &&
+                  newsCategories?.map((item) => {
+                    return (
+                      <div
+                        key={item.title}
+                        className="bg-white rounded-md p-2 flex items-center gap-3 w-full shadow-md"
+                      >
+                        <div className="relative w-36 h-20 md:w-40 md:h-20">
+                          <Image
+                            src={`https://wowfy.in/testusr/images/${item.image_url}`}
+                            fill
+                            objectFit="cover"
+                            alt={"logo"}
+                          />
+                        </div>
+                        <div className="h-full w-full flex flex-col justify-between max-h-20 md:max-h-20">
+                          <div className="leading-5">
+                            <p className="text-sm max-md:text-[11.5px] text-red-500">
+                              {item.category_name}
+                            </p>
+                            <p className="text-[15px] md:text-lg font-semibold">
+                              {truncateTitle(item.title)}
+                            </p>
+                          </div>
+                          <div className="flex justify-between items-center w-full">
+                            <span className="text-[10px] md:text-sm text-slate-500">
+                              {formatDate(item.created_at)}
+                            </span>
+                            <Link
+                              href={`/news/${item.category_name.toLowerCase()}/${
+                                item.id
+                              }`}
+                              className="text-[10px] md:text-sm text-slate-500"
+                            >
+                              Read more...
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+              {!selectedAge && !sampleAge && (
+                <>
+                  <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
+                    <Image
+                      src={
+                        "https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
+                      }
+                      width={80}
+                      height={80}
+                      alt={"logo"}
+                    />
+                    <div className="h-full w-full">
+                      <p className=" text-xs text-red-500">International</p>
+                      <p className=" text-sm font-semibold">
+                        Lorem ipsum dolor sit amet consectetur...
+                      </p>
+                      <div className="w-full flex justify-between items-center">
+                        <span className="text-[9px] text-slate-500">
+                          Saturday, 16 Nov 2014 04:44 PM
+                        </span>
+                        <span className="text-[9px] text-slate-500">
+                          Read more...
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
+                    <Image
+                      src={
+                        "https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
+                      }
+                      width={80}
+                      height={80}
+                      alt={"logo"}
+                    />
+                    <div className="h-full w-full">
+                      <p className=" text-xs text-red-500">International</p>
+                      <p className=" text-sm font-semibold">
+                        Lorem ipsum dolor sit amet consectetur...
+                      </p>
+                      <div className="w-full flex justify-between items-center">
+                        <span className="text-[9px] text-slate-500">
+                          Saturday, 16 Nov 2014 04:44 PM
+                        </span>
+                        <span className="text-[9px] text-slate-500">
+                          Read more...
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
+                    <Image
+                      src={
+                        "https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
+                      }
+                      width={80}
+                      height={80}
+                      alt={"logo"}
+                    />
+                    <div className="h-full w-full">
+                      <p className=" text-xs text-red-500">International</p>
+                      <p className=" text-sm font-semibold">
+                        Lorem ipsum dolor sit amet consectetur...
+                      </p>
+                      <div className="w-full flex justify-between items-center">
+                        <span className="text-[9px] text-slate-500">
+                          Saturday, 16 Nov 2014 04:44 PM
+                        </span>
+                        <span className="text-[9px] text-slate-500">
+                          Read more...
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </>
               )}
             </div>
           </div>
-        </div> */}
-      </div>
+          {/* Community */}
+          {/* <div className="w-full rounded-md bg-[#76e4e4] flex flex-col justify-center items-center p-2 space-y-4">
+            <div className="flex flex-col gap-2 text-center">
+              <h4 className=" text-center font-semibold text-2xl">COMMUNITY</h4>
+              <span className="text-center text-slate-600 text-xs w-full">
+                Age appropriate Social Media for Kids
+              </span>
+            </div>
+            <div className="flex flex-col items-center justify-center">
+              <div
+                className={cn(
+                  "w-full flex flex-col gap-2  relative",
+                  posts?.length > 0 ? " overflow-y-auto h-72" : "h-64"
+                )}
+              >
+                {posts.length > 0 ? (
+                  posts.map((post) => <PostData key={post.postId} post={post} />)
+                ) : (
+                  <p className="text-gray-600">
+                    No posts found for this community.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div> */}
+        </div>)
+      }
     </div>
   );
 };
