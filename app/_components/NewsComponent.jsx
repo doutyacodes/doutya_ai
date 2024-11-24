@@ -61,7 +61,7 @@ export default function NewsDetails({ id }) {
 
   const { title, category, image_url, date, description, questions, meanings } =
     article;
-
+// console.log("meanings",meanings)
   // Replace words with hoverable bolded spans
   const replaceWordsWithHover = (text) => {
     return meanings.reduce((acc, { word, description }) => {
