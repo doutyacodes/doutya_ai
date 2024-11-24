@@ -25,8 +25,8 @@ const pathname = usePathname()
           <Link href={"/"} className="mx-auto flex justify-center items-center">
             <Image
               src={"/images/logo2.png"}
-              width={135}
-              height={135}
+              width={170}
+              height={170}
               alt="logo"
             />
           </Link>
@@ -50,7 +50,7 @@ const pathname = usePathname()
                   height={50}
                   alt={ "gender"}
                 />
-                <span className="text-xs text-blue-600">
+                <span className="text-[14px] text-blue-600">
                   Guest, {selectedAge}
                 </span>
               </div>

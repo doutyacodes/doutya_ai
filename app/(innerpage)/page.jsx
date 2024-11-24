@@ -934,7 +934,7 @@ const Home = () => {
       )}
         {latestCourse && (  <div className="h-1 bg-orange-600 w-full absolute top-0 left-0 z-[99999999999999999]" />)}
       {latestCourse && (
-        <div className="flex items-start justify-between bg-white rounded-lg w-full shadow-md p-6 relative font-bold text-xl mt-4">
+        <div className="flex items-start justify-between bg-white rounded-lg w-full shadow-md p-2 relative font-bold text-xl mt-4">
           <div
             onClick={() => setLatestCourse(null)}
             className="bg-orange-500  p-2 rounded-full"
@@ -946,7 +946,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-            className="flex flex-col gap-3 items-center "
+            className="flex flex-col gap-1 items-center "
           >
             <div className="uppercase underline text-xl">
               {latestCourse?.courseName}
@@ -973,7 +973,7 @@ const Home = () => {
           <div />
         </div>
       )}
-      <div className="w-full md:flex gap-7 text-justify pt-6">
+      <div className="w-full md:flex gap-7 text-justify pt-3">
         {latestCourse && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
