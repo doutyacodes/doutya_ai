@@ -68,7 +68,10 @@ export default function NewsDetails({ id }) {
       const regex = new RegExp(`\\b(${word})\\b`, "gi");
       return acc.replace(
         regex,
-        `<span class="group font-bold cursor-pointer relative hover:text-orange-500">${word}
+        `<span class="group font-bold cursor-pointer relative hover:text-orange-500 text-blue-500">
+        <span className="">
+        ${word}
+        </span>
           <div class="absolute left-0 bottom-full mb-2 hidden group-hover:flex w-64 p-2 bg-white shadow-md border rounded-lg z-10 text-sm text-gray-700">${description}</div>
         </span>`
       );

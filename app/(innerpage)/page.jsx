@@ -752,7 +752,7 @@ const Home = () => {
                           {/* <SelectItem value="informative story">
                           an Informative Story
                         </SelectItem> */}
-                          <SelectItem value="podcast">a Podcast</SelectItem>
+                          {/* <SelectItem value="podcast">a Podcast</SelectItem> */}
                           <SelectItem value="poem">a Poem</SelectItem>
                         </SelectGroup>
                       </SelectContent>
