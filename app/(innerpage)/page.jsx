@@ -973,7 +973,7 @@ const Home = () => {
           <div />
         </div>
       )}
-      <div className="w-full md:flex gap-7  pt-6">
+      <div className="w-full md:flex gap-7 text-justify pt-6">
         {latestCourse && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -981,7 +981,7 @@ const Home = () => {
             transition={{ duration: 1 }}
             className="flex flex-col items-center space-y-4 bg-[#f8f8f8] shadow-lg rounded-lg w-full max-w-4xl p-3 py-6 relative"
           >
-            <div className="mt-2 w-full text-left">
+            <div className="mt-2 w-full text-justify">
               {/* <h3 className="text-2xl font-semibold mb-4">
               Latest Course Details
             </h3>
