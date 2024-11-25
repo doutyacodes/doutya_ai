@@ -21,8 +21,10 @@ export default function NewsSection() {
   const [showNews, setShowNews] = useState(false);
   const [showId, setShowId] = useState(null);
   const { selectedAge } = useChildren();
+  const [searchQuery, setSearchQuery] = useState("");
+
   const pathname = usePathname();
-// console.log("selectedAge",selectedAge)
+  // console.log("selectedAge",selectedAge)
   const [, , category, id] = pathname.split("/");
   useEffect(() => {
     setShowId(id);
@@ -80,6 +82,9 @@ export default function NewsSection() {
   }, [selectedAge]);
 
   const currentCategoryNews = newsByCategory[selectedCategory] || [];
+  const filteredNews = currentCategoryNews.filter((article) =>
+    article.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   function getCategoryNameById(id) {
     const category = newsCategories.find((cat) => cat.id === id);
     return category ? category.name : null; // Returns null if no matching id is found
@@ -99,7 +104,21 @@ export default function NewsSection() {
       >
         <h1 className="text-4xl font-bold text-orange-600">News</h1>
       </motion.header>
-
+      {/* Search Bar */}
+      <motion.div
+        className="w-full mb-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <input
+          type="text"
+          placeholder="Search news..."
+          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </motion.div>
       {/* Category Tabs */}
       <div className="w-full max-w-[82vw]">
         <div className="flex space-x-4 overflow-x-auto pb-2 my-2 scrollbar-hide">
@@ -110,6 +129,7 @@ export default function NewsSection() {
                 setSelectedCategory(category.name);
                 setShowId(null);
                 setShowNews(false);
+                setSearchQuery("");
               }}
               className={`whitespace-nowrap px-4 py-2 font-medium rounded-full ${
                 selectedCategory === category.name
@@ -134,13 +154,13 @@ export default function NewsSection() {
           key={selectedCategory}
           transition={{ duration: 0.8 }}
         >
-          {currentCategoryNews.length > 0 ? (
-            currentCategoryNews.map((article) => (
+          {filteredNews.length > 0 ? (
+            filteredNews.map((article) => (
               <motion.div
                 key={article.id}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white cursor-pointer shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col"
+                className="bg-white shadow-md cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col"
                 onClick={() => {
                   setShowId(article.id);
                   setShowNews(true);
@@ -164,9 +184,9 @@ export default function NewsSection() {
                     {truncateTitle(article.title)}
                   </h3>
 
-                  {/* Spacer to push the button to the bottom */}
+                  {/* Footer */}
                   <div className="flex justify-between items-center mt-auto">
-                    <span className="text-[9px] text-slate-500">
+                    <span className="text-sm text-gray-500">
                       {formatDate(article.created_at)}
                     </span>
                     <div>

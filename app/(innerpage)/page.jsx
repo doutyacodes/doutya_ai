@@ -57,6 +57,7 @@ const Home = () => {
   const [showButton, setShowButton] = useState(true);
   const [showOurStory, setShowOurStory] = useState(true);
   const [showFeatures, setShowFeatures] = useState(true);
+  const [meanings, setMeanings] = useState([]);
   const [posts, setPosts] = useState([]);
   console.log("selectedAge", selectedAge);
   useEffect(() => {
@@ -200,10 +201,12 @@ const Home = () => {
         childId: selectedChildId || null, // Pass selected child ID
       });
 
-      console.log("API Response:", response.data.content);
+      // console.log("API Response:", response.data.content);
 
       const newCourse = response?.data?.content || {};
+      const meaningData = response?.data?.meanings || [];
       setLatestCourse(newCourse);
+      setMeanings(meaningData);
 
       if (newCourse && Object.keys(newCourse).length > 0) {
         // Optionally show success toast
@@ -695,6 +698,24 @@ const Home = () => {
     }
   }
 
+  const replaceWordsWithHover = (text) => {
+    return meanings.reduce((acc, { word, description }) => {
+      const regex = new RegExp(`\\b(${word})\\b`, "gi");
+      return acc.replace(
+        regex,
+        `<span class="group font-bold cursor-pointer relative hover:text-orange-500 text-blue-500">
+        <span className="">
+        ${word}
+        </span>
+          <div class="absolute left-0 bottom-full mb-2 hidden group-hover:flex w-64 p-2 bg-white shadow-md border rounded-lg z-10 text-sm text-gray-700">${description}</div>
+        </span>`
+      );
+    }, text);
+  };
+
+  // // Process summary and paragraphs
+  // // const processedSummary = replaceWordsWithHover(summary);
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -708,8 +729,6 @@ const Home = () => {
 
       {!latestCourse && (
         <>
-          
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -932,7 +951,9 @@ const Home = () => {
           </motion.div>
         </>
       )}
-        {latestCourse && (  <div className="h-1 bg-orange-600 w-full absolute top-0 left-0 z-[99999999999999999]" />)}
+      {latestCourse && (
+        <div className="h-1 bg-orange-600 w-full absolute top-0 left-0 z-[99999999999999999]" />
+      )}
       {latestCourse && (
         <div className="flex items-start justify-between bg-white rounded-lg w-full shadow-md p-2 relative font-bold text-xl mt-4">
           <div
@@ -1011,15 +1032,24 @@ const Home = () => {
                   <h2 className="text-3xl font-bold mb-6  text-center text-black">
                     {latestCourse.title}
                   </h2>
-                  <p className="text-gray-700 mb-8">
-                    {latestCourse.introduction?.content ||
-                      "Introduction data is unavailable."}
-                  </p>
+                  <p
+                    className="text-gray-700 mb-8"
+                    dangerouslySetInnerHTML={{
+                      __html: replaceWordsWithHover(
+                        latestCourse.introduction?.content
+                      ),
+                    }}
+                  />
                   {latestCourse.body?.map((paragraph, index) => (
-                    <p key={index} className="text-gray-700 mb-4">
-                      {paragraph.content}
-                    </p>
+                    <p
+                      key={index}
+                      className="text-gray-700 mb-4"
+                      dangerouslySetInnerHTML={{
+                        __html: replaceWordsWithHover(paragraph.content),
+                      }}
+                    />
                   ))}
+
                   <p className="text-gray-700">
                     {latestCourse.conclusion?.content ||
                       "Conclusion data is unavailable."}
@@ -1397,8 +1427,8 @@ const Home = () => {
         </div>
         </div>
       )} */}
-      {
-        !latestCourse && (<div className="grid  grid-cols-1 gap-4 w-full mt-2">
+      {!latestCourse && (
+        <div className="grid  grid-cols-1 gap-4 w-full mt-2">
           <div className="w-full rounded-md bg-[#febd59] space-y-2">
             <div className="flex flex-col gap-2 text-center">
               <h4 className=" text-center font-semibold text-3xl py-1 max-md:text-2xl bg-[#f68c1f] rounded-md">
@@ -1452,7 +1482,7 @@ const Home = () => {
                   </div>
                 </div>
               )}
-  
+
               <div className="grid grid-cols-1 gap-2">
                 {newsCategories?.length > 0 &&
                   newsCategories?.map((item) => {
@@ -1460,9 +1490,13 @@ const Home = () => {
                       <div
                         key={item.title}
                         className="bg-white rounded-md p-2 cursor-pointer flex items-center gap-3 w-full shadow-md"
-                        onClick={()=>router.push(`/news/${item.category_name.toLowerCase()}/${
-                                item.id
-                              }`)}
+                        onClick={() =>
+                          router.push(
+                            `/news/${item.category_name.toLowerCase()}/${
+                              item.id
+                            }`
+                          )
+                        }
                       >
                         <div className="relative w-36 h-20 md:w-40 md:h-20">
                           <Image
@@ -1485,7 +1519,6 @@ const Home = () => {
                             <span className="text-[10px] md:text-sm text-slate-500">
                               {formatDate(item.created_at)}
                             </span>
-                            
                           </div>
                         </div>
                       </div>
@@ -1595,8 +1628,8 @@ const Home = () => {
               </div>
             </div>
           </div> */}
-        </div>)
-      }
+        </div>
+      )}
     </div>
   );
 };

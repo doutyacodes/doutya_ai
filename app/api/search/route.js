@@ -6,6 +6,7 @@ import {
   CHILDREN,
   COURSES,
   USER_BADGES,
+  WORDS_MEANINGS,
 } from "@/utils/schema";
 import { db } from "@/utils";
 import { generateUniqueSlug } from "@/lib/utils";
@@ -64,6 +65,15 @@ export async function POST(request) {
         }
       }
     }
+    const allMeanings = await db
+      .select({
+        word: WORDS_MEANINGS.word,
+        description: WORDS_MEANINGS.description,
+      })
+      .from(WORDS_MEANINGS)
+      .where(eq(WORDS_MEANINGS.age, age))
+      .execute();
+
     if (userId) {
       const [{ countTotalData: totalCourses = 0 }] = await db
         .select({ countTotalData: sql`COUNT(${COURSES.id})` })
@@ -283,6 +293,7 @@ export async function POST(request) {
         {
           message: "Course already exists for this user",
           content: structuredResponse,
+          meanings: allMeanings,
         },
         { status: 200 }
       );
@@ -401,7 +412,11 @@ export async function POST(request) {
     }
 
     return NextResponse.json(
-      { message: "Course created successfully!", content: parsedData },
+      {
+        message: "Course created successfully!",
+        content: parsedData,
+        meanings: allMeanings,
+      },
       { status: 201 }
     );
   } catch (error) {
