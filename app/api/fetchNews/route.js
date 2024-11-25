@@ -21,10 +21,7 @@ export async function POST(req) {
   // }
 
   if (!age) {
-    return NextResponse.json(
-      { error: "Age is required." },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Age is required." }, { status: 400 });
   }
 
   try {
@@ -33,8 +30,20 @@ export async function POST(req) {
 
     // Fetch news based on the provided age
     const news = await db
-      .select()
+      .select({
+        id: NEWS.id,
+        title: NEWS.title,
+        description: NEWS.description,
+        category: NEWS_CATEGORIES.name,
+        age: NEWS.age,
+        news_category_id: NEWS.news_category_id,
+        image_url: NEWS.image_url, // URL of the featured image
+        summary: NEWS.summary, // Brief summary, nullable
+        created_at: NEWS.created_at, // Timestamp for record creation
+        updated_at: NEWS.updated_at,
+      })
       .from(NEWS)
+      .leftJoin(NEWS_CATEGORIES, eq(NEWS.news_category_id, NEWS_CATEGORIES.id)) // Join on category ID
       .where(eq(NEWS.age, age))
       .execute();
 

@@ -76,7 +76,8 @@ export default function NewsSection() {
   const filteredNews = currentCategoryNews.filter(
     (article) =>
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      article.description?.toLowerCase().includes(searchQuery.toLowerCase())||
+      article.category?.toLowerCase().includes(searchQuery.toLowerCase())
   );
   function getCategoryNameById(id) {
     const category = newsCategories.find((cat) => cat.id === id);
