@@ -73,8 +73,10 @@ export default function NewsSection() {
   }, [selectedAge]);
 
   const currentCategoryNews = newsByCategory[selectedCategory] || [];
-  const filteredNews = currentCategoryNews.filter((article) =>
-    article.title.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredNews = currentCategoryNews.filter(
+    (article) =>
+      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      article.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
   function getCategoryNameById(id) {
     const category = newsCategories.find((cat) => cat.id === id);
