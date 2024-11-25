@@ -74,7 +74,7 @@ const SideBar = () => {
       <motion.div
         animate={{ width: isCollapsed ? "6rem" : "14rem" }}
         className={cn(
-          "min-h-screen shadow-lg bg-[#f8f8f8] relative max-md:fixed z-[9999999] flex flex-col p-3 rounded-md lg:block ",
+          "min-h-screen shadow-lg bg-[#fef3d7] relative max-md:fixed z-[9999999] flex flex-col p-3 rounded-md lg:block ",
           isCollapsed ? "hidden" : "flex"
         )}
         initial={{ width: "6rem" }}

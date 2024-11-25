@@ -714,7 +714,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-            className="rounded-md flex justify-center items-center border-[3px] border-orange-500/70 mt-0 py-3 w-full bg-white p-3"
+            className="rounded-md flex justify-center items-center border-[3px] border-orange-500/70 mt-0 py-3 w-full bg-[#f04229] p-3"
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -727,7 +727,7 @@ const Home = () => {
             </div> */}
               <form onSubmit={handleSearch} className="w-full">
                 <div className="w-full text-center mb-4">
-                  <h2 className="text-xl font-semibold max-md:w-full mb-8 items-center justify-center flex flex-wrap  gap-3 ">
+                  <h2 className="text-xl font-semibold max-md:w-full mb-8 items-center justify-center flex flex-wrap  gap-3 text-white">
                     <div className="max-md:text-sm">I want </div>
                     <Select
                       onValueChange={handleTypeChange}
@@ -770,7 +770,7 @@ const Home = () => {
                 </div>
                 <div
                   onClick={() => setAdvanced(!advanced)}
-                  className="cursor-pointer text-center text-orange-600 mb-2 hover:underline max-md:text-xs"
+                  className="cursor-pointer text-center text-white mb-2 hover:underline max-md:text-xs"
                 >
                   {advanced ? "Hide Advanced Filter" : "Show Advanced Filter"}
                 </div>
@@ -778,7 +778,7 @@ const Home = () => {
                   <>
                     {ageGenres.length > 0 && type == "story" && (
                       <div className="w-full text-center mb-4">
-                        <h2 className="text-lg font-semibold mb-2 ">
+                        <h2 className="text-lg text-white font-semibold mb-2 ">
                           Select a Genre
                         </h2>
                         <Select
@@ -837,7 +837,7 @@ const Home = () => {
                       )}
 
                       <div className="w-full text-center mb-4">
-                        <h2 className="text-lg font-semibold mb-2 ">
+                        <h2 className="text-lg font-semibold mb-2 text-white">
                           Language
                         </h2>
                         <Select onValueChange={setLanguage} value={language}>
@@ -1266,7 +1266,7 @@ const Home = () => {
                   {latestCourse?.activities?.title}
                 </h4>
                 <h4 className=" ">{latestCourse?.activities?.content}</h4>
-                <div className="w-full flex justify-between mt-5">
+                {/* <div className="w-full flex justify-between mt-5">
                   <input
                     type="file"
                     accept="image/*"
@@ -1286,7 +1286,7 @@ const Home = () => {
                   >
                     Submit
                   </Button>
-                </div>
+                </div> */}
                 {image && (
                   <img
                     src={image}
@@ -1305,7 +1305,7 @@ const Home = () => {
                 >
                   Back to Search
                 </motion.div> */}
-            <div className="flex flex-col gap-5">
+            {/* <div className="flex flex-col gap-5">
               <p className="uppercase font-bold text-lg text-center">
                 Related Topics
               </p>
@@ -1330,7 +1330,7 @@ const Home = () => {
                     latestCourse?.["related-topics"][1]?.topic}
                 </button>
               </div>
-            </div>
+            </div> */}
           </motion.div>
         )}
       </div>
@@ -1459,7 +1459,10 @@ const Home = () => {
                     return (
                       <div
                         key={item.title}
-                        className="bg-white rounded-md p-2 flex items-center gap-3 w-full shadow-md"
+                        className="bg-white rounded-md p-2 cursor-pointer flex items-center gap-3 w-full shadow-md"
+                        onClick={()=>router.push(`/news/${item.category_name.toLowerCase()}/${
+                                item.id
+                              }`)}
                       >
                         <div className="relative w-36 h-20 md:w-40 md:h-20">
                           <Image
@@ -1482,14 +1485,7 @@ const Home = () => {
                             <span className="text-[10px] md:text-sm text-slate-500">
                               {formatDate(item.created_at)}
                             </span>
-                            <Link
-                              href={`/news/${item.category_name.toLowerCase()}/${
-                                item.id
-                              }`}
-                              className="text-[10px] md:text-sm text-slate-500"
-                            >
-                              Read more...
-                            </Link>
+                            
                           </div>
                         </div>
                       </div>
