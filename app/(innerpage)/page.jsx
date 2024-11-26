@@ -749,7 +749,7 @@ const Home = () => {
             </div> */}
               <form onSubmit={handleSearch} className="w-full">
                 <div className="w-full text-center mb-4">
-                  <h2 className="text-xl font-semibold max-md:w-full mb-8 items-center justify-center flex flex-wrap  gap-3 text-white">
+                  <h2 className="text-xl font-semibold max-md:w-full mb-[1.2vh] items-center justify-center flex flex-wrap  gap-[1.1vh] text-white">
                     <div className="max-md:text-[1.7vh]">I want </div>
                     <Select
                       onValueChange={handleTypeChange}
