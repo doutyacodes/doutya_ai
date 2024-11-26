@@ -1371,7 +1371,7 @@ const Home = () => {
       {!latestCourse && (
         <div className="grid  grid-cols-1 gap-[0.8vh] w-full mt-2 max-md:h-[58vh]">
           <div className="w-full rounded-md bg-[#ffcf89] space-y-2 max-md:space-y-[1.1vh]">
-            <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#f68c1f] rounded-md max-md:h-[7.3vh]">
+            <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#f68c1f] rounded-md ">
               <h4 className=" text-center font-semibold text-3xl max-md:text-[2.6vh]  text-white">
                 NEWS
               </h4>
