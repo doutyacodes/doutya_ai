@@ -742,13 +742,13 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
-              className="flex flex-col items-center space-y-4 rounded-lg w-full max-w-4xl p-1 py-4"
+              className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full max-w-4xl p-1 py-[1.2vh]"
             >
               {/* <div className="w-full flex justify-end items-center">
               <ChildSelector />
             </div> */}
               <form onSubmit={handleSearch} className="w-full">
-                <div className="w-full text-center mb-4">
+                <div className="w-full text-center mb-[1vh]">
                   <h2 className="text-xl font-semibold max-md:w-full mb-[1.2vh] items-center justify-center flex flex-wrap  gap-[1.1vh] text-white">
                     <div className="max-md:text-[1.7vh]">I want </div>
                     <Select
@@ -943,7 +943,7 @@ const Home = () => {
                 <div className="w-full flex justify-center items-center mt-[1vh]">
                   <button
                     type="submit"
-                    className="bg-green-600 rounded-full uppercase font-semibold py-[1vh] max-md:max-w-40 md:py-2 text-lg max-md:text-[1.9vh] text-white px-[1.2vh] transition-all max-md:w-full md:min-w-60 "
+                    className="bg-green-600 rounded-full uppercase font-semibold py-[1vh] max-md:max-w-40 md:py-2 text-lg max-md:text-[1.9vh] text-white px-[0.8vh] transition-all max-md:w-full md:min-w-60 "
                   >
                     Submit
                   </button>
