@@ -1341,3 +1341,11 @@ export const CHALLENGE_USER_QUIZ = mysqlTable("challenge_user_quiz", {
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
+
+export const NEWS_REPORTS = mysqlTable("news_reports", {
+  id: int("id").primaryKey().autoincrement(),
+  news_id: int("news_id").notNull().references(() => NEWS.id),
+  user_id: int("user_id").references(() => USER_DETAILS.id), // Nullable
+  report_text: text("report_text"),
+  created_at: timestamp("created_at").defaultNow(),
+});

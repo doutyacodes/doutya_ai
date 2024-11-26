@@ -1,15 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import { useChildren } from "@/context/CreateContext";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
-import GlobalApi from "@/app/api/_services/GlobalApi";
 import NewsDetails from "@/app/_components/NewsComponent";
+import NewsData from "@/app/_components/NewsData";
+import GlobalApi from "@/app/api/_services/GlobalApi";
+import { useChildren } from "@/context/CreateContext";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
-const truncateTitle = (title, length = 40) =>
-  title.length > length ? `${title.slice(0, length)}...` : title;
+
 
 export default function NewsSection() {
   const [newsCategories, setNewsCategories] = useState([]);
@@ -21,20 +20,7 @@ export default function NewsSection() {
   const [showId, setShowId] = useState(null);
   const { selectedAge } = useChildren();
 
-  const formatDate = (date) => {
-    const options = {
-      weekday: "long",
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-      timeZone: "Asia/Kolkata",
-    };
 
-    return new Date(date).toLocaleString("en-IN", options).replace(",", "");
-  };
 
   const fetchNews = async () => {
     try {
@@ -76,7 +62,7 @@ export default function NewsSection() {
   const filteredNews = currentCategoryNews.filter(
     (article) =>
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.description?.toLowerCase().includes(searchQuery.toLowerCase())||
+      article.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.category?.toLowerCase().includes(searchQuery.toLowerCase())
   );
   function getCategoryNameById(id) {
@@ -152,53 +138,13 @@ export default function NewsSection() {
         >
           {filteredNews.length > 0 ? (
             filteredNews.map((article) => (
-              <motion.div
+              <NewsData
+                article={article}
+                setShowId={setShowId}
+                setShowNews={setShowNews}
+                getCategoryNameById={getCategoryNameById}
                 key={article.id}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white shadow-md cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col"
-                onClick={() => {
-                  setShowId(article.id);
-                  setShowNews(true);
-                }}
-              >
-                {/* Image with fixed height */}
-                <div className="h-48 w-full">
-                  <Image
-                    src={`https://wowfy.in/testusr/images/${article.image_url}`}
-                    alt={article.title}
-                    width={400}
-                    height={300}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                {/* Content Area */}
-                <div className="flex flex-col flex-grow p-4">
-                  {/* Title */}
-                  <h3 className="text-lg font-medium text-gray-800 mb-2">
-                    {truncateTitle(article.title)}
-                  </h3>
-
-                  {/* Footer */}
-                  <div className="flex justify-between items-center mt-auto">
-                    <span className="text-sm text-gray-500">
-                      {formatDate(article.created_at)}
-                    </span>
-                    <div>
-                      <motion.div
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="text-xs font-medium text-orange-500 px-4 py-2 relative"
-                      >
-                        <span className="pb-1 ">
-                          {getCategoryNameById(article.news_category_id)}
-                        </span>
-                      </motion.div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+              />
             ))
           ) : (
             <p className="text-center col-span-full text-gray-600">

@@ -266,6 +266,21 @@ const fetchNewsHome = async (token,data) => {
   }
 };
 
+const ReportNews = async (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  if(token)
+  {
+    return axios.post(`/api/fetchNews/report`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+      },
+    });
+  }else{
+    return axios.post(`/api/fetchNews/report`, data);
+  }
+};
+
 // New function to fetch courses
 const FetchActivities = async (data) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
@@ -745,4 +760,5 @@ export default {
   SaveQuizProgress2,
   GetFeedbacksData,
   GetDaysData,
+  ReportNews
 };
