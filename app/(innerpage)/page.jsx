@@ -733,7 +733,10 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-            className="rounded-md flex justify-center items-center border-[3px] border-orange-500/70 mt-0 py-3 w-full bg-[#f04229] p-3"
+            className={cn(
+              "rounded-md flex justify-center items-center border-[3px] border-orange-500/70 mt-0 py-3 w-full bg-[#f04229] p-3 ",
+              !advanced && "max-md:h-[30vh]"
+            )}
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -747,13 +750,13 @@ const Home = () => {
               <form onSubmit={handleSearch} className="w-full">
                 <div className="w-full text-center mb-4">
                   <h2 className="text-xl font-semibold max-md:w-full mb-8 items-center justify-center flex flex-wrap  gap-3 text-white">
-                    <div className="max-md:text-sm">I want </div>
+                    <div className="max-md:text-[1.7vh]">I want </div>
                     <Select
                       onValueChange={handleTypeChange}
                       value={type}
                       className="bg-transparent ring-transparent border  bg-[#ede7e7] focus:ring-0 focus-visible:ring-0 border-[#f59e1e] underline decoration-2  max-md:w-full" // Thicker underline with offset
                     >
-                      <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-xl uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0  underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
+                      <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-[2.3vh] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0  underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
                         <SelectValue
                           placeholder="Story"
                           className="text-black w-full"
@@ -776,7 +779,7 @@ const Home = () => {
                         </SelectGroup>
                       </SelectContent>
                     </Select>{" "}
-                    <div className="text-sm">about</div>
+                    <div className="max-md:max-md:text-[1.7vh]">about</div>
                   </h2>
                   <Input
                     type="text"
@@ -784,12 +787,12 @@ const Home = () => {
                     value={courseName}
                     maxLength="150"
                     onChange={(e) => setCourseName(e.target.value)}
-                    className="w-full p-2 max-md:py-5 py-6 text-xl placeholder:text-sm focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-4 bg-[#ede7e7]"
+                    className="w-full p-2 max-md:py-[2.4vh] py-6 text-xl placeholder:text-sm focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-4 bg-[#ede7e7]"
                   />
                 </div>
                 <div
                   onClick={() => setAdvanced(!advanced)}
-                  className="cursor-pointer text-center text-white mb-2 hover:underline max-md:text-xs"
+                  className="cursor-pointer text-center text-white mb-2 hover:underline max-md:text-[1.5vh]"
                 >
                   {advanced ? "Hide Advanced Filter" : "Show Advanced Filter"}
                 </div>
@@ -797,7 +800,7 @@ const Home = () => {
                   <>
                     {ageGenres.length > 0 && type == "story" && (
                       <div className="w-full text-center mb-4">
-                        <h2 className="text-lg text-white font-semibold mb-2 ">
+                        <h2 className="text-lg max-md:text-[2.1vh] text-white font-semibold mb-2 ">
                           Select a Genre
                         </h2>
                         <Select
@@ -856,7 +859,7 @@ const Home = () => {
                       )}
 
                       <div className="w-full text-center mb-4">
-                        <h2 className="text-lg font-semibold mb-2 text-white">
+                        <h2 className="text-lg max-md:text-[2.1vh] font-semibold mb-2 text-white">
                           Language
                         </h2>
                         <Select onValueChange={setLanguage} value={language}>
@@ -940,7 +943,7 @@ const Home = () => {
                 <div className="w-full flex justify-center items-center mt-5">
                   <button
                     type="submit"
-                    className="bg-green-600 rounded-full uppercase font-semibold py-2 max-md:max-w-40 md:py-2 text-lg max-md:text-base text-white px-4 transition-all max-md:w-full md:min-w-60 "
+                    className="bg-green-600 rounded-full uppercase font-semibold py-2 max-md:max-w-40 md:py-2 text-lg max-md:text-[1.9vh] text-white px-4 transition-all max-md:w-full md:min-w-60 "
                   >
                     Submit
                   </button>
@@ -994,7 +997,7 @@ const Home = () => {
           <div />
         </div>
       )}
-      <div className="w-full md:flex gap-7 text-justify pt-3">
+      <div className="w-full md:flex gap-7 text-justify md:pt-3">
         {latestCourse && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1365,131 +1368,29 @@ const Home = () => {
         )}
       </div>
 
-      {/* <div className="space-y-5">
-        {showOurStory && <OurStory />}
-        {showFeatures && <Features />}
-        <Contact />
-      </div> */}
-
-      {/* Scroll Button with Animation */}
-      {/* Scroll Buttons with Animation */}
-      {/* {showButton && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 px-3 w-full flex justify-center items-center">
-        <div className=" flex space-x-4 bg-orange-500 justify-between rounded-3xl shadow-lg px-2 max-sm:w-full w-72">
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.5 }}
-            onClick={() => scrollToSection("our-story")}
-            className=" text-white text-xs p-3  flex flex-col items-center justify-center w-full"
-          >
-            <span>Our Story</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-5 h-5 rotate-90"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </motion.button>
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.5 }}
-            onClick={() => scrollToSection("features")}
-            className=" text-white text-xs p-3  flex flex-col items-center justify-center w-full"
-          >
-            <span>Our Features</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-5 h-5 rotate-90"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </motion.button>
-        </div>
-        </div>
-      )} */}
       {!latestCourse && (
-        <div className="grid  grid-cols-1 gap-4 w-full mt-2">
-          <div className="w-full rounded-md bg-[#febd59] space-y-2">
-            <div className="flex flex-col gap-2 text-center">
-              <h4 className=" text-center font-semibold text-3xl py-1 max-md:text-2xl bg-[#f68c1f] rounded-md">
+        <div className="grid  grid-cols-1 gap-[0.8vh] w-full mt-2 max-md:h-[58vh]">
+          <div className="w-full rounded-md bg-[#ffcf89] space-y-2 max-md:space-y-[1.1vh]">
+            <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#f68c1f] rounded-md max-md:h-[7.3vh]">
+              <h4 className=" text-center font-semibold text-3xl max-md:text-[2.6vh]  text-white">
                 NEWS
               </h4>
-              <span className="text-center text-slate-600 text-sm max-md:text-xs w-full">
+              <span className="text-center text-white text-sm max-md:text-[1.3vh] w-full">
                 Todays News made age appropriate for Kids
               </span>
             </div>
             <div
               className={cn(
-                "w-full flex flex-col gap-2  relative p-2",
-                newsCategories?.length > 0 ? " overflow-y-auto h-96" : "h-64"
+                "w-full flex flex-col gap-2 max-md:gap-[0.4vh]  relative p-2  overflow-y-auto h-[50vh]"
               )}
             >
-              {!selectedAge && !sampleAge && (
-                <div className="absolute top-0 left-0 bg-white w-full h-full z-[999999999] rounded-md opacity-95 flex justify-center items-center">
-                  <div className="w-[90%] max-w-md bg-gray-100 p-6 rounded-lg shadow-lg text-center">
-                    {/* <h2 className="text-xl font-semibold mb-4">
-                      Enter Your Child&apos;s Age
-                    </h2> */}
-                    {/* <div>
-                      <input
-                        type="number"
-                        min="3"
-                        max="12"
-                        placeholder="Enter age (3-12)"
-                        className="w-full p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-500"
-                        value={childAge}
-                        onChange={(e) => setChildAge(e.target.value)}
-                      />
-                      <button
-                        onClick={() => {
-                          if (!childAge) {
-                            toast.error(
-                              "Please enter your child's age to continue"
-                            );
-                          } else if (childAge < 3 || childAge > 12) {
-                            toast.error(
-                              "Children from age 3 to 12 only can continue."
-                            );
-                          } else {
-                            setSampleAge(childAge);
-                          }
-                        }}
-                        className="bg-orange-500 text-white py-2 px-6 rounded-md hover:bg-orange-600"
-                      >
-                        Submit
-                      </button>
-                    </div> */}
-                  </div>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 gap-2 max-md:gap-[0.8vh]">
                 {newsCategories?.length > 0 &&
                   newsCategories?.map((item) => {
                     return (
                       <div
                         key={item.title}
-                        className="bg-white rounded-md p-2 cursor-pointer flex items-center gap-3 w-full shadow-md"
+                        className="bg-white rounded-md p-[0.5vh] cursor-pointer flex items-center gap-3 max-md:gap-[1.1vh] w-full shadow-md"
                         onClick={() =>
                           router.push(
                             `/news/${item.category_name.toLowerCase()}/${
@@ -1498,7 +1399,7 @@ const Home = () => {
                           )
                         }
                       >
-                        <div className="relative w-36 h-20 md:w-40 md:h-20">
+                        <div className="relative w-[30vw] h-[9vh] md:w-40 md:h-20">
                           <Image
                             src={`https://wowfy.in/testusr/images/${item.image_url}`}
                             fill
@@ -1506,17 +1407,17 @@ const Home = () => {
                             alt={"logo"}
                           />
                         </div>
-                        <div className="h-full w-full flex flex-col justify-between max-h-20 md:max-h-20">
+                        <div className="h-full w-full flex flex-col justify-between">
                           <div className="leading-5">
-                            <p className="text-sm max-md:text-[11.5px] text-red-500">
+                            <p className="text-sm max-md:text-[1.4vh] text-red-500">
                               {item.category_name}
                             </p>
-                            <p className="text-[15px] md:text-lg font-semibold">
+                            <p className="text-[1.6vh] md:text-lg font-semibold">
                               {truncateTitle(item.title)}
                             </p>
                           </div>
                           <div className="flex justify-between items-center w-full">
-                            <span className="text-[10px] md:text-sm text-slate-500">
+                            <span className="text-[1.1vh] md:text-sm text-slate-500">
                               {formatDate(item.created_at)}
                             </span>
                           </div>
