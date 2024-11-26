@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import useAuth from "../hooks/useAuth";
+import { hp } from "@/utils/encryption";
 
 const SideBar = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -63,7 +64,7 @@ const SideBar = () => {
             : "hidden"
         )}
       >
-        <Menu size={32} />
+        <Menu size={hp(3.9)} />
       </div>
       {!isCollapsed && (
         <div
@@ -72,7 +73,7 @@ const SideBar = () => {
         />
       )}
       <motion.div
-        animate={{ width: isCollapsed ? "6rem" : "14rem" }}
+        animate={{ width: isCollapsed ? "6rem" : "12rem" }}
         className={cn(
           "min-h-screen shadow-lg bg-[#fef3d7] relative max-md:fixed z-[9999999] flex flex-col p-3 rounded-md lg:block ",
           isCollapsed ? "hidden" : "flex"
@@ -114,7 +115,7 @@ const SideBar = () => {
                   href={links || "/"}
                   className={cn(
                     "flex items-center p-2 hover:bg-blue-100 rounded-lg cursor-pointer",
-                    isCollapsed ? "flex-col justify-center gap-2" : "flex-row pl-14"
+                    isCollapsed ? "flex-col justify-center gap-2" : "flex-row pl-5"
                   )}
                 >
                   <Icon
@@ -134,27 +135,7 @@ const SideBar = () => {
               </motion.div>
             );
           })}
-          {/* {isAuthenticated && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: navLinks.length * 0.1 }}
-              onClick={logout}
-              className={cn(
-                "flex items-center p-2 hover:bg-blue-100 rounded-lg cursor-pointer",
-                isCollapsed ? "flex-col justify-center gap-2" : "flex-row"
-              )}
-            >
-              <FaSignOutAlt size={24} className="text-black" />
-              <span
-                    className={` ${
-                      isCollapsed ? "text-[10px] text-nowrap " : "block"
-                    } transition-all duration-300 `}
-                  >
-                Sign Out
-              </span>
-            </motion.div>
-          )} */}
+          
         </nav>
       </motion.div>
     </>

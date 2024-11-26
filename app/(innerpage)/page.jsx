@@ -734,7 +734,7 @@ const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
             className={cn(
-              "rounded-md flex justify-center items-center border-[3px] border-orange-500/70 mt-0 py-3 w-full bg-[#f04229] p-3 ",
+              "rounded-md flex justify-center items-center border-[3px] border-orange-500/70 mt-0 py-[1vh] w-full bg-[#f04229] p-[1vh] ",
               !advanced && "max-md:h-[30vh]"
             )}
           >
@@ -940,10 +940,10 @@ const Home = () => {
                   </Select>
                 </div>
               )} */}
-                <div className="w-full flex justify-center items-center mt-5">
+                <div className="w-full flex justify-center items-center mt-[1vh]">
                   <button
                     type="submit"
-                    className="bg-green-600 rounded-full uppercase font-semibold py-2 max-md:max-w-40 md:py-2 text-lg max-md:text-[1.9vh] text-white px-4 transition-all max-md:w-full md:min-w-60 "
+                    className="bg-green-600 rounded-full uppercase font-semibold py-[1vh] max-md:max-w-40 md:py-2 text-lg max-md:text-[1.9vh] text-white px-[1.2vh] transition-all max-md:w-full md:min-w-60 "
                   >
                     Submit
                   </button>

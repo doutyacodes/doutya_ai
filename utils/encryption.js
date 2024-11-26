@@ -22,3 +22,13 @@ export const decryptURLText = (cipherText) => {
   const bytes = CryptoJS.AES.decrypt(decodedCipherText, secretKey);
   return bytes.toString(CryptoJS.enc.Utf8);
 };
+
+// Utility to get percentage of height
+export const hp = (percentage) => {
+  return (window.innerHeight * percentage) / 100;
+};
+
+// Utility to get percentage of width
+export const wp = (percentage) => {
+  return (window.innerWidth * percentage) / 100;
+};
