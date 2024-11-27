@@ -728,25 +728,23 @@ const Home = () => {
       <Toaster />
 
       {!latestCourse && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 max-md:gap-[1.1vh] md:gap-2">
           <div className="w-full space-y-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
               className={cn(
-                "rounded-md  items-center mt-0  w-full bg-[#6a3a9d] ",
-                !advanced && "max-md:h-[32vh] max-sm:h-[36vh]"
+                "rounded-md  items-center m-0  w-full bg-[#6a3a9d] ",
+                !advanced && "max-md:h-[30vh]"
               )}
             >
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1 }}
-                className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full max-w-4xl"
+              
+                className="flex flex-col items-center md:space-y-[1.2vh] space-y-0 rounded-lg w-full max-w-4xl"
               >
                 <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#491c57] rounded-md w-full pb-[1.1vh]">
-                  <h4 className=" text-center font-semibold text-2xl max-md:text-[2.6vh]  text-white">
+                  <h4 className=" text-center font-semibold text-2xl max-md:text-[2.4vh]  text-white">
                     SEARCH
                   </h4>
                   <span className="text-center text-white text-xs max-md:text-[1.1vh] w-full uppercase">
@@ -755,16 +753,16 @@ const Home = () => {
                 </div>
                 <form
                   onSubmit={handleSearch}
-                  className="w-full p-[1.3vh] md:space-y-6 md:pb-7"
+                  className="w-full p-[1vh] md:space-y-6 max-md:space-y-[1.1vh] md:pb-7 "
                 >
-                  <div className="w-full text-center mb-[1vh]">
-                    <h2 className="text-xl font-semibold max-md:w-full mb-[1.2vh] md:pb-3 items-center justify-center flex flex-wrap  gap-[1.1vh] text-white">
+                  <div className="w-full text-center ">
+                    <h2 className="md:text-xl font-semibold max-md:w-full md:pb-3 items-center justify-center flex flex-wrap  gap-[1.1vh] text-white">
                       <Select
                         onValueChange={handleTypeChange}
                         value={type}
                         className="bg-transparent ring-transparent border  bg-[#ede7e7] focus:ring-0 focus-visible:ring-0 border-[#f59e1e] underline decoration-2 max-md:w-full" // Thicker underline with offset
                       >
-                        <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-[2.3vh] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0  underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
+                        <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl max-md:text-[2.2vh] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0  underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
                           <SelectValue
                             placeholder="Story"
                             className="text-black w-full"
@@ -773,7 +771,7 @@ const Home = () => {
                         <SelectContent>
                           <SelectGroup>
                             <SelectItem value="story">a Story</SelectItem>
-                           
+
                             <SelectItem value="explanation">
                               an Explanation
                             </SelectItem>
@@ -792,12 +790,12 @@ const Home = () => {
                       value={courseName}
                       maxLength="150"
                       onChange={(e) => setCourseName(e.target.value)}
-                      className="w-full md:max-w-lg md:p-2 max-md:py-[1vh] mx-auto py-6 text-xl placeholder:text-sm max-md:placeholder:text-[1.3vh] focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-4 bg-[#ede7e7]"
+                      className="w-full md:max-w-lg md:p-2 max-md:py-[0.8vh] mx-auto py-6 text-xl placeholder:text-sm max-md:placeholder:text-[1.3vh] focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-4 bg-[#ede7e7]"
                     />
                   </div>
                   <div
                     onClick={() => setAdvanced(!advanced)}
-                    className="cursor-pointer text-center text-white my-[1.5vh] hover:underline max-md:text-[1.5vh]"
+                    className="cursor-pointer text-center text-white my-[1.5vh] hover:underline max-md:text-[1.2vh]"
                   >
                     {advanced ? "Hide Advanced Filter" : "Show Advanced Filter"}
                   </div>
@@ -906,10 +904,10 @@ const Home = () => {
                     </>
                   )}
 
-                  <div className="w-full flex justify-center items-center mt-[1vh]">
+                  <div className="w-full flex justify-center items-center ">
                     <button
                       type="submit"
-                      className="bg-green-600 rounded-full uppercase font-semibold py-[0.7vh] max-md:max-w-40 md:py-2 text-lg max-md:text-[1.7vh] text-white px-[0.8vh] transition-all max-md:w-full md:min-w-60 "
+                      className="bg-green-600 rounded-full uppercase font-semibold py-[0.4vh] max-md:max-w-40 md:py-2 text-lg max-md:text-[1.5vh] text-white px-[0.8vh] transition-all max-md:w-full md:min-w-60 "
                     >
                       Submit
                     </button>
@@ -945,7 +943,7 @@ const Home = () => {
             </motion.div>
           </div>
           {!latestCourse && (
-            <div className="grid  grid-cols-1 gap-[0.8vh] w-full max-md:h-[58vh]">
+            <div className="grid  grid-cols-1 gap-[0.8vh] w-full ">
               <div className="w-full rounded-md bg-[#ffcf89] space-y-2 max-md:space-y-[1.1vh] pb-[1.1vh]">
                 <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#f68c1f] rounded-md ">
                   <h4 className=" text-center font-semibold text-2xl max-md:text-[2.6vh]  text-white">
@@ -957,7 +955,7 @@ const Home = () => {
                 </div>
                 <div
                   className={cn(
-                    "w-full flex flex-col gap-2 max-md:gap-[0.4vh]  relative p-2  overflow-y-auto max-md:h-[50vh] h-[73vh]"
+                    "w-full flex flex-col gap-2 max-md:gap-[0.4vh]  relative p-2  overflow-y-auto max-md:h-[35vh] h-[73vh]"
                   )}
                 >
                   <div className="grid grid-cols-1 gap-2 max-md:gap-[0.8vh]">

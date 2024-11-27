@@ -13,7 +13,7 @@ const Navbar = () => {
   const { isAuthenticated, } = useAuth();
 const pathname = usePathname()
   return (
-    <nav className={cn("w-full bg-transparent ",pathname!=="/" ? "md:min-h-24 max-md:py-[0.8vh] border-b-4 border-orange-600" : "md:min-h-24 max-md:py-[0.8vh]")}>
+    <nav className={cn("w-full bg-transparent ",pathname!=="/" ? "md:min-h-24 max-md:py-[0.8vh] border-b-4 border-orange-600 max-md:max-h-[8.5vh]" : "md:min-h-24 max-md:py-[0.8vh] max-md:max-h-[8.5vh]")}>
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between w-full">
           <div className="block absolute top-10 left-2 z-[999999999] md:hidden opacity-0">
@@ -22,7 +22,7 @@ const pathname = usePathname()
           <div className="opacity-0">
           Login
           </div>
-          <Link href={"/"} className="mx-auto flex justify-center items-center relative h-[7.8vh] w-[40vw]">
+          <Link href={"/"} className="mx-auto flex justify-center items-center relative h-[7.6vh] w-[40vw]">
             <Image
               src={"/images/logo2.png"}
               fill
@@ -41,7 +41,7 @@ const pathname = usePathname()
               )} */}
               {!isAuthenticated && (
                 <div onClick={()=>showPopupForUser()} className="flex flex-col w-fit gap-[1px] items-center ">
-                  <div className="relative h-[5.8vh] w-[12vw]">
+                  <div className="relative h-[5.2vh] w-[12vw]">
 
                 <Image
                   src={
