@@ -73,7 +73,7 @@ const SideBar = () => {
         />
       )}
       <motion.div
-        animate={{ width: isCollapsed ? "6rem" : "12rem" }}
+        animate={{ width: isCollapsed ? "6rem" : "6rem" }}
         className={cn(
           "min-h-screen shadow-lg bg-[#fef3d7] relative max-md:fixed z-[9999999] flex flex-col p-3 rounded-md lg:block ",
           isCollapsed ? "hidden" : "flex"
@@ -81,7 +81,7 @@ const SideBar = () => {
         initial={{ width: "6rem" }}
       >
         {/* Sidebar Header */}
-        <div
+        {/* <div
           className="flex items-center justify-between rounded-full bg-orange-500 w-fit absolute -right-2 top-5 z-[99999999]"
           onClick={toggleCollapse}
         >
@@ -94,7 +94,7 @@ const SideBar = () => {
           >
             <ChevronRight />
           </motion.div>
-        </div>
+        </div> */}
 
         {/* Navigation Links */}
         <nav className={cn("flex-1 mt-20 space-y-4")}>
@@ -115,7 +115,7 @@ const SideBar = () => {
                   href={links || "/"}
                   className={cn(
                     "flex items-center p-2 hover:bg-blue-100 rounded-lg cursor-pointer",
-                    isCollapsed ? "flex-col justify-center gap-2" : "flex-row pl-5"
+                    isCollapsed ? "flex-col justify-center gap-2" : "flex-col justify-center gap-2"
                   )}
                 >
                   <Icon
@@ -124,7 +124,7 @@ const SideBar = () => {
                   />
                   <span
                     className={`${
-                      isCollapsed ? "text-[10px] text-nowrap" : "block ml-3"
+                      isCollapsed ? "text-[10px] text-nowrap" : "text-[10px] text-nowrap"
                     } transition-all duration-300 ${
                       isActive ? "text-red-500" : ""
                     }`}
