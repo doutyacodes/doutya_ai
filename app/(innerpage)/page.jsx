@@ -736,7 +736,7 @@ const Home = () => {
               transition={{ duration: 1 }}
               className={cn(
                 "rounded-md  items-center mt-0  w-full bg-[#6a3a9d] ",
-                !advanced && "max-md:h-[32vh]"
+                !advanced && "max-md:h-[32vh] max-sm:h-[34vh]"
               )}
             >
               <motion.div
@@ -996,7 +996,7 @@ const Home = () => {
                   <h4 className=" text-center font-semibold text-2xl max-md:text-[2.6vh]  text-white">
                     HEADLINES
                   </h4>
-                  <span className="text-center text-white text-xs max-md:text-[1.3vh] w-full">
+                  <span className="text-center text-white text-xs max-md:text-[1.3vh] w-full uppercase pb-2">
                     Todays News made age appropriate for Kids
                   </span>
                 </div>
