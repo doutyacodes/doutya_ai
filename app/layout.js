@@ -22,6 +22,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang={locale}>
       <body className={`${poppins.className} min-h-screen`}>
+        
         <NextIntlClientProvider messages={messages}>
           <Toaster />
           {children}

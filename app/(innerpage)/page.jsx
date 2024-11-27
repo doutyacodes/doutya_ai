@@ -722,10 +722,12 @@ const Home = () => {
   return (
     <div
       className={cn(
-        " flex flex-col items-center justify-center  text-gray-800 p-1  pt-0 relative"
+        "  text-gray-800 p-1  pt-0 relative",
+        !latestCourse && !advanced && "max-md:h-screen"
       )}
     >
       <Toaster />
+
 
       {!latestCourse && (
         <div className="grid grid-cols-1 md:grid-cols-2 max-md:gap-[1.1vh] md:gap-2">
@@ -955,7 +957,7 @@ const Home = () => {
                 </div>
                 <div
                   className={cn(
-                    "w-full flex flex-col gap-2 max-md:gap-[0.4vh]  relative p-2  overflow-y-auto max-md:h-[35vh] h-[73vh]"
+                    "w-full flex flex-col gap-2 max-md:gap-[0.4vh]  relative p-2  overflow-y-auto max-md:max-h-[50vh] md:max-h-[73vh]"
                   )}
                 >
                   <div className="grid grid-cols-1 gap-2 max-md:gap-[0.8vh]">
