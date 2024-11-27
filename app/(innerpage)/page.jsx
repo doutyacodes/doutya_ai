@@ -736,7 +736,7 @@ const Home = () => {
               transition={{ duration: 1 }}
               className={cn(
                 "rounded-md  items-center mt-0  w-full bg-[#6a3a9d] ",
-                !advanced && "max-md:h-[32vh] max-sm:h-[34vh]"
+                !advanced && "max-md:h-[32vh] max-sm:h-[36vh]"
               )}
             >
               <motion.div
@@ -753,7 +753,10 @@ const Home = () => {
                     Stories, poems & explanations made age appropriate for Kids
                   </span>
                 </div>
-                <form onSubmit={handleSearch} className="w-full p-[1.3vh] md:space-y-6 md:pb-7">
+                <form
+                  onSubmit={handleSearch}
+                  className="w-full p-[1.3vh] md:space-y-6 md:pb-7"
+                >
                   <div className="w-full text-center mb-[1vh]">
                     <h2 className="text-xl font-semibold max-md:w-full mb-[1.2vh] md:pb-3 items-center justify-center flex flex-wrap  gap-[1.1vh] text-white">
                       <Select
@@ -770,9 +773,7 @@ const Home = () => {
                         <SelectContent>
                           <SelectGroup>
                             <SelectItem value="story">a Story</SelectItem>
-                            {/* <SelectItem value="bedtime story">
-                          a Bedtime Story
-                        </SelectItem> */}
+                           
                             <SelectItem value="explanation">
                               an Explanation
                             </SelectItem>
@@ -791,7 +792,7 @@ const Home = () => {
                       value={courseName}
                       maxLength="150"
                       onChange={(e) => setCourseName(e.target.value)}
-                      className="w-full md:max-w-lg p-2 max-md:py-[2.4vh] mx-auto py-6 text-xl placeholder:text-sm focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-4 bg-[#ede7e7]"
+                      className="w-full md:max-w-lg md:p-2 max-md:py-[1vh] mx-auto py-6 text-xl placeholder:text-sm max-md:placeholder:text-[1.3vh] focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-4 bg-[#ede7e7]"
                     />
                   </div>
                   <div
@@ -832,11 +833,6 @@ const Home = () => {
                                     <span className="w-full text-center">
                                       {option.label1}
                                     </span>
-                                    {/* {
-                              <div className="text-[10px] md:hidden text-gray-500 pt-1 mt-1 w-full border-t-[1px]">
-                                {option.label}
-                              </div>
-                            } */}
                                   </SelectItem>
                                 ))}
                               </SelectGroup>
@@ -899,29 +895,8 @@ const Home = () => {
                                       <SelectItem value="portuguese">
                                         Portuguese
                                       </SelectItem>
-                                      {/* <SelectItem value="dutch">Dutch</SelectItem>
-                              <SelectItem value="russian">Russian</SelectItem>
-                              <SelectItem value="chinese simplified">
-                                Chinese (Simplified)
-                              </SelectItem>
-                              <SelectItem value="chinese traditional">
-                                Chinese (Traditional)
-                              </SelectItem>
-                              <SelectItem value="japanese">Japanese</SelectItem>
-                              <SelectItem value="korean">Korean</SelectItem>
-                              <SelectItem value="arabic">Arabic</SelectItem> */}
                                     </>
                                   )}
-                                  {/* {(type == "story" || type == "explanation") && (
-                            <>
-                              <SelectItem value="malayalam">
-                                Malayalam
-                              </SelectItem>
-                              <SelectItem value="kannada">Kannada</SelectItem>
-                              <SelectItem value="telugu">Telugu</SelectItem>
-                              <SelectItem value="hindi">Hindi</SelectItem>
-                            </>
-                          )} */}
                                 </SelectGroup>
                               </SelectContent>
                             </SelectContent>
@@ -931,24 +906,6 @@ const Home = () => {
                     </>
                   )}
 
-                  {/* {age > 13 && (
-                <div className="w-full text-center mb-4">
-                  <h2 className="text-lg font-semibold mb-2 ">
-                    Difficulty
-                  </h2>
-                  <Select onValueChange={setDifficulty} value={difficulty}>
-                    <SelectTrigger className="w-full border focus-visible:ring-transparent border-gray-300 rounded-lg p-2">
-                      <SelectValue placeholder="Basic" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="basic">Basic</SelectItem>
-                        <SelectItem value="advanced">Advanced</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )} */}
                   <div className="w-full flex justify-center items-center mt-[1vh]">
                     <button
                       type="submit"
@@ -966,7 +923,7 @@ const Home = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
               className={cn(
-                "rounded-md items-center mt-0  w-full bg-[#5ebc4a] ",
+                "rounded-md items-center mt-0  w-full bg-[#5ebc4a] max-md:hidden"
               )}
             >
               <motion.div
@@ -984,9 +941,7 @@ const Home = () => {
                   </span>
                 </div>
               </motion.div>
-              <div className="w-full h-full min-h-[28vh]">
-
-              </div>
+              <div className="w-full h-full min-h-[28vh]"></div>
             </motion.div>
           </div>
           {!latestCourse && (
