@@ -12,7 +12,7 @@ import {
   ACTIVITIES,
 } from "@/utils/schema";
 import { authenticate } from "@/lib/jwtMiddleware";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 
 export async function POST(req) {
   const authResult = await authenticate(req, true);
@@ -51,6 +51,7 @@ export async function POST(req) {
         category_name: NEWS_CATEGORIES.name,
       })
       .from(NEWS)
+      .orderBy(desc(NEWS.created_at))
       .leftJoin(NEWS_CATEGORIES, eq(NEWS.news_category_id, NEWS_CATEGORIES.id))
       .where(eq(NEWS.age, age))
       .execute();
