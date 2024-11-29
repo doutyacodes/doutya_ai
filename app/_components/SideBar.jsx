@@ -25,6 +25,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import useAuth from "../hooks/useAuth";
 import { hp } from "@/utils/encryption";
+import { IoGlobeSharp } from "react-icons/io5";
+import { GiBriefcase } from "react-icons/gi";
+import { IoIosTrophy } from "react-icons/io";
+import { FaPeopleGroup } from "react-icons/fa6";
 
 const SideBar = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -39,20 +43,27 @@ const SideBar = () => {
     setIsCollapsed(true);
   };
 
+  // const navLinks = [
+  //   { label: "Home", links: "/", icon: FaHome },
+  //   // { label: "Search", links: "/search", icon: FaSearch },
+  //   { label: "News", links: "/news", icon: FaNewspaper },
+  //   // { label: "Learn", links: "/learn", icon: FaBook },
+  //   // { label: "Tests", links: "/tests", icon: FaTasks },
+  //   // { label: "Activities", links: "/activities", icon: FaTasks },
+  //   // { label: "Communities", links: "/communities", icon: FaUserFriends },
+  //   { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
+  //   // { label: "Our Features", links: "/our-features", icon: FaStar },
+  //   // { label: "About Us", links: "/about-us", icon: FaBuilding },
+  //   // { label: "Challenges", links: "/challenges", icon: FaTrophy },
+  // ];
   const navLinks = [
-    { label: "Home", links: "/", icon: FaHome },
-    // { label: "Search", links: "/search", icon: FaSearch },
-    { label: "News", links: "/news", icon: FaNewspaper },      
-    // { label: "Learn", links: "/learn", icon: FaBook },
-    // { label: "Tests", links: "/tests", icon: FaTasks },
-    // { label: "Activities", links: "/activities", icon: FaTasks },
-    // { label: "Communities", links: "/communities", icon: FaUserFriends },
+    { label: "Home", icon: FaHome, links: "/" },
+    { label: "News", icon: IoGlobeSharp, links: "/news" },
+    { label: "Careers", icon: GiBriefcase, links: "/tests" },
+    { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
+    { label: "Community", icon: FaPeopleGroup, links: "/communities" },
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
-    // { label: "Our Features", links: "/our-features", icon: FaStar },
-    // { label: "About Us", links: "/about-us", icon: FaBuilding },      
-    // { label: "Challenges", links: "/challenges", icon: FaTrophy },      
   ];
-
   return (
     <>
       <div
@@ -115,7 +126,9 @@ const SideBar = () => {
                   href={links || "/"}
                   className={cn(
                     "flex items-center p-2 hover:bg-blue-100 rounded-lg cursor-pointer",
-                    isCollapsed ? "flex-col justify-center gap-2" : "flex-col justify-center gap-2"
+                    isCollapsed
+                      ? "flex-col justify-center gap-2"
+                      : "flex-col justify-center gap-2"
                   )}
                 >
                   <Icon
@@ -124,7 +137,9 @@ const SideBar = () => {
                   />
                   <span
                     className={`${
-                      isCollapsed ? "text-[10px] text-nowrap" : "text-[10px] text-nowrap"
+                      isCollapsed
+                        ? "text-[10px] text-nowrap"
+                        : "text-[10px] text-nowrap"
                     } transition-all duration-300 ${
                       isActive ? "text-red-500" : ""
                     }`}
@@ -135,7 +150,6 @@ const SideBar = () => {
               </motion.div>
             );
           })}
-          
         </nav>
       </motion.div>
     </>

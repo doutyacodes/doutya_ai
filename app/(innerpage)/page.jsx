@@ -728,7 +728,6 @@ const Home = () => {
     >
       <Toaster />
 
-
       {!latestCourse && (
         <div className="grid grid-cols-1 md:grid-cols-2 max-md:gap-[1.1vh] md:gap-2">
           <div className="w-full space-y-2">
@@ -737,34 +736,31 @@ const Home = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
               className={cn(
-                "rounded-md  items-center m-0  w-full bg-[#6a3a9d] ",
-                !advanced && "max-md:h-[30vh]"
+                "rounded-md items-center m-0 w-full bg-[#f04229]",
+                !advanced && "max-md:h-[35vh]" // Apply 35vh height only if advanced content is hidden
               )}
             >
-              <motion.div
-              
-                className="flex flex-col items-center md:space-y-[1.2vh] space-y-0 rounded-lg w-full max-w-4xl"
-              >
-                <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#491c57] rounded-md w-full pb-[1.1vh]">
-                  <h4 className=" text-center font-semibold text-2xl max-md:text-[2.4vh]  text-white">
+              <motion.div className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full max-w-4xl">
+                <div className="flex flex-col gap-[1vh] text-center bg-[#e91b25] rounded-md w-full pb-[1vh]">
+                  <h4 className="text-center font-semibold text-lg max-md:text-[2vh] text-white">
                     SEARCH
                   </h4>
-                  <span className="text-center text-white text-xs max-md:text-[1.1vh] w-full uppercase">
+                  <span className="text-center text-white text-xs max-md:text-[1.2vh] w-full uppercase">
                     Stories, poems & explanations made age appropriate for Kids
                   </span>
                 </div>
                 <form
                   onSubmit={handleSearch}
-                  className="w-full p-[1vh] md:space-y-6 max-md:space-y-[1.1vh] md:pb-7 "
+                  className="w-full p-[1vh] max-md:flex flex-col justify-between max-md:min-h-[24vh] items-center h-full md:space-y-[1vh] md:pb-4"
                 >
-                  <div className="w-full text-center ">
-                    <h2 className="md:text-xl font-semibold max-md:w-full md:pb-3 items-center justify-center flex flex-wrap  gap-[1.1vh] text-white">
+                  <div className="w-full text-center">
+                    <h2 className="md:text-lg font-semibold flex flex-wrap items-center justify-center gap-[1vh] text-white">
                       <Select
                         onValueChange={handleTypeChange}
                         value={type}
-                        className="bg-transparent ring-transparent border  bg-[#ede7e7] focus:ring-0 focus-visible:ring-0 border-[#f59e1e] underline decoration-2 max-md:w-full" // Thicker underline with offset
+                        className="bg-transparent ring-transparent border bg-[#ede7e7] focus:ring-0 focus-visible:ring-0 border-[#f59e1e] underline decoration-2 max-md:w-full"
                       >
-                        <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl max-md:text-[2.2vh] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0  underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
+                        <SelectTrigger className="w-fit ring-transparent border border-transparent bg-transparent md:text-base max-md:text-[1.8vh] uppercase rounded-full p-2 underline decoration-2 [&>svg]:w-6 [&>svg]:h-20 [&>svg]:opacity-100">
                           <SelectValue
                             placeholder="Story"
                             className="text-black w-full"
@@ -773,73 +769,64 @@ const Home = () => {
                         <SelectContent>
                           <SelectGroup>
                             <SelectItem value="story">a Story</SelectItem>
-
                             <SelectItem value="explanation">
                               an Explanation
                             </SelectItem>
-                            {/* <SelectItem value="informative story">
-                          an Informative Story
-                        </SelectItem> */}
-                            {/* <SelectItem value="podcast">a Podcast</SelectItem> */}
                             <SelectItem value="poem">a Poem</SelectItem>
                           </SelectGroup>
                         </SelectContent>
-                      </Select>{" "}
+                      </Select>
                     </h2>
-                    <Input
-                      type="text"
-                      placeholder="Type the topic name here"
-                      value={courseName}
-                      maxLength="150"
-                      onChange={(e) => setCourseName(e.target.value)}
-                      className="w-full md:max-w-lg md:p-2 max-md:py-[0.8vh] mx-auto py-6 text-xl placeholder:text-sm max-md:placeholder:text-[1.3vh] focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-4 bg-[#ede7e7]"
-                    />
                   </div>
+                  <Input
+                    type="text"
+                    placeholder="Type the topic name here"
+                    value={courseName}
+                    maxLength="150"
+                    onChange={(e) => setCourseName(e.target.value)}
+                    className="w-full md:max-w-lg mx-auto py-[0.8vh] text-sm placeholder:text-[1.2vh] focus-visible:ring-transparent border border-[#f59e1e] rounded-lg placeholder:text-center bg-[#ede7e7]"
+                  />
                   <div
                     onClick={() => setAdvanced(!advanced)}
-                    className="cursor-pointer text-center text-white my-[1.5vh] hover:underline max-md:text-[1.2vh]"
+                    className="cursor-pointer text-center text-white mt-[1vh] hover:underline max-md:text-[1.1vh]"
                   >
                     {advanced ? "Hide Advanced Filter" : "Show Advanced Filter"}
                   </div>
                   {advanced && (
                     <>
-                      {ageGenres.length > 0 && type == "story" && (
-                        <div className="w-full text-center mb-4">
-                          <h2 className="text-lg max-md:text-[2.1vh] text-white font-semibold mb-2 ">
-                            Select a Genre
-                          </h2>
-                          <Select
-                            onValueChange={(value) =>
-                              setGenre(
-                                ageGenres.find(
-                                  (option) => option.value === value
-                                )
-                              )
-                            }
-                            value={genre.value}
-                            className="md:max-w-lg mx-auto"
-                          >
-                            <SelectTrigger className="w-full border md:max-w-lg mx-auto text-center focus-visible:ring-transparent  bg-[#ede7e7] border-[#f59e1e] rounded-lg p-2">
-                              <SelectValue placeholder={genre.label} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup className="max-md:w-screen pr-2">
-                                {ageGenres.map((option) => (
-                                  <SelectItem
-                                    className="w-full"
-                                    key={option.value}
-                                    value={option.value}
-                                  >
-                                    <span className="w-full text-center">
-                                      {option.label1}
-                                    </span>
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
+                      <div className="w-full text-center mb-4">
+                        <h2 className="text-lg max-md:text-[2.1vh] text-white font-semibold mb-2">
+                          Select a Genre
+                        </h2>
+                        <Select
+                          onValueChange={(value) =>
+                            setGenre(
+                              ageGenres.find((option) => option.value === value)
+                            )
+                          }
+                          value={genre.value}
+                          className="md:max-w-lg mx-auto"
+                        >
+                          <SelectTrigger className="w-full border md:max-w-lg mx-auto text-center focus-visible:ring-transparent bg-[#ede7e7] border-[#f59e1e] rounded-lg p-2">
+                            <SelectValue placeholder={genre.label} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup className="max-md:w-screen pr-2">
+                              {ageGenres.map((option) => (
+                                <SelectItem
+                                  className="w-full"
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  <span className="w-full text-center">
+                                    {option.label1}
+                                  </span>
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
                       <div
                         className={cn(
                           "grid gap-2 md:gap-8",
@@ -850,13 +837,13 @@ const Home = () => {
                       >
                         {!isAuthenticated && !selectedAge && (
                           <div className="w-full text-center mb-4">
-                            <h2 className="text-lg font-semibold mb-2 ">Age</h2>
+                            <h2 className="text-lg font-semibold mb-2">Age</h2>
                             <Input
                               type="number"
-                              placeholder="Enter your child’s age (2-12)"
+                              placeholder="Enter your child’s age (2-12)"
                               value={age}
                               onChange={(e) => setAge(e.target.value)}
-                              className="w-full md:max-w-lg mx-auto p-2 placeholder:text-center  bg-[#ede7e7] focus-visible:ring-transparent border border-[#f59e1e] rounded-lg"
+                              className="w-full md:max-w-lg mx-auto p-2 placeholder:text-center bg-[#ede7e7] focus-visible:ring-transparent border border-[#f59e1e] rounded-lg"
                             />
                           </div>
                         )}
@@ -866,7 +853,7 @@ const Home = () => {
                             Language
                           </h2>
                           <Select onValueChange={setLanguage} value={language}>
-                            <SelectTrigger className="w-full md:max-w-lg mx-auto border text-center  bg-[#ede7e7] focus-visible:ring-transparent border-[#f59e1e] rounded-lg p-2">
+                            <SelectTrigger className="w-full md:max-w-lg mx-auto border text-center bg-[#ede7e7] focus-visible:ring-transparent border-[#f59e1e] rounded-lg p-2">
                               <SelectValue
                                 className="w-full text-center"
                                 placeholder="English"
@@ -878,7 +865,7 @@ const Home = () => {
                                   <SelectItem value="english">
                                     English
                                   </SelectItem>
-                                  {type != "podcast" && (
+                                  {type !== "podcast" && (
                                     <>
                                       <SelectItem value="spanish">
                                         Spanish
@@ -905,11 +892,10 @@ const Home = () => {
                       </div>
                     </>
                   )}
-
-                  <div className="w-full flex justify-center items-center ">
+                  <div className="w-full flex justify-center items-center">
                     <button
                       type="submit"
-                      className="bg-green-600 rounded-full uppercase font-semibold py-[0.4vh] max-md:max-w-40 md:py-2 text-lg max-md:text-[1.5vh] text-white px-[0.8vh] transition-all max-md:w-full md:min-w-60 "
+                      className="bg-green-600 max-w-32 rounded-full uppercase font-semibold py-[0.5vh] max-md:text-[1.5vh] text-white px-[1vh] transition-all w-full md:min-w-60"
                     >
                       Submit
                     </button>
@@ -918,31 +904,58 @@ const Home = () => {
                 {error && <p className="text-red-500">{error}</p>}
               </motion.div>
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-              className={cn(
-                "rounded-md items-center mt-0  w-full bg-[#5ebc4a] max-md:hidden"
-              )}
-            >
+
+            <div className="grid grid-cols-2 gap-[0.8vh]">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1 }}
-                className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full max-w-4xl"
+                className={cn(
+                  "rounded-md items-center w-full bg-[#5ebc4a] h-[13vh] md:h-[40vh]"
+                )}
               >
-                <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#069b49] rounded-md w-full pb-[1.1vh]">
-                  <h4 className=" text-center font-semibold text-2xl max-md:text-[2.6vh]  text-white">
-                    CONTESTS
-                  </h4>
-                  <span className="text-center text-white text-xs max-md:text-[1.3vh] w-full uppercase">
-                    WIN AMAZING PRIZES
-                  </span>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1 }}
+                  className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full max-w-4xl h-full"
+                >
+                  <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#069b49] rounded-md w-full">
+                    <h4 className="text-center font-semibold text-2xl max-md:text-[1.4vh] text-white">
+                      PERSONALITY TEST
+                    </h4>
+                  </div>
+                  <div className="w-full h-full flex justify-center items-center uppercase text-white text-center p-[1.5vh] max-md:text-[1.1vh]">
+                    Understand the Strengths & Weakness of your child
+                  </div>
+                </motion.div>
               </motion.div>
-              <div className="w-full h-full min-h-[28vh]"></div>
-            </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1 }}
+                className={cn(
+                  "rounded-md items-center w-full bg-[#009be8] h-[13vh] md:h-[40vh]"
+                )}
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1 }}
+                  className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full max-w-4xl h-full"
+                >
+                  <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#0170c1] rounded-md w-full">
+                    <h4 className="text-center font-semibold text-2xl max-md:text-[1.4vh] text-white">
+                      LEARNING STYLE TEST
+                    </h4>
+                  </div>
+                  <div className="w-full h-full flex justify-center items-center uppercase text-white text-center p-[1.5vh] max-md:text-[1.1vh]">
+                    Understand your child&apos;s preferred learning style
+                  </div>
+                </motion.div>
+              </motion.div>
+            </div>
           </div>
           {!latestCourse && (
             <div className="grid  grid-cols-1 gap-[0.8vh] w-full ">
@@ -957,7 +970,7 @@ const Home = () => {
                 </div>
                 <div
                   className={cn(
-                    "w-full flex flex-col gap-2 max-md:gap-[0.4vh]  relative p-2  overflow-y-auto max-md:max-h-[50vh] md:max-h-[73vh]"
+                    "w-full flex flex-col gap-2 max-md:gap-[0.4vh]  relative p-2  overflow-y-auto max-md:max-h-[50vh] md:max-h-[60vh]"
                   )}
                 >
                   <div className="grid grid-cols-1 gap-2 max-md:gap-[0.8vh]">
@@ -1002,109 +1015,9 @@ const Home = () => {
                         );
                       })}
                   </div>
-                  {!selectedAge && !sampleAge && (
-                    <>
-                      <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
-                        <Image
-                          src={
-                            "https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
-                          }
-                          width={80}
-                          height={80}
-                          alt={"logo"}
-                        />
-                        <div className="h-full w-full">
-                          <p className=" text-xs text-red-500">International</p>
-                          <p className=" text-sm font-semibold">
-                            Lorem ipsum dolor sit amet consectetur...
-                          </p>
-                          <div className="w-full flex justify-between items-center">
-                            <span className="text-[9px] text-slate-500">
-                              Saturday, 16 Nov 2014 04:44 PM
-                            </span>
-                            <span className="text-[9px] text-slate-500">
-                              Read more...
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
-                        <Image
-                          src={
-                            "https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
-                          }
-                          width={80}
-                          height={80}
-                          alt={"logo"}
-                        />
-                        <div className="h-full w-full">
-                          <p className=" text-xs text-red-500">International</p>
-                          <p className=" text-sm font-semibold">
-                            Lorem ipsum dolor sit amet consectetur...
-                          </p>
-                          <div className="w-full flex justify-between items-center">
-                            <span className="text-[9px] text-slate-500">
-                              Saturday, 16 Nov 2014 04:44 PM
-                            </span>
-                            <span className="text-[9px] text-slate-500">
-                              Read more...
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="bg-white rounded-md p-2 flex items-center gap-3 w-full">
-                        <Image
-                          src={
-                            "https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
-                          }
-                          width={80}
-                          height={80}
-                          alt={"logo"}
-                        />
-                        <div className="h-full w-full">
-                          <p className=" text-xs text-red-500">International</p>
-                          <p className=" text-sm font-semibold">
-                            Lorem ipsum dolor sit amet consectetur...
-                          </p>
-                          <div className="w-full flex justify-between items-center">
-                            <span className="text-[9px] text-slate-500">
-                              Saturday, 16 Nov 2014 04:44 PM
-                            </span>
-                            <span className="text-[9px] text-slate-500">
-                              Read more...
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                  
                 </div>
               </div>
-              {/* Community */}
-              {/* <div className="w-full rounded-md bg-[#76e4e4] flex flex-col justify-center items-center p-2 space-y-4">
-            <div className="flex flex-col gap-2 text-center">
-              <h4 className=" text-center font-semibold text-2xl">COMMUNITY</h4>
-              <span className="text-center text-slate-600 text-xs w-full">
-                Age appropriate Social Media for Kids
-              </span>
-            </div>
-            <div className="flex flex-col items-center justify-center">
-              <div
-                className={cn(
-                  "w-full flex flex-col gap-2  relative",
-                  posts?.length > 0 ? " overflow-y-auto h-72" : "h-64"
-                )}
-              >
-                {posts.length > 0 ? (
-                  posts.map((post) => <PostData key={post.postId} post={post} />)
-                ) : (
-                  <p className="text-gray-600">
-                    No posts found for this community.
-                  </p>
-                )}
-              </div>
-            </div>
-          </div> */}
             </div>
           )}
         </div>
@@ -1161,27 +1074,6 @@ const Home = () => {
             className="flex flex-col items-center space-y-4 bg-[#f8f8f8] shadow-lg rounded-lg w-full max-w-4xl p-3 py-6 relative"
           >
             <div className="mt-2 w-full text-justify">
-              {/* <h3 className="text-2xl font-semibold mb-4">
-              Latest Course Details
-            </h3>
-
-            <div className="mb-4">
-              <p>
-                <strong>Course Name:</strong> {latestCourse.courseName || "N/A"}
-              </p>
-              <p>
-                <strong>Language:</strong> {latestCourse.language || "N/A"}
-              </p>
-              <p>
-                <strong>Difficulty:</strong> {latestCourse.difficulty || "N/A"}
-              </p>
-              <p>
-                <strong>Age:</strong> {latestCourse.age || "N/A"}
-              </p>
-              <p>
-                <strong>Type:</strong> {latestCourse.type || "N/A"}
-              </p>
-            </div> */}
               {latestCourse.type == "story" ||
               latestCourse.type == "explanation" ||
               latestCourse.type == "bedtime story" ||

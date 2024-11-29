@@ -73,27 +73,29 @@ const RightSideBar = () => {
             className={cn(
               "",
               isCollapsed
-                ? "block absolute top-2 right-3 z-[999999999]"
+                ? "block absolute top-4 right-3 z-[999999999]"
                 : "hidden"
             )}
           >
             {/* {selectedGender && ( */}
-            <div className="flex flex-col w-fit gap-[1px] items-center md:hidden">
-              <Image
+            <div className="flex flex-col w-fit gap-[1px] items-center lg:hidden">
+            <div className="relative h-[5.2vh] w-[12vw]">
+            <Image
                 src={
                   selectedGender === "male"
                     ? "/images/boy.png"
                     : "/images/girl.png"
                 }
-                width={26}
-                height={26}
+                fill
+                objectFit="contain"
                 alt={selectedGender || "gender"}
               />
-              <span className="text-[9px] text-blue-600">
+            </div>
+              <span className="text-[1.3vh] text-blue-600">
                 {selectedChild.name.split(" ")[0]}, {selectedChild.age}
               </span>
-            </div>
             {/* )} */}
+          </div>
           </div>
           {!isCollapsed && (
             <div
