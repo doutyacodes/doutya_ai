@@ -66,7 +66,7 @@ const SideBar = () => {
   ];
   return (
     <>
-      <div
+      {/* <div
         onClick={toggleCollapse}
         className={cn(
           "",
@@ -76,7 +76,7 @@ const SideBar = () => {
         )}
       >
         <Menu size={hp(3.9)} />
-      </div>
+      </div> */}
       {!isCollapsed && (
         <div
           onClick={toggleCollapse}
