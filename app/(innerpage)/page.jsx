@@ -970,7 +970,7 @@ const Home = () => {
                 </div>
                 <div
                   className={cn(
-                    "w-full flex flex-col gap-2 max-md:gap-[0.4vh]  relative p-2  overflow-y-auto max-md:max-h-[50vh] md:max-h-[60vh]"
+                    "w-full flex flex-col gap-2 max-md:gap-[0.4vh]  relative p-2 o-scrollbar  overflow-y-auto max-md:max-h-[50vh] md:max-h-[60vh]"
                   )}
                 >
                   <div className="grid grid-cols-1 gap-2 max-md:gap-[0.8vh]">
