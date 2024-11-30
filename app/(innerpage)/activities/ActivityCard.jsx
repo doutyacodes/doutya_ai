@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { useChildren } from "@/context/CreateContext";
 
-const ActivityCard = ({ activity, fetchActivities,courses }) => {
+const ActivityCard = ({ activity, fetchActivities, courses, completed }) => {
   const { selectedChildId } = useChildren();
   const [isLoading, setIsLoading] = useState(false);
   const [base64Image, setBase64Image] = useState(null);
@@ -67,7 +67,7 @@ const ActivityCard = ({ activity, fetchActivities,courses }) => {
         <p className="text-gray-700 text-sm">{activity.content}</p>
       </div>
 
-      {activity.completed ? (
+      {completed ? (
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

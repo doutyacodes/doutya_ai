@@ -17,12 +17,6 @@ import { redirect, useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 function Banner({
-  onToggleResults,
-  showResults,
-  onToggleQuiz2Results,
-  showQuiz2Results,
-  isTest2Completed,
-  setIsTest2Completed,
 }) {
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState([]);
@@ -45,11 +39,11 @@ function Banner({
           selectedAge,
           selectedWeeks
         );
-        console.log("resp.data", resp);
+        console.log("resp.data", resp.data);
         setDashboardData(resp.data);
 
         const test2 = resp.data.find((q) => q.quiz_id === 2);
-        if (test2 && test2.isCompleted) setIsTest2Completed(true);
+        // if (test2 && test2.isCompleted) {setIsTest2Completed(true)}
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -57,7 +51,7 @@ function Banner({
       }
     };
     getQuizData();
-  }, [setIsTest2Completed, selectedChildId]);
+  }, [selectedChildId]);
 
   const getQuizStatus = (quizId) => {
     const quiz = dashboardData.find((q) => q.quiz_id === quizId);
@@ -65,6 +59,7 @@ function Banner({
   };
 
   const isTest1Completed = getQuizStatus(1).isCompleted;
+  const isTest2Completed = getQuizStatus(2).isCompleted;
   const isTest4Completed = getQuizStatus(4).isCompleted;
 
   if (loading) {

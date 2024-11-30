@@ -72,7 +72,7 @@ const ChallengeDetails = () => {
       >
         {/* Image */}
         <motion.img
-          src={challenge.image}
+          src={`https://wowfy.in/testusr/images/${challenge.image}`}
           alt={challenge.title}
           className="w-full h-64 object-cover"
           whileHover={{ scale: 1.05 }}
@@ -107,15 +107,33 @@ const ChallengeDetails = () => {
             </div>
           </div>
 
-          {/* Start Button */}
-          <motion.button
-            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md w-full transition-colors"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleStart}
-          >
-            Start Challenge
-          </motion.button>
+          {/* Conditional Rendering for Challenge Type */}
+          {challenge.challenge_type === 'pedometer' ? (
+            <div className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+              <p className="font-bold">Mobile App Required</p>
+              <p>This challenge is only available on our mobile app. Please download the app to participate.</p>
+              <div className="flex justify-center mt-4">
+                <a 
+                  href="https://play.google.com/store/apps/details?id=YOUR_ANDROID_APP_ID" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md transition-colors"
+                >
+                  Download Mobile App
+                </a>
+              </div>
+            </div>
+          ) : (
+            <motion.button
+              className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md w-full transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleStart}
+            >
+              Start Challenge
+            </motion.button>
+          )}
+
         </div>
       </motion.div>
     </div>

@@ -190,7 +190,7 @@ const ActivitiesList = () => {
         </h2> */}
 
         {normalActivities && normalActivities.length > 0 ? (
-          normalActivities.map(({activities,courses}) => {
+          normalActivities.map(({activities, courses, completed}) => {
             // console.log("activities",activities)
             return (
               <ActivityCard
@@ -198,6 +198,7 @@ const ActivitiesList = () => {
                 key={activities.id}
                 activity={activities}
                 courses={courses}
+                completed = {completed}
               />
             )
           })

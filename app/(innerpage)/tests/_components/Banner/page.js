@@ -21,7 +21,6 @@ function Banner({
   showResults,
   onToggleQuiz2Results,
   showQuiz2Results,
-  isTest2Completed,
   setIsTest2Completed,
 }) {
   const [loading, setLoading] = useState(false);
@@ -45,9 +44,11 @@ function Banner({
         );
         console.log("resp.data", resp);
         setDashboardData(resp.data);
-
+        console.log(resp.data);
         const test2 = resp.data.find((q) => q.quiz_id === 2);
-        if (test2 && test2.isCompleted) setIsTest2Completed(true);
+        if (test2 && test2.isCompleted){
+          setIsTest2Completed(true);
+        } 
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -63,6 +64,7 @@ function Banner({
   };
 
   const isTest1Completed = getQuizStatus(1).isCompleted;
+  const isTest2Completed = getQuizStatus(2).isCompleted;
   const isTest4Completed = getQuizStatus(4).isCompleted;
 
   if (loading) {

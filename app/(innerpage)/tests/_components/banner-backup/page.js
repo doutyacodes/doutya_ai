@@ -46,7 +46,9 @@ function Banner({
         setDashboardData(resp.data);
 
         const test2 = resp.data.find((q) => q.quiz_id === 2);
-        if (test2 && test2.isCompleted) setIsTest2Completed(true);
+        if (test2 && test2.isCompleted){
+          setIsTest2Completed(true);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {

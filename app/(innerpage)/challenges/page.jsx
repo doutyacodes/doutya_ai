@@ -55,7 +55,8 @@ const Challenges = () => {
 
       {/* Challenges Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {challengesData.length > 0 && challengesData.map((challenge, index) => (
+        {challengesData.length > 0 ? (
+          challengesData.map((challenge, index) => (
           <Link href={`/challenges/${challenge.slug}`} key={challenge.id}>
             <motion.div
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
@@ -95,7 +96,38 @@ const Challenges = () => {
               </div>
             </motion.div>
           </Link>
-        ))}
+        ))
+        ) : (
+          <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg shadow-md">
+            {/* <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-24 w-24 text-orange-400 mb-6" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+              />
+            </svg> */}
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              No Challenges Available
+            </h2>
+            <p className="text-gray-600 text-center mb-6">
+              Looks like there are no challenges at the moment. 
+              Check back later or stay tuned for upcoming challenges!
+            </p>
+            {/* <button 
+              className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md transition-colors"
+            >
+              Refresh Challenges
+            </button> */}
+          </div>
+        )
+      }
       </div>
     </div>
   );

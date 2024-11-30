@@ -61,7 +61,7 @@ const CourseList = () => {
           >
             <option value="story">Story</option>
             <option value="poem">Poem</option>
-            <option value="podcast">Podcast</option>
+            {/* <option value="podcast">Podcast</option> */}
             <option value="explanation">Explanation</option>
           </select>
         </div>
