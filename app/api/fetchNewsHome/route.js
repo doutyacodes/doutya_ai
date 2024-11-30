@@ -10,6 +10,7 @@ import {
   KIDS_LIKES,
   USER_ACTIVITIES,
   ACTIVITIES,
+  QUIZ_SEQUENCES,
 } from "@/utils/schema";
 import { authenticate } from "@/lib/jwtMiddleware";
 import { eq, and, desc } from "drizzle-orm";
@@ -21,7 +22,7 @@ export async function POST(req) {
   }
 
   const userId = authResult.decoded_Data.id;
-  const { age } = await req.json();
+  const { age,childId } = await req.json();
 
   if (!age) {
     return NextResponse.json({ error: "Age is required." }, { status: 400 });
@@ -120,9 +121,25 @@ export async function POST(req) {
       );
     }
 
+    let userQuiz =null;
+
+    if(childId)
+    {
+       userQuiz = await db
+      .select()
+      .from(QUIZ_SEQUENCES)
+      .where(
+        and(
+          eq(QUIZ_SEQUENCES.child_id, childId)
+        )
+      ) // Ensure userId is an integer
+      .execute();
+    }
+
     return NextResponse.json({
       news,
       posts: postsWithLikesAndComments ? postsWithLikesAndComments : [],
+      userQuiz: userQuiz ? userQuiz : null,
     });
   } catch (error) {
     console.error("Error fetching news or categories:", error);

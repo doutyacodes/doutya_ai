@@ -48,6 +48,7 @@ const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0); // Track current playback position
   const [sampleAge, setSampleAge] = useState(null);
   const [childAge, setChildAge] = useState(0);
+  const [userQuiz, setUserQuiz] = useState(null);
   const [genre, setGenre] = useState({
     value: "Any",
     label1: "Any",
@@ -91,11 +92,13 @@ const Home = () => {
       setIsLoading(true);
       const response = await GlobalApi.fetchNewsHome(token, {
         age: isAuthenticated ? selectedAge : selectedAge,
+        childId: selectedChildId,
       });
       const news = response.data.news || [];
-      // console.log("response", response.data);
+      console.log("response", response.data);
       setNewsCategories(news);
       setPosts(response.data.posts);
+      setUserQuiz(response.data.userQuiz);
     } catch (error) {
       console.error("Error fetching news:", error);
     } finally {
@@ -107,7 +110,7 @@ const Home = () => {
     if ((selectedAge && selectedAge != "") || (sampleAge && sampleAge != "")) {
       fetchNews();
     }
-  }, [selectedAge, sampleAge]);
+  }, [selectedAge, sampleAge, selectedChildId]);
   const scrollToSection = (sectionId) => {
     // Update which sections to show based on the section clicked
     if (sectionId === "our-story") {
@@ -155,7 +158,10 @@ const Home = () => {
   //   setError("");
   //   return true;
   // };
-
+  const getQuizStatus = (quizId) => {
+    const quiz = userQuiz.find((q) => q.quiz_id === quizId);
+    return quiz ? { isCompleted: quiz.isCompleted } : { isCompleted: false };
+  };
   const handleSearch = async (e) => {
     e.preventDefault();
     console.log(selectedChildId);
@@ -736,11 +742,11 @@ const Home = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
               className={cn(
-                "rounded-md items-center m-0 w-full bg-[#f04229]",
+                "rounded-md items-center m-0 w-full bg-[#f04229] md:min-h-[50vh] md:h-fit",
                 !advanced && "max-md:h-[35vh]" // Apply 35vh height only if advanced content is hidden
               )}
             >
-              <motion.div className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full max-w-4xl">
+              <motion.div className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full h-full">
                 <div className="flex flex-col gap-[1vh] text-center bg-[#e91b25] rounded-md w-full pb-[1vh]">
                   <h4 className="text-center font-semibold text-lg max-md:text-[2vh] text-white">
                     SEARCH
@@ -751,7 +757,7 @@ const Home = () => {
                 </div>
                 <form
                   onSubmit={handleSearch}
-                  className="w-full p-[1vh] max-md:flex flex-col justify-between max-md:min-h-[24vh] items-center h-full md:space-y-[1vh] md:pb-4"
+                  className="w-full p-[1vh] flex flex-col justify-between md:justify-center max-md:min-h-[24vh] items-center h-full md:space-y-[1vh] md:pb-4 md:flex-1 md:min-h-[35vh]"
                 >
                   <div className="w-full text-center">
                     <h2 className="md:text-lg font-semibold flex flex-wrap items-center justify-center gap-[1vh] text-white">
@@ -910,8 +916,18 @@ const Home = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1 }}
+                onClick={() => {
+                  const isTest1Completed = getQuizStatus(1).isCompleted;
+                  if (!isAuthenticated) {
+                    router.push("/login");
+                  } else {
+                    router.push(
+                      isTest1Completed ? "/tests/myResults" : "/quiz-section/1"
+                    );
+                  }
+                }}
                 className={cn(
-                  "rounded-md items-center w-full bg-[#5ebc4a] h-[13vh] md:h-[40vh]"
+                  "rounded-md items-center w-full bg-[#5ebc4a] h-[13vh] md:h-[20vh] cursor-pointer"
                 )}
               >
                 <motion.div
@@ -921,7 +937,7 @@ const Home = () => {
                   className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full max-w-4xl h-full"
                 >
                   <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#069b49] rounded-md w-full">
-                    <h4 className="text-center font-semibold text-2xl max-md:text-[1.4vh] text-white">
+                    <h4 className="text-center font-semibold text-lg max-md:text-[2vh] text-white">
                       PERSONALITY TEST
                     </h4>
                   </div>
@@ -935,8 +951,21 @@ const Home = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1 }}
+                onClick={() => {
+                  const isTest4Completed = getQuizStatus(4).isCompleted;
+
+                  if (!isAuthenticated) {
+                    router.push("/login");
+                  } else {
+                    router.push(
+                      isTest4Completed
+                        ? "/tests/learning-style-results"
+                        : "/quiz/learning-style/4"
+                    );
+                  }
+                }}
                 className={cn(
-                  "rounded-md items-center w-full bg-[#009be8] h-[13vh] md:h-[40vh]"
+                  "rounded-md items-center w-full bg-[#009be8] h-[13vh] md:h-[20vh] cursor-pointer"
                 )}
               >
                 <motion.div
@@ -946,7 +975,7 @@ const Home = () => {
                   className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full max-w-4xl h-full"
                 >
                   <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#0170c1] rounded-md w-full">
-                    <h4 className="text-center font-semibold text-2xl max-md:text-[1.4vh] text-white">
+                    <h4 className="text-center font-semibold text-lg max-md:text-[2vh] text-white">
                       LEARNING STYLE TEST
                     </h4>
                   </div>
@@ -1015,7 +1044,6 @@ const Home = () => {
                         );
                       })}
                   </div>
-                  
                 </div>
               </div>
             </div>
