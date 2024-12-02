@@ -21,8 +21,9 @@ const ChallengeDetails = () => {
       const response = await GlobalApi.FetchChallengesOne({
         slug,
         childId: selectedChildId,
+        show: true,
       });
-      console.log(response.data);
+      // console.log(response.data);
       setChallenge(response.data.challenge);
     } catch (error) {
     } finally {
@@ -36,12 +37,10 @@ const ChallengeDetails = () => {
       toast.success("You have already completed this challenge!");
       return;
     }
-    if(challenge.challenge_type=="upload")
-    {
+    if (challenge.challenge_type == "upload") {
       router.push(`/challenges/upload-challenge/${slug}`);
     }
-    if(challenge.challenge_type=="quiz")
-    {
+    if (challenge.challenge_type == "quiz") {
       router.push(`/challenges/quiz-section/${slug}`);
     }
   };
@@ -108,15 +107,21 @@ const ChallengeDetails = () => {
           </div>
 
           {/* Conditional Rendering for Challenge Type */}
-          {challenge.challenge_type === 'pedometer' ? (
-            <div className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+          {challenge.challenge_type === "pedometer" ? (
+            <div
+              className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
+              role="alert"
+            >
               <p className="font-bold">Mobile App Required</p>
-              <p>This challenge is only available on our mobile app. Please download the app to participate.</p>
+              <p>
+                This challenge is only available on our mobile app. Please
+                download the app to participate.
+              </p>
               <div className="flex justify-center mt-4">
-                <a 
-                  href="https://play.google.com/store/apps/details?id=YOUR_ANDROID_APP_ID" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://play.google.com/store/apps/details?id=YOUR_ANDROID_APP_ID"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md transition-colors"
                 >
                   Download Mobile App
@@ -128,12 +133,23 @@ const ChallengeDetails = () => {
               className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md w-full transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleStart}
+              onClick={
+                challenge.entry_type != "points"
+                  ? handleStart
+                  : () => {
+                      if (challenge.permission) {
+                        handleStart();
+                      } else {
+                        toast.error(
+                          "Sorry.You don't have enough points to start the challenge!"
+                        );
+                      }
+                    }
+              }
             >
               Start Challenge
             </motion.button>
           )}
-
         </div>
       </motion.div>
     </div>

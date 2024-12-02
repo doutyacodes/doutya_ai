@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { CHALLENGE_USER_QUIZ, CHALLENGE_PROGRESS } from "@/utils/schema";
+import {
+  CHALLENGE_USER_QUIZ,
+  CHALLENGE_PROGRESS,
+  CHALLENGE_OPTIONS,
+  QUIZ_SCORE,
+  USER_POINTS,
+  USER_CHALLENGE_POINTS,
+  CHALLENGES,
+} from "@/utils/schema";
 import { eq, and } from "drizzle-orm";
 import { authenticate } from "@/lib/jwtMiddleware";
 
@@ -20,8 +28,14 @@ export async function POST(req) {
       );
     }
 
-    const { challengeId, questionId, optionId, childId, isCompleted, isFirstQuestion } =
-      await req.json();
+    const {
+      challengeId,
+      questionId,
+      optionId,
+      childId,
+      isCompleted,
+      isFirstQuestion,
+    } = await req.json();
 
     if (
       !challengeId ||
@@ -37,7 +51,7 @@ export async function POST(req) {
       );
     }
 
-    // Insert or update answer
+    // Insert or update the user's quiz answer
     await db.insert(CHALLENGE_USER_QUIZ).values({
       challenge_id: challengeId,
       question_id: questionId,
@@ -45,6 +59,51 @@ export async function POST(req) {
       child_id: childId,
       user_id: userId,
     });
+
+    // Check if the selected option is the correct answer
+    const correctOption = await db
+      .select()
+      .from(CHALLENGE_OPTIONS)
+      .where(
+        and(
+          eq(CHALLENGE_OPTIONS.id, optionId),
+          eq(CHALLENGE_OPTIONS.is_answer, true)
+        )
+      )
+      .limit(1)
+      .execute();
+
+    if (correctOption.length > 0) {
+      // If the option is correct, update the score
+      const existingScore = await db
+        .select()
+        .from(QUIZ_SCORE)
+        .where(
+          and(
+            eq(QUIZ_SCORE.challenge_id, challengeId),
+            eq(QUIZ_SCORE.child_id, childId),
+            eq(QUIZ_SCORE.user_id, userId)
+          )
+        )
+        .limit(1)
+        .execute();
+      // console.log(existingScore,existingScore[0])
+      if (existingScore.length > 0) {
+        // Update the score by incrementing it
+        await db
+          .update(QUIZ_SCORE)
+          .set({ score: parseFloat(existingScore[0].score) + 1 })
+          .where(eq(QUIZ_SCORE.id, existingScore[0].id));
+      } else {
+        // Insert a new score record
+        await db.insert(QUIZ_SCORE).values({
+          user_id: userId,
+          child_id: childId,
+          challenge_id: challengeId,
+          score: 1, // Start with a score of 1 for the first correct answer
+        });
+      }
+    }
 
     // If it's the first question, insert a record in CHALLENGE_PROGRESS with is_started: true
     if (isFirstQuestion) {
@@ -58,7 +117,8 @@ export async function POST(req) {
             eq(CHALLENGE_PROGRESS.user_id, userId)
           )
         )
-        .limit(1);
+        .limit(1)
+        .execute();
 
       if (existingProgress.length === 0) {
         await db.insert(CHALLENGE_PROGRESS).values({
@@ -83,9 +143,61 @@ export async function POST(req) {
             eq(CHALLENGE_PROGRESS.user_id, userId)
           )
         );
+
+      let challengeExists;
+      // Check if the challenge exists for the given ID
+      const challenge = await db
+        .select()
+        .from(CHALLENGES)
+        .where(eq(CHALLENGES.id, challengeId))
+        .limit(1)
+        .execute();
+
+      if (challenge.length > 0) {
+        challengeExists = challenge[0].id;
+      }
+
+      if (challengeExists.entry_type != "points") {
+        const userPoints = await db
+          .select()
+          .from(USER_POINTS)
+          .where(
+            and(
+              eq(USER_POINTS.user_id, userId),
+              eq(USER_POINTS.child_id, childId)
+            )
+          )
+          .limit(1)
+          .execute();
+
+        if (userPoints.length > 0) {
+          // Record exists; update points
+          const updatedPoints = userPoints[0].points + (challengeExists.points||0);
+          await db
+            .update(USER_POINTS)
+            .set({ points: updatedPoints })
+            .where(eq(USER_POINTS.id, userPoints[0].id));
+        } else {
+          // Record does not exist; create new
+          await db.insert(USER_POINTS).values({
+            user_id: userId,
+            child_id: childId,
+            points: challengeExists.points,
+          });
+        }
+        await db.insert(USER_CHALLENGE_POINTS).values({
+          user_id: userId,
+          child_id: childId,
+          points: challengeExists.points,
+          challenge_id: challengeId,
+        });
+      }
     }
 
-    return NextResponse.json({ success: true, message: "Answer submitted successfully." });
+    return NextResponse.json({
+      success: true,
+      message: "Answer submitted successfully.",
+    });
   } catch (error) {
     console.error("Error submitting quiz answer:", error);
     return NextResponse.json(

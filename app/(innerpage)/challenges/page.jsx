@@ -6,8 +6,6 @@ import { useChildren } from "@/context/CreateContext";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 
-
-
 const Challenges = () => {
   const { selectedAge, selectedChildId } = useChildren();
   const [challengesData, setChallengesData] = useState([]);
@@ -21,7 +19,7 @@ const Challenges = () => {
         childId: selectedChildId,
       });
       setChallengesData(response.data.challenges);
-    //   console.log(response.data);
+      //   console.log(response.data);
     } catch (error) {
       console.error("Error fetching news:", error);
     } finally {
@@ -35,8 +33,8 @@ const Challenges = () => {
 
   const formatDate = (date) => {
     const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0'); // Ensures two digits for day
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Ensures two digits for month
+    const day = String(d.getDate()).padStart(2, "0"); // Ensures two digits for day
+    const month = String(d.getMonth() + 1).padStart(2, "0"); // Ensures two digits for month
     const year = d.getFullYear();
     return `${day}-${month}-${year}`;
   };
@@ -57,46 +55,60 @@ const Challenges = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {challengesData.length > 0 ? (
           challengesData.map((challenge, index) => (
-          <Link href={`/challenges/${challenge.slug}`} key={challenge.id}>
-            <motion.div
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2, duration: 0.5 }}
-              whileHover={{ scale: 1.03 }}
+            <Link
+              href={`/challenges/${challenge.slug}`}
+              key={challenge.id}
             >
-              {/* Title Section */}
-              <div className="p-3 text-center font-medium">
-                Axara Added a Challenge
-              </div>
+              
+              <motion.div
+                className="bg-white rounded-lg shadow-md relative overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.2, duration: 0.5 }}
+                whileHover={{ scale: 1.03 }}
+              >
+                {challenge.entry_type !== "nill" && (
+                <div className="absolute z-20 right-3 top-3 bg-green-500 text-white text-[8px] rounded-sm px-2 py-[2px]">
+                  CONTEST
+                </div>
+              )}
+                {/* Title Section */}
+                <div className="p-3 text-center font-medium">
+                  Axara Added a Challenge
+                </div>
 
-              {/* Image */}
-              <motion.img
-                // src={challenge.image}
-                src={`https://wowfy.in/testusr/images/${challenge.image}`}
-                alt={challenge.title}
-                className="w-full h-40 object-cover"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-              />
+                {/* Image */}
+                <motion.img
+                  // src={challenge.image}
+                  src={`https://wowfy.in/testusr/images/${challenge.image}`}
+                  alt={challenge.title}
+                  className="w-full h-40 object-cover"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
+                />
 
-              {/* Title */}
-              <div className="p-4 text-center">
-                <h2 className="text-lg font-semibold text-gray-800">
-                  {challenge.title}
-                </h2>
-              </div>
+                {/* Title */}
+                <div className="p-4 text-center">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    {challenge.title}
+                  </h2>
+                </div>
 
-              {/* Footer Section */}
-              <div className="flex justify-between items-center bg-gray-50 px-4 py-3 text-sm text-gray-600">
-                <span>📅 {formatDate(challenge.show_date)}</span>
-                <span className="font-medium">
-                  Entry Fee: {challenge.entry_type =="nill" ? "NILL" : challenge.entry_type =="points" ? challenge.entry_fee + " Points" : "₹"+challenge.entry_fee}
-                </span>
-              </div>
-            </motion.div>
-          </Link>
-        ))
+                {/* Footer Section */}
+                <div className="flex justify-between items-center bg-gray-50 px-4 py-3 text-sm text-gray-600">
+                  <span>📅 {formatDate(challenge.show_date)}</span>
+                  <span className="font-medium">
+                    Entry Fee:{" "}
+                    {challenge.entry_type == "nill"
+                      ? "NILL"
+                      : challenge.entry_type == "points"
+                      ? challenge.entry_fee + " Points"
+                      : "₹" + challenge.entry_fee}
+                  </span>
+                </div>
+              </motion.div>
+            </Link>
+          ))
         ) : (
           <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg shadow-md">
             {/* <svg 
@@ -117,8 +129,8 @@ const Challenges = () => {
               No Challenges Available
             </h2>
             <p className="text-gray-600 text-center mb-6">
-              Looks like there are no challenges at the moment. 
-              Check back later or stay tuned for upcoming challenges!
+              Looks like there are no challenges at the moment. Check back later
+              or stay tuned for upcoming challenges!
             </p>
             {/* <button 
               className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md transition-colors"
@@ -126,8 +138,7 @@ const Challenges = () => {
               Refresh Challenges
             </button> */}
           </div>
-        )
-      }
+        )}
       </div>
     </div>
   );

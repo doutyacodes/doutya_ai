@@ -4,6 +4,7 @@ import { ChildrenProvider } from "@/context/CreateContext";
 import Navbar from "../_components/Navbar";
 import SideBar from "../_components/SideBar";
 import RightSideBar from "../_components/RightSideBar";
+import LayoutWrapper from "../_components/LayoutWrapper";
 
 const ProtectLayout = ({ children }) => {
   return (
@@ -13,10 +14,10 @@ const ProtectLayout = ({ children }) => {
           <SideBar />
 
           {/* Content */}
-          <div className="flex-grow relative z-10 p-3">
+          <LayoutWrapper >
             <Navbar />
             {children}
-          </div>
+          </LayoutWrapper>
           <RightSideBar />
         </div>
       </ChildrenProvider>

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/utils";
 import { CHALLENGES, CHALLENGE_PROGRESS, CHILDREN } from "@/utils/schema";
 import { authenticate } from "@/lib/jwtMiddleware";
-import { and, eq, notIn } from "drizzle-orm"; // Using `notIn` to exclude challenges that are completed
+import { and, eq, notIn, isNull, or, lt } from "drizzle-orm"; // Added `isNull` and `lt` for date comparison
 
 export async function POST(req) {
   const authResult = await authenticate(req);
@@ -23,6 +23,7 @@ export async function POST(req) {
   if (!age) {
     return NextResponse.json({ error: "Age is required." }, { status: 400 });
   }
+
   let finalChildId = childId;
   if (userId) {
     if (!childId) {
@@ -43,12 +44,23 @@ export async function POST(req) {
       }
     }
   }
+
   try {
-    // Fetch challenges that match the user's age
+    const currentDate = new Date();
+
+    // Fetch challenges that match the user's age and are not expired
     const challenges = await db
       .select()
       .from(CHALLENGES)
-      .where(eq(CHALLENGES.age, age)) // Filter by age
+      .where(
+        and(
+          eq(CHALLENGES.age, age), // Filter by age
+          or(
+            isNull(CHALLENGES.end_date), // Include challenges without an end_date
+            lt(currentDate, CHALLENGES.end_date) // Include challenges where end_date is in the future
+          )
+        )
+      )
       .execute();
 
     // Fetch the completed challenges for the user to exclude from the list
@@ -59,7 +71,7 @@ export async function POST(req) {
         and(
           eq(CHALLENGE_PROGRESS.is_completed, true),
           eq(CHALLENGE_PROGRESS.user_id, userId),
-          eq(CHALLENGE_PROGRESS.child_id, finalChildId),
+          eq(CHALLENGE_PROGRESS.child_id, finalChildId)
         )
       )
       .execute();

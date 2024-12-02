@@ -55,6 +55,7 @@ export async function POST(req) {
       .orderBy(desc(NEWS.created_at))
       .leftJoin(NEWS_CATEGORIES, eq(NEWS.news_category_id, NEWS_CATEGORIES.id))
       .where(eq(NEWS.age, age))
+      .limit(10)
       .execute();
     let postsWithLikesAndComments = null;
 

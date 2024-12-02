@@ -6,6 +6,7 @@ import {
   CHALLENGE_QUESTIONS,
   CHALLENGE_OPTIONS,
   CHALLENGE_USER_QUIZ,
+  USER_POINTS,
 } from "@/utils/schema";
 import { and, eq, not, inArray } from "drizzle-orm";
 import { authenticate } from "@/lib/jwtMiddleware";
@@ -28,7 +29,7 @@ export async function POST(req) {
     }
 
     // Parse request body
-    const { slug, childId } = await req.json();
+    const { slug, childId, show = null } = await req.json();
 
     if (!slug || !childId) {
       return NextResponse.json(
@@ -52,6 +53,23 @@ export async function POST(req) {
     }
 
     const challengeData = challenge[0];
+
+    let permission = false;
+
+    if (show && challengeData.entry_type == "points") {
+      const user_points = await db
+        .select()
+        .from(USER_POINTS)
+        .where(eq(USER_POINTS.child_id, childId))
+        .execute();
+      if (user_points.length > 0) {
+        const required_points = challengeData.entry_fee;
+        const user_points = user_points[0].points;
+        if (user_points >= required_points) {
+          permission = true;
+        }
+      }
+    }
 
     // Fetch user's progress
     const challengeProgress = await db
@@ -130,6 +148,7 @@ export async function POST(req) {
         challenge: {
           ...challengeData,
           isCompleted,
+          permission
         },
         answeredQuestions: answeredQuestions || [],
         remainingQuestions: remainingQuestions || [],
@@ -141,6 +160,7 @@ export async function POST(req) {
       challenge: {
         ...challengeData,
         isCompleted,
+        permission
       },
     });
   } catch (error) {

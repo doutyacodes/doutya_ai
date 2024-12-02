@@ -222,6 +222,16 @@ const FetchChallengesOne = async (data) => {
   });
 };
 
+const FetchLeaderboard = async (data) => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(`/api/fetchLeaderboard`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
+
 const submitQuizAnswer = async (data) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
@@ -760,5 +770,6 @@ export default {
   SaveQuizProgress2,
   GetFeedbacksData,
   GetDaysData,
-  ReportNews
+  ReportNews,
+  FetchLeaderboard
 };

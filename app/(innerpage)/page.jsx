@@ -728,21 +728,21 @@ const Home = () => {
   return (
     <div
       className={cn(
-        "  text-gray-800 p-1  pt-0 relative",
+        "  text-gray-800 md:p-1  pt-0 relative",
         !latestCourse && !advanced && "max-md:h-screen"
       )}
     >
       <Toaster />
 
       {!latestCourse && (
-        <div className="grid grid-cols-1 md:grid-cols-2 max-md:gap-[1.1vh] md:gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 max-md:gap-[1.1vh] md:gap-2 ">
           <div className="w-full space-y-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
               className={cn(
-                "rounded-md items-center m-0 w-full bg-[#f04229] md:min-h-[50vh] md:h-fit",
+                "rounded-md items-center m-0 w-full bg-[#f04229] md:min-h-[60vh] md:h-fit",
                 !advanced && "max-md:h-[35vh]" // Apply 35vh height only if advanced content is hidden
               )}
             >
@@ -757,7 +757,7 @@ const Home = () => {
                 </div>
                 <form
                   onSubmit={handleSearch}
-                  className="w-full p-[1vh] flex flex-col justify-between md:justify-center max-md:min-h-[24vh] items-center h-full md:space-y-[1vh] md:pb-4 md:flex-1 md:min-h-[35vh]"
+                  className="w-full p-[1vh] flex flex-col justify-between md:justify-around max-md:min-h-[24vh] items-center h-full md:space-y-[1vh] md:pb-4 md:flex-1 md:min-h-[35vh]"
                 >
                   <div className="w-full text-center">
                     <h2 className="md:text-lg font-semibold flex flex-wrap items-center justify-center gap-[1vh] text-white">
@@ -835,13 +835,11 @@ const Home = () => {
                       </div>
                       <div
                         className={cn(
-                          "grid gap-2 md:gap-8",
-                          selectedAge
-                            ? "grid-cols-1"
-                            : "grid-cols-2 max-md:grid-cols-1"
+                          "grid gap-2 md:gap-8 grid-cols-1"
+                     
                         )}
                       >
-                        {!isAuthenticated && !selectedAge && (
+                        {/* {!isAuthenticated && !selectedAge && (
                           <div className="w-full text-center mb-4">
                             <h2 className="text-lg font-semibold mb-2">Age</h2>
                             <Input
@@ -852,7 +850,7 @@ const Home = () => {
                               className="w-full md:max-w-lg mx-auto p-2 placeholder:text-center bg-[#ede7e7] focus-visible:ring-transparent border border-[#f59e1e] rounded-lg"
                             />
                           </div>
-                        )}
+                        )} */}
 
                         <div className="w-full text-center mb-4">
                           <h2 className="text-lg max-md:text-[2.1vh] font-semibold mb-2 text-white">
@@ -937,7 +935,7 @@ const Home = () => {
                   className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full max-w-4xl h-full"
                 >
                   <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#069b49] rounded-md w-full">
-                    <h4 className="text-center font-semibold text-lg max-md:text-[2vh] text-white">
+                    <h4 className=" text-center font-semibold text-lg max-md:text-[2vh] text-white">
                       PERSONALITY TEST
                     </h4>
                   </div>
@@ -975,7 +973,7 @@ const Home = () => {
                   className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full max-w-4xl h-full"
                 >
                   <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#0170c1] rounded-md w-full">
-                    <h4 className="text-center font-semibold text-lg max-md:text-[2vh] text-white">
+                    <h4 className=" text-center font-semibold text-lg max-md:text-[2vh] text-white">
                       LEARNING STYLE TEST
                     </h4>
                   </div>
@@ -988,18 +986,18 @@ const Home = () => {
           </div>
           {!latestCourse && (
             <div className="grid  grid-cols-1 gap-[0.8vh] w-full ">
-              <div className="w-full rounded-md bg-[#ffcf89] space-y-2 max-md:space-y-[1.1vh] pb-[1.1vh]">
-                <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#f68c1f] rounded-md ">
-                  <h4 className=" text-center font-semibold text-2xl max-md:text-[2.6vh]  text-white">
+              <div className="flex flex-col gap-[1vh] text-center bg-[#ffcf89] rounded-md w-full pb-[1vh]">
+                <div className="flex flex-col gap-2 max-md:gap-[0.1vh] text-center bg-[#f68c1f] rounded-md">
+                  <h4 className=" text-center font-semibold text-lg max-md:text-[2vh] text-white">
                     HEADLINES
                   </h4>
-                  <span className="text-center text-white text-xs max-md:text-[1.3vh] w-full uppercase pb-2">
+                  <span className="text-center text-white text-xs max-md:text-[1.2vh] w-full uppercase mb-[1.2%]">
                     Todays News made age appropriate for Kids
                   </span>
                 </div>
                 <div
                   className={cn(
-                    "w-full flex flex-col gap-2 max-md:gap-[0.4vh]  relative p-2 o-scrollbar  overflow-y-auto max-md:max-h-[50vh] md:max-h-[60vh]"
+                    "w-full flex flex-col gap-2 max-md:gap-[0.4vh]  relative p-2 o-scrollbar  overflow-y-auto max-md:max-h-[50vh] md:max-h-[71vh]"
                   )}
                 >
                   <div className="grid grid-cols-1 gap-2 max-md:gap-[0.8vh]">
@@ -1050,6 +1048,7 @@ const Home = () => {
           )}
         </div>
       )}
+      <div className="w-full h-full p-3 space-y-4">
       {latestCourse && (
         <div className="h-1 bg-orange-600 w-full absolute top-0 left-0 z-[99999999999999999]" />
       )}
@@ -1441,6 +1440,7 @@ const Home = () => {
             </div> */}
           </motion.div>
         )}
+      </div>
       </div>
     </div>
   );

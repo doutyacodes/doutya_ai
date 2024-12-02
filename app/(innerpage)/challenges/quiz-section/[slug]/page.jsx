@@ -7,9 +7,11 @@ import { useChildren } from "@/context/CreateContext";
 import toast from "react-hot-toast";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
+import { cn } from "@/lib/utils";
 
 const QuizSection = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [quiz_loading, setQuiz_loading] = useState(false);
   const [challenge, setChallenge] = useState(null);
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -61,10 +63,11 @@ const QuizSection = () => {
   // Submit current answer
   const handleFinalSubmit = async () => {
     try {
+      setQuiz_loading(true);
       const currentQuestion = quizQuestions[currentQuestionIndex];
       const isLastQuestion = currentQuestionIndex === quizQuestions.length - 1;
       const isFirstQuestion = currentQuestionIndex === 0;
-  
+
       const response = await GlobalApi.submitQuizAnswer({
         challengeId: challenge.id,
         questionId: currentQuestion.id,
@@ -73,7 +76,7 @@ const QuizSection = () => {
         isCompleted: isLastQuestion,
         isFirstQuestion: isFirstQuestion,
       });
-  
+
       if (response.data.success) {
         toast.success("Answer submitted successfully.");
         if (isLastQuestion) {
@@ -86,9 +89,10 @@ const QuizSection = () => {
     } catch (error) {
       console.error("Error submitting answer:", error);
       toast.error("Failed to submit the answer. Please try again.");
+    } finally {
+      setQuiz_loading(false);
     }
   };
-  
 
   return (
     <div className="min-h-screen p-4">
@@ -100,7 +104,9 @@ const QuizSection = () => {
 
       {challengeCompleted && (
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-green-600">Challenge Completed!</h2>
+          <h2 className="text-2xl font-bold text-green-600">
+            Challenge Completed!
+          </h2>
           <motion.button
             className="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg"
             onClick={() => router.push("/challenges")}
@@ -115,7 +121,7 @@ const QuizSection = () => {
           <h2 className="text-xl font-semibold">
             {quizQuestions[currentQuestionIndex]?.question}
           </h2>
-          <div className="mt-4 space-y-2 grid grid-cols-12 gap-3">
+          <div className="mt-4 grid grid-cols-12 gap-3">
             {quizQuestions[currentQuestionIndex]?.options?.map((option) => (
               <button
                 key={option.id}
@@ -132,9 +138,12 @@ const QuizSection = () => {
           </div>
           <motion.button
             onClick={handleFinalSubmit}
-            className="mt-8 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg"
+            disabled={quiz_loading}
+            className={cn("mt-8 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg",quiz_loading &&"bg-opacity-50")}
           >
-            {currentQuestionIndex === quizQuestions.length - 1
+            {quiz_loading
+              ? "Submitting..."
+              : currentQuestionIndex === quizQuestions.length - 1
               ? "Submit Quiz"
               : "Next Question"}
           </motion.button>
@@ -142,11 +151,11 @@ const QuizSection = () => {
       )}
 
       {isQuizCompleted && (
-        <motion.div
-          className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center"
-        >
+        <motion.div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-2xl font-bold text-green-600">Quiz Completed!</h2>
+            <h2 className="text-2xl font-bold text-green-600">
+              Quiz Completed!
+            </h2>
             <motion.button
               onClick={() => router.push("/challenges")}
               className="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg"

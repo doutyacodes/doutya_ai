@@ -1283,22 +1283,41 @@ export const WORDS_MEANINGS = mysqlTable("words_meanings", {
   created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
 });
-
+ 
 export const CHALLENGES = mysqlTable("challenges", {
   id: int("id").primaryKey().autoincrement(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").default(null),
   show_date: date("show_date").notNull(),
+  end_date: datetime("end_date").default(null), // Add end_date with datetime type
   challenge_type: mysqlEnum("challenge_type", ["upload", "quiz"]).notNull(),
   slug: varchar("slug", { length: 350 }), // UUID for unique challenge identification
   image: varchar("image", { length: 255 }).default(null),
   entry_fee: int("entry_fee").default(0),
   age: int("age"),
+  points: int("points"),
   entry_type: mysqlEnum("entry_type", ["nill", "points", "fee"]).default(
     "nill"
   ),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const USER_POINTS = mysqlTable("user_points", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull(),  // User identifier
+  child_id: int("child_id").notNull(),  // Child identifier
+  points: int("points").default(0),  // Points earned by the user for a child
+  created_at: timestamp("created_at").defaultNow(),  // Timestamp for record
+});
+
+export const USER_CHALLENGE_POINTS = mysqlTable("user_challenge_points", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull(),  // User identifier
+  child_id: int("child_id").notNull(),  // Child identifier
+  challenge_id: int("challenge_id").notNull(),
+  points: int("points").default(0),  // Points earned by the user for a child
+  created_at: timestamp("created_at").defaultNow(),  // Timestamp for record
 });
 
 export const CHALLENGE_PROGRESS = mysqlTable("challenge_progress", {
@@ -1349,4 +1368,14 @@ export const NEWS_REPORTS = mysqlTable("news_reports", {
   user_id: int("user_id").references(() => USER_DETAILS.id), // Nullable
   report_text: text("report_text"),
   created_at: timestamp("created_at").defaultNow(),
+});
+
+export const QUIZ_SCORE = mysqlTable("quiz_score", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull(),
+  child_id: int("child_id").notNull(),
+  challenge_id: int("challenge_id").notNull(), // Link to a specific challenge
+  score: decimal("score", { precision: 5, scale: 2 }).notNull(), // Allows 999.99 max
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });

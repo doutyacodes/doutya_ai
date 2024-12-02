@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import SFTPClient from "ssh2-sftp-client";
-import { CHALLENGES, CHALLENGE_PROGRESS } from "@/utils/schema";
+import { CHALLENGES, CHALLENGE_PROGRESS, USER_CHALLENGE_POINTS, USER_POINTS } from "@/utils/schema";
 import { authenticate } from "@/lib/jwtMiddleware";
 import jwt from "jsonwebtoken";
 import os from "os";
 import { db } from "@/utils";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export async function POST(request) {
   const { child_id, token, challenge_id, image } = await request.json();
@@ -95,7 +95,34 @@ export async function POST(request) {
       challenge_type:"upload",
       is_completed: true,
     });
+  //   const userPoints = await db
+  //   .select()
+  //   .from(USER_POINTS)
+  //   .where(and(eq(USER_POINTS.user_id, userId), eq(USER_POINTS.child_id, child_id)))
+  //   .limit(1)
+  //   .execute();
 
+  // if (userPoints.length > 0) {
+  //   // Record exists; update points
+  //   const updatedPoints = userPoints[0].points + challengeExists.points;
+  //   await db
+  //     .update(USER_POINTS)
+  //     .set({ points: updatedPoints })
+  //     .where(eq(USER_POINTS.id, userPoints[0].id));
+  // } else {
+  //   // Record does not exist; create new
+  //   await db.insert(USER_POINTS).values({
+  //     user_id: userId,
+  //     child_id: child_id,
+  //     points: challengeExists.points,
+  //   });
+  // }
+  // await db.insert(USER_CHALLENGE_POINTS).values({
+  //   user_id: userId,
+  //   child_id: child_id,
+  //   points: challengeExists.points,
+  //   challenge_id:challenge_id
+  // });
     // Clean up temporary file
     fs.unlinkSync(localFilePath);
 
