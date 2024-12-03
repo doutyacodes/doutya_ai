@@ -23,7 +23,7 @@ export default function NewsDetails({ id }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const { selectedAge } = useChildren();
-  const [report_text, setReport_text] = useState("")
+  const [report_text, setReport_text] = useState("");
   const [showReportPopup, setShowReportPopup] = useState(false);
 
   useEffect(() => {
@@ -51,24 +51,22 @@ export default function NewsDetails({ id }) {
     fetchArticle();
   }, [id]);
 
-  const handleReport = async() => {
-   
+  const handleReport = async () => {
     try {
-        const response = await GlobalApi.ReportNews({
-            news_id: id,
-            report_text
-        })
-        console.log(response.data)
-        if (response?.data) {
-            toast.success("News reported successfully.");
-          }
-          setReport_text("")
+      const response = await GlobalApi.ReportNews({
+        news_id: id,
+        report_text,
+      });
+      console.log(response.data);
+      if (response?.data) {
+        toast.success("News reported successfully.");
+      }
+      setReport_text("");
     } catch (error) {
-        console.log(error)
-        toast.error("Failed to report the news.Please try again")
-    }finally{
-        setShowReportPopup(false);
-
+      console.log(error);
+      toast.error("Failed to report the news.Please try again");
+    } finally {
+      setShowReportPopup(false);
     }
   };
 
@@ -102,6 +100,7 @@ export default function NewsDetails({ id }) {
     description,
     questions,
     meanings,
+    created_at,
   } = article;
   const shareUrl = `https://www.axara.co/news/${category.toLowerCase()}/${id}`;
   // console.log("meanings",meanings)
@@ -126,6 +125,21 @@ export default function NewsDetails({ id }) {
   const processedParagraphs = description
     .split("\n\n")
     .map((para) => replaceWordsWithHover(para));
+
+  const formatDate = (date) => {
+    const options = {
+      weekday: "long",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
+    };
+
+    return new Date(date).toLocaleString("en-IN", options).replace(",", "");
+  };
 
   return (
     <div className="text-gray-800 p-2">
@@ -158,38 +172,41 @@ export default function NewsDetails({ id }) {
           className="rounded-md"
         />
       </motion.div>
+      <div className="text-xs text-slate-500">
+{formatDate(created_at)}
+      </div>
       <div className="flex items-center space-x-8 w-fit  my-6">
-            {/* Share Icon */}
-            <div className="text-gray-500 cursor-pointer relative group">
-              <FaShareAlt size={16} />
-              {/* Share Options */}
-              <div className="hidden group-hover:flex gap-2 absolute -top-10 left-0 bg-white border shadow-lg rounded-md p-2 z-50">
-                <FacebookShareButton url={shareUrl} quote={title}>
-                  <FacebookIcon size={32} round />
-                </FacebookShareButton>
-                <TwitterShareButton url={shareUrl} title={title}>
-                  <TwitterIcon size={32} round />
-                </TwitterShareButton>
-                <WhatsappShareButton url={shareUrl} title={title}>
-                  <WhatsappIcon size={32} round />
-                </WhatsappShareButton>
-                <TelegramShareButton url={shareUrl} title={title}>
-                  <TelegramIcon size={32} round />
-                </TelegramShareButton>
-              </div>
-            </div>
-
-            {/* Report Icon */}
-            <div
-              onClick={() => {
-                setShowReportPopup(true);
-                console.log("Report popup triggered");
-              }}
-              className="text-gray-500 cursor-pointer rotate-90"
-            >
-              <FaEllipsisH size={16} />
-            </div>
+        {/* Share Icon */}
+        <div className="text-gray-500 cursor-pointer relative group">
+          <FaShareAlt size={16} />
+          {/* Share Options */}
+          <div className="hidden group-hover:flex gap-2 absolute -top-10 left-0 bg-white border shadow-lg rounded-md p-2 z-50">
+            <FacebookShareButton url={shareUrl} quote={title}>
+              <FacebookIcon size={32} round />
+            </FacebookShareButton>
+            <TwitterShareButton url={shareUrl} title={title}>
+              <TwitterIcon size={32} round />
+            </TwitterShareButton>
+            <WhatsappShareButton url={shareUrl} title={title}>
+              <WhatsappIcon size={32} round />
+            </WhatsappShareButton>
+            <TelegramShareButton url={shareUrl} title={title}>
+              <TelegramIcon size={32} round />
+            </TelegramShareButton>
           </div>
+        </div>
+
+        {/* Report Icon */}
+        <div
+          onClick={() => {
+            setShowReportPopup(true);
+            console.log("Report popup triggered");
+          }}
+          className="text-gray-500 cursor-pointer rotate-90"
+        >
+          <FaEllipsisH size={16} />
+        </div>
+      </div>
 
       {/* Summary Section */}
       {/* <motion.div
@@ -278,7 +295,7 @@ export default function NewsDetails({ id }) {
                 className="w-full border border-gray-300 rounded-lg p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500"
                 placeholder="Optional: Provide additional information about your report..."
                 value={report_text}
-                onChange={(e)=>setReport_text(e.target.value)}
+                onChange={(e) => setReport_text(e.target.value)}
               />
 
               {/* Buttons */}
