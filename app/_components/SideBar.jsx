@@ -59,9 +59,9 @@ const SideBar = () => {
   const navLinks = [
     { label: "Home", icon: FaHome, links: "/" },
     { label: "News", icon: IoGlobeSharp, links: "/news" },
-    { label: "Careers", icon: GiBriefcase, links: "/tests" },
-    { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
-    { label: "Community", icon: FaPeopleGroup, links: "/communities" },
+    // { label: "Careers", icon: GiBriefcase, links: "/tests" },
+    // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
+    // { label: "Community", icon: FaPeopleGroup, links: "/communities" },
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
   ];
   return (

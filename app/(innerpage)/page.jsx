@@ -735,9 +735,18 @@ const Home = () => {
       <Toaster />
 
       {!latestCourse && (
-        <div className="grid grid-cols-1 md:grid-cols-2 max-md:gap-[1.1vh] md:gap-2 ">
+        <div className="grid grid-cols-1 max-md:gap-[1.1vh] md:gap-2 ">
           <div className="w-full space-y-2">
             <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              className={cn(
+                "rounded-md items-center m-0 w-full bg-[#f04229] md:h-fit",
+                !advanced && "max-md:h-[35vh]" // Apply 35vh height only if advanced content is hidden
+              )}
+            >
+            {/* <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
@@ -745,7 +754,7 @@ const Home = () => {
                 "rounded-md items-center m-0 w-full bg-[#f04229] md:min-h-[60vh] md:h-fit",
                 !advanced && "max-md:h-[35vh]" // Apply 35vh height only if advanced content is hidden
               )}
-            >
+            > */}
               <motion.div className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full h-full">
                 <div className="flex flex-col gap-[1vh] text-center bg-[#e91b25] rounded-md w-full pb-[1vh]">
                   <h4 className="text-center font-semibold text-lg max-md:text-[2vh] text-white">
@@ -833,12 +842,7 @@ const Home = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div
-                        className={cn(
-                          "grid gap-2 md:gap-8 grid-cols-1"
-                     
-                        )}
-                      >
+                      <div className={cn("grid gap-2 md:gap-8 grid-cols-1")}>
                         {/* {!isAuthenticated && !selectedAge && (
                           <div className="w-full text-center mb-4">
                             <h2 className="text-lg font-semibold mb-2">Age</h2>
@@ -909,7 +913,7 @@ const Home = () => {
               </motion.div>
             </motion.div>
 
-            <div className="grid grid-cols-2 gap-[0.8vh]">
+            {/* <div className="grid grid-cols-2 gap-[0.8vh]">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -982,7 +986,7 @@ const Home = () => {
                   </div>
                 </motion.div>
               </motion.div>
-            </div>
+            </div> */}
           </div>
           {!latestCourse && (
             <div className="grid  grid-cols-1 gap-[0.8vh] w-full ">
@@ -1049,296 +1053,302 @@ const Home = () => {
         </div>
       )}
       <div className="w-full h-full p-3 space-y-4">
-      {latestCourse && (
-        <div className="h-1 bg-orange-600 w-full absolute top-0 left-0 z-[99999999999999999]" />
-      )}
-      {latestCourse && (
-        <div className="flex items-start justify-between bg-white rounded-lg w-full shadow-md p-2 relative font-bold text-xl mt-4">
-          <div
-            onClick={() => setLatestCourse(null)}
-            className="bg-orange-500  p-2 rounded-full"
-          >
-            <ChevronLeft />
-            {console.log(latestCourse?.activities)}
-          </div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="flex flex-col gap-1 items-center "
-          >
-            <div className="uppercase underline text-xl">
-              {latestCourse?.courseName}
-            </div>
-            <div className="uppercase  text-base font-semibold">
-              {latestCourse?.type}{" "}
-              {(latestCourse?.type == "story" ||
-                latestCourse?.type == "explanation") && (
-                <span className="uppercase text-base font-semibold">
-                  - {latestCourse?.genre}
-                </span>
-              )}
-            </div>
-
-            <div className="flex gap-7 items-center">
-              <div className="uppercase text-sm font-normal">
-                Age: {latestCourse?.age}
-              </div>
-              <div className="uppercase text-sm font-normal">
-                Language: {latestCourse?.language}
-              </div>
-            </div>
-          </motion.div>
-          <div />
-        </div>
-      )}
-      <div className="w-full md:flex gap-7 text-justify md:pt-3">
         {latestCourse && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="flex flex-col items-center space-y-4 bg-[#f8f8f8] shadow-lg rounded-lg w-full max-w-4xl p-3 py-6 relative"
-          >
-            <div className="mt-2 w-full text-justify">
-              {latestCourse.type == "story" ||
-              latestCourse.type == "explanation" ||
-              latestCourse.type == "bedtime story" ||
-              latestCourse.type == "informative story" ? (
-                <>
-                  <h2 className="text-3xl font-bold mb-6  text-center text-black">
-                    {latestCourse.title}
-                  </h2>
-                  <p
-                    className="text-gray-700 mb-8"
-                    dangerouslySetInnerHTML={{
-                      __html: replaceWordsWithHover(
-                        latestCourse.introduction?.content
-                      ),
-                    }}
-                  />
-                  {latestCourse.body?.map((paragraph, index) => (
+          <div className="h-1 bg-orange-600 w-full absolute top-0 left-0 z-[99999999999999999]" />
+        )}
+        {latestCourse && (
+          <div className="flex items-start justify-between bg-white rounded-lg w-full shadow-md p-2 relative font-bold text-xl mt-4">
+            <div
+              onClick={() => setLatestCourse(null)}
+              className="bg-orange-500  p-2 rounded-full"
+            >
+              <ChevronLeft />
+              {console.log(latestCourse?.activities)}
+            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              className="flex flex-col gap-1 items-center "
+            >
+              <div className="uppercase underline text-xl">
+                {latestCourse?.courseName}
+              </div>
+              <div className="uppercase  text-base font-semibold">
+                {latestCourse?.type}{" "}
+                {(latestCourse?.type == "story" ||
+                  latestCourse?.type == "explanation") && (
+                  <span className="uppercase text-base font-semibold">
+                    - {latestCourse?.genre}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex gap-7 items-center">
+                <div className="uppercase text-sm font-normal">
+                  Age: {latestCourse?.age}
+                </div>
+                <div className="uppercase text-sm font-normal">
+                  Language: {latestCourse?.language}
+                </div>
+              </div>
+            </motion.div>
+            <div />
+          </div>
+        )}
+        <div className="w-full md:flex gap-7 text-justify md:pt-3">
+          {latestCourse && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              className="flex flex-col items-center space-y-4 bg-[#f8f8f8] shadow-lg rounded-lg w-full max-w-4xl p-3 py-6 relative"
+            >
+              <div className="mt-2 w-full text-justify">
+                {latestCourse.type == "story" ||
+                latestCourse.type == "explanation" ||
+                latestCourse.type == "bedtime story" ||
+                latestCourse.type == "informative story" ? (
+                  <>
+                    <h2 className="text-3xl font-bold mb-6  text-center text-black">
+                      {latestCourse.title}
+                    </h2>
                     <p
-                      key={index}
-                      className="text-gray-700 mb-4"
+                      className="text-gray-700 mb-8"
                       dangerouslySetInnerHTML={{
-                        __html: replaceWordsWithHover(paragraph.content),
+                        __html: replaceWordsWithHover(
+                          latestCourse.introduction?.content
+                        ),
                       }}
                     />
-                  ))}
-
-                  <p className="text-gray-700">
-                    {latestCourse.conclusion?.content ||
-                      "Conclusion data is unavailable."}
-                  </p>
-                </>
-              ) : latestCourse.type == "podcast" ? (
-                <>
-                  <div className="flex flex-col items-center justify-center mt-4">
-                    {latestCourse.language == "english" && (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={playContent}
-                          className="bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
-                        >
-                          {isPlaying ? (
-                            <>
-                              <IoPauseCircle className="text-3xl text-white" />{" "}
-                              Pause
-                            </>
-                          ) : (
-                            <>
-                              <IoPlayCircle className="text-3xl text-white" />{" "}
-                              Play Podcast
-                            </>
-                          )}
-                        </button>
-                        <button
-                          onClick={stopContent}
-                          disabled={!isPlaying} // Disable when isPlaying is false
-                          className={`${
-                            isPlaying
-                              ? "bg-red-500 hover:bg-red-600"
-                              : "bg-gray-400 cursor-not-allowed"
-                          } text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center gap-2`}
-                        >
-                          <IoStopCircle className="text-xl" /> Stop
-                        </button>
-                      </div>
-                    )}
-                    <button
-                      onClick={() => setShowTranscript(!showTranscript)}
-                      className="mt-4 text-[#1e5f9f] hover:underline text-lg font-semibold"
-                    >
-                      {showTranscript ? "Hide Transcript" : "Show Transcript"}
-                    </button>
-
-                    {showTranscript && (
-                      <div className="text-left mt-6 p-4 bg-gray-50 rounded-lg">
-                        <p className="text-gray-700">
-                          {latestCourse.introduction?.content ||
-                            "Introduction data is unavailable."}
-                        </p>
-                        {latestCourse.body?.map((paragraph, index) => (
-                          <p key={index} className="text-gray-700 mb-4">
-                            {paragraph.content}
-                          </p>
-                        ))}
-                        <p className="text-gray-700">
-                          {latestCourse.conclusion?.content ||
-                            "Conclusion data is unavailable."}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </>
-              ) : latestCourse.type == "poem" ? (
-                <>
-                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                    {latestCourse.title}
-                  </h2>
-                  {latestCourse.verses?.map((verse, index) => (
-                    <p key={index} className="text-gray-700 mb-2">
-                      {verse.line}
-                    </p>
-                  ))}
-                </>
-              ) : latestCourse.type === "presentation" ? (
-                <>
-                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                    {latestCourse.presentation?.title ||
-                      "Title is unavailable."}
-                  </h2>
-                  <div className="mb-8">
-                    {latestCourse.presentation?.slides.map((slide, index) => (
-                      <div
+                    {latestCourse.body?.map((paragraph, index) => (
+                      <p
                         key={index}
-                        className="mb-4 rounded-md shadow-md p-2 "
-                      >
-                        <h3 className="text-xl font-semibold">
-                          Slide {slide.slide_number}
-                        </h3>
-                        {slide.content.map((contentItem, contentIndex) => (
-                          <div key={contentIndex}>
-                            <p className="text-lg font-semibold">Title</p>
-                            <p className="text-gray-700">
-                              {contentItem.content}
-                            </p>
-                            <p className="text-lg font-semibold">
-                              Relevant Data
-                            </p>
-
-                            <p className="text-gray-700  mb-4">
-                              {contentItem.image_suggestion}
-                            </p>
-
-                            {contentItem.additional_resources && (
-                              <a
-                                href={contentItem.additional_resources}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-500 underline"
-                              >
-                                Additional Resources
-                              </a>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+                        className="text-gray-700 mb-4"
+                        dangerouslySetInnerHTML={{
+                          __html: replaceWordsWithHover(paragraph.content),
+                        }}
+                      />
                     ))}
-                  </div>
-                </>
-              ) : latestCourse.type === "course" ? (
-                <>
-                  {/* {
+
+                    <p className="text-gray-700">
+                      {latestCourse.conclusion?.content ||
+                        "Conclusion data is unavailable."}
+                    </p>
+                  </>
+                ) : latestCourse.type == "podcast" ? (
+                  <>
+                    <div className="flex flex-col items-center justify-center mt-4">
+                      {latestCourse.language == "english" && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={playContent}
+                            className="bg-[#1e5f9f] hover:bg-[#40cb9f] rounded-full p-4 flex items-center space-x-2 text-lg font-bold transition-all shadow-md"
+                          >
+                            {isPlaying ? (
+                              <>
+                                <IoPauseCircle className="text-3xl text-white" />{" "}
+                                Pause
+                              </>
+                            ) : (
+                              <>
+                                <IoPlayCircle className="text-3xl text-white" />{" "}
+                                Play Podcast
+                              </>
+                            )}
+                          </button>
+                          <button
+                            onClick={stopContent}
+                            disabled={!isPlaying} // Disable when isPlaying is false
+                            className={`${
+                              isPlaying
+                                ? "bg-red-500 hover:bg-red-600"
+                                : "bg-gray-400 cursor-not-allowed"
+                            } text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center gap-2`}
+                          >
+                            <IoStopCircle className="text-xl" /> Stop
+                          </button>
+                        </div>
+                      )}
+                      <button
+                        onClick={() => setShowTranscript(!showTranscript)}
+                        className="mt-4 text-[#1e5f9f] hover:underline text-lg font-semibold"
+                      >
+                        {showTranscript ? "Hide Transcript" : "Show Transcript"}
+                      </button>
+
+                      {showTranscript && (
+                        <div className="text-left mt-6 p-4 bg-gray-50 rounded-lg">
+                          <p className="text-gray-700">
+                            {latestCourse.introduction?.content ||
+                              "Introduction data is unavailable."}
+                          </p>
+                          {latestCourse.body?.map((paragraph, index) => (
+                            <p key={index} className="text-gray-700 mb-4">
+                              {paragraph.content}
+                            </p>
+                          ))}
+                          <p className="text-gray-700">
+                            {latestCourse.conclusion?.content ||
+                              "Conclusion data is unavailable."}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : latestCourse.type == "poem" ? (
+                  <>
+                    <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                      {latestCourse.title}
+                    </h2>
+                    {latestCourse.verses?.map((verse, index) => (
+                      <p key={index} className="text-gray-700 mb-2">
+                        {verse.line}
+                      </p>
+                    ))}
+                  </>
+                ) : latestCourse.type === "presentation" ? (
+                  <>
+                    <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                      {latestCourse.presentation?.title ||
+                        "Title is unavailable."}
+                    </h2>
+                    <div className="mb-8">
+                      {latestCourse.presentation?.slides.map((slide, index) => (
+                        <div
+                          key={index}
+                          className="mb-4 rounded-md shadow-md p-2 "
+                        >
+                          <h3 className="text-xl font-semibold">
+                            Slide {slide.slide_number}
+                          </h3>
+                          {slide.content.map((contentItem, contentIndex) => (
+                            <div key={contentIndex}>
+                              <p className="text-lg font-semibold">Title</p>
+                              <p className="text-gray-700">
+                                {contentItem.content}
+                              </p>
+                              <p className="text-lg font-semibold">
+                                Relevant Data
+                              </p>
+
+                              <p className="text-gray-700  mb-4">
+                                {contentItem.image_suggestion}
+                              </p>
+
+                              {contentItem.additional_resources && (
+                                <a
+                                  href={contentItem.additional_resources}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-500 underline"
+                                >
+                                  Additional Resources
+                                </a>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : latestCourse.type === "course" ? (
+                  <>
+                    {/* {
                 console.log(latestCourse)
               } */}
-                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                    Introduction
-                  </h2>
-                  <p className="text-gray-700 mb-8">
-                    {latestCourse.courseContent?.introduction?.content ||
-                      "Introduction data is unavailable."}
-                  </p>
-                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                    Modules
-                  </h2>
-                  {latestCourse.courseContent?.body?.modules?.map(
-                    (section, index) => (
-                      <div
-                        key={index}
-                        className="mb-8 p-4 bg-gray-100 rounded-md"
-                      >
-                        <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
-                          Module - {section.module_number} : {section.title}
-                        </h4>
-                        <p className="text-gray-700 mb-4">{section.content}</p>
-                        {section.subtopics?.map((subtopic, subIndex) => (
-                          <div key={subIndex} className="ml-4 mb-2">
-                            <Link href={`/chapter/${subtopic.subtopic_slug}`}>
-                              <h5 className="text-lg font-semibold text-gray-800 cursor-pointer">
+                    <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                      Introduction
+                    </h2>
+                    <p className="text-gray-700 mb-8">
+                      {latestCourse.courseContent?.introduction?.content ||
+                        "Introduction data is unavailable."}
+                    </p>
+                    <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                      Modules
+                    </h2>
+                    {latestCourse.courseContent?.body?.modules?.map(
+                      (section, index) => (
+                        <div
+                          key={index}
+                          className="mb-8 p-4 bg-gray-100 rounded-md"
+                        >
+                          <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
+                            Module - {section.module_number} : {section.title}
+                          </h4>
+                          <p className="text-gray-700 mb-4">
+                            {section.content}
+                          </p>
+                          {section.subtopics?.map((subtopic, subIndex) => (
+                            <div key={subIndex} className="ml-4 mb-2">
+                              <Link href={`/chapter/${subtopic.subtopic_slug}`}>
+                                <h5 className="text-lg font-semibold text-gray-800 cursor-pointer">
+                                  {subtopic.title}
+                                </h5>
+                              </Link>
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    )}
+                    <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                      Conclusion
+                    </h2>
+                    <p className="text-gray-700">
+                      {latestCourse.courseContent?.conclusion?.content ||
+                        "Conclusion data is unavailable."}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                      Introduction
+                    </h2>
+                    <p className="text-gray-700 mb-8">
+                      {latestCourse.essayContent?.introduction?.content ||
+                        "Introduction data is unavailable."}
+                    </p>
+
+                    <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                      Main Sections
+                    </h2>
+                    {latestCourse.essayContent?.body?.sections?.map(
+                      (section, index) => (
+                        <div
+                          key={index}
+                          className="mb-8 p-4 bg-gray-100 rounded-md"
+                        >
+                          <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
+                            {section.title}
+                          </h4>
+                          <p className="text-gray-700 mb-4">
+                            {section.content}
+                          </p>
+                          {section.subtopics?.map((subtopic, subIndex) => (
+                            <div key={subIndex} className="ml-4 mb-2">
+                              <h5 className="text-lg font-semibold text-gray-800">
                                 {subtopic.title}
                               </h5>
-                            </Link>
-                          </div>
-                        ))}
-                      </div>
-                    )
-                  )}
-                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                    Conclusion
-                  </h2>
-                  <p className="text-gray-700">
-                    {latestCourse.courseContent?.conclusion?.content ||
-                      "Conclusion data is unavailable."}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                    Introduction
-                  </h2>
-                  <p className="text-gray-700 mb-8">
-                    {latestCourse.essayContent?.introduction?.content ||
-                      "Introduction data is unavailable."}
-                  </p>
+                              <p className="text-gray-700">
+                                {subtopic.content}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    )}
 
-                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                    Main Sections
-                  </h2>
-                  {latestCourse.essayContent?.body?.sections?.map(
-                    (section, index) => (
-                      <div
-                        key={index}
-                        className="mb-8 p-4 bg-gray-100 rounded-md"
-                      >
-                        <h4 className="text-xl font-semibold mb-2 text-[#1e5f9f]">
-                          {section.title}
-                        </h4>
-                        <p className="text-gray-700 mb-4">{section.content}</p>
-                        {section.subtopics?.map((subtopic, subIndex) => (
-                          <div key={subIndex} className="ml-4 mb-2">
-                            <h5 className="text-lg font-semibold text-gray-800">
-                              {subtopic.title}
-                            </h5>
-                            <p className="text-gray-700">{subtopic.content}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )
-                  )}
+                    <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
+                      Conclusion
+                    </h2>
+                    <p className="text-gray-700">
+                      {latestCourse.essayContent?.conclusion?.content ||
+                        "Conclusion data is unavailable."}
+                    </p>
+                  </>
+                )}
 
-                  <h2 className="text-3xl font-bold mb-6 text-center text-[#1e5f9f]">
-                    Conclusion
-                  </h2>
-                  <p className="text-gray-700">
-                    {latestCourse.essayContent?.conclusion?.content ||
-                      "Conclusion data is unavailable."}
-                  </p>
-                </>
-              )}
-
-              {/* {(latestCourse.type === "story" ||
+                {/* {(latestCourse.type === "story" ||
                 latestCourse.type === "bedtime story" ||
                 latestCourse.type === "explanation" ||
                 latestCourse.type === "informative story" ||
@@ -1354,26 +1364,26 @@ const Home = () => {
                   )}
                 </div>
               )} */}
-            </div>
-          </motion.div>
-        )}
-        {latestCourse && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="flex flex-col  gap-3 md:w-[30%]"
-          >
-            {latestCourse?.activities && hideActivity && (
-              <div className=" bg-[#f8f8f8] rounded-lg p-3 shadow-lg  max-md:mt-4 border border-slate-200">
-                <h4 className="uppercase underline  font-bold text-center text-xl mb-8">
-                  Actvity
-                </h4>
-                <h4 className="uppercase font-semibold my-3 text-lg">
-                  {latestCourse?.activities?.title}
-                </h4>
-                <h4 className=" ">{latestCourse?.activities?.content}</h4>
-                {/* <div className="w-full flex justify-between mt-5">
+              </div>
+            </motion.div>
+          )}
+          {latestCourse && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              className="flex flex-col  gap-3 md:w-[30%]"
+            >
+              {latestCourse?.activities && hideActivity && (
+                <div className=" bg-[#f8f8f8] rounded-lg p-3 shadow-lg  max-md:mt-4 border border-slate-200">
+                  <h4 className="uppercase underline  font-bold text-center text-xl mb-8">
+                    Actvity
+                  </h4>
+                  <h4 className="uppercase font-semibold my-3 text-lg">
+                    {latestCourse?.activities?.title}
+                  </h4>
+                  <h4 className=" ">{latestCourse?.activities?.content}</h4>
+                  {/* <div className="w-full flex justify-between mt-5">
                   <input
                     type="file"
                     accept="image/*"
@@ -1394,16 +1404,16 @@ const Home = () => {
                     Submit
                   </Button>
                 </div> */}
-                {image && (
-                  <img
-                    src={image}
-                    alt="Preview"
-                    style={{ maxWidth: "100px", maxHeight: "100px" }}
-                  />
-                )}
-              </div>
-            )}
-            {/* <motion.div
+                  {image && (
+                    <img
+                      src={image}
+                      alt="Preview"
+                      style={{ maxWidth: "100px", maxHeight: "100px" }}
+                    />
+                  )}
+                </div>
+              )}
+              {/* <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 1 }}
@@ -1412,7 +1422,7 @@ const Home = () => {
                 >
                   Back to Search
                 </motion.div> */}
-            {/* <div className="flex flex-col gap-5">
+              {/* <div className="flex flex-col gap-5">
               <p className="uppercase font-bold text-lg text-center">
                 Related Topics
               </p>
@@ -1438,9 +1448,9 @@ const Home = () => {
                 </button>
               </div>
             </div> */}
-          </motion.div>
-        )}
-      </div>
+            </motion.div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -50,8 +50,8 @@ const RightSideBar = () => {
     { label: "My Search history", links: "/my-search", icon: FaHistory },
     // { label: "My Lessons", links: "/learn", icon: GiTiedScroll },
     { label: "My Activities", links: "/activities", icon: BsActivity },
-    { label: "My Badges", links: "/badges", icon: FaMedal },
-    { label: "My Challenges", links: "/my-challenges/1", icon: FaMedal },
+    // { label: "My Badges", links: "/badges", icon: FaMedal },
+    // { label: "My Challenges", links: "/my-challenges/1", icon: FaMedal },
     // {
     //   label: "Add Child",
     //   links: "/add-child",
