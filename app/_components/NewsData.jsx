@@ -79,7 +79,7 @@ const NewsData = ({
       //   whileTap={{ scale: 0.95 }}
       className={cn(
         "bg-white shadow-md cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col p-1",
-        size && "max-w-lg mx-auto"
+        size && "max-w-lg mx-auto w-full"
       )}
     >
       {/* Image with Date at the Top */}
@@ -89,7 +89,7 @@ const NewsData = ({
           alt={article.title}
           width={size ? 1000 : 400}
           height={size ? 500 : 300}
-          className={"w-full h-full object-cover"}
+          className={"w-full h-full object-cover  max-md:rounded-md"}
           onClick={() => {
             setShowId(article.id);
             setShowNews(true);
