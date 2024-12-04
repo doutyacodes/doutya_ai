@@ -18,6 +18,11 @@ import {
 import { FaEllipsisH, FaShareAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
 import GlobalApi from "../api/_services/GlobalApi";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 export default function NewsDetails({ id }) {
   const [article, setArticle] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -105,20 +110,22 @@ export default function NewsDetails({ id }) {
   const shareUrl = `https://www.axara.co/news/${category.toLowerCase()}/${id}`;
   // console.log("meanings",meanings)
   // Replace words with hoverable bolded spans
+  
   const replaceWordsWithHover = (text) => {
     return meanings.reduce((acc, { word, description }) => {
       const regex = new RegExp(`\\b(${word})\\b`, "gi");
       return acc.replace(
         regex,
         `<span class="group font-bold cursor-pointer relative hover:text-orange-500 text-blue-500">
-        <span className="">
-        ${word}
-        </span>
-          <div class="absolute left-0 bottom-full mb-2 hidden group-hover:flex w-64 p-2 bg-white shadow-md border rounded-lg z-10 text-sm text-gray-700">${description}</div>
+          <span>${word}</span>
+          <div class="absolute right-0 bottom-full mb-2 hidden group-hover:flex w-[250px] max-w-sm p-2 bg-white shadow-md border rounded-lg z-10 text-sm text-gray-700 overflow-wrap break-word">
+            ${description}
+          </div>
         </span>`
       );
     }, text);
   };
+  
 
   // Process summary and paragraphs
   // const processedSummary = replaceWordsWithHover(summary);
