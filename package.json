@@ -23,6 +23,7 @@
     "@radix-ui/react-popper": "^1.2.0",
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
+    "@tippyjs/react": "^4.2.6",
     "axios": "^1.7.7",
     "base64-url": "^2.3.3",
     "basic-ftp": "^5.0.5",
@@ -58,6 +59,7 @@
     "swiper": "^11.1.14",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
+    "tippy.js": "^6.3.7",
     "uuid": "^11.0.2",
     "zod": "^3.23.8"
   },

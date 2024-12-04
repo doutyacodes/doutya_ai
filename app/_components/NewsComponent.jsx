@@ -110,40 +110,20 @@ export default function NewsDetails({ id }) {
   const shareUrl = `https://www.axara.co/news/${category.toLowerCase()}/${id}`;
   // console.log("meanings",meanings)
   // Replace words with hoverable bolded spans
-
+  
   const replaceWordsWithHover = (text) => {
-    const placeholderPrefix = "__PLACEHOLDER__";
-    const placeholderSuffix = "__END__";
-    let placeholderMap = {};
-  
-    // Step 1: Temporarily replace descriptions with placeholders
-    meanings.forEach(({ description }, index) => {
-      const placeholder = `${placeholderPrefix}${index}${placeholderSuffix}`;
-      placeholderMap[placeholder] = description;
-      text = text.replace(description, placeholder);
-    });
-  
-    // Step 2: Replace only the words in the main content
-    meanings.forEach(({ word, description }) => {
+    return meanings.reduce((acc, { word, description }) => {
       const regex = new RegExp(`\\b(${word})\\b`, "gi");
-      text = text.replace(
+      return acc.replace(
         regex,
-        (match) =>
-          `<span class="group font-bold cursor-pointer relative hover:text-orange-500 text-blue-500">
-            <span>${match}</span>
-            <div class="absolute right-0 bottom-full mb-2 hidden group-hover:flex w-[250px] max-w-sm p-2 bg-white shadow-md border rounded-lg z-10 text-sm text-gray-700 overflow-wrap break-word">
-              <span class="tooltip-content">${description}</span>
-            </div>
-          </span>`
+        `<span class="group font-bold cursor-pointer relative hover:text-orange-500 text-blue-500">
+          <span>${word}</span>
+          <div class="absolute right-0 bottom-full mb-2 hidden group-hover:flex w-[250px] max-w-sm p-2 bg-white shadow-md border rounded-lg z-10 text-sm text-gray-700 overflow-wrap break-word">
+            ${description}
+          </div>
+        </span>`
       );
-    });
-  
-    // Step 3: Restore original descriptions from placeholders
-    Object.entries(placeholderMap).forEach(([placeholder, description]) => {
-      text = text.replace(placeholder, description);
-    });
-  
-    return text;
+    }, text);
   };
   
 
@@ -199,7 +179,9 @@ export default function NewsDetails({ id }) {
           className="rounded-md"
         />
       </motion.div>
-      <div className="text-xs text-slate-500">{formatDate(created_at)}</div>
+      <div className="text-xs text-slate-500">
+{formatDate(created_at)}
+      </div>
       <div className="flex items-center space-x-8 w-fit  my-6">
         {/* Share Icon */}
         <div className="text-gray-500 cursor-pointer relative group">
