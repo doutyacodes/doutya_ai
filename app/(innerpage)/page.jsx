@@ -48,8 +48,11 @@ export default function NewsSection() {
           .slice(0, 2);  // Limit to the first 2 news items
         return acc;
       }, {});
-      console.log(groupedNews2)
-      
+
+      groupedNews2["All"] = news_top2
+      .filter((item) => item.main_news) // Filter by main_news for "All"
+      .slice(0, 2);
+
 
       setNewsByCategory(groupedNews);
       setNews_top(groupedNews2);

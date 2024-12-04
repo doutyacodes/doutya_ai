@@ -5,6 +5,7 @@ import NewsDetails from "@/app/_components/NewsComponent";
 import NewsData from "@/app/_components/NewsData";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -41,8 +42,20 @@ export default function NewsSection() {
       // Add "All" category news (all news combined)
       groupedNews["All"] = news;
 
+      const groupedNews2 = categories.reduce((acc, category) => {
+        acc[category.name] = news_top2
+          .filter((item) => item.news_category_id === category.id)
+          .slice(0, 2);  // Limit to the first 2 news items
+        return acc;
+      }, {});
+
+      groupedNews2["All"] = news_top2
+      .filter((item) => item.main_news) // Filter by main_news for "All"
+      .slice(0, 2);
+
+
       setNewsByCategory(groupedNews);
-      setNews_top(news_top2);
+      setNews_top(groupedNews2);
 
       // Default to "All" category
       setSelectedCategory("All");
@@ -54,13 +67,13 @@ export default function NewsSection() {
   };
 
   useEffect(() => {
-    if(selectedAge)
-      {
-       fetchNews();
-      }
+    if (selectedAge) {
+      fetchNews();
+    }
   }, [selectedAge]);
 
   const currentCategoryNews = newsByCategory[selectedCategory] || [];
+  const NEWSTOP = news_top[selectedCategory] || [];
   const filteredNews = currentCategoryNews.filter(
     (article) =>
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -126,14 +139,15 @@ export default function NewsSection() {
           ))}
         </div>
       </div>
-     {!showNews && !showId &&( <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 py-4 gap-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        {news_top.length > 0 && (
-            news_top.map((article) => (
+      {!showNews && !showId && (
+        <motion.div
+          className={cn("grid grid-cols-1  py-4 gap-4",NEWSTOP?.length ==2 &&"md:grid-cols-2")}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          {NEWSTOP.length > 0 &&
+            NEWSTOP.map((article) => (
               <NewsData
                 article={article}
                 setShowId={setShowId}
@@ -142,9 +156,9 @@ export default function NewsSection() {
                 key={article.id}
                 size={true}
               />
-            ))
-          ) }
-      </motion.div>)}
+            ))}
+        </motion.div>
+      )}
       {/* News Cards */}
       {showNews && showId ? (
         <NewsDetails id={showId} />

@@ -38,6 +38,7 @@ export async function POST(req) {
         summary: NEWS.summary, // Brief summary, nullable
         created_at: NEWS.created_at, // Timestamp for record creation
         updated_at: NEWS.updated_at,
+        main_news:NEWS.main_news
       })
       .from(NEWS)
       .leftJoin(NEWS_CATEGORIES, eq(NEWS.news_category_id, NEWS_CATEGORIES.id)) // Join on category ID
