@@ -49,7 +49,6 @@ export async function POST(req) {
           gt(NEWS.created_at, twentyFourHoursAgo) // Created within the last 24 hours
         )
       )
-      .limit(2)
       .execute();
 
     // Fetch normal news (not marked as "on top")
