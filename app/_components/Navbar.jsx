@@ -7,7 +7,7 @@ import { useChildren } from "@/context/CreateContext";
 import useAuth from "../hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { FaHome } from "react-icons/fa";
+import { FaHome, FaInfoCircle } from "react-icons/fa";
 import { IoGlobeSharp } from "react-icons/io5";
 import { GiBriefcase } from "react-icons/gi";
 import { IoIosTrophy } from "react-icons/io";
@@ -20,18 +20,20 @@ const Navbar = () => {
   const pathname = usePathname();
   const links = [
     { label: "Home", icon: FaHome, links: "/" },
-    { label: "News", icon: IoGlobeSharp, links: "/news" },
-    { label: "Careers", icon: GiBriefcase, links: "/tests" },
-    { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
-    { label: "Community", icon: FaPeopleGroup, links: "/communities" },
+    // { label: "News", icon: IoGlobeSharp, links: "/news" },
+    // { label: "Careers", icon: GiBriefcase, links: "/tests" },
+    // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
+    // { label: "Community", icon: FaPeopleGroup, links: "/communities" },
+    { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
+
   ];
   return (
     <nav
       className={cn(
         "w-full bg-transparent ",
-        pathname !== "/"
-          ? "md:min-h-24 max-md:py-[0.8vh] border-b-4 border-orange-600 max-md:max-h-[8.5vh]"
-          : "md:min-h-24 max-md:py-[0.8vh] max-md:max-h-[8.5vh]"
+        // pathname !== "/"
+           "md:min-h-24 max-md:py-[0.8vh] border-b-4 border-orange-600 max-md:max-h-[8.5vh]"
+          // : "md:min-h-24 max-md:py-[0.8vh] max-md:max-h-[8.5vh]"
       )}
     >
       <div className="max-w-7xl mx-auto">
@@ -94,7 +96,7 @@ const Navbar = () => {
               href={links}
               key={idx}
               className={`flex flex-col items-center gap-0 ${
-                isActive ? "opacity-100" : "opacity-50"
+                (isActive || (label=="Home" && (pathname.includes("news"))))  ? "opacity-100" : "opacity-50"
               }`}
             >
               <Icon size={24} color="white" />

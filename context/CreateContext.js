@@ -50,7 +50,7 @@ export const ChildrenProvider = ({ children }) => {
     if (showPopup) {
       const timer = setTimeout(() => {
         setShowPopup(false);
-        router.push("/");
+        // router.push("/");
       }, 3000);
       return () => clearTimeout(timer);
     }

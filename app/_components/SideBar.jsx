@@ -58,7 +58,7 @@ const SideBar = () => {
   // ];
   const navLinks = [
     { label: "Home", icon: FaHome, links: "/" },
-    { label: "News", icon: IoGlobeSharp, links: "/news" },
+    // { label: "News", icon: IoGlobeSharp, links: "/news" },
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
     // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
     // { label: "Community", icon: FaPeopleGroup, links: "/communities" },
@@ -86,7 +86,7 @@ const SideBar = () => {
       <motion.div
         animate={{ width: isCollapsed ? "6rem" : "6rem" }}
         className={cn(
-          "min-h-screen shadow-lg bg-[#fef3d7] relative max-md:fixed z-[9999999] flex flex-col p-3 rounded-md lg:block ",
+          "min-h-screen shadow-lg bg-[#ffffff] relative max-md:fixed z-[9999999] flex flex-col p-3 rounded-md lg:block ",
           isCollapsed ? "hidden" : "flex"
         )}
         initial={{ width: "6rem" }}
@@ -133,7 +133,7 @@ const SideBar = () => {
                 >
                   <Icon
                     size={24}
-                    className={isActive ? "text-red-500" : "text-black"}
+                    className={(isActive || (label=="Home" && (pathname.includes("news")))) ? "text-red-500" : "text-black"}
                   />
                   <span
                     className={`${

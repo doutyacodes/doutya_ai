@@ -15,58 +15,81 @@ import {
 } from "react-share";
 import GlobalApi from "../api/_services/GlobalApi";
 import toast from "react-hot-toast";
+import { cn } from "@/lib/utils";
 
 const formatDate = (date) => {
   const inputDate = moment(date);
   return inputDate.fromNow();
 };
 
-const truncateTitle = (title, length = 40) =>
+const formatDate2 = (date) => {
+  const options = {
+    weekday: "long",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    // hour: "2-digit",
+    // minute: "2-digit",
+    // hour12: true,
+    timeZone: "Asia/Kolkata",
+  };
+
+  return new Date(date).toLocaleString("en-IN", options).replace(",", "");
+};
+
+const truncateTitle = (title, length = 50) =>
   title.length > length ? `${title.slice(0, length)}...` : title;
 
-const NewsData = ({ article, setShowId, setShowNews, getCategoryNameById }) => {
+const NewsData = ({
+  article,
+  setShowId,
+  setShowNews,
+  getCategoryNameById,
+  size = false,
+}) => {
   const [showReportPopup, setShowReportPopup] = useState(false);
-  const [report_text, setReport_text] = useState("")
+  const [report_text, setReport_text] = useState("");
 
   const shareUrl = `https://www.axara.co/news/${article.category.toLowerCase()}/${
     article.id
   }`;
   const title = article.title;
 
-  const handleReport = async() => {
-   
+  const handleReport = async () => {
     try {
-        const response = await GlobalApi.ReportNews({
-            news_id: article.id,
-            report_text
-        })
-        // console.log(response.data)
-        if (response?.data) {
-            toast.success("News reported successfully.");
-          }
-          setReport_text("")
+      const response = await GlobalApi.ReportNews({
+        news_id: article.id,
+        report_text,
+      });
+      // console.log(response.data)
+      if (response?.data) {
+        toast.success("News reported successfully.");
+      }
+      setReport_text("");
     } catch (error) {
-        console.log(error)
-        toast.error("Failed to report the news.Please try again")
-    }finally{
-        setShowReportPopup(false);
-
+      console.log(error);
+      toast.error("Failed to report the news.Please try again");
+    } finally {
+      setShowReportPopup(false);
     }
   };
 
   return (
     <div
       //   whileTap={{ scale: 0.95 }}
-      className="bg-white shadow-md cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col p-1"
+      className={cn(
+        "bg-white shadow-md cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col p-1",
+        size && "max-w-lg mx-auto"
+      )}
     >
       {/* Image with Date at the Top */}
-      <div className="relative h-48 w-full">
+      <div className={cn("relative  w-full", !size ? "h-48":"h-48 md:h-80")}>
         <Image
           src={`https://wowfy.in/testusr/images/${article.image_url}`}
           alt={article.title}
-          width={400}
-          height={300}
-          className="w-full h-full object-cover"
+          width={size ? 1000 : 400}
+          height={size ? 500 : 300}
+          className={"w-full h-full object-cover"}
           onClick={() => {
             setShowId(article.id);
             setShowNews(true);
@@ -76,12 +99,18 @@ const NewsData = ({ article, setShowId, setShowNews, getCategoryNameById }) => {
         <span className="absolute top-2 left-2 text-white text-xs font-medium bg-black bg-opacity-60 px-2 py-1 rounded-md">
           {formatDate(article.created_at)}
         </span>
+        <span className="absolute bottom-2 left-2 text-white text-xs font-medium bg-orange-500 bg-opacity-80 px-2 py-1 rounded-md">
+        {getCategoryNameById(article.news_category_id)}
+        </span>
       </div>
 
       {/* Content Area */}
-      <div className="flex flex-col flex-grow p-4">
+      <div className="flex flex-col flex-grow p-2">
         {/* Title */}
-        <h3 className="text-lg font-medium text-gray-800 mb-2">
+        <h3 onClick={() => {
+            setShowId(article.id);
+            setShowNews(true);
+          }} className="text-lg font-medium text-gray-800 mb-2 cursor-pointer">
           {truncateTitle(article.title)}
         </h3>
 
@@ -123,9 +152,10 @@ const NewsData = ({ article, setShowId, setShowNews, getCategoryNameById }) => {
             <motion.div
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="text-xs font-medium text-orange-500 px-4 py-2 relative"
+              className="text-xs font-medium  py-2 relative"
             >
-              {getCategoryNameById(article.news_category_id)}
+                        {formatDate2(article.created_at)}
+
             </motion.div>
           </div>
         </div>
@@ -174,7 +204,7 @@ const NewsData = ({ article, setShowId, setShowNews, getCategoryNameById }) => {
                 className="w-full border border-gray-300 rounded-lg p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500"
                 placeholder="Optional: Provide additional information about your report..."
                 value={report_text}
-                onChange={(e)=>setReport_text(e.target.value)}
+                onChange={(e) => setReport_text(e.target.value)}
               />
 
               {/* Buttons */}

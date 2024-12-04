@@ -8,10 +8,9 @@ import { useChildren } from "@/context/CreateContext";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-
-
 export default function NewsSection() {
   const [newsCategories, setNewsCategories] = useState([]);
+  const [news_top, setNews_top] = useState([]);
   const [newsByCategory, setNewsByCategory] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,14 +19,13 @@ export default function NewsSection() {
   const [showId, setShowId] = useState(null);
   const { selectedAge } = useChildren();
 
-
-
   const fetchNews = async () => {
     try {
       setIsLoading(true);
       const response = await GlobalApi.FetchNews({ age: selectedAge });
       const categories = response.data.categories || [];
       const news = response.data.news || [];
+      const news_top2 = response.data.news_top || [];
 
       // Add "All" category
       setNewsCategories([{ name: "All" }, ...categories]);
@@ -44,6 +42,7 @@ export default function NewsSection() {
       groupedNews["All"] = news;
 
       setNewsByCategory(groupedNews);
+      setNews_top(news_top2);
 
       // Default to "All" category
       setSelectedCategory("All");
@@ -55,7 +54,10 @@ export default function NewsSection() {
   };
 
   useEffect(() => {
-    fetchNews();
+    if(selectedAge)
+      {
+       fetchNews();
+      }
   }, [selectedAge]);
 
   const currentCategoryNews = newsByCategory[selectedCategory] || [];
@@ -76,14 +78,14 @@ export default function NewsSection() {
   return (
     <div className="p-4 text-gray-800 w-full">
       {/* Header */}
-      <motion.header
+      {/* <motion.header
         className="text-center mb-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
         <h1 className="text-4xl font-bold text-orange-600">News</h1>
-      </motion.header>
+      </motion.header> */}
 
       {/* Search Bar */}
       <motion.div
@@ -124,7 +126,25 @@ export default function NewsSection() {
           ))}
         </div>
       </div>
-
+     {!showNews && !showId &&( <motion.div
+        className="grid grid-cols-1 md:grid-cols-2 py-4 gap-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
+        {news_top.length > 0 && (
+            news_top.map((article) => (
+              <NewsData
+                article={article}
+                setShowId={setShowId}
+                setShowNews={setShowNews}
+                getCategoryNameById={getCategoryNameById}
+                key={article.id}
+                size={true}
+              />
+            ))
+          ) }
+      </motion.div>)}
       {/* News Cards */}
       {showNews && showId ? (
         <NewsDetails id={showId} />
