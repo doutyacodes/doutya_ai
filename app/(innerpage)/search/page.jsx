@@ -746,21 +746,13 @@ const Home = () => {
                 !advanced && "max-md:h-[35vh]" // Apply 35vh height only if advanced content is hidden
               )}
             >
-              {/* <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-              className={cn(
-                "rounded-md items-center m-0 w-full bg-[#f04229] md:min-h-[60vh] md:h-fit",
-                !advanced && "max-md:h-[35vh]" // Apply 35vh height only if advanced content is hidden
-              )}
-            > */}
+              
               <motion.div className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full h-full">
                 <div className="flex flex-col gap-[1vh] text-center bg-[#e91b25] rounded-md w-full pb-[1vh]">
-                  <h4 className="text-center font-semibold text-lg max-md:text-[2vh] text-white">
+                  <h4 className="text-center font-semibold text-xl max-md:text-[2vh] text-white">
                     SEARCH
                   </h4>
-                  <span className="text-center text-white text-xs max-md:text-[1.2vh] w-full uppercase">
+                  <span className="text-center text-white text-sm max-md:text-[1.2vh] w-full uppercase">
                     Stories, poems & explanations made age appropriate for Kids
                   </span>
                 </div>
@@ -769,13 +761,13 @@ const Home = () => {
                   className="w-full p-[1vh] flex flex-col justify-between md:justify-around max-md:min-h-[24vh] items-center h-full md:space-y-[1vh] md:pb-4 md:flex-1 md:min-h-[35vh]"
                 >
                   <div className="w-full text-center">
-                    <h2 className="md:text-lg font-semibold flex flex-wrap items-center justify-center gap-[1vh] text-white">
+                    <h2 className="md:text-xl font-semibold flex flex-wrap items-center justify-center gap-[1vh] text-white">
                       <Select
                         onValueChange={handleTypeChange}
                         value={type}
                         className="bg-transparent ring-transparent border bg-[#ede7e7] focus:ring-0 focus-visible:ring-0 border-[#f59e1e] underline decoration-2 max-md:w-full"
                       >
-                        <SelectTrigger className="w-fit ring-transparent border border-transparent bg-transparent md:text-base max-md:text-[1.8vh] uppercase rounded-full p-2 underline decoration-2 [&>svg]:w-6 [&>svg]:h-20 [&>svg]:opacity-100">
+                        <SelectTrigger className="w-fit ring-transparent border border-transparent bg-transparent md:text-lg max-md:text-[1.8vh] uppercase rounded-full p-2 underline decoration-2 [&>svg]:w-6 [&>svg]:h-20 [&>svg]:opacity-100">
                           <SelectValue
                             placeholder="Story"
                             className="text-black w-full"
@@ -799,7 +791,7 @@ const Home = () => {
                     value={courseName}
                     maxLength="150"
                     onChange={(e) => setCourseName(e.target.value)}
-                    className="w-full md:max-w-lg mx-auto py-[0.8vh] text-sm placeholder:text-[1.2vh] focus-visible:ring-transparent border border-[#f59e1e] rounded-lg placeholder:text-center bg-[#ede7e7]"
+                    className="w-full md:max-w-lg mx-auto py-[0.8vh] text-base md:placeholder:text-sm max-md:placeholder:text-[1.2vh] focus-visible:ring-transparent border border-[#f59e1e] rounded-lg placeholder:text-center bg-[#ede7e7]"
                   />
                   <div
                     onClick={() => setAdvanced(!advanced)}
