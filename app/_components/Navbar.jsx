@@ -7,7 +7,7 @@ import { useChildren } from "@/context/CreateContext";
 import useAuth from "../hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { FaHome, FaInfoCircle } from "react-icons/fa";
+import { FaHome, FaInfoCircle, FaSearch } from "react-icons/fa";
 import { IoGlobeSharp } from "react-icons/io5";
 import { GiBriefcase } from "react-icons/gi";
 import { IoIosTrophy } from "react-icons/io";
@@ -24,6 +24,7 @@ const Navbar = () => {
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
     // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
     // { label: "Community", icon: FaPeopleGroup, links: "/communities" },
+    { label: "Search", links: "/search", icon: FaSearch },
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
 
   ];

@@ -60,6 +60,7 @@ const SideBar = () => {
     { label: "Home", icon: FaHome, links: "/" },
     // { label: "News", icon: IoGlobeSharp, links: "/news" },
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
+    { label: "Search", links: "/search", icon: FaSearch },
     // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
     // { label: "Community", icon: FaPeopleGroup, links: "/communities" },
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
@@ -133,7 +134,11 @@ const SideBar = () => {
                 >
                   <Icon
                     size={24}
-                    className={(isActive || (label=="Home" && (pathname.includes("news")))) ? "text-red-500" : "text-black"}
+                    className={
+                      isActive || (label == "Home" && pathname.includes("news"))
+                        ? "text-red-500"
+                        : "text-black"
+                    }
                   />
                   <span
                     className={`${
