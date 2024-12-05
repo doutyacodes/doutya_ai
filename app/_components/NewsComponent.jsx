@@ -106,8 +106,9 @@ export default function NewsDetails({ id }) {
     questions,
     meanings,
     created_at,
+    categoryNames
   } = article;
-  const shareUrl = `https://www.axara.co/news/${category.toLowerCase()}/${id}`;
+  const shareUrl = `https://www.axara.co/news/category/${id}`;
   // console.log("meanings",meanings)
   // Replace words with hoverable bolded spans
   
@@ -158,7 +159,7 @@ export default function NewsDetails({ id }) {
         transition={{ duration: 0.6 }}
       >
         <div className="text-sm text-orange-500 uppercase font-medium mb-2">
-          {category}
+          {categoryNames}
         </div>
         <h1 className="text-4xl font-bold text-gray-800">{title}</h1>
         <p className="text-sm text-gray-500 mt-2">{date}</p>

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { NEWS, NEWS_CATEGORIES } from "@/utils/schema";
+import { NEWS, NEWS_CATEGORIES, NEWS_TO_CATEGORIES } from "@/utils/schema";
 import { authenticate } from "@/lib/jwtMiddleware";
-import { and, desc, eq, gt } from "drizzle-orm";
+import { and, desc, eq, gt, inArray, sql } from "drizzle-orm";
 
 export async function POST(req) {
   // const authResult = await authenticate(req,true);
@@ -26,22 +26,29 @@ export async function POST(req) {
     const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
     // Fetch top news created within the last 24 hours
-    const news_top = await db
+    const newsTop = await db
       .select({
         id: NEWS.id,
         title: NEWS.title,
         description: NEWS.description,
-        category: NEWS_CATEGORIES.name,
+        categoryIds: sql`GROUP_CONCAT(${NEWS_CATEGORIES.id} SEPARATOR ',')`.as("categoryIds"),
+        categoryNames: sql`GROUP_CONCAT(${NEWS_CATEGORIES.name} SEPARATOR ',')`.as("categoryNames"),
         age: NEWS.age,
-        news_category_id: NEWS.news_category_id,
-        image_url: NEWS.image_url, // URL of the featured image
-        summary: NEWS.summary, // Brief summary, nullable
-        created_at: NEWS.created_at, // Timestamp for record creation
+        image_url: NEWS.image_url,
+        summary: NEWS.summary,
+        created_at: NEWS.created_at,
         updated_at: NEWS.updated_at,
-        main_news:NEWS.main_news
+        main_news: NEWS.main_news
       })
       .from(NEWS)
-      .leftJoin(NEWS_CATEGORIES, eq(NEWS.news_category_id, NEWS_CATEGORIES.id)) // Join on category ID
+      .leftJoin(
+        NEWS_TO_CATEGORIES,
+        eq(NEWS.id, NEWS_TO_CATEGORIES.news_id)
+      )
+      .leftJoin(
+        NEWS_CATEGORIES,
+        eq(NEWS_TO_CATEGORIES.news_category_id, NEWS_CATEGORIES.id)
+      ).groupBy(NEWS.id)
       .orderBy(desc(NEWS.created_at))
       .where(
         and(
@@ -50,6 +57,7 @@ export async function POST(req) {
           gt(NEWS.created_at, twentyFourHoursAgo) // Created within the last 24 hours
         )
       )
+      .orderBy(desc(NEWS.created_at))
       .execute();
 
     // Fetch normal news (not marked as "on top")
@@ -58,24 +66,33 @@ export async function POST(req) {
         id: NEWS.id,
         title: NEWS.title,
         description: NEWS.description,
-        category: NEWS_CATEGORIES.name,
+        categoryIds: sql`GROUP_CONCAT(${NEWS_CATEGORIES.id} SEPARATOR ',')`.as("categoryIds"),
+        categoryNames: sql`GROUP_CONCAT(${NEWS_CATEGORIES.name} SEPARATOR ',')`.as("categoryNames"),
         age: NEWS.age,
-        news_category_id: NEWS.news_category_id,
-        image_url: NEWS.image_url, // URL of the featured image
-        summary: NEWS.summary, // Brief summary, nullable
-        created_at: NEWS.created_at, // Timestamp for record creation
-        updated_at: NEWS.updated_at,
+        image_url: NEWS.image_url,
+        summary: NEWS.summary,
+        created_at: NEWS.created_at,
+        updated_at: NEWS.updated_at
       })
       .from(NEWS)
-      .leftJoin(NEWS_CATEGORIES, eq(NEWS.news_category_id, NEWS_CATEGORIES.id)) // Join on category ID
-      .orderBy(desc(NEWS.created_at))
+      .leftJoin(
+        NEWS_TO_CATEGORIES,
+        eq(NEWS.id, NEWS_TO_CATEGORIES.news_id)
+      )
+      .leftJoin(
+        NEWS_CATEGORIES,
+        eq(NEWS_TO_CATEGORIES.news_category_id, NEWS_CATEGORIES.id)
+      )
       .where(and(eq(NEWS.age, age), eq(NEWS.show_on_top, false)))
+      .groupBy(NEWS.id)
+    .orderBy(desc(NEWS.created_at))
+
       .execute();
 
     return NextResponse.json({
       categories: newsCategories,
       news,
-      news_top,
+      newsTop
     });
   } catch (error) {
     console.error("Error fetching news categories or news:", error);

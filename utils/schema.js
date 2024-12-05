@@ -1274,6 +1274,17 @@ export const NEWS_QUESTIONS = mysqlTable("news_questions", {
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
 });
 
+export const NEWS_TO_CATEGORIES = mysqlTable("news_to_categories", {
+  id: int("id").primaryKey().autoincrement(),
+  news_id: int("news_id")
+    .notNull()
+    .references(() => NEWS.id, { onDelete: "cascade" }), // Foreign key referencing NEWS table
+  news_category_id: int("news_category_id")
+    .notNull()
+    .references(() => NEWS_CATEGORIES.id, { onDelete: "cascade" }), // Foreign key referencing NEWS_CATEGORIES table
+});
+
+
 export const WORDS_MEANINGS = mysqlTable("words_meanings", {
   id: int("id").primaryKey().autoincrement(), // Primary key
   age: int("age"), // Primary key

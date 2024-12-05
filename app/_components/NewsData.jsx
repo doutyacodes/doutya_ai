@@ -44,13 +44,15 @@ const NewsData = ({
   article,
   setShowId,
   setShowNews,
-  getCategoryNameById,
+  getCategoryNamesByIds,
   size = false,
 }) => {
   const [showReportPopup, setShowReportPopup] = useState(false);
   const [report_text, setReport_text] = useState("");
 
-  const shareUrl = `https://www.axara.co/news/${article.category.toLowerCase()}/${
+  // console.log("article",article)
+
+  const shareUrl = `https://www.axara.co/news/categories/${
     article.id
   }`;
   const title = article.title;
@@ -99,9 +101,9 @@ const NewsData = ({
         <span className="absolute top-2 left-2 text-white text-xs font-medium bg-black bg-opacity-60 px-2 py-1 rounded-md">
           {formatDate(article.created_at)}
         </span>
-        <span className="absolute bottom-2 left-2 text-white text-xs font-medium bg-orange-500 bg-opacity-80 px-2 py-1 rounded-md">
-        {getCategoryNameById(article.news_category_id)}
-        </span>
+        {/* <span className="absolute bottom-2 left-2 text-white text-xs font-medium bg-orange-500 bg-opacity-80 px-2 py-1 rounded-md"> */}
+        {/* {getCategoryNameById(article.news_category_id)} */}
+        {/* </span> */}
       </div>
 
       {/* Content Area */}

@@ -11,9 +11,9 @@ import { useEffect, useState } from "react";
 
 export default function NewsSection() {
   const [newsCategories, setNewsCategories] = useState([]);
-  const [news_top, setNews_top] = useState([]);
+  const [newsTop, setNewsTop] = useState({});
   const [newsByCategory, setNewsByCategory] = useState({});
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [showNews, setShowNews] = useState(false);
@@ -24,38 +24,32 @@ export default function NewsSection() {
     try {
       setIsLoading(true);
       const response = await GlobalApi.FetchNews({ age: selectedAge });
-      const categories = response.data.categories || [];
-      const news = response.data.news || [];
-      const news_top2 = response.data.news_top || [];
+      const { categories = [], news = [], newsTop: newsTopData = [] } = response.data;
 
       // Add "All" category
-      setNewsCategories([{ name: "All" }, ...categories]);
+      const allCategory = { id: "all", name: "All" };
+      setNewsCategories([allCategory, ...categories]);
 
       // Group news by categories
       const groupedNews = categories.reduce((acc, category) => {
-        acc[category.name] = news.filter(
-          (item) => item.news_category_id === category.id
+        acc[category.name] = news.filter((item) =>
+          item.categoryIds.split(",").map(Number).includes(category.id)
         );
         return acc;
       }, {});
-
-      // Add "All" category news (all news combined)
       groupedNews["All"] = news;
 
-      const groupedNews2 = categories.reduce((acc, category) => {
-        acc[category.name] = news_top2
-          .filter((item) => item.news_category_id === category.id)
-          .slice(0, 2);  // Limit to the first 2 news items
+      // Group top news by categories
+      const groupedNewsTop = categories.reduce((acc, category) => {
+        acc[category.name] = newsTopData.filter((item) =>
+          item.categoryIds.split(",").map(Number).includes(category.id)
+        );
         return acc;
       }, {});
-
-      groupedNews2["All"] = news_top2
-      .filter((item) => item.main_news) // Filter by main_news for "All"
-      .slice(0, 2);
-
+      groupedNewsTop["All"] = newsTopData;
 
       setNewsByCategory(groupedNews);
-      setNews_top(groupedNews2);
+      setNewsTop(groupedNewsTop);
 
       // Default to "All" category
       setSelectedCategory("All");
@@ -73,33 +67,19 @@ export default function NewsSection() {
   }, [selectedAge]);
 
   const currentCategoryNews = newsByCategory[selectedCategory] || [];
-  const NEWSTOP = news_top[selectedCategory] || [];
+  const currentTopNews = newsTop[selectedCategory] || [];
   const filteredNews = currentCategoryNews.filter(
     (article) =>
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.category?.toLowerCase().includes(searchQuery.toLowerCase())
+      article.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  function getCategoryNameById(id) {
-    const category = newsCategories.find((cat) => cat.id === id);
-    return category ? category.name : null; // Returns null if no matching id is found
-  }
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
   return (
     <div className="p-4 text-gray-800 w-full">
-      {/* Header */}
-      {/* <motion.header
-        className="text-center mb-6"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <h1 className="text-4xl font-bold text-orange-600">News</h1>
-      </motion.header> */}
-
       {/* Search Bar */}
       <motion.div
         className="w-full mb-6"
@@ -139,26 +119,27 @@ export default function NewsSection() {
           ))}
         </div>
       </div>
-      {!showNews && !showId && (
+
+      {/* Top News Section */}
+      {!showNews && !showId && currentTopNews.length > 0 && (
         <motion.div
-          className={cn("grid grid-cols-1  py-4 gap-4",NEWSTOP?.length ==2 &&"md:grid-cols-2")}
+          className={cn("grid grid-cols-1 py-4 gap-4", currentTopNews.length >= 2 && "md:grid-cols-2")}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          {NEWSTOP.length > 0 &&
-            NEWSTOP.map((article) => (
-              <NewsData
-                article={article}
-                setShowId={setShowId}
-                setShowNews={setShowNews}
-                getCategoryNameById={getCategoryNameById}
-                key={article.id}
-                size={true}
-              />
-            ))}
+          {currentTopNews.map((article) => (
+            <NewsData
+              article={article}
+              setShowId={setShowId}
+              setShowNews={setShowNews}
+              key={article.id}
+              size={true}
+            />
+          ))}
         </motion.div>
       )}
+
       {/* News Cards */}
       {showNews && showId ? (
         <NewsDetails id={showId} />
@@ -176,7 +157,6 @@ export default function NewsSection() {
                 article={article}
                 setShowId={setShowId}
                 setShowNews={setShowNews}
-                getCategoryNameById={getCategoryNameById}
                 key={article.id}
               />
             ))
