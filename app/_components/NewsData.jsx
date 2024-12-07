@@ -28,9 +28,9 @@ const formatDate2 = (date) => {
     day: "2-digit",
     month: "short",
     year: "numeric",
-    // hour: "2-digit",
-    // minute: "2-digit",
-    // hour12: true,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
     timeZone: "Asia/Kolkata",
   };
 
@@ -52,9 +52,7 @@ const NewsData = ({
 
   // console.log("article",article)
 
-  const shareUrl = `https://www.axara.co/news/categories/${
-    article.id
-  }`;
+  const shareUrl = `https://www.axara.co/news/categories/${article.id}`;
   const title = article.title;
 
   const handleReport = async () => {
@@ -76,6 +74,26 @@ const NewsData = ({
     }
   };
 
+  const categoriesList = (data) => {
+    if (!data) return null; // Handle cases where data is null or undefined
+    const categoryNames = data;
+    const result = categoryNames.split(",");
+    
+    return (
+      <>
+        {result.map((item, index) => (
+          <div
+            key={index} // Always add a unique key when rendering lists
+            className="  text-[7.9px] text-white text-xs font-medium bg-orange-500 bg-opacity-80 px-2 py-[2px] rounded-md"
+          >
+            {item.trim()} {/* Remove extra spaces */}
+          </div>
+        ))}
+      </>
+    );
+  };
+  
+
   return (
     <div
       //   whileTap={{ scale: 0.95 }}
@@ -85,7 +103,7 @@ const NewsData = ({
       )}
     >
       {/* Image with Date at the Top */}
-      <div className={cn("relative  w-full", !size ? "h-48":"h-48 md:h-80")}>
+      <div className={cn("relative  w-full", !size ? "h-48" : "h-48 md:h-80")}>
         <Image
           src={`https://wowfy.in/testusr/images/${article.image_url}`}
           alt={article.title}
@@ -101,18 +119,21 @@ const NewsData = ({
         <span className="absolute top-2 left-2 text-white text-xs font-medium bg-black bg-opacity-60 px-2 py-1 rounded-md">
           {formatDate(article.created_at)}
         </span>
-        {/* <span className="absolute bottom-2 left-2 text-white text-xs font-medium bg-orange-500 bg-opacity-80 px-2 py-1 rounded-md"> */}
-        {/* {getCategoryNameById(article.news_category_id)} */}
-        {/* </span> */}
+        <span className="absolute bottom-2 left-2 flex gap-[3px] items-center ">
+        {categoriesList(article.categoryNames)}
+        </span>
       </div>
 
       {/* Content Area */}
       <div className="flex flex-col flex-grow p-2">
         {/* Title */}
-        <h3 onClick={() => {
+        <h3
+          onClick={() => {
             setShowId(article.id);
             setShowNews(true);
-          }} className="text-lg font-medium text-gray-800 mb-2 cursor-pointer">
+          }}
+          className="text-lg font-medium text-gray-800 mb-2 cursor-pointer"
+        >
           {truncateTitle(article.title)}
         </h3>
 
@@ -150,15 +171,15 @@ const NewsData = ({
               <FaEllipsisH size={16} />
             </div>
           </div>
-          <div>
+          <div className="flex flex-col gap-[1px]">
             <motion.div
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="text-xs font-medium  py-2 relative"
+              className="text-[8px] font-medium relative"
             >
-                        {formatDate2(article.created_at)}
-
+              {formatDate2(article.created_at)}
             </motion.div>
+            {console.log("article", article)}
           </div>
         </div>
       </div>
