@@ -111,8 +111,8 @@ export default function NewsSection() {
       </motion.div>
 
       {/* Category Tabs */}
-      <div className="w-full max-w-[82vw] mb-4">
-        <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="w-full max-w-[84vw] mb-4">
+        <div className="flex space-x-1 overflow-x-auto pb-2 scrollbar-hide">
           {newsCategories.map((category) => (
             <button
               key={category.name}
@@ -122,7 +122,7 @@ export default function NewsSection() {
                 setShowNews(false);
                 setSearchQuery("");
               }}
-              className={`whitespace-nowrap px-4 py-2 font-medium rounded-full ${
+              className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full ${
                 selectedCategory === category.name
                   ? "bg-orange-500 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-orange-200"

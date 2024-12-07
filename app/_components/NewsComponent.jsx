@@ -150,7 +150,7 @@ export default function NewsDetails({ id }) {
   };
 
   return (
-    <div className="text-gray-800 p-2">
+    <div className="text-gray-800 p-2 pb-8">
       {/* Header Section */}
       <motion.div
         className="mb-6"

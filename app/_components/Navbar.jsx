@@ -7,7 +7,7 @@ import { useChildren } from "@/context/CreateContext";
 import useAuth from "../hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { FaHome, FaInfoCircle, FaSearch } from "react-icons/fa";
+import { FaHome, FaInfoCircle, FaSearch, FaUserAlt, FaUserCircle } from "react-icons/fa";
 import { IoGlobeSharp } from "react-icons/io5";
 import { GiBriefcase } from "react-icons/gi";
 import { IoIosTrophy } from "react-icons/io";
@@ -42,7 +42,7 @@ const Navbar = () => {
           <div className="block absolute top-10 left-2 z-[999999999] md:hidden opacity-0">
             <Menu />
           </div>
-          <div className="opacity-0">Login</div>
+          <div className="opacity-0 text-xs">Login</div>
           <Link
             href={"/"}
             className="mx-auto flex justify-center items-center relative h-[7.6vh] w-[40vw]"
@@ -65,27 +65,20 @@ const Navbar = () => {
               )} */}
               {!isAuthenticated && (
                 <div
-                  onClick={() => showPopupForUser()}
-                  className="flex flex-col w-fit gap-[1px] items-center "
-                >
-                  <div className="relative h-[5.2vh] w-[12vw]">
-                    <Image
-                      src={"/images/boy.png"}
-                      objectFit="contain"
-                      fill
-                      alt={"gender"}
-                    />
-                  </div>
-                  <span className="text-[1.3vh] text-blue-600">
-                    Guest, {selectedAge}
-                  </span>
-                </div>
+                onClick={() => showPopupForUser()}
+                className="flex flex-col w-fit gap-[1px] items-center"
+              >
+                <FaUserCircle size={28} color="gray" />
+                <span className="text-[1.3vh] text-blue-600">
+                  Guest, {selectedAge}
+                </span>
+              </div>
               )}
             </div>
           )}
         </div>
       </div>
-      <div className="md:hidden fixed z-[999999999999999999] bottom-1 left-0 bg-[#f04229] p-2 w-full flex justify-around items-center">
+      <div className="md:hidden fixed z-[999999999999999999] bottom-0 left-0 bg-[#f04229] p-2 w-full flex justify-around items-center">
         {links.map(({ label, icon: Icon, links }, idx) => {
           const isActive =
             links === "/"

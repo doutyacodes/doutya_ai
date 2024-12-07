@@ -7,7 +7,7 @@ const LayoutWrapper = ({children}) => {
     const pathname = usePathname()
 
   return (
-    <div className={cn("flex-grow relative z-10 ",pathname=="/" ? "md:p-3":"p-3")}>
+    <div className={cn("flex-grow relative z-10 md:p-3")}>
         {children}
     </div>
   )
