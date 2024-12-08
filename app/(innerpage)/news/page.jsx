@@ -25,7 +25,11 @@ export default function NewsSection() {
     try {
       setIsLoading(true);
       const response = await GlobalApi.FetchNews({ age: selectedAge });
-      const { categories = [], news = [], newsTop: newsTopData = [] } = response.data;
+      const {
+        categories = [],
+        news = [],
+        newsTop: newsTopData = [],
+      } = response.data;
 
       // Add "All" category
       const allCategory = { id: "all", name: "All" };
@@ -47,7 +51,9 @@ export default function NewsSection() {
         );
         return acc;
       }, {});
-      groupedNewsTop["All"] = newsTopData;
+      groupedNewsTop["All"] = newsTopData.filter(
+        (item) => item.main_news === true
+      );
 
       setNewsByCategory(groupedNews);
       setNewsTop(groupedNewsTop);
@@ -68,7 +74,14 @@ export default function NewsSection() {
   }, [selectedAge]);
 
   const currentCategoryNews = newsByCategory[selectedCategory] || [];
-  const currentTopNews = newsTop[selectedCategory] || [];
+  let currentTopNews = newsTop[selectedCategory] || [];
+
+  // Apply the `main_news` filter for the "All" category
+  if (selectedCategory === "All") {
+    currentTopNews = currentTopNews.filter(
+      (article) => article.main_news === true
+    );
+  }
   const filteredNews = currentCategoryNews.filter(
     (article) =>
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -78,15 +91,15 @@ export default function NewsSection() {
   function getCategoryNamesByIds(ids) {
     // Handle case where ids is a single ID or an array of IDs
     const idsArray = Array.isArray(ids) ? ids : [ids];
-    
+
     // Get category names for the given IDs
     const categoryNames = idsArray.map((id) => {
       const category = newsCategories.find((cat) => cat.id === id);
       return category ? category.name : null; // Return category name or null if not found
     });
-  
+
     // Filter out null values and join the category names with commas
-    return categoryNames.filter(name => name !== null).join(', ');
+    return categoryNames.filter((name) => name !== null).join(", ");
   }
 
   if (isLoading) {
@@ -124,8 +137,7 @@ export default function NewsSection() {
                 setSearchQuery("");
               }}
               className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full ${
-                                (selectedCategory === category.name && !showId)
-
+                selectedCategory === category.name && !showId
                   ? "bg-orange-500 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-orange-200"
               }`}
@@ -139,7 +151,10 @@ export default function NewsSection() {
       {/* Top News Section */}
       {!showNews && !showId && currentTopNews.length > 0 && (
         <motion.div
-          className={cn("grid grid-cols-1 py-4 gap-4", currentTopNews.length >= 2 && "md:grid-cols-2")}
+          className={cn(
+            "grid grid-cols-1 py-4 gap-4",
+            currentTopNews.length >= 2 && "md:grid-cols-2"
+          )}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
