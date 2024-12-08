@@ -18,12 +18,9 @@ import {
 import { FaEllipsisH, FaShareAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
 import GlobalApi from "../api/_services/GlobalApi";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-export default function NewsDetails({ id }) {
+
+export default function NewsDetails({ id,    showNames
+}) {
   const [article, setArticle] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -106,7 +103,6 @@ export default function NewsDetails({ id }) {
     questions,
     meanings,
     created_at,
-    showNames
   } = article;
   console.log(article)
   const shareUrl = `https://www.axara.co/news/category/${id}`;
@@ -152,7 +148,8 @@ export default function NewsDetails({ id }) {
 
   const categoriesList = () => {
     if (!showNames) return null; // Handle cases where data is null or undefined
-    const categoryNames = data;
+    const categoryNames =     showNames
+    ;
     const result = categoryNames.split(",");
     
     return (
@@ -178,7 +175,7 @@ export default function NewsDetails({ id }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="text-sm text-orange-500 uppercase font-medium mb-2">
+        <div className="text-sm text-orange-500 uppercase font-medium mb-2 flex w-fit gap-2">
           {categoriesList()}
         </div>
         <h1 className="text-4xl font-bold text-gray-800">{title}</h1>
