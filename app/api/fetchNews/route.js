@@ -38,7 +38,7 @@ export async function POST(req) {
         summary: NEWS.summary,
         created_at: NEWS.created_at,
         updated_at: NEWS.updated_at,
-        // main_news: NEWS.main_news
+        main_news: NEWS.main_news
       })
       .from(NEWS)
       .leftJoin(
