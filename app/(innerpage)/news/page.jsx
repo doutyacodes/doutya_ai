@@ -18,6 +18,7 @@ export default function NewsSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [showNews, setShowNews] = useState(false);
   const [showId, setShowId] = useState(null);
+  const [showNames, setShowNames] = useState(null);
   const { selectedAge } = useChildren();
 
   const fetchNews = async () => {
@@ -74,6 +75,20 @@ export default function NewsSection() {
       article.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  function getCategoryNamesByIds(ids) {
+    // Handle case where ids is a single ID or an array of IDs
+    const idsArray = Array.isArray(ids) ? ids : [ids];
+    
+    // Get category names for the given IDs
+    const categoryNames = idsArray.map((id) => {
+      const category = newsCategories.find((cat) => cat.id === id);
+      return category ? category.name : null; // Return category name or null if not found
+    });
+  
+    // Filter out null values and join the category names with commas
+    return categoryNames.filter(name => name !== null).join(', ');
+  }
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -109,7 +124,8 @@ export default function NewsSection() {
                 setSearchQuery("");
               }}
               className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full ${
-                selectedCategory === category.name
+                                (selectedCategory === category.name && !showId)
+
                   ? "bg-orange-500 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-orange-200"
               }`}
@@ -132,9 +148,11 @@ export default function NewsSection() {
             <NewsData
               article={article}
               setShowId={setShowId}
+              setShowNames={setShowNames}
               setShowNews={setShowNews}
               key={article.id}
               size={true}
+              getCategoryNamesByIds={getCategoryNamesByIds}
             />
           ))}
         </motion.div>
@@ -142,7 +160,7 @@ export default function NewsSection() {
 
       {/* News Cards */}
       {showNews && showId ? (
-        <NewsDetails id={showId} />
+        <NewsDetails showNames={showNames} id={showId} />
       ) : (
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
@@ -156,6 +174,7 @@ export default function NewsSection() {
               <NewsData
                 article={article}
                 setShowId={setShowId}
+                setShowNames={setShowNames}
                 setShowNews={setShowNews}
                 key={article.id}
               />

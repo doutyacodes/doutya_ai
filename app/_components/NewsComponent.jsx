@@ -106,8 +106,9 @@ export default function NewsDetails({ id }) {
     questions,
     meanings,
     created_at,
-    categoryNames
+    showNames
   } = article;
+  console.log(article)
   const shareUrl = `https://www.axara.co/news/category/${id}`;
   // console.log("meanings",meanings)
   // Replace words with hoverable bolded spans
@@ -149,6 +150,25 @@ export default function NewsDetails({ id }) {
     return new Date(date).toLocaleString("en-IN", options).replace(",", "");
   };
 
+  const categoriesList = () => {
+    if (!showNames) return null; // Handle cases where data is null or undefined
+    const categoryNames = data;
+    const result = categoryNames.split(",");
+    
+    return (
+      <>
+        {result.map((item, index) => (
+          <div
+            key={index} // Always add a unique key when rendering lists
+            className="  text-[7.9px] text-white text-xs font-medium bg-orange-500 bg-opacity-80 px-2 py-[2px] rounded-md"
+          >
+            {item.trim()} {/* Remove extra spaces */}
+          </div>
+        ))}
+      </>
+    );
+  };
+
   return (
     <div className="text-gray-800 p-2 pb-8">
       {/* Header Section */}
@@ -159,7 +179,7 @@ export default function NewsDetails({ id }) {
         transition={{ duration: 0.6 }}
       >
         <div className="text-sm text-orange-500 uppercase font-medium mb-2">
-          {categoryNames}
+          {categoriesList()}
         </div>
         <h1 className="text-4xl font-bold text-gray-800">{title}</h1>
         <p className="text-sm text-gray-500 mt-2">{date}</p>

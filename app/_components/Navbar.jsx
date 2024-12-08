@@ -7,7 +7,7 @@ import { useChildren } from "@/context/CreateContext";
 import useAuth from "../hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { FaHome, FaInfoCircle, FaSearch, FaUserAlt, FaUserCircle } from "react-icons/fa";
+import { FaHome, FaInfoCircle, FaNewspaper, FaSearch, FaUserAlt, FaUserCircle } from "react-icons/fa";
 import { IoGlobeSharp } from "react-icons/io5";
 import { GiBriefcase } from "react-icons/gi";
 import { IoIosTrophy } from "react-icons/io";
@@ -19,7 +19,7 @@ const Navbar = () => {
   const { isAuthenticated } = useAuth();
   const pathname = usePathname();
   const links = [
-    { label: "Home", icon: FaHome, links: "/" },
+    { label: "Home", icon: FaNewspaper, links: "/" },
     // { label: "News", icon: IoGlobeSharp, links: "/news" },
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
     // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
@@ -70,7 +70,7 @@ const Navbar = () => {
               >
                 <FaUserCircle size={28} color="gray" />
                 <span className="text-[1.3vh] text-blue-600">
-                  Guest, {selectedAge}
+                  Age, {selectedAge}
                 </span>
               </div>
               )}

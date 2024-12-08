@@ -57,7 +57,7 @@ const SideBar = () => {
   //   // { label: "Challenges", links: "/challenges", icon: FaTrophy },
   // ];
   const navLinks = [
-    { label: "Home", icon: FaHome, links: "/" },
+    { label: "Home", icon: FaNewspaper, links: "/" },
     // { label: "News", icon: IoGlobeSharp, links: "/news" },
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
     { label: "Search", links: "/search", icon: FaSearch },

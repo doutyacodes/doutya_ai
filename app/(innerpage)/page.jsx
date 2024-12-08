@@ -18,6 +18,7 @@ export default function NewsSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [showNews, setShowNews] = useState(false);
   const [showId, setShowId] = useState(null);
+  const [showNames, setShowNames] = useState(null);
   const { selectedAge } = useChildren();
 
   const fetchNews = async () => {
@@ -123,7 +124,8 @@ export default function NewsSection() {
                 setSearchQuery("");
               }}
               className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full ${
-                selectedCategory === category.name
+                                (selectedCategory === category.name && !showId)
+
                   ? "bg-orange-500 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-orange-200"
               }`}
@@ -146,6 +148,7 @@ export default function NewsSection() {
             <NewsData
               article={article}
               setShowId={setShowId}
+              setShowNames={setShowNames}
               setShowNews={setShowNews}
               key={article.id}
               size={true}
@@ -157,7 +160,7 @@ export default function NewsSection() {
 
       {/* News Cards */}
       {showNews && showId ? (
-        <NewsDetails id={showId} />
+        <NewsDetails showNames={showNames} id={showId} />
       ) : (
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
@@ -171,6 +174,7 @@ export default function NewsSection() {
               <NewsData
                 article={article}
                 setShowId={setShowId}
+                setShowNames={setShowNames}
                 setShowNews={setShowNews}
                 key={article.id}
               />

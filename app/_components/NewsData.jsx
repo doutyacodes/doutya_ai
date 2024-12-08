@@ -44,7 +44,7 @@ const NewsData = ({
   article,
   setShowId,
   setShowNews,
-  getCategoryNamesByIds,
+  setShowNames,
   size = false,
 }) => {
   const [showReportPopup, setShowReportPopup] = useState(false);
@@ -112,6 +112,7 @@ const NewsData = ({
           className={"w-full h-full object-cover  max-md:rounded-md"}
           onClick={() => {
             setShowId(article.id);
+            setShowNames(article.categoryNames);
             setShowNews(true);
           }}
         />
@@ -178,6 +179,7 @@ const NewsData = ({
               className="text-[8px] font-medium relative"
             >
               {formatDate2(article.created_at)}
+              {/* {article.created_at} */}
             </motion.div>
             {console.log("article", article)}
           </div>
