@@ -70,7 +70,7 @@ const Navbar = () => {
               >
                 <FaUserCircle size={28} color="#845EC2" />
                 <span className="text-[1.3vh] text-blue-600">
-                  Age- {selectedAge}
+                  Age - {selectedAge}
                 </span>
               </div>
               )}
