@@ -735,7 +735,7 @@ const Home = () => {
       <Toaster />
 
       {!latestCourse && (
-        <div className="grid grid-cols-1 max-md:gap-[1.1vh] md:gap-2 mt-3">
+        <div className="grid grid-cols-1 max-md:gap-[1.1vh] md:gap-2 mt-3 pb-8">
           <div className="w-full space-y-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
