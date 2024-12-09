@@ -19,6 +19,7 @@ import {
 } from "react-share";
 import toast from "react-hot-toast";
 import GlobalApi from "../api/_services/GlobalApi";
+import { FiCopy } from "react-icons/fi";
 
 export default function NewsDetails({ id, showNames }) {
   const [article, setArticle] = useState(null);
@@ -170,7 +171,17 @@ export default function NewsDetails({ id, showNames }) {
 
     return new Date(date).toLocaleString("en-IN", options).replace(",", "");
   };
-
+  const handleCopyLink = () => {
+    navigator.clipboard
+      .writeText(shareUrl)
+      .then(() => {
+        toast.success("Link copied to clipboard!"); // Optional success toast
+      })
+      .catch((err) => {
+        // toast.error('Failed to copy link.'); // Optional error toast
+        console.log(err); // Optional error toast
+      });
+  };
   return (
     <div className="text-gray-800 p-2 pb-8">
       <div className="mb-6">
@@ -205,6 +216,14 @@ export default function NewsDetails({ id, showNames }) {
             <TelegramShareButton url={shareUrl} title={title}>
               <TelegramIcon size={32} round />
             </TelegramShareButton>
+            <button
+                  onClick={handleCopyLink}
+                  className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                  aria-label="Copy Link"
+                  title="Copy Link"
+                >
+                  <FiCopy size={20} />
+                </button>
           </div>
         </div>
 

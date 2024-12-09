@@ -16,6 +16,7 @@ import {
 import GlobalApi from "../api/_services/GlobalApi";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import { FiCopy } from "react-icons/fi";
 
 const formatDate = (date) => {
   const inputDate = moment(date);
@@ -78,7 +79,7 @@ const NewsData = ({
     if (!data) return null; // Handle cases where data is null or undefined
     const categoryNames = data;
     const result = categoryNames.split(",");
-    
+
     return (
       <>
         {result.map((item, index) => (
@@ -92,8 +93,18 @@ const NewsData = ({
       </>
     );
   };
-  
 
+  const handleCopyLink = () => {
+    navigator.clipboard
+      .writeText(shareUrl)
+      .then(() => {
+        toast.success("Link copied to clipboard!"); // Optional success toast
+      })
+      .catch((err) => {
+        // toast.error('Failed to copy link.'); // Optional error toast
+        console.log(err); // Optional error toast
+      });
+  };
   return (
     <div
       //   whileTap={{ scale: 0.95 }}
@@ -121,7 +132,7 @@ const NewsData = ({
           {formatDate(article.created_at)}
         </span>
         <span className="absolute bottom-2 left-2 flex gap-[3px] items-center ">
-        {categoriesList(article.categoryNames)}
+          {categoriesList(article.categoryNames)}
         </span>
       </div>
 
@@ -158,6 +169,14 @@ const NewsData = ({
                 <TelegramShareButton url={shareUrl} title={title}>
                   <TelegramIcon size={32} round />
                 </TelegramShareButton>
+                <button
+                  onClick={handleCopyLink}
+                  className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                  aria-label="Copy Link"
+                  title="Copy Link"
+                >
+                  <FiCopy size={20} />
+                </button>
               </div>
             </div>
 
