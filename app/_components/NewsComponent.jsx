@@ -73,7 +73,7 @@ export default function NewsDetails({ id, showNames }) {
     };
 
     fetchArticle();
-  }, [id]);
+  }, [id,selectedAge]);
 
   const categoriesList = () => {
     if (!showNames) return null; // Handle cases where data is null or undefined
