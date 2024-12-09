@@ -73,7 +73,7 @@ export default function NewsDetails({ id, showNames }) {
     };
 
     fetchArticle();
-  }, [id,selectedAge]);
+  }, [id, selectedAge]);
 
   const categoriesList = () => {
     if (!showNames) return null; // Handle cases where data is null or undefined
@@ -217,13 +217,13 @@ export default function NewsDetails({ id, showNames }) {
               <TelegramIcon size={32} round />
             </TelegramShareButton>
             <button
-                  onClick={handleCopyLink}
-                  className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition"
-                  aria-label="Copy Link"
-                  title="Copy Link"
-                >
-                  <FiCopy size={20} />
-                </button>
+              onClick={handleCopyLink}
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+              aria-label="Copy Link"
+              title="Copy Link"
+            >
+              <FiCopy size={20} />
+            </button>
           </div>
         </div>
 
@@ -290,10 +290,13 @@ export default function NewsDetails({ id, showNames }) {
                 <IoIosCloseCircle size={24} color="#dc2626" />
               </button>
               <h2 className="text-lg font-bold text-gray-800">
-                Word: {popupContent.word}
+                {popupContent.word.charAt(0).toUpperCase() +
+                  popupContent.word.slice(1)}
               </h2>
+
               <p className="text-sm text-gray-600 mt-2">
-                Meaning: {popupContent.meaning}
+                <span className="font-bold"> Meaning</span>:{" "}
+                {popupContent.meaning}
               </p>
             </motion.div>
           </motion.div>
