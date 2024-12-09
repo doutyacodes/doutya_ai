@@ -33,7 +33,7 @@ const Navbar = () => {
       className={cn(
         "w-full bg-transparent ",
         // pathname !== "/"
-           "md:min-h-24 max-md:py-[0.8vh] border-b-4 border-orange-600 max-md:max-h-[8.5vh]"
+           "md:min-h-16 max-md:py-[0.8vh] border-b-4 border-orange-600 max-md:max-h-[8.5vh]"
           // : "md:min-h-24 max-md:py-[0.8vh] max-md:max-h-[8.5vh]"
       )}
     >
