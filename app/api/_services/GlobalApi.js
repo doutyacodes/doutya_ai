@@ -278,8 +278,7 @@ const fetchNewsHome = async (token,data) => {
 
 const fetchOneNews = async (data) => {
 
-
-    return axios.post(`/api/fetchNews/news`, data);
+    return axios.post(`https://www.axara.co/api/fetchNews/news`, data);
  
 };
 
