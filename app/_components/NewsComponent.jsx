@@ -183,92 +183,96 @@ export default function NewsDetails({ id, showNames }) {
       });
   };
   return (
-    <div className="text-gray-800 p-2 pb-8">
-      <div className="mb-6">
-        <h1 className="text-4xl font-bold text-gray-800">{title}</h1>
-        <p className="text-sm text-gray-500 mt-2">{date}</p>
-      </div>
-      <div className="mb-3 flex gap-2">{categoriesList()}</div>
-      <Image
-        src={`https://wowfy.in/testusr/images/${image_url}`}
-        alt={title}
-        width={800}
-        height={300}
-        className="rounded-md mb-6"
-      />
+    <div className="text-gray-800 p-2 pb-8 grid grid-cols-2 gap-2 md:gap-5 max-md:grid-cols-1">
+      <div className="w-full ">
+        <div className="mb-6">
+          <h1 className="text-4xl font-bold text-gray-800">{title}</h1>
+          <p className="text-sm text-gray-500 mt-2">{date}</p>
+        </div>
+        <div className="mb-3 flex gap-2">{categoriesList()}</div>
+        <Image
+          src={`https://wowfy.in/testusr/images/${image_url}`}
+          alt={title}
+          width={800}
+          height={300}
+          className="rounded-md mb-6"
+        />
 
-      <div className="text-xs text-slate-500">{formatDate(created_at)}</div>
-      <div className="flex items-center space-x-8 w-fit  my-6">
-        {/* Share Icon */}
-        <div className="text-gray-500 cursor-pointer relative group">
-          <FaShareAlt size={16} />
-          {/* Share Options */}
-          <div className="hidden group-hover:flex gap-2 absolute -top-10 left-0 bg-white border shadow-lg rounded-md p-2 z-50">
-            <FacebookShareButton url={shareUrl} quote={title}>
-              <FacebookIcon size={32} round />
-            </FacebookShareButton>
-            <TwitterShareButton url={shareUrl} title={title}>
-              <TwitterIcon size={32} round />
-            </TwitterShareButton>
-            <WhatsappShareButton url={shareUrl} title={title}>
-              <WhatsappIcon size={32} round />
-            </WhatsappShareButton>
-            <TelegramShareButton url={shareUrl} title={title}>
-              <TelegramIcon size={32} round />
-            </TelegramShareButton>
-            <button
-              onClick={handleCopyLink}
-              className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition"
-              aria-label="Copy Link"
-              title="Copy Link"
-            >
-              <FiCopy size={20} />
-            </button>
+        <div className="text-xs text-slate-500">{formatDate(created_at)}</div>
+        <div className="flex items-center space-x-8 w-fit  my-6">
+          {/* Share Icon */}
+          <div className="text-gray-500 cursor-pointer relative group">
+            <FaShareAlt size={16} />
+            {/* Share Options */}
+            <div className="hidden group-hover:flex gap-2 absolute -top-10 left-0 bg-white border shadow-lg rounded-md p-2 z-50">
+              <FacebookShareButton url={shareUrl} quote={title}>
+                <FacebookIcon size={32} round />
+              </FacebookShareButton>
+              <TwitterShareButton url={shareUrl} title={title}>
+                <TwitterIcon size={32} round />
+              </TwitterShareButton>
+              <WhatsappShareButton url={shareUrl} title={title}>
+                <WhatsappIcon size={32} round />
+              </WhatsappShareButton>
+              <TelegramShareButton url={shareUrl} title={title}>
+                <TelegramIcon size={32} round />
+              </TelegramShareButton>
+              <button
+                onClick={handleCopyLink}
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                aria-label="Copy Link"
+                title="Copy Link"
+              >
+                <FiCopy size={20} />
+              </button>
+            </div>
+          </div>
+
+          {/* Report Icon */}
+          <div
+            onClick={() => {
+              setShowReportPopup(true);
+              console.log("Report popup triggered");
+            }}
+            className="text-gray-500 cursor-pointer rotate-90"
+          >
+            <FaEllipsisH size={16} />
           </div>
         </div>
-
-        {/* Report Icon */}
-        <div
-          onClick={() => {
-            setShowReportPopup(true);
-            console.log("Report popup triggered");
-          }}
-          className="text-gray-500 cursor-pointer rotate-90"
-        >
-          <FaEllipsisH size={16} />
-        </div>
-      </div>
-      <motion.div
-        className="text-lg text-gray-700 space-y-6 leading-relaxed"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        {description.split("\n\n").map((para, index) => (
-          <p key={index} className="text-justify">
-            {replaceWordsWithSpans(para)}
-          </p>
-        ))}
-      </motion.div>
-      {questions && questions.length > 0 && (
         <motion.div
-          className="mt-8 bg-gray-100 p-6 rounded-md shadow-sm"
+          className="text-lg text-gray-700 space-y-6 leading-relaxed"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Questions for revision
-          </h2>
-          <ol className="list-decimal pl-6 space-y-4">
-            {questions.map((question, index) => (
-              <li key={index} className="text-lg text-gray-700">
-                {question}
-              </li>
-            ))}
-          </ol>
+          {description.split("\n\n").map((para, index) => (
+            <p key={index} className="text-justify">
+              {replaceWordsWithSpans(para)}
+            </p>
+          ))}
         </motion.div>
-      )}
+      </div>
+      <div className=" w-full md:mt-[6.5rem]">
+        {questions && questions.length > 0 && (
+          <motion.div
+            className="mt-8 bg-gray-100 p-6 rounded-md shadow-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              Questions for revision
+            </h2>
+            <ol className="list-decimal pl-6 space-y-4">
+              {questions.map((question, index) => (
+                <li key={index} className="text-lg text-gray-700">
+                  {question}
+                </li>
+              ))}
+            </ol>
+          </motion.div>
+        )}
+      </div>
       <AnimatePresence>
         {showPopup && (
           <motion.div

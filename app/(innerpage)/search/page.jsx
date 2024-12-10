@@ -746,7 +746,7 @@ const Home = () => {
               Magic Box
             </h1>
             <p className="mt-2 text-xs text-gray-700">
-            Stories, poems & explanations made age appropriate for Kids
+              Stories, poems & explanations made age appropriate for Kids
             </p>
           </motion.header>
           <div className="w-full flex justify-center items-center max-md:p-3  max-md:px-10">
