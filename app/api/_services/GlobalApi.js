@@ -276,6 +276,13 @@ const fetchNewsHome = async (token,data) => {
   }
 };
 
+const fetchOneNews = async (data) => {
+
+
+    return axios.post(`/api/fetchNews/news`, data);
+ 
+};
+
 const ReportNews = async (data) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
@@ -771,5 +778,6 @@ export default {
   GetFeedbacksData,
   GetDaysData,
   ReportNews,
+  fetchOneNews,
   FetchLeaderboard
 };

@@ -60,7 +60,7 @@ export default function NewsDetails({ id, showNames }) {
         });
         const data = await response.json();
         if (response.ok) {
-          setArticle(data);
+          setArticle(data.newsData);
         } else {
           setError(data.error || "Failed to fetch news");
         }
