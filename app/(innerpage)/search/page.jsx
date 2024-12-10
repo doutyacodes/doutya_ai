@@ -735,170 +735,224 @@ const Home = () => {
       <Toaster />
 
       {!latestCourse && (
-        <div className="grid grid-cols-1 max-md:gap-[1.1vh] md:gap-2 mt-3 pb-8">
-          <div className="w-full space-y-2">
+        <>
+          <motion.header
+            className="text-center mb-8 mt-2"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-3xl font-bold text-orange-600 roboto-bold ">
+              Magic Box
+            </h1>
+            <p className="mt-2 text-xs text-gray-700">
+            Stories, poems & explanations made age appropriate for Kids
+            </p>
+          </motion.header>
+          <div className="w-full flex justify-center items-center max-md:p-3  max-md:px-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center mt-2"
+            >
+              {/* <h1 className="text-5xl font-bold  mb-4">
+              Learn Anything, Anytime, Your Way
+            </h1>
+            <p className="text-lg text-gray-200 max-w-lg mx-auto">
+              Customized courses, adaptive learning, and flexible schedules
+              crafted by you for your unique journey.
+            </p> */}
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
-              className={cn(
-                "rounded-md items-center m-0 w-full bg-[#f04229] md:h-fit",
-                !advanced && "max-md:h-[35vh]" // Apply 35vh height only if advanced content is hidden
-              )}
+              className="flex flex-col items-center space-y-4 rounded-lg w-full max-w-4xl p-1 py-4"
             >
-              
-              <motion.div className="flex flex-col items-center space-y-[1.2vh] rounded-lg w-full h-full">
-                <div className="flex flex-col gap-[1vh] text-center bg-[#e91b25] rounded-md w-full pb-[1vh]">
-                  <h4 className="text-center font-semibold text-xl max-md:text-[2vh] text-white">
-                    SEARCH
-                  </h4>
-                  <span className="text-center text-white text-sm max-md:text-[1.2vh] w-full uppercase">
-                    Stories, poems & explanations made age appropriate for Kids
-                  </span>
-                </div>
-                <form
-                  onSubmit={handleSearch}
-                  className="w-full p-[1vh] flex flex-col justify-between md:justify-around max-md:min-h-[24vh] items-center h-full md:space-y-[1vh] md:pb-4 md:flex-1 md:min-h-[35vh]"
-                >
-                  <div className="w-full text-center">
-                    <h2 className="md:text-xl font-semibold flex flex-wrap items-center justify-center gap-[1vh] text-white">
-                      <Select
-                        onValueChange={handleTypeChange}
-                        value={type}
-                        className="bg-transparent ring-transparent border bg-[#ede7e7] focus:ring-0 focus-visible:ring-0 border-[#f59e1e] underline decoration-2 max-md:w-full"
-                      >
-                        <SelectTrigger className="w-fit ring-transparent border border-transparent bg-transparent md:text-lg max-md:text-[1.8vh] uppercase rounded-full p-2 underline decoration-2 [&>svg]:w-6 [&>svg]:h-20 [&>svg]:opacity-100">
-                          <SelectValue
-                            placeholder="Story"
-                            className="text-black w-full"
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value="story">a Story</SelectItem>
-                            <SelectItem value="explanation">
-                              an Explanation
-                            </SelectItem>
-                            <SelectItem value="poem">a Poem</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </h2>
-                  </div>
+              {/* <div className="w-full flex justify-end items-center">
+              <ChildSelector />
+            </div> */}
+              <form onSubmit={handleSearch} className="w-full ">
+                <div className="w-full text-center mb-4">
+                  <h2 className="text-xl font-semibold max-md:w-full mb-8 items-center justify-center flex flex-wrap  gap-3 ">
+                    <div>I want </div>
+                    <Select
+                      onValueChange={handleTypeChange}
+                      value={type}
+                      className="bg-transparent ring-transparent border  bg-[#ede7e7] focus:ring-0 focus-visible:ring-0 border-[#f59e1e] underline decoration-2  max-md:w-full" // Thicker underline with offset
+                    >
+                      <SelectTrigger className="w-fit ring-transparent border border-transparent focus-visible:ring-transparent bg-transparent md:text-4xl text-[29px] uppercase rounded-full p-2 focus:ring-0 focus-visible:ring-0  underline decoration-2  [&>svg]:w-8 [&>svg]:h-24 [&>svg]:opacity-100">
+                        <SelectValue
+                          placeholder="Story"
+                          className="text-black w-full"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="story">a Story</SelectItem>
+                          {/* <SelectItem value="bedtime story">
+                          a Bedtime Story
+                        </SelectItem> */}
+                          <SelectItem value="explanation">
+                            an Explanation
+                          </SelectItem>
+                          {/* <SelectItem value="informative story">
+                          an Informative Story
+                        </SelectItem> */}
+                          <SelectItem value="podcast">a Podcast</SelectItem>
+                          <SelectItem value="poem">a Poem</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>{" "}
+                    <div>about</div>
+                  </h2>
                   <Input
                     type="text"
                     placeholder="Type the topic name here"
                     value={courseName}
                     maxLength="150"
                     onChange={(e) => setCourseName(e.target.value)}
-                    className="w-full md:max-w-lg mx-auto py-[0.8vh] text-base md:placeholder:text-sm max-md:placeholder:text-[1.2vh] focus-visible:ring-transparent border border-[#f59e1e] rounded-lg placeholder:text-center bg-[#ede7e7]"
+                    className="w-full p-2 py-12 text-xl placeholder:text-lg focus-visible:ring-transparent border border-[#f59e1e] rounded-xl md:rounded-lg placeholder:text-center md:mb-16 bg-[#ede7e7]"
                   />
-                  {/* <div
-                    onClick={() => setAdvanced(!advanced)}
-                    className="cursor-pointer text-center text-white mt-[1vh] hover:underline max-md:text-[1.1vh]"
-                  >
-                    {advanced ? "Hide Advanced Filter" : "Show Advanced Filter"}
-                  </div> */}
-                  {advanced && (
-                    <>
-                      <div className="w-full text-center mb-4">
-                        <h2 className="text-lg max-md:text-[2.1vh] text-white font-semibold mb-2">
-                          Select a Genre
-                        </h2>
-                        <Select
-                          onValueChange={(value) =>
-                            setGenre(
-                              ageGenres.find((option) => option.value === value)
-                            )
-                          }
-                          value={genre.value}
-                          className="md:max-w-lg mx-auto"
-                        >
-                          <SelectTrigger className="w-full border md:max-w-lg mx-auto text-center focus-visible:ring-transparent bg-[#ede7e7] border-[#f59e1e] rounded-lg p-2">
-                            <SelectValue placeholder={genre.label} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup className="max-md:w-screen pr-2">
-                              {ageGenres.map((option) => (
-                                <SelectItem
-                                  className="w-full"
-                                  key={option.value}
-                                  value={option.value}
-                                >
-                                  <span className="w-full text-center">
-                                    {option.label1}
-                                  </span>
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className={cn("grid gap-2 w-full")}>
-                     
-
-                        <div className="w-full text-center mb-4">
-                          <h2 className="text-lg max-md:text-[2.1vh] font-semibold mb-2 text-white">
-                            Language
-                          </h2>
-                          <Select onValueChange={setLanguage} value={language}>
-                            <SelectTrigger className="w-full md:max-w-lg mx-auto border text-center bg-[#ede7e7] focus-visible:ring-transparent border-[#f59e1e] rounded-lg p-2">
-                              <SelectValue
-                                className="w-full text-center"
-                                placeholder="English"
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectContent>
-                                <SelectGroup>
-                                  <SelectItem value="english">
-                                    English
-                                  </SelectItem>
-                                  {type !== "podcast" && (
-                                    <>
-                                      <SelectItem value="spanish">
-                                        Spanish
-                                      </SelectItem>
-                                      <SelectItem value="french">
-                                        French
-                                      </SelectItem>
-                                      <SelectItem value="german">
-                                        German
-                                      </SelectItem>
-                                      <SelectItem value="italian">
-                                        Italian
-                                      </SelectItem>
-                                      <SelectItem value="portuguese">
-                                        Portuguese
-                                      </SelectItem>
-                                    </>
-                                  )}
-                                </SelectGroup>
-                              </SelectContent>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  <div className="w-full flex justify-center items-center">
-                    <button
-                      type="submit"
-                      className="bg-green-600 max-w-32 rounded-full uppercase font-semibold py-[0.5vh] max-md:text-[1.5vh] text-white px-[1vh] transition-all w-full md:min-w-60"
+                </div>
+                {ageGenres.length > 0 && type == "story" && (
+                  <div className="w-full text-center mb-4">
+                    <h2 className="text-lg font-semibold mb-2 ">
+                      Select a Genre
+                    </h2>
+                    <Select
+                      onValueChange={(value) =>
+                        ageGenres.find((option) => option.value === value)
+                      }
+                      value={genre.value}
                     >
-                      Submit
-                    </button>
+                      <SelectTrigger className="w-full border text-center focus-visible:ring-transparent  bg-[#ede7e7] border-[#f59e1e] rounded-lg p-2">
+                        <SelectValue placeholder={genre.label} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup className="max-md:w-screen pr-2">
+                          {ageGenres.map((option) => (
+                            <SelectItem
+                              className="w-full"
+                              key={option.value}
+                              value={option.value}
+                            >
+                              <span className="w-full text-center">
+                                {option.label1}
+                              </span>
+                              {/* {
+                              <div className="text-[10px] md:hidden text-gray-500 pt-1 mt-1 w-full border-t-[1px]">
+                                {option.label}
+                              </div>
+                            } */}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
-                </form>
-                {error && <p className="text-red-500">{error}</p>}
-              </motion.div>
-            </motion.div>
+                )}
+                <div className={cn("grid gap-2 md:gap-8 grid-cols-1")}>
+                  {/* {!isAuthenticated && (
+                  <div className="w-full text-center mb-4">
+                    <h2 className="text-lg font-semibold mb-2 ">Age</h2>
+                    <Input
+                      type="number"
+                      placeholder="Enter your child’s age (2-12)"
+                      value={age}
+                      onChange={(e) => setAge(e.target.value)}
+                      className="w-full p-2 placeholder:text-center  bg-[#ede7e7] focus-visible:ring-transparent border border-[#f59e1e] rounded-lg"
+                    />
+                  </div>
+                )} */}
 
-            
+                  <div className="w-full text-center mb-4">
+                    <h2 className="text-lg font-semibold mb-2 ">Language</h2>
+                    <Select onValueChange={setLanguage} value={language}>
+                      <SelectTrigger className="w-full border text-center  bg-[#ede7e7] focus-visible:ring-transparent border-[#f59e1e] rounded-lg p-2">
+                        <SelectValue
+                          className="w-full text-center"
+                          placeholder="English"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="english">English</SelectItem>
+                            {type != "podcast" && (
+                              <>
+                                <SelectItem value="spanish">Spanish</SelectItem>
+                                <SelectItem value="french">French</SelectItem>
+                                <SelectItem value="german">German</SelectItem>
+                                <SelectItem value="italian">Italian</SelectItem>
+                                <SelectItem value="portuguese">
+                                  Portuguese
+                                </SelectItem>
+                                {/* <SelectItem value="dutch">Dutch</SelectItem>
+                              <SelectItem value="russian">Russian</SelectItem>
+                              <SelectItem value="chinese simplified">
+                                Chinese (Simplified)
+                              </SelectItem>
+                              <SelectItem value="chinese traditional">
+                                Chinese (Traditional)
+                              </SelectItem>
+                              <SelectItem value="japanese">Japanese</SelectItem>
+                              <SelectItem value="korean">Korean</SelectItem>
+                              <SelectItem value="arabic">Arabic</SelectItem> */}
+                              </>
+                            )}
+                            {/* {(type == "story" || type == "explanation") && (
+                            <>
+                              <SelectItem value="malayalam">
+                                Malayalam
+                              </SelectItem>
+                              <SelectItem value="kannada">Kannada</SelectItem>
+                              <SelectItem value="telugu">Telugu</SelectItem>
+                              <SelectItem value="hindi">Hindi</SelectItem>
+                            </>
+                          )} */}
+                          </SelectGroup>
+                        </SelectContent>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* {age > 13 && (
+                <div className="w-full text-center mb-4">
+                  <h2 className="text-lg font-semibold mb-2 ">
+                    Difficulty
+                  </h2>
+                  <Select onValueChange={setDifficulty} value={difficulty}>
+                    <SelectTrigger className="w-full border focus-visible:ring-transparent border-gray-300 rounded-lg p-2">
+                      <SelectValue placeholder="Basic" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="basic">Basic</SelectItem>
+                        <SelectItem value="advanced">Advanced</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )} */}
+                <div className="w-full flex justify-center items-center mt-5">
+                  <button
+                    type="submit"
+                    className="bg-[#ea1b24] text-white rounded-full uppercase font-semibold py-4 md:py-2 text-lg px-4 transition-all max-md:w-full md:min-w-60"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </form>
+              {error && <p className="text-red-500">{error}</p>}
+            </motion.div>
           </div>
-          
-        </div>
+        </>
       )}
+
       <div className="w-full h-full p-3 space-y-4">
         {latestCourse && (
           <div className="h-1 bg-orange-600 w-full absolute top-0 left-0 z-[99999999999999999]" />
