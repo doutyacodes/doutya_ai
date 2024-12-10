@@ -834,7 +834,7 @@ const Home = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className={cn("grid gap-2 md:gap-8 grid-cols-1")}>
+                      <div className={cn("grid gap-2 w-full")}>
                      
 
                         <div className="w-full text-center mb-4">
