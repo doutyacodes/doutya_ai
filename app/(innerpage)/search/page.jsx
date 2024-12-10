@@ -37,7 +37,7 @@ const Home = () => {
   const [latestCourse, setLatestCourse] = useState(null);
   const [base64Image, setBase64Image] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [advanced, setAdvanced] = useState(false);
+  const [advanced, setAdvanced] = useState(true);
   const [showTranscript, setShowTranscript] = useState(false); // New state for transcript visibility
   const { isAuthenticated, logout } = useAuth();
   const [image, setImage] = useState(null);
@@ -793,12 +793,12 @@ const Home = () => {
                     onChange={(e) => setCourseName(e.target.value)}
                     className="w-full md:max-w-lg mx-auto py-[0.8vh] text-base md:placeholder:text-sm max-md:placeholder:text-[1.2vh] focus-visible:ring-transparent border border-[#f59e1e] rounded-lg placeholder:text-center bg-[#ede7e7]"
                   />
-                  <div
+                  {/* <div
                     onClick={() => setAdvanced(!advanced)}
                     className="cursor-pointer text-center text-white mt-[1vh] hover:underline max-md:text-[1.1vh]"
                   >
                     {advanced ? "Hide Advanced Filter" : "Show Advanced Filter"}
-                  </div>
+                  </div> */}
                   {advanced && (
                     <>
                       <div className="w-full text-center mb-4">
