@@ -24,7 +24,7 @@ const Navbar = () => {
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
     // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
     // { label: "Community", icon: FaPeopleGroup, links: "/communities" },
-    { label: "Search", links: "/search", icon: FaGift },
+    { label: "Magic Box", links: "/search", icon: FaGift },
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
 
   ];
