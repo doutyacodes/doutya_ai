@@ -22,7 +22,7 @@ export default function OurStory() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: 'easeInOut', delay: 0.3 }}
         >
-          It all started with a curious question from a little voice. One evening, as one of our founders tucked their 3-year-old child into bed, they were hit with a barrage of questions: "Why do stars twinkle? Where does the sun go at night?" These weren’t just simple bedtime musings—they were genuine sparks of curiosity. And like many parents, they felt a mix of pride and panic. How do you explain something so big, so complicated, in a way that tiny minds can truly understand?
+          It all started with a curious question from a little voice. One evening, as one of our founders tucked their 3-year-old child into bed, they were hit with a barrage of questions: "Why do stars twinkle? Where does the sun go at night?" These weren&apos;t just simple bedtime musings—they were genuine sparks of curiosity. And like many parents, they felt a mix of pride and panic. How do you explain something so big, so complicated, in a way that tiny minds can truly understand?
         </motion.div>
 
         {/* Second Paragraph */}
@@ -40,7 +40,7 @@ export default function OurStory() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: 'easeInOut', delay: 0.9 }}
         >
-          We imagined a world where parents wouldn’t have to struggle to simplify the vastness of knowledge. A world where children could explore complex ideas through stories, poems, and explanations created just for them—perfectly matched to their age and understanding. This led to the creation of Magic Box, an AI-powered tool that turns any topic into engaging content for kids. From whimsical stories about animals to poetic answers about why the sky is blue, Magic Box became the ultimate companion for every parent navigating their child’s endless curiosity.
+          We imagined a world where parents wouldn&apos;t have to struggle to simplify the vastness of knowledge. A world where children could explore complex ideas through stories, poems, and explanations created just for them—perfectly matched to their age and understanding. This led to the creation of Magic Box, an AI-powered tool that turns any topic into engaging content for kids. From whimsical stories about animals to poetic answers about why the sky is blue, Magic Box became the ultimate companion for every parent navigating their child&apos;s endless curiosity.
         </motion.div>
 
         {/* Fourth Paragraph */}
@@ -49,7 +49,7 @@ export default function OurStory() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: 'easeInOut', delay: 1.2 }}
         >
-          But there was something more. As parents, we wanted our children to feel connected to the world they’re growing up in. That’s where News for Kids came in—a feature that translates today’s news into age-appropriate language, helping children explore the world in a way that feels accessible, exciting, and empowering.
+          But there was something more. As parents, we wanted our children to feel connected to the world they&apos;re growing up in. That&apos;s where News for Kids came in—a feature that translates today&apos;s news into age-appropriate language, helping children explore the world in a way that feels accessible, exciting, and empowering.
         </motion.div>
 
         {/* Fifth Paragraph */}
@@ -58,7 +58,7 @@ export default function OurStory() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: 'easeInOut', delay: 1.5 }}
         >
-          Axara isn’t just a tool; it’s a partner for parents who want to nurture their child’s curiosity, inspire a love of learning, and connect them to the world around them. It’s a journey that began with a single bedtime question but grew into a mission to make learning magical for every child.
+          Axara isn&apos;t just a tool; it&apos;s a partner for parents who want to nurture their child&apos;s curiosity, inspire a love of learning, and connect them to the world around them. It&apos;s a journey that began with a single bedtime question but grew into a mission to make learning magical for every child.
         </motion.div>
 
         {/* Sixth Paragraph */}
