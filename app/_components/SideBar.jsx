@@ -18,6 +18,7 @@ import {
   FaHome,
   FaTrophy,
   FaBox,
+  FaGift,
 } from "react-icons/fa";
 import Image from "next/image";
 import { ChevronRight, Menu } from "lucide-react";
@@ -61,7 +62,7 @@ const SideBar = () => {
     { label: "News", icon: FaNewspaper, links: "/" },
     // { label: "News", icon: IoGlobeSharp, links: "/news" },
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
-    { label: "Search", links: "/search", icon: FaBox  },
+    { label: "Search", links: "/search", icon: FaGift  },
     // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
     // { label: "Community", icon: FaPeopleGroup, links: "/communities" },
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
