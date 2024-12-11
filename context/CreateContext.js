@@ -82,36 +82,9 @@ export const ChildrenProvider = ({ children }) => {
       if (storedRegion) {
         setSelectedRegion(storedRegion);
       } else {
-        // Use Geolocation API
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            async (position) => {
-              const { latitude, longitude } = position.coords;
-              const response = await fetch(
-                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
-              );
-              const data = await response.json();
-              const detectedRegion = data.countryName;
-
-              if (detectedRegion === "United States") {
-                setSelectedRegion("United States");
-                localStorage.setItem("userRegion", "United States");
-              } else {
-                setSelectedRegion("India");
-                localStorage.setItem("userRegion", "India");
-              }
-            },
-            () => {
-              // Default to India if geolocation fails
-              setSelectedRegion("India");
-              localStorage.setItem("userRegion", "India");
-            }
-          );
-        } else {
-          // Default to India if geolocation is not available
-          setSelectedRegion("India");
-          localStorage.setItem("userRegion", "India");
-        }
+        // Default to India if geolocation is not available
+        setSelectedRegion("India");
+        localStorage.setItem("userRegion", "India");
       }
     } catch (error) {
       console.error("Error fetching region:", error);
@@ -188,7 +161,7 @@ export const ChildrenProvider = ({ children }) => {
         selectedRegion,
         handleRegionChange,
         showPopupForUser,
-        showPopupRegion
+        showPopupRegion,
       }}
     >
       {loading ? <LoadingSpinner /> : children}
