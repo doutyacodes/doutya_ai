@@ -20,7 +20,7 @@ export default function NewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showNews, setShowNews] = useState(false);
   const [showId, setShowId] = useState(null);
-  const { selectedAge } = useChildren();
+  const { selectedAge,selectedRegion } = useChildren();
   const [showNames, setShowNames] = useState(null);
 
   const pathname = usePathname();
@@ -34,7 +34,7 @@ export default function NewPage() {
   const fetchNews = async () => {
     try {
       setIsLoading(true);
-      const response = await GlobalApi.FetchNews({ age: selectedAge });
+      const response = await GlobalApi.FetchNews({ age: selectedAge,region:selectedRegion });
       const {
         categories = [],
         news = [],
@@ -79,7 +79,7 @@ export default function NewPage() {
     if (selectedAge) {
       fetchNews();
     }
-  }, [selectedAge]);
+  }, [selectedAge,selectedRegion]);
 
   const currentCategoryNews = newsByCategory[selectedCategory] || [];
   const currentTopNews = newsTop[selectedCategory] || [];

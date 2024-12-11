@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { NEWS, NEWS_CATEGORIES, NEWS_TO_CATEGORIES } from "@/utils/schema";
+import {
+  NEWS,
+  NEWS_CATEGORIES,
+  NEWS_TO_CATEGORIES,
+  REGIONS,
+} from "@/utils/schema";
 import { authenticate } from "@/lib/jwtMiddleware";
-import { and, asc, desc, eq, gt, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, inArray, or, sql } from "drizzle-orm";
 
 export async function POST(req) {
   // const authResult = await authenticate(req,true);
@@ -11,7 +16,7 @@ export async function POST(req) {
   // }
 
   // const userId = authResult.decoded_Data.id;
-  const { age } = await req.json();
+  const { age, region = "India" } = await req.json();
 
   if (!age) {
     return NextResponse.json({ error: "Age is required." }, { status: 400 });
@@ -19,8 +24,23 @@ export async function POST(req) {
 
   try {
     // Fetch news categories
-    const newsCategories = await db.select().from(NEWS_CATEGORIES).orderBy(asc(NEWS_CATEGORIES.order_no)).execute();
+    const Regions = await db
+      .select()
+      .from(REGIONS)
+      .where(eq(REGIONS.name, region))
+      .execute();
+    const newsCategories = await db
+      .select()
+      .from(NEWS_CATEGORIES)
+      .orderBy(asc(NEWS_CATEGORIES.order_no))
+      .execute();
 
+    let region_id = 2;
+
+    if (Regions.length > 0) {
+      region_id = Regions[0].id;
+    }
+    // console.log(Regions)
     // Calculate 24-hour threshold
     const now = new Date();
     const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -31,30 +51,34 @@ export async function POST(req) {
         id: NEWS.id,
         title: NEWS.title,
         description: NEWS.description,
-        categoryIds: sql`GROUP_CONCAT(${NEWS_CATEGORIES.id} SEPARATOR ',')`.as("categoryIds"),
-        categoryNames: sql`GROUP_CONCAT(${NEWS_CATEGORIES.name} SEPARATOR ',')`.as("categoryNames"),
+        categoryIds: sql`GROUP_CONCAT(${NEWS_CATEGORIES.id} SEPARATOR ',')`.as(
+          "categoryIds"
+        ),
+        categoryNames:
+          sql`GROUP_CONCAT(${NEWS_CATEGORIES.name} SEPARATOR ',')`.as(
+            "categoryNames"
+          ),
         age: NEWS.age,
         image_url: NEWS.image_url,
         summary: NEWS.summary,
         created_at: NEWS.created_at,
         updated_at: NEWS.updated_at,
-        main_news: NEWS.main_news
+        main_news: NEWS.main_news,
       })
       .from(NEWS)
-      .leftJoin(
-        NEWS_TO_CATEGORIES,
-        eq(NEWS.id, NEWS_TO_CATEGORIES.news_id)
-      )
+      .leftJoin(NEWS_TO_CATEGORIES, eq(NEWS.id, NEWS_TO_CATEGORIES.news_id))
       .leftJoin(
         NEWS_CATEGORIES,
         eq(NEWS_TO_CATEGORIES.news_category_id, NEWS_CATEGORIES.id)
-      ).groupBy(NEWS.id)
+      )
+      .groupBy(NEWS.id)
       .orderBy(desc(NEWS.created_at))
       .where(
         and(
           eq(NEWS.age, age),
           eq(NEWS.show_on_top, true),
-          gt(NEWS.created_at, twentyFourHoursAgo) // Created within the last 24 hours
+          gt(NEWS.created_at, twentyFourHoursAgo), // Created within the last 24 hours
+          or(eq(NEWS_TO_CATEGORIES.region_id, region_id), eq(NEWS_TO_CATEGORIES.region_id, 1))
         )
       )
       .orderBy(desc(NEWS.created_at))
@@ -66,33 +90,41 @@ export async function POST(req) {
         id: NEWS.id,
         title: NEWS.title,
         description: NEWS.description,
-        categoryIds: sql`GROUP_CONCAT(${NEWS_CATEGORIES.id} SEPARATOR ',')`.as("categoryIds"),
-        categoryNames: sql`GROUP_CONCAT(${NEWS_CATEGORIES.name} SEPARATOR ',')`.as("categoryNames"),
+        categoryIds: sql`GROUP_CONCAT(${NEWS_CATEGORIES.id} SEPARATOR ',')`.as(
+          "categoryIds"
+        ),
+        categoryNames:
+          sql`GROUP_CONCAT(${NEWS_CATEGORIES.name} SEPARATOR ',')`.as(
+            "categoryNames"
+          ),
         age: NEWS.age,
         image_url: NEWS.image_url,
         summary: NEWS.summary,
         created_at: NEWS.created_at,
-        updated_at: NEWS.updated_at
+        updated_at: NEWS.updated_at,
       })
       .from(NEWS)
-      .leftJoin(
-        NEWS_TO_CATEGORIES,
-        eq(NEWS.id, NEWS_TO_CATEGORIES.news_id)
-      )
+      .leftJoin(NEWS_TO_CATEGORIES, eq(NEWS.id, NEWS_TO_CATEGORIES.news_id))
       .leftJoin(
         NEWS_CATEGORIES,
         eq(NEWS_TO_CATEGORIES.news_category_id, NEWS_CATEGORIES.id)
       )
-      .where(and(eq(NEWS.age, age), eq(NEWS.show_on_top, false)))
+      .where(
+        and(
+          eq(NEWS.age, age),
+          eq(NEWS.show_on_top, false),
+          or(eq(NEWS_TO_CATEGORIES.region_id, region_id), eq(NEWS_TO_CATEGORIES.region_id, 1))
+        )
+      )
       .groupBy(NEWS.id)
-    .orderBy(desc(NEWS.created_at))
+      .orderBy(desc(NEWS.created_at))
 
       .execute();
 
     return NextResponse.json({
       categories: newsCategories,
       news,
-      newsTop
+      newsTop,
     });
   } catch (error) {
     console.error("Error fetching news categories or news:", error);

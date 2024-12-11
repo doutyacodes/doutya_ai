@@ -19,12 +19,12 @@ export default function NewsSection() {
   const [showNews, setShowNews] = useState(false);
   const [showId, setShowId] = useState(null);
   const [showNames, setShowNames] = useState(null);
-  const { selectedAge } = useChildren();
+  const { selectedAge ,selectedRegion} = useChildren();
 
   const fetchNews = async () => {
     try {
       setIsLoading(true);
-      const response = await GlobalApi.FetchNews({ age: selectedAge });
+      const response = await GlobalApi.FetchNews({ age: selectedAge,region:selectedRegion });
       const {
         categories = [],
         news = [],
@@ -71,7 +71,7 @@ export default function NewsSection() {
     if (selectedAge) {
       fetchNews();
     }
-  }, [selectedAge]);
+  }, [selectedAge,selectedRegion]);
 
   const currentCategoryNews = newsByCategory[selectedCategory] || [];
   let currentTopNews = newsTop[selectedCategory] || [];

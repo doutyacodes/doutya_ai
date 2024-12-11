@@ -10,11 +10,12 @@ import { usePathname } from "next/navigation";
 import { FaBox, FaGift, FaHome, FaInfoCircle, FaNewspaper, FaSearch, FaUserAlt, FaUserCircle } from "react-icons/fa";
 import { IoGlobeSharp } from "react-icons/io5";
 import { GiBriefcase } from "react-icons/gi";
-import { IoIosTrophy } from "react-icons/io";
+import { IoIosTrophy, IoMdGlobe } from "react-icons/io";
 import { FaPeopleGroup } from "react-icons/fa6";
 
 const Navbar = () => {
-  const { childrenData, showPopupForUser, selectedAge, loading } =
+  const { childrenData, showPopupForUser, selectedAge, loading ,selectedRegion,
+    showPopupRegion} =
     useChildren();
   const { isAuthenticated } = useAuth();
   const pathname = usePathname();
@@ -37,9 +38,15 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between w-full">
-          <div className="block absolute top-10 left-2 z-[999999999] md:hidden opacity-0">
-            <Menu />
-          </div>
+        <div
+                onClick={() => showPopupRegion()}
+                className="flex flex-col w-fit gap-[1px] items-center"
+              >
+                <IoMdGlobe size={28} color="#845EC2" />
+                <span className="text-[1.3vh] text-blue-600">
+                  {selectedRegion}
+                </span>
+              </div>
           <div className="opacity-0 text-xs">Login</div>
           <Link
             href={"/"}

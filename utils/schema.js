@@ -1250,6 +1250,13 @@ export const NEWS_CATEGORIES = mysqlTable("news_categories", {
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
 });
 
+export const REGIONS = mysqlTable("regions", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(), // Category name
+  created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
+});
+
 export const NEWS = mysqlTable("news", {
   id: int("id").primaryKey().autoincrement(),
   news_category_id: int("news_category_id")
@@ -1282,6 +1289,7 @@ export const NEWS_TO_CATEGORIES = mysqlTable("news_to_categories", {
   news_id: int("news_id")
     .notNull()
     .references(() => NEWS.id, { onDelete: "cascade" }), // Foreign key referencing NEWS table
+    region_id: int("region_id").notNull(),
   news_category_id: int("news_category_id")
     .notNull()
     .references(() => NEWS_CATEGORIES.id, { onDelete: "cascade" }), // Foreign key referencing NEWS_CATEGORIES table

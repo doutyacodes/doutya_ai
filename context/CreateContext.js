@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import WelcomeCard from "@/app/_components/WelcomeCard";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import AgeSelectionPopup from "@/app/_components/AgeSelectionPopup"; // Create this component
+import RegionSelectionPopup from "@/app/_components/RegionSelectionPopup"; // Create this component
 import useAuth from "@/app/hooks/useAuth";
 
 const ChildrenContext = createContext();
@@ -20,9 +21,11 @@ export const ChildrenProvider = ({ children }) => {
   const [selectedName, setSelectedName] = useState(null);
   const [selectedChild, setSelectedChild] = useState(null);
   const [selectedGrade, setSelectedGrade] = useState(null);
+  const [selectedRegion, setSelectedRegion] = useState("India"); // Default to India
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [showAgePopup, setShowAgePopup] = useState(false); // For unauthenticated age selection
+  const [showRegionPopup, setShowRegionPopup] = useState(false); // Region selection popup
   const router = useRouter();
   const { isAuthenticated } = useAuth();
 
@@ -73,9 +76,51 @@ export const ChildrenProvider = ({ children }) => {
     }
   };
 
+  const fetchRegion = async () => {
+    try {
+      const storedRegion = localStorage.getItem("userRegion");
+      if (storedRegion) {
+        setSelectedRegion(storedRegion);
+      } else {
+        // Use Geolocation API
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              const { latitude, longitude } = position.coords;
+              const response = await fetch(
+                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+              );
+              const data = await response.json();
+              const detectedRegion = data.countryName;
+
+              if (detectedRegion === "United States") {
+                setSelectedRegion("United States");
+                localStorage.setItem("userRegion", "United States");
+              } else {
+                setSelectedRegion("India");
+                localStorage.setItem("userRegion", "India");
+              }
+            },
+            () => {
+              // Default to India if geolocation fails
+              setSelectedRegion("India");
+              localStorage.setItem("userRegion", "India");
+            }
+          );
+        } else {
+          // Default to India if geolocation is not available
+          setSelectedRegion("India");
+          localStorage.setItem("userRegion", "India");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching region:", error);
+    }
+  };
+
   useEffect(() => {
     const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
     if (token) {
       fetchChildren();
     } else {
@@ -87,6 +132,9 @@ export const ChildrenProvider = ({ children }) => {
         setShowAgePopup(true); // Show popup for age selection
       }
     }
+
+    // Fetch region
+    fetchRegion();
   }, [isAuthenticated]);
 
   const handleAgeSubmit = (age) => {
@@ -97,9 +145,19 @@ export const ChildrenProvider = ({ children }) => {
     }
   };
 
-  const showPopupForUser = () =>{
-    setShowAgePopup(true)
-  }
+  const handleRegionChange = (region) => {
+    setSelectedRegion(region);
+    localStorage.setItem("userRegion", region); // Allow user to change and store new region
+    setShowRegionPopup(false); // Close region popup
+  };
+
+  const showPopupForUser = () => {
+    setShowAgePopup(true);
+  };
+
+  const showPopupRegion = () => {
+    setShowRegionPopup(true);
+  };
 
   useEffect(() => {
     const handleSingleData = () => {
@@ -127,7 +185,10 @@ export const ChildrenProvider = ({ children }) => {
         loading,
         selectedChild,
         selectedGrade,
-        showPopupForUser
+        selectedRegion,
+        handleRegionChange,
+        showPopupForUser,
+        showPopupRegion
       }}
     >
       {loading ? <LoadingSpinner /> : children}
@@ -144,6 +205,13 @@ export const ChildrenProvider = ({ children }) => {
         <AgeSelectionPopup
           onSubmit={handleAgeSubmit}
           onClose={() => setShowAgePopup(false)}
+        />
+      )}
+      {showRegionPopup && (
+        <RegionSelectionPopup
+          selectedRegion={selectedRegion}
+          onSubmit={handleRegionChange}
+          onClose={() => setShowRegionPopup(false)}
         />
       )}
     </ChildrenContext.Provider>
