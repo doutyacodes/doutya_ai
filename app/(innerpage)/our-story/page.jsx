@@ -1,5 +1,5 @@
 "use client";
-// pages/our-story/page.js
+// pages/our-story/page.jsx
 
 import { motion } from 'framer-motion';
 
