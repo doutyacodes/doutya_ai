@@ -22,7 +22,7 @@ export default function OurStory() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: 'easeInOut', delay: 0.3 }}
         >
-          It all started with a curious question from a little voice. One evening, as one of our founders tucked their 3-year-old child into bed, they were hit with a barrage of questions: "Why do stars twinkle? Where does the sun go at night?" These weren&apos;t just simple bedtime musings—they were genuine sparks of curiosity. And like many parents, they felt a mix of pride and panic. How do you explain something so big, so complicated, in a way that tiny minds can truly understand?
+          It all started with a curious question from a little voice. One evening, as one of our founders tucked their 3-year-old child into bed, they were hit with a barrage of questions: &quot;Why do stars twinkle? Where does the sun go at night?&quot; These weren&apos;t just simple bedtime musings—they were genuine sparks of curiosity. And like many parents, they felt a mix of pride and panic. How do you explain something so big, so complicated, in a way that tiny minds can truly understand?
         </motion.div>
 
         {/* Second Paragraph */}
