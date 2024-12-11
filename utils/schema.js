@@ -1243,6 +1243,8 @@ export const LEARN_DATAS = mysqlTable("learn_datas", {
 
 export const NEWS_CATEGORIES = mysqlTable("news_categories", {
   id: int("id").primaryKey().autoincrement(),
+  order_no: int("order_no") 
+    .notNull(),
   name: varchar("name", { length: 255 }).notNull(), // Category name
   created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates

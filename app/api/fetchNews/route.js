@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/utils";
 import { NEWS, NEWS_CATEGORIES, NEWS_TO_CATEGORIES } from "@/utils/schema";
 import { authenticate } from "@/lib/jwtMiddleware";
-import { and, desc, eq, gt, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, inArray, sql } from "drizzle-orm";
 
 export async function POST(req) {
   // const authResult = await authenticate(req,true);
@@ -19,7 +19,7 @@ export async function POST(req) {
 
   try {
     // Fetch news categories
-    const newsCategories = await db.select().from(NEWS_CATEGORIES).execute();
+    const newsCategories = await db.select().from(NEWS_CATEGORIES).orderBy(asc(NEWS_CATEGORIES.order_no)).execute();
 
     // Calculate 24-hour threshold
     const now = new Date();
