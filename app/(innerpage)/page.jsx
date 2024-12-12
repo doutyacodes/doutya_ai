@@ -123,7 +123,7 @@ export default function NewsSection() {
                 setShowNews(false);
                 setSearchQuery("");
               }}
-              className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full ${
+              className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full ${(selectedRegion =="India" && category.name=="U S A" ) ? "hidden" :(selectedRegion =="United States" && category.name=="India" ) ? "hidden" :""} ${
                                 (selectedCategory === category.name && !showId)
 
                   ? "bg-orange-500 text-white"
