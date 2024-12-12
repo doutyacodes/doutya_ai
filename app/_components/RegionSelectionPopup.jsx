@@ -18,7 +18,7 @@ const RegionSelectionPopup = ({ selectedRegion, onSubmit, onClose }) => {
         transition={{ duration: 0.4, ease: "easeInOut" }}
       >
         <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-          Select Your Region
+          Select Your Edition
         </h2>
         <div className="mb-6">
           <select
@@ -26,8 +26,8 @@ const RegionSelectionPopup = ({ selectedRegion, onSubmit, onClose }) => {
             onChange={(e) => setRegion(e.target.value)}
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
           >
-            <option value="India">India</option>
-            <option value="United States">United States</option>
+            <option value="India">Indian Edition</option>
+            <option value="United States">United States Edition</option>
           </select>
         </div>
         <div className="flex justify-between items-center gap-4">

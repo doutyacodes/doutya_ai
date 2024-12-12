@@ -40,14 +40,14 @@ const Navbar = () => {
         <div className="flex items-center justify-between w-full">
         <div
                 onClick={() => showPopupRegion()}
-                className="flex flex-col w-fit gap-[1px] items-center"
+                className="flex flex-col w-fit gap-[1px] items-center ml-3"
               >
-                <IoMdGlobe size={28} color="#845EC2" />
-                <span className="text-[1.3vh] text-blue-600 flex gap-1 items-center">
-                 <span>{selectedRegion}</span>  <IoChevronDownOutline size={10} />
+                {/* <IoMdGlobe size={28} color="#845EC2" /> */}
+                <span className="text-[1.5vh] font-bold text-blue-600 flex gap-1 items-center">
+                 <span>{selectedRegion =="India" ? "Indian Edition" : "United States Edition"}</span>  <IoChevronDownOutline size={10} />
                 </span>
               </div>
-          <div className="opacity-0 text-xs">Login</div>
+          {/* <div className="opacity-0 text-xs">Login</div> */}
           <Link
             href={"/"}
             className="mx-auto flex justify-center items-center relative h-[7.6vh] w-[40vw]"
@@ -73,8 +73,8 @@ const Navbar = () => {
                 onClick={() => showPopupForUser()}
                 className="flex flex-col w-fit gap-[1px] items-center"
               >
-                <FaUserCircle size={28} color="#845EC2" />
-                <span className="text-[1.3vh] text-blue-600 flex items-center gap-1">
+                {/* <FaUserCircle size={28} color="#845EC2" /> */}
+                <span className="text-[1.5vh] font-bold text-blue-600 flex items-center gap-1">
                  
                   <span> Age - {selectedAge}</span>  <IoChevronDownOutline size={10} />
 
