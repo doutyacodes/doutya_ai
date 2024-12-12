@@ -3,8 +3,8 @@ import NewPage from "./_component/NewPage";
 import { useChildren } from "@/context/CreateContext";
 
 export async function generateMetadata({ params }) {
-  const { slug } = await params; // slug is an array, e.g., ['categories', '419']
-  const id = slug[slug.length - 1]; // Extract the last element
+  const { id } = await params; // slug is an array, e.g., ['categories', '419']
+  // const id = slug[slug.length - 1]; // Extract the last element
 
   console.log("ID:", id);
 

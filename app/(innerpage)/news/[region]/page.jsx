@@ -7,11 +7,9 @@ import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-
-export default function NewPage() {
+export default function NewsSection() {
   const [newsCategories, setNewsCategories] = useState([]);
   const [newsTop, setNewsTop] = useState({});
   const [newsByCategory, setNewsByCategory] = useState({});
@@ -20,26 +18,14 @@ export default function NewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showNews, setShowNews] = useState(false);
   const [showId, setShowId] = useState(null);
-  const { selectedAge,selectedRegion } = useChildren();
   const [showNames, setShowNames] = useState(null);
-
-  const pathname = usePathname();
-  const [, , category, id] = pathname.split("/");
-
-  useEffect(() => {
-    setShowId(id);
-    setShowNews(true);
-  }, [id]);
+  const { selectedAge,selectedRegion } = useChildren();
 
   const fetchNews = async () => {
     try {
       setIsLoading(true);
       const response = await GlobalApi.FetchNews({ age: selectedAge,region:selectedRegion });
-      const {
-        categories = [],
-        news = [],
-        newsTop: newsTopData = [],
-      } = response.data;
+      const { categories = [], news = [], newsTop: newsTopData = [] } = response.data;
 
       // Add "All" category
       const allCategory = { id: "all", name: "All" };
@@ -88,19 +74,21 @@ export default function NewPage() {
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
   function getCategoryNamesByIds(ids) {
     // Handle case where ids is a single ID or an array of IDs
     const idsArray = Array.isArray(ids) ? ids : [ids];
-
+    
     // Get category names for the given IDs
     const categoryNames = idsArray.map((id) => {
       const category = newsCategories.find((cat) => cat.id === id);
       return category ? category.name : null; // Return category name or null if not found
     });
-
+  
     // Filter out null values and join the category names with commas
-    return categoryNames.filter((name) => name !== null).join(", ");
+    return categoryNames.filter(name => name !== null).join(', ');
   }
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -135,8 +123,9 @@ export default function NewPage() {
                 setShowNews(false);
                 setSearchQuery("");
               }}
-              className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full ${
-                selectedCategory === category.name && !showId
+              className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full  ${
+                                (selectedCategory === category.name && !showId)
+
                   ? "bg-orange-500 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-orange-200"
               }`}
@@ -150,10 +139,7 @@ export default function NewPage() {
       {/* Top News Section */}
       {!showNews && !showId && currentTopNews.length > 0 && (
         <motion.div
-          className={cn(
-            "grid grid-cols-1 py-4 gap-4",
-            currentTopNews.length >= 2 && "md:grid-cols-2"
-          )}
+          className={cn("grid grid-cols-1 py-4 gap-4", currentTopNews.length >= 2 && "md:grid-cols-2")}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
@@ -162,10 +148,11 @@ export default function NewPage() {
             <NewsData
               article={article}
               setShowId={setShowId}
-              setShowNews={setShowNews}
               setShowNames={setShowNames}
+              setShowNews={setShowNews}
               key={article.id}
               size={true}
+              getCategoryNamesByIds={getCategoryNamesByIds}
             />
           ))}
         </motion.div>

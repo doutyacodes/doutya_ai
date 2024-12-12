@@ -59,7 +59,7 @@ const SideBar = () => {
   //   // { label: "Challenges", links: "/challenges", icon: FaTrophy },
   // ];
   const navLinks = [
-    { label: "News", icon: FaNewspaper, links: "/" },
+    { label: "News", icon: FaNewspaper, links: "/news" },
     // { label: "News", icon: IoGlobeSharp, links: "/news" },
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
     { label: "Magic Box", links: "/search", icon: FaGift  },
@@ -114,9 +114,7 @@ const SideBar = () => {
         <nav className={cn("flex-1 mt-20 space-y-4")}>
           {navLinks.map(({ label, icon: Icon, links }, idx) => {
             const isActive =
-              links === "/"
-                ? pathname === links // Exact match for the root path
-                : pathname.includes(links); // Partial match for other links
+              pathname.includes(links); // Partial match for other links
             return (
               <motion.div
                 key={idx}

@@ -25,7 +25,7 @@ export default function NewsDetails({ id, showNames }) {
   const [article, setArticle] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { selectedAge } = useChildren();
+  const { selectedAge,selectedRegion } = useChildren();
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState({ word: "", meaning: "" });
   const [report_text, setReport_text] = useState("");
@@ -155,7 +155,7 @@ export default function NewsDetails({ id, showNames }) {
     meanings,
     created_at,
   } = article;
-  const shareUrl = `https://www.axara.co/news/category/${id}`;
+  const shareUrl = `https://www.axara.co/news/${selectedRegion =="India" ? "in" :"us"}/${id}`;
 
   const formatDate = (date) => {
     const options = {

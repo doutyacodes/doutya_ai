@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { FiCopy } from "react-icons/fi";
 import { useRouter } from "next/navigation";
+import { useChildren } from "@/context/CreateContext";
 
 const formatDate = (date) => {
   const inputDate = moment(date);
@@ -53,8 +54,9 @@ const NewsData = ({
   const [report_text, setReport_text] = useState("");
 const router = useRouter()
   // console.log("article",article)
+  const {selectedRegion} = useChildren()
 
-  const shareUrl = `https://www.axara.co/news/categories/${article.id}`;
+  const shareUrl = `https://www.axara.co/news/${selectedRegion =="India" ? "in" :"us"}/${article.id}`;
   const title = article.title;
 
   const handleReport = async () => {
@@ -128,7 +130,7 @@ const router = useRouter()
           //   setShowNews(true);
           // }}
           onClick={()=>{
-            router.push(`/news/categories/${article.id}`)
+            router.push(`/news/${selectedRegion =="India" ? "in" :"us"}/${article.id}`)
           }}
         />
         {/* Date at the top */}
@@ -150,7 +152,7 @@ const router = useRouter()
           //   setShowNews(true);
           // }}
           onClick={()=>{
-            router.push(`/news/categories/${article.id}`)
+            router.push(`/news/${selectedRegion =="India" ? "in" :"us"}/${article.id}`)
           }}
           className="text-lg font-medium text-gray-800 mb-2 cursor-pointer"
         >

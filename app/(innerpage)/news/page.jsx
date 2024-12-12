@@ -7,6 +7,7 @@ import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function NewsSection() {
@@ -20,6 +21,7 @@ export default function NewsSection() {
   const [showId, setShowId] = useState(null);
   const [showNames, setShowNames] = useState(null);
   const { selectedAge ,selectedRegion} = useChildren();
+  const router = useRouter()
 
   const fetchNews = async () => {
     try {
@@ -30,7 +32,6 @@ export default function NewsSection() {
         news = [],
         newsTop: newsTopData = [],
       } = response.data;
-
       // Add "All" category
       const allCategory = { id: "all", name: "All" };
       setNewsCategories([allCategory, ...categories]);
@@ -68,8 +69,14 @@ export default function NewsSection() {
   };
 
   useEffect(() => {
-    if (selectedAge) {
-      fetchNews();
+    // if (selectedAge) {
+    //   fetchNews();
+    // }
+    if(selectedRegion =="India")
+    {
+      router.replace("/news/in")
+    }else{
+      router.replace("/news/us")
     }
   }, [selectedAge,selectedRegion]);
 
@@ -106,101 +113,101 @@ export default function NewsSection() {
     return <LoadingSpinner />;
   }
 
-  return (
-    <div className="p-4 text-gray-800 w-full">
-      {/* Search Bar */}
-      <motion.div
-        className="w-full mb-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-      >
-        <input
-          type="text"
-          placeholder="Search news..."
-          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </motion.div>
+  // return (
+  //   <div className="p-4 text-gray-800 w-full">
+  //     {/* Search Bar */}
+  //     <motion.div
+  //       className="w-full mb-6"
+  //       initial={{ opacity: 0 }}
+  //       animate={{ opacity: 1 }}
+  //       transition={{ duration: 0.6, delay: 0.2 }}
+  //     >
+  //       <input
+  //         type="text"
+  //         placeholder="Search news..."
+  //         className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+  //         value={searchQuery}
+  //         onChange={(e) => setSearchQuery(e.target.value)}
+  //       />
+  //     </motion.div>
 
-      {/* Category Tabs */}
-      <div className="w-full max-w-[84vw] mb-4">
-        <div className="flex space-x-1 overflow-x-auto pb-2 scrollbar-hide">
-          {newsCategories.map((category) => (
-            <button
-              key={category.name}
-              onClick={() => {
-                setSelectedCategory(category.name);
-                setShowId(null);
-                setShowNews(false);
-                setSearchQuery("");
-              }}
-              className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full ${
-                selectedCategory === category.name && !showId
-                  ? "bg-orange-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-      </div>
+  //     {/* Category Tabs */}
+  //     <div className="w-full max-w-[84vw] mb-4">
+  //       <div className="flex space-x-1 overflow-x-auto pb-2 scrollbar-hide">
+  //         {newsCategories.map((category) => (
+  //           <button
+  //             key={category.name}
+  //             onClick={() => {
+  //               setSelectedCategory(category.name);
+  //               setShowId(null);
+  //               setShowNews(false);
+  //               setSearchQuery("");
+  //             }}
+  //             className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full ${
+  //               selectedCategory === category.name && !showId
+  //                 ? "bg-orange-500 text-white"
+  //                 : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+  //             }`}
+  //           >
+  //             {category.name}
+  //           </button>
+  //         ))}
+  //       </div>
+  //     </div>
 
-      {/* Top News Section */}
-      {!showNews && !showId && currentTopNews.length > 0 && (
-        <motion.div
-          className={cn(
-            "grid grid-cols-1 py-4 gap-4",
-            currentTopNews.length >= 2 && "md:grid-cols-2"
-          )}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-        >
-          {currentTopNews.map((article) => (
-            <NewsData
-              article={article}
-              setShowId={setShowId}
-              setShowNames={setShowNames}
-              setShowNews={setShowNews}
-              key={article.id}
-              size={true}
-              getCategoryNamesByIds={getCategoryNamesByIds}
-            />
-          ))}
-        </motion.div>
-      )}
+  //     {/* Top News Section */}
+  //     {!showNews && !showId && currentTopNews.length > 0 && (
+  //       <motion.div
+  //         className={cn(
+  //           "grid grid-cols-1 py-4 gap-4",
+  //           currentTopNews.length >= 2 && "md:grid-cols-2"
+  //         )}
+  //         initial={{ opacity: 0 }}
+  //         animate={{ opacity: 1 }}
+  //         transition={{ duration: 0.8 }}
+  //       >
+  //         {currentTopNews.map((article) => (
+  //           <NewsData
+  //             article={article}
+  //             setShowId={setShowId}
+  //             setShowNames={setShowNames}
+  //             setShowNews={setShowNews}
+  //             key={article.id}
+  //             size={true}
+  //             getCategoryNamesByIds={getCategoryNamesByIds}
+  //           />
+  //         ))}
+  //       </motion.div>
+  //     )}
 
-      {/* News Cards */}
-      {showNews && showId ? (
-        <NewsDetails showNames={showNames} id={showId} />
-      ) : (
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          key={selectedCategory}
-          transition={{ duration: 0.8 }}
-        >
-          {filteredNews.length > 0 ? (
-            filteredNews.map((article) => (
-              <NewsData
-                article={article}
-                setShowId={setShowId}
-                setShowNames={setShowNames}
-                setShowNews={setShowNews}
-                key={article.id}
-              />
-            ))
-          ) : (
-            <p className="text-center col-span-full text-gray-600">
-              No news found.
-            </p>
-          )}
-        </motion.div>
-      )}
-    </div>
-  );
+  //     {/* News Cards */}
+  //     {showNews && showId ? (
+  //       <NewsDetails showNames={showNames} id={showId} />
+  //     ) : (
+  //       <motion.div
+  //         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+  //         initial={{ opacity: 0 }}
+  //         animate={{ opacity: 1 }}
+  //         key={selectedCategory}
+  //         transition={{ duration: 0.8 }}
+  //       >
+  //         {filteredNews.length > 0 ? (
+  //           filteredNews.map((article) => (
+  //             <NewsData
+  //               article={article}
+  //               setShowId={setShowId}
+  //               setShowNames={setShowNames}
+  //               setShowNews={setShowNews}
+  //               key={article.id}
+  //             />
+  //           ))
+  //         ) : (
+  //           <p className="text-center col-span-full text-gray-600">
+  //             No news found.
+  //           </p>
+  //         )}
+  //       </motion.div>
+  //     )}
+  //   </div>
+  // );
 }

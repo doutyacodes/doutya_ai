@@ -20,7 +20,7 @@ const Navbar = () => {
   const { isAuthenticated } = useAuth();
   const pathname = usePathname();
   const links = [
-    { label: "News", icon: FaNewspaper, links: "/" },
+    { label: "News", icon: FaNewspaper, links: "/news" },
     // { label: "News", icon: IoGlobeSharp, links: "/news" },
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
     // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },

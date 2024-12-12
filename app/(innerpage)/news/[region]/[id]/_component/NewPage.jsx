@@ -7,10 +7,10 @@ import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function NewsSection() {
+export default function NewPage() {
   const [newsCategories, setNewsCategories] = useState([]);
   const [newsTop, setNewsTop] = useState({});
   const [newsByCategory, setNewsByCategory] = useState({});
@@ -19,9 +19,18 @@ export default function NewsSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [showNews, setShowNews] = useState(false);
   const [showId, setShowId] = useState(null);
+  const { selectedAge, selectedRegion, handleRegionChange } = useChildren();
   const [showNames, setShowNames] = useState(null);
-  const { selectedAge, selectedRegion } = useChildren();
-  const router = useRouter();
+
+  const pathname = usePathname();
+  const [, , category, id] = pathname.split("/");
+  console.log(category);
+  useEffect(() => {
+    handleRegionChange(category == "us" ? "United States" : "India");
+    setShowId(id);
+    setShowNews(true);
+  }, [id]);
+
   const fetchNews = async () => {
     try {
       setIsLoading(true);
@@ -70,13 +79,8 @@ export default function NewsSection() {
   };
 
   useEffect(() => {
-    // if (selectedAge) {
-    //   fetchNews();
-    // }
-    if (selectedRegion == "India") {
-      router.replace("/news/in");
-    } else {
-      router.replace("/news/us");
+    if (selectedAge) {
+      fetchNews();
     }
   }, [selectedAge, selectedRegion]);
 
@@ -87,7 +91,6 @@ export default function NewsSection() {
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
   function getCategoryNamesByIds(ids) {
     // Handle case where ids is a single ID or an array of IDs
     const idsArray = Array.isArray(ids) ? ids : [ids];
@@ -101,7 +104,6 @@ export default function NewsSection() {
     // Filter out null values and join the category names with commas
     return categoryNames.filter((name) => name !== null).join(", ");
   }
-
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -136,7 +138,7 @@ export default function NewsSection() {
                 setShowNews(false);
                 setSearchQuery("");
               }}
-              className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full  ${
+              className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full ${
                 selectedCategory === category.name && !showId
                   ? "bg-orange-500 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-orange-200"
@@ -163,11 +165,10 @@ export default function NewsSection() {
             <NewsData
               article={article}
               setShowId={setShowId}
-              setShowNames={setShowNames}
               setShowNews={setShowNews}
+              setShowNames={setShowNames}
               key={article.id}
               size={true}
-              getCategoryNamesByIds={getCategoryNamesByIds}
             />
           ))}
         </motion.div>
