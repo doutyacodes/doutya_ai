@@ -29,17 +29,26 @@ export async function POST(req) {
       .from(REGIONS)
       .where(eq(REGIONS.name, region))
       .execute();
-    const newsCategories = await db
-      .select()
-      .from(NEWS_CATEGORIES)
-      .orderBy(asc(NEWS_CATEGORIES.order_no))
-      .execute();
 
     let region_id = 2;
 
     if (Regions.length > 0) {
       region_id = Regions[0].id;
     }
+    const newsCategories = await db
+      .select()
+      .from(NEWS_CATEGORIES)
+      .orderBy(asc(NEWS_CATEGORIES.order_no))
+      .where(
+        or(
+          eq(NEWS_CATEGORIES.region, "no"),
+          and(
+            eq(NEWS_CATEGORIES.region, "yes"),
+            eq(NEWS_CATEGORIES.region_id, region_id)
+          )
+        )
+      )
+      .execute();
     // console.log(Regions)
     // Calculate 24-hour threshold
     const now = new Date();
@@ -47,36 +56,46 @@ export async function POST(req) {
 
     // Fetch top news created within the last 24 hours
     // Fetch top news created within the last 24 hours
-const newsTop = await db
-.select({
-  id: NEWS.id,
-  title: NEWS.title,
-  description: NEWS.description,
-  categoryIds: sql`GROUP_CONCAT(${NEWS_CATEGORIES.id} SEPARATOR ',')`.as("categoryIds"),
-  categoryNames: sql`GROUP_CONCAT(${NEWS_CATEGORIES.name} SEPARATOR ',')`.as("categoryNames"),
-  age: NEWS.age,
-  image_url: NEWS.image_url,
-  summary: NEWS.summary,
-  created_at: NEWS.created_at,
-  updated_at: NEWS.updated_at,
-  main_news: NEWS.main_news,
-})
-.from(NEWS)
-.leftJoin(NEWS_TO_CATEGORIES, eq(NEWS.id, NEWS_TO_CATEGORIES.news_id))
-.leftJoin(NEWS_CATEGORIES, eq(NEWS_TO_CATEGORIES.news_category_id, NEWS_CATEGORIES.id))
-.groupBy(NEWS.id)
-.orderBy(desc(NEWS.created_at))
-.where(
-  and(
-    eq(NEWS.age, age),
-    eq(NEWS.show_on_top, true),
-    gt(NEWS.created_at, twentyFourHoursAgo), // Created within the last 24 hours
-    or(eq(NEWS_TO_CATEGORIES.region_id, region_id), eq(NEWS_TO_CATEGORIES.region_id, 1))
-  )
-)
-.limit(1) // Limit to only one top news per category
-.execute();
-
+    const newsTop = await db
+      .select({
+        id: NEWS.id,
+        title: NEWS.title,
+        description: NEWS.description,
+        categoryIds: sql`GROUP_CONCAT(${NEWS_CATEGORIES.id} SEPARATOR ',')`.as(
+          "categoryIds"
+        ),
+        categoryNames:
+          sql`GROUP_CONCAT(${NEWS_CATEGORIES.name} SEPARATOR ',')`.as(
+            "categoryNames"
+          ),
+        age: NEWS.age,
+        image_url: NEWS.image_url,
+        summary: NEWS.summary,
+        created_at: NEWS.created_at,
+        updated_at: NEWS.updated_at,
+        main_news: NEWS.main_news,
+      })
+      .from(NEWS)
+      .leftJoin(NEWS_TO_CATEGORIES, eq(NEWS.id, NEWS_TO_CATEGORIES.news_id))
+      .leftJoin(
+        NEWS_CATEGORIES,
+        eq(NEWS_TO_CATEGORIES.news_category_id, NEWS_CATEGORIES.id)
+      )
+      .groupBy(NEWS.id)
+      .orderBy(desc(NEWS.created_at))
+      .where(
+        and(
+          eq(NEWS.age, age),
+          eq(NEWS.show_on_top, true),
+          gt(NEWS.created_at, twentyFourHoursAgo), // Created within the last 24 hours
+          or(
+            eq(NEWS_TO_CATEGORIES.region_id, region_id),
+            eq(NEWS_TO_CATEGORIES.region_id, 1)
+          )
+        )
+      )
+      .limit(1) // Limit to only one top news per category
+      .execute();
 
     // Fetch normal news (not marked as "on top")
     const news = await db
@@ -107,7 +126,10 @@ const newsTop = await db
         and(
           eq(NEWS.age, age),
           eq(NEWS.show_on_top, false),
-          or(eq(NEWS_TO_CATEGORIES.region_id, region_id), eq(NEWS_TO_CATEGORIES.region_id, 1))
+          or(
+            eq(NEWS_TO_CATEGORIES.region_id, region_id),
+            eq(NEWS_TO_CATEGORIES.region_id, 1)
+          )
         )
       )
       .groupBy(NEWS.id)

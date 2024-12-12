@@ -1246,6 +1246,8 @@ export const NEWS_CATEGORIES = mysqlTable("news_categories", {
   order_no: int("order_no") 
     .notNull(),
   name: varchar("name", { length: 255 }).notNull(), // Category name
+  region: mysqlEnum("region", ["no", "yes"]).notNull().default("pending"),
+  region_id: int("region_id").notNull(),
   created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
 });
