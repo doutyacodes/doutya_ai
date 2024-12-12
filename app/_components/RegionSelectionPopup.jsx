@@ -9,7 +9,7 @@ const RegionSelectionPopup = ({ selectedRegion, onSubmit, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 h-screen w-screen z-[9999] bg-gradient-to-br from-orange-200 via-white to-orange-100 bg-opacity-70 flex items-center justify-center">
+    <div className="fixed inset-0 h-screen w-screen z-[9999] bg-gradient-to-br from-orange-200 via-white to-orange-100 bg-opacity-70 flex items-center justify-center p-3">
       <motion.div
         className="bg-white shadow-lg rounded-xl w-full max-w-md p-6"
         initial={{ opacity: 0, y: 50 }}
@@ -27,7 +27,7 @@ const RegionSelectionPopup = ({ selectedRegion, onSubmit, onClose }) => {
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
           >
             <option value="India">Indian Edition</option>
-            <option value="United States">United States Edition</option>
+            <option value="United States">USA Edition</option>
           </select>
         </div>
         <div className="flex justify-between items-center gap-4">

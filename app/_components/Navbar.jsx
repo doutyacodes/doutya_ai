@@ -43,11 +43,12 @@ const Navbar = () => {
                 className="flex flex-col w-fit gap-[1px] items-center ml-3"
               >
                 {/* <IoMdGlobe size={28} color="#845EC2" /> */}
-                <span className="text-[1.5vh] font-bold text-blue-600 flex gap-1 items-center">
-                 <span>{selectedRegion =="India" ? "Indian Edition" : "United States Edition"}</span>  <IoChevronDownOutline size={10} />
+                <span className="text-[1.5vh] font-bold text-[#845EC2] flex gap-1 items-center">
+                 <span>{selectedRegion =="India" ? "Indian Edition" : "USA Edition"}</span>  <IoChevronDownOutline size={10} />
                 </span>
               </div>
           {/* <div className="opacity-0 text-xs">Login</div> */}
+          <div className="flex-1 flex justify-center items-center">
           <Link
             href={"/"}
             className="mx-auto flex justify-center items-center relative h-[7.6vh] w-[40vw]"
@@ -59,6 +60,7 @@ const Navbar = () => {
               alt="logo"
             />
           </Link>
+          </div>
           {loading ? (
             <p>Loading...</p>
           ) : (
@@ -74,7 +76,7 @@ const Navbar = () => {
                 className="flex flex-col w-fit gap-[1px] items-center"
               >
                 {/* <FaUserCircle size={28} color="#845EC2" /> */}
-                <span className="text-[1.5vh] font-bold text-blue-600 flex items-center gap-1">
+                <span className="text-[1.5vh] font-bold text-[#845EC2] flex items-center gap-1">
                  
                   <span> Age - {selectedAge}</span>  <IoChevronDownOutline size={10} />
 
