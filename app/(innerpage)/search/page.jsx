@@ -954,11 +954,11 @@ const Home = () => {
       )}
 
       <div className="w-full h-full p-3 space-y-4">
-        {latestCourse && (
+        {/* {latestCourse && (
           <div className="h-1 bg-orange-600 w-full absolute top-0 left-0 z-[99999999999999999]" />
-        )}
+        )} */}
         {latestCourse && (
-          <div className="flex items-start justify-between bg-white rounded-lg w-full shadow-md p-2 relative font-bold text-xl mt-4">
+          <div className="flex items-start justify-between bg-white rounded-lg w-full shadow-md p-2 relative font-bold text-xl mt-4 pb-6">
             <div
               onClick={() => setLatestCourse(null)}
               className="bg-orange-500  p-2 rounded-full"
