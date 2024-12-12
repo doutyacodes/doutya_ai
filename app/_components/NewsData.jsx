@@ -121,10 +121,13 @@ const NewsData = ({
           width={size ? 1000 : 400}
           height={size ? 500 : 300}
           className={"w-full h-full object-cover  max-md:rounded-md"}
-          onClick={() => {
-            setShowId(article.id);
-            setShowNames(article.categoryNames);
-            setShowNews(true);
+          // onClick={() => {
+          //   setShowId(article.id);
+          //   setShowNames(article.categoryNames);
+          //   setShowNews(true);
+          // }}
+          onClick={()=>{
+            router.push(`/news/categories/${article.id}`)
           }}
         />
         {/* Date at the top */}
@@ -140,9 +143,13 @@ const NewsData = ({
       <div className="flex flex-col flex-grow p-2">
         {/* Title */}
         <h3
-          onClick={() => {
-            setShowId(article.id);
-            setShowNews(true);
+          // onClick={() => {
+          //   setShowId(article.id);
+          //   setShowNames(article.categoryNames);
+          //   setShowNews(true);
+          // }}
+          onClick={()=>{
+            router.push(`/news/categories/${article.id}`)
           }}
           className="text-lg font-medium text-gray-800 mb-2 cursor-pointer"
         >
