@@ -17,6 +17,7 @@ import GlobalApi from "../api/_services/GlobalApi";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { FiCopy } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 const formatDate = (date) => {
   const inputDate = moment(date);
@@ -50,7 +51,7 @@ const NewsData = ({
 }) => {
   const [showReportPopup, setShowReportPopup] = useState(false);
   const [report_text, setReport_text] = useState("");
-
+const router = useRouter()
   // console.log("article",article)
 
   const shareUrl = `https://www.axara.co/news/categories/${article.id}`;
