@@ -46,43 +46,37 @@ export async function POST(req) {
     const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
     // Fetch top news created within the last 24 hours
-    const newsTop = await db
-      .select({
-        id: NEWS.id,
-        title: NEWS.title,
-        description: NEWS.description,
-        categoryIds: sql`GROUP_CONCAT(${NEWS_CATEGORIES.id} SEPARATOR ',')`.as(
-          "categoryIds"
-        ),
-        categoryNames:
-          sql`GROUP_CONCAT(${NEWS_CATEGORIES.name} SEPARATOR ',')`.as(
-            "categoryNames"
-          ),
-        age: NEWS.age,
-        image_url: NEWS.image_url,
-        summary: NEWS.summary,
-        created_at: NEWS.created_at,
-        updated_at: NEWS.updated_at,
-        main_news: NEWS.main_news,
-      })
-      .from(NEWS)
-      .leftJoin(NEWS_TO_CATEGORIES, eq(NEWS.id, NEWS_TO_CATEGORIES.news_id))
-      .leftJoin(
-        NEWS_CATEGORIES,
-        eq(NEWS_TO_CATEGORIES.news_category_id, NEWS_CATEGORIES.id)
-      )
-      .groupBy(NEWS.id)
-      .orderBy(desc(NEWS.created_at))
-      .where(
-        and(
-          eq(NEWS.age, age),
-          eq(NEWS.show_on_top, true),
-          gt(NEWS.created_at, twentyFourHoursAgo), // Created within the last 24 hours
-          or(eq(NEWS_TO_CATEGORIES.region_id, region_id), eq(NEWS_TO_CATEGORIES.region_id, 1))
-        )
-      )
-      .orderBy(desc(NEWS.created_at))
-      .execute();
+    // Fetch top news created within the last 24 hours
+const newsTop = await db
+.select({
+  id: NEWS.id,
+  title: NEWS.title,
+  description: NEWS.description,
+  categoryIds: sql`GROUP_CONCAT(${NEWS_CATEGORIES.id} SEPARATOR ',')`.as("categoryIds"),
+  categoryNames: sql`GROUP_CONCAT(${NEWS_CATEGORIES.name} SEPARATOR ',')`.as("categoryNames"),
+  age: NEWS.age,
+  image_url: NEWS.image_url,
+  summary: NEWS.summary,
+  created_at: NEWS.created_at,
+  updated_at: NEWS.updated_at,
+  main_news: NEWS.main_news,
+})
+.from(NEWS)
+.leftJoin(NEWS_TO_CATEGORIES, eq(NEWS.id, NEWS_TO_CATEGORIES.news_id))
+.leftJoin(NEWS_CATEGORIES, eq(NEWS_TO_CATEGORIES.news_category_id, NEWS_CATEGORIES.id))
+.groupBy(NEWS.id)
+.orderBy(desc(NEWS.created_at))
+.where(
+  and(
+    eq(NEWS.age, age),
+    eq(NEWS.show_on_top, true),
+    gt(NEWS.created_at, twentyFourHoursAgo), // Created within the last 24 hours
+    or(eq(NEWS_TO_CATEGORIES.region_id, region_id), eq(NEWS_TO_CATEGORIES.region_id, 1))
+  )
+)
+.limit(1) // Limit to only one top news per category
+.execute();
+
 
     // Fetch normal news (not marked as "on top")
     const news = await db
