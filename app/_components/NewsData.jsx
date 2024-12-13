@@ -123,8 +123,9 @@ const NewsData = ({
     <div
       //   whileTap={{ scale: 0.95 }}
       className={cn(
-        "bg-white shadow-md cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col p-1 ",
-        size && "max-w-7xl mx-auto w-full md:flex-row gap-2 max-md:min-h-[40vh]"
+        "bg-[#f5f5f5] shadow-md cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col p-1 ",
+        size &&
+          "max-w-7xl mx-auto w-full md:flex-row md:gap-6 max-md:min-h-[40vh] md:p-5"
       )}
     >
       {/* Image with Date at the Top */}
@@ -161,15 +162,15 @@ const NewsData = ({
         <span className="absolute bottom-2 left-2 flex gap-[3px] items-center ">
           {categoriesList(article.categoryNames)}
         </span>
-        {size&& (
+        {size && (
           <span className="absolute top-2 right-2 max-md:flex hidden bg-black/60 gap-[3px] items-center p-2 rounded-full ">
             <FaStar color="gold" />
           </span>
         )}
       </div>
-      <div className={cn("", size && "md:w-2/4 md:mt-6")}>
+      <div className={cn("", size && "md:w-2/4 ")}>
         {/* Content Area */}
-        <div className="flex flex-col flex-grow p-2">
+        <div className={cn("flex flex-col flex-grow", !size ? " p-2" :"md:mb-3")}>
           {/* Title */}
           <h3
             // onClick={() => {
