@@ -127,7 +127,7 @@ export default function NewPage() {
                        : "bg-gray-100 text-gray-700 hover:bg-orange-200"
                    }`}
                  >
-                   Search <HiMagnifyingGlass size={18} color="#374151" />
+                   Search <HiMagnifyingGlass size={18} />
                  </button>
           {newsCategories.map((category) => (
             <button
