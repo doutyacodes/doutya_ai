@@ -112,23 +112,21 @@ export default function NewPage() {
 
   return (
     <div className="p-4 text-gray-800 w-full">
-      
-
       {/* Category Tabs */}
-      <div className="w-full max-w-[84vw] mb-4">
-        <div className="flex space-x-1 overflow-x-auto pb-2 scrollbar-hide">
-       <button
-                   onClick={() => {
-                     setShowSearch((prev) => !prev);
-                   }}
-                   className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full  ${
-                     showSearch
-                       ? "bg-orange-500 text-white"
-                       : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-                   }`}
-                 >
-                   Search <HiMagnifyingGlass size={18} />
-                 </button>
+      <div className="w-full max-w-[90vw]">
+        <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
+          <button
+            onClick={() => {
+              setShowSearch((prev) => !prev);
+            }}
+            className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full  ${
+              showSearch
+                ? "bg-orange-500 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+            }`}
+          >
+            Search <HiMagnifyingGlass size={18} />
+          </button>
           {newsCategories.map((category) => (
             <button
               key={category.name}

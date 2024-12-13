@@ -124,7 +124,7 @@ const NewsData = ({
       //   whileTap={{ scale: 0.95 }}
       className={cn(
         "bg-white shadow-md cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col p-1 ",
-        size && "max-w-2xl mx-auto w-full md:flex-row gap-2 max-md:min-h-[40vh]"
+        size && "max-w-7xl mx-auto w-full md:flex-row gap-2 max-md:min-h-[40vh]"
       )}
     >
       {/* Image with Date at the Top */}
@@ -257,10 +257,11 @@ const NewsData = ({
                 `/news/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
               );
             }}
-            className="text-sm text-gray-800 mb-2 cursor-pointer max-md:text-xs  max-md:px-2 md:mt-6"
+            className="text-sm max-md:line-clamp-4 text-justify max-md:leading-5 text-gray-800 mb-2 cursor-pointer max-md:text-xs  max-md:px-2 md:mt-6"
           >
-            {truncateDescription(article.description, descriptionLength)}
-            {article.description.length > descriptionLength && (
+            {/* {truncateDescription(article.description, descriptionLength)} */}
+            {article.description}
+            {/* {article.description.length > descriptionLength && (
               <span
                 onClick={() => {
                   router.push(
@@ -273,7 +274,7 @@ const NewsData = ({
               >
                 Read More
               </span>
-            )}{" "}
+            )}{" "} */}
           </h3>
         )}
       </div>

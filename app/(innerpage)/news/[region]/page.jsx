@@ -103,8 +103,8 @@ export default function NewsSection() {
   return (
     <div className="p-4 text-gray-800 w-full">
       {/* Category Tabs */}
-      <div className="w-full max-w-[84vw] mb-4">
-        <div className="flex space-x-1 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="w-full max-w-[90vw]">
+        <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
           <button
             onClick={() => {
               setShowSearch((prev) => !prev);
