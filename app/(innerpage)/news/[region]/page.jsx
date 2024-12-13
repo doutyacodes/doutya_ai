@@ -186,7 +186,7 @@ export default function NewsSection() {
         <NewsDetails showNames={showNames} id={showId} />
       ) : (
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6  mt-6"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6  md:mt-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           key={selectedCategory}

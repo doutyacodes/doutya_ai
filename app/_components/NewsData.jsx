@@ -20,6 +20,7 @@ import { FiCopy } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { useChildren } from "@/context/CreateContext";
 import { useMediaQuery } from "react-responsive";
+import Link from "next/link";
 
 const truncateDescription = (description, length) =>
   description.length > length
@@ -170,7 +171,9 @@ const NewsData = ({
       </div>
       <div className={cn("", size && "md:w-2/4 ")}>
         {/* Content Area */}
-        <div className={cn("flex flex-col flex-grow", !size ? " p-2" :"md:mb-3")}>
+        <div
+          className={cn("flex flex-col flex-grow", !size ? " p-2" : "md:mb-3")}
+        >
           {/* Title */}
           <h3
             // onClick={() => {
@@ -247,36 +250,14 @@ const NewsData = ({
           </div>
         </div>
         {size && (
-          <h3
-            // onClick={() => {
-            //   setShowId(article.id);
-            //   setShowNames(article.categoryNames);
-            //   setShowNews(true);
-            // }}
-            onClick={() => {
-              router.push(
+          <Link
+            href={
                 `/news/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
-              );
-            }}
+              }
             className="text-sm max-md:line-clamp-4 text-justify max-md:leading-5 text-gray-800 mb-2 cursor-pointer max-md:text-xs  max-md:px-2 md:mt-6"
           >
-            {/* {truncateDescription(article.description, descriptionLength)} */}
             {article.description}
-            {/* {article.description.length > descriptionLength && (
-              <span
-                onClick={() => {
-                  router.push(
-                    `/news/${selectedRegion == "India" ? "in" : "us"}/${
-                      article.id
-                    }`
-                  );
-                }}
-                className="text-blue-500 hover:underline ml-1"
-              >
-                Read More
-              </span>
-            )}{" "} */}
-          </h3>
+          </Link>
         )}
       </div>
 
