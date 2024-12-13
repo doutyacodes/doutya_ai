@@ -7,16 +7,30 @@ import { useChildren } from "@/context/CreateContext";
 import useAuth from "../hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { FaBox, FaGift, FaHome, FaInfoCircle, FaNewspaper, FaSearch, FaUserAlt, FaUserCircle } from "react-icons/fa";
+import {
+  FaBox,
+  FaGift,
+  FaHome,
+  FaInfoCircle,
+  FaNewspaper,
+  FaSearch,
+  FaUserAlt,
+  FaUserCircle,
+} from "react-icons/fa";
 import { IoChevronDownOutline, IoGlobeSharp } from "react-icons/io5";
 import { GiBriefcase } from "react-icons/gi";
 import { IoIosTrophy, IoMdGlobe } from "react-icons/io";
 import { FaPeopleGroup } from "react-icons/fa6";
 
 const Navbar = () => {
-  const { childrenData, showPopupForUser, selectedAge, loading ,selectedRegion,
-    showPopupRegion} =
-    useChildren();
+  const {
+    childrenData,
+    showPopupForUser,
+    selectedAge,
+    loading,
+    selectedRegion,
+    showPopupRegion,
+  } = useChildren();
   const { isAuthenticated } = useAuth();
   const pathname = usePathname();
   const links = [
@@ -27,44 +41,45 @@ const Navbar = () => {
     // { label: "Community", icon: FaPeopleGroup, links: "/communities" },
     { label: "Magic Box", links: "/search", icon: FaGift },
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
-
   ];
   return (
     <nav
       className={cn(
         "w-full bg-transparent md:min-h-16 max-md:py-[0.8vh] border-b-4 border-orange-600 max-md:max-h-[8.5vh]"
-          
       )}
     >
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between w-full">
-        <div
-                onClick={() => showPopupRegion()}
-                className="flex flex-col w-fit gap-[1px] items-center ml-3"
-              >
-                {/* <IoMdGlobe size={28} color="#845EC2" /> */}
-                <span className="text-[1.5vh] font-bold text-[#845EC2] flex gap-1 items-center">
-                 <span>{selectedRegion =="India" ? "Indian Edition" : "USA Edition"}</span>  <IoChevronDownOutline size={10} />
-                </span>
-              </div>
-          {/* <div className="opacity-0 text-xs">Login</div> */}
-          <div className="flex-1 flex justify-center items-center">
-          <Link
-            href={"/"}
-            className="mx-auto flex justify-center items-center relative h-[7.6vh] w-[40vw]"
+        <div className="grid items-center w-full grid-cols-3">
+          <div
+            onClick={() => showPopupRegion()}
+            className="flex flex-col w-fit gap-[1px] items-center ml-3"
           >
-            <Image
-              src={"/images/logo2.png"}
-              fill
-              objectFit="contain"
-              alt="logo"
-            />
-          </Link>
+            {/* <IoMdGlobe size={28} color="#845EC2" /> */}
+            <span className="text-[1.3vh] text-black flex gap-1 items-center">
+              <span>
+                {selectedRegion == "India" ? "Indian Edition" : "USA Edition"}
+              </span>{" "}
+              <IoChevronDownOutline size={10} />
+            </span>
+          </div>
+          {/* <div className="opacity-0 text-xs">Login</div> */}
+          <div className="flex justify-center items-center">
+            <Link
+              href={"/"}
+              className="mx-auto flex justify-center items-center relative h-[7.6vh] w-[40vw]"
+            >
+              <Image
+                src={"/images/logo2.png"}
+                fill
+                objectFit="contain"
+                alt="logo"
+              />
+            </Link>
           </div>
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <div className="max-md:mr-3">
+            <div className="max-md:mr-3 w-full justify-end items-center flex">
               {/* {!isAuthenticated && (
                 <Link href={"/login"} className="font-semibold">
                   Login
@@ -72,16 +87,15 @@ const Navbar = () => {
               )} */}
               {!isAuthenticated && (
                 <div
-                onClick={() => showPopupForUser()}
-                className="flex flex-col w-fit gap-[1px] items-center"
-              >
-                {/* <FaUserCircle size={28} color="#845EC2" /> */}
-                <span className="text-[1.5vh] font-bold text-[#845EC2] flex items-center gap-1">
-                 
-                  <span> Age - {selectedAge}</span>  <IoChevronDownOutline size={10} />
-
-                </span>
-              </div>
+                  onClick={() => showPopupForUser()}
+                  className="flex flex-col w-fit gap-[1px] items-center"
+                >
+                  {/* <FaUserCircle size={28} color="#845EC2" /> */}
+                  <span className="text-[1.5vh] font-bold text-black flex items-center gap-1">
+                    <span> Age - {selectedAge}</span>{" "}
+                    <IoChevronDownOutline size={10} />
+                  </span>
+                </div>
               )}
             </div>
           )}
@@ -99,7 +113,9 @@ const Navbar = () => {
               href={links}
               key={idx}
               className={`flex flex-col items-center gap-0 ${
-                (isActive || (label=="Home" && (pathname.includes("news"))))  ? "opacity-100" : "opacity-50"
+                isActive || (label == "Home" && pathname.includes("news"))
+                  ? "opacity-100"
+                  : "opacity-50"
               }`}
             >
               <Icon size={24} color="white" />

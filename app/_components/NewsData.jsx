@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import moment from "moment";
 import Image from "next/image";
-import { FaEllipsisH, FaShareAlt } from "react-icons/fa";
+import { FaEllipsisH, FaShareAlt, FaStar } from "react-icons/fa";
 import {
   FacebookShareButton,
   TwitterShareButton,
@@ -19,6 +19,12 @@ import { cn } from "@/lib/utils";
 import { FiCopy } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { useChildren } from "@/context/CreateContext";
+import { useMediaQuery } from "react-responsive";
+
+const truncateDescription = (description, length) =>
+  description.length > length
+    ? `${description.slice(0, length)}...`
+    : description;
 
 const formatDate = (date) => {
   const inputDate = moment(date);
@@ -40,7 +46,7 @@ const formatDate2 = (date) => {
   return new Date(date).toLocaleString("en-IN", options).replace(",", "");
 };
 
-const truncateTitle = (title, length = 50) =>
+const truncateTitle = (title, length = 80) =>
   title.length > length ? `${title.slice(0, length)}...` : title;
 
 const NewsData = ({
@@ -52,13 +58,18 @@ const NewsData = ({
 }) => {
   const [showReportPopup, setShowReportPopup] = useState(false);
   const [report_text, setReport_text] = useState("");
-const router = useRouter()
+  const router = useRouter();
   // console.log("article",article)
-  const {selectedRegion} = useChildren()
+  const { selectedRegion } = useChildren();
 
-  const shareUrl = `https://www.axara.co/news/${selectedRegion =="India" ? "in" :"us"}/${article.id}`;
+  const shareUrl = `https://www.axara.co/news/${
+    selectedRegion == "India" ? "in" : "us"
+  }/${article.id}`;
   const title = article.title;
+  const isBelowMd = useMediaQuery({ query: "(max-width: 768px)" });
 
+  // Set truncate length based on screen size
+  const descriptionLength = isBelowMd ? 250 : 300; // Use 100 below `md`, otherwise 200
   const handleReport = async () => {
     try {
       const response = await GlobalApi.ReportNews({
@@ -112,25 +123,35 @@ const router = useRouter()
     <div
       //   whileTap={{ scale: 0.95 }}
       className={cn(
-        "bg-white shadow-md cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col p-1",
-        size && "max-w-lg mx-auto w-full"
+        "bg-white shadow-md cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col p-1 ",
+        size && "max-w-2xl mx-auto w-full md:flex-row gap-2 max-md:min-h-[40vh]"
       )}
     >
       {/* Image with Date at the Top */}
-      <div className={cn("relative  w-full", !size ? "h-48" : "h-48 md:h-80")}>
+      <div
+        className={cn(
+          "relative  w-full",
+          !size ? "h-48" : "h-48 md:h-80  md:w-2/4"
+        )}
+      >
         <Image
           src={`https://wowfy.in/testusr/images/${article.image_url}`}
           alt={article.title}
           width={size ? 1000 : 400}
           height={size ? 500 : 300}
-          className={"w-full h-full object-cover  max-md:rounded-md"}
+          className={cn(
+            "w-full h-full object-cover  max-md:rounded-md",
+            size && "md:rounded-lg"
+          )}
           // onClick={() => {
           //   setShowId(article.id);
           //   setShowNames(article.categoryNames);
           //   setShowNews(true);
           // }}
-          onClick={()=>{
-            router.push(`/news/${selectedRegion =="India" ? "in" :"us"}/${article.id}`)
+          onClick={() => {
+            router.push(
+              `/news/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
+            );
           }}
         />
         {/* Date at the top */}
@@ -140,79 +161,121 @@ const router = useRouter()
         <span className="absolute bottom-2 left-2 flex gap-[3px] items-center ">
           {categoriesList(article.categoryNames)}
         </span>
+        {size&& (
+          <span className="absolute top-2 right-2 max-md:flex hidden bg-black/60 gap-[3px] items-center p-2 rounded-full ">
+            <FaStar color="gold" />
+          </span>
+        )}
       </div>
+      <div className={cn("", size && "md:w-2/4 md:mt-6")}>
+        {/* Content Area */}
+        <div className="flex flex-col flex-grow p-2">
+          {/* Title */}
+          <h3
+            // onClick={() => {
+            //   setShowId(article.id);
+            //   setShowNames(article.categoryNames);
+            //   setShowNews(true);
+            // }}
+            onClick={() => {
+              router.push(
+                `/news/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
+              );
+            }}
+            className={cn(
+              "text-lg font-medium text-gray-800 mb-2 cursor-pointer",
+              size && "md:text-xl"
+            )}
+          >
+            {truncateTitle(article.title)}
+          </h3>
 
-      {/* Content Area */}
-      <div className="flex flex-col flex-grow p-2">
-        {/* Title */}
-        <h3
-          // onClick={() => {
-          //   setShowId(article.id);
-          //   setShowNames(article.categoryNames);
-          //   setShowNews(true);
-          // }}
-          onClick={()=>{
-            router.push(`/news/${selectedRegion =="India" ? "in" :"us"}/${article.id}`)
-          }}
-          className="text-lg font-medium text-gray-800 mb-2 cursor-pointer"
-        >
-          {truncateTitle(article.title)}
-        </h3>
+          {/* Footer with Share and Report Options */}
+          <div className="flex flex-row-reverse justify-between items-center mt-auto">
+            <div className="flex items-center space-x-5">
+              {/* Share Icon */}
+              <div className="text-gray-500 cursor-pointer relative group">
+                <FaShareAlt size={16} />
+                {/* Share Options */}
+                <div className="hidden group-hover:flex gap-2 absolute -top-10 right-0 bg-white border shadow-lg rounded-md p-2 z-50">
+                  <FacebookShareButton url={shareUrl} quote={title}>
+                    <FacebookIcon size={32} round />
+                  </FacebookShareButton>
+                  <TwitterShareButton url={shareUrl} title={title}>
+                    <TwitterIcon size={32} round />
+                  </TwitterShareButton>
+                  <WhatsappShareButton url={shareUrl} title={title}>
+                    <WhatsappIcon size={32} round />
+                  </WhatsappShareButton>
+                  <TelegramShareButton url={shareUrl} title={title}>
+                    <TelegramIcon size={32} round />
+                  </TelegramShareButton>
+                  <button
+                    onClick={handleCopyLink}
+                    className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                    aria-label="Copy Link"
+                    title="Copy Link"
+                  >
+                    <FiCopy size={20} />
+                  </button>
+                </div>
+              </div>
 
-        {/* Footer with Share and Report Options */}
-        <div className="flex flex-row-reverse justify-between items-center mt-auto">
-          <div className="flex items-center space-x-5">
-            {/* Share Icon */}
-            <div className="text-gray-500 cursor-pointer relative group">
-              <FaShareAlt size={16} />
-              {/* Share Options */}
-              <div className="hidden group-hover:flex gap-2 absolute -top-10 right-0 bg-white border shadow-lg rounded-md p-2 z-50">
-                <FacebookShareButton url={shareUrl} quote={title}>
-                  <FacebookIcon size={32} round />
-                </FacebookShareButton>
-                <TwitterShareButton url={shareUrl} title={title}>
-                  <TwitterIcon size={32} round />
-                </TwitterShareButton>
-                <WhatsappShareButton url={shareUrl} title={title}>
-                  <WhatsappIcon size={32} round />
-                </WhatsappShareButton>
-                <TelegramShareButton url={shareUrl} title={title}>
-                  <TelegramIcon size={32} round />
-                </TelegramShareButton>
-                <button
-                  onClick={handleCopyLink}
-                  className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition"
-                  aria-label="Copy Link"
-                  title="Copy Link"
-                >
-                  <FiCopy size={20} />
-                </button>
+              {/* Report Icon */}
+              <div
+                onClick={() => {
+                  setShowReportPopup(true);
+                  console.log("Report popup triggered");
+                }}
+                className="text-gray-500 cursor-pointer rotate-90"
+              >
+                <FaEllipsisH size={16} />
               </div>
             </div>
-
-            {/* Report Icon */}
-            <div
-              onClick={() => {
-                setShowReportPopup(true);
-                console.log("Report popup triggered");
-              }}
-              className="text-gray-500 cursor-pointer rotate-90"
-            >
-              <FaEllipsisH size={16} />
+            <div className="flex flex-col gap-[1px]">
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="text-[8px] font-medium relative"
+              >
+                {formatDate2(article.created_at)}
+                {/* {article.created_at} */}
+              </motion.div>
+              {console.log("article", article)}
             </div>
           </div>
-          <div className="flex flex-col gap-[1px]">
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="text-[8px] font-medium relative"
-            >
-              {formatDate2(article.created_at)}
-              {/* {article.created_at} */}
-            </motion.div>
-            {console.log("article", article)}
-          </div>
         </div>
+        {size && (
+          <h3
+            // onClick={() => {
+            //   setShowId(article.id);
+            //   setShowNames(article.categoryNames);
+            //   setShowNews(true);
+            // }}
+            onClick={() => {
+              router.push(
+                `/news/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
+              );
+            }}
+            className="text-sm text-gray-800 mb-2 cursor-pointer max-md:text-xs  max-md:px-2 md:mt-6"
+          >
+            {truncateDescription(article.description, descriptionLength)}
+            {article.description.length > descriptionLength && (
+              <span
+                onClick={() => {
+                  router.push(
+                    `/news/${selectedRegion == "India" ? "in" : "us"}/${
+                      article.id
+                    }`
+                  );
+                }}
+                className="text-blue-500 hover:underline ml-1"
+              >
+                Read More
+              </span>
+            )}{" "}
+          </h3>
+        )}
       </div>
 
       {/* Report Popup */}

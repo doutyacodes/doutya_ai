@@ -24,6 +24,7 @@ import { usePathname } from "next/navigation";
 import useAuth from "../hooks/useAuth";
 import { useChildren } from "@/context/CreateContext";
 import ChildSelector from "./ChildSelecter";
+import { IoChevronDownOutline } from "react-icons/io5";
 
 const RightSideBar = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -74,29 +75,32 @@ const RightSideBar = () => {
             className={cn(
               "",
               isCollapsed
-                ? "block absolute top-4 right-3 z-[999999999]"
+                ? "block absolute top-8 right-3 z-[999999999]"
                 : "hidden"
             )}
           >
             {/* {selectedGender && ( */}
             <div className="flex flex-col w-fit gap-[1px] items-center lg:hidden">
-            <div className="relative h-[5.2vh] w-[12vw]">
-            <Image
-                src={
-                  selectedGender === "male"
-                    ? "/images/boy.png"
-                    : "/images/girl.png"
-                }
-                fill
-                objectFit="contain"
-                alt={selectedGender || "gender"}
-              />
-            </div>
-              <span className="text-[1.3vh] text-blue-600">
-                {selectedChild.name.split(" ")[0]}, {selectedChild.age}
+              {/* <div className="relative h-[5.2vh] w-[12vw]">
+                <Image
+                  src={
+                    selectedGender === "male"
+                      ? "/images/boy.png"
+                      : "/images/girl.png"
+                  }
+                  fill
+                  objectFit="contain"
+                  alt={selectedGender || "gender"}
+                />
+              </div> */}
+              <span className="text-[1.3vh] text-black flex gap-1 items-center">
+                <span>
+                  {selectedChild.name.split(" ")[0]}, {selectedChild.age}
+                </span>
+                <IoChevronDownOutline size={10} />
               </span>
-            {/* )} */}
-          </div>
+              {/* )} */}
+            </div>
           </div>
           {!isCollapsed && (
             <div

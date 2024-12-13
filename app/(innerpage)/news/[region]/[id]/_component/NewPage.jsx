@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { HiMagnifyingGlass } from "react-icons/hi2";
 
 export default function NewPage() {
   const [newsCategories, setNewsCategories] = useState([]);
@@ -21,6 +22,7 @@ export default function NewPage() {
   const [showId, setShowId] = useState(null);
   const { selectedAge, selectedRegion, handleRegionChange } = useChildren();
   const [showNames, setShowNames] = useState(null);
+  const [showSearch, setShowSearch] = useState(false);
 
   const pathname = usePathname();
   const [, , category, id] = pathname.split("/");
@@ -110,25 +112,23 @@ export default function NewPage() {
 
   return (
     <div className="p-4 text-gray-800 w-full">
-      {/* Search Bar */}
-      <motion.div
-        className="w-full mb-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-      >
-        <input
-          type="text"
-          placeholder="Search news..."
-          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </motion.div>
+      
 
       {/* Category Tabs */}
       <div className="w-full max-w-[84vw] mb-4">
         <div className="flex space-x-1 overflow-x-auto pb-2 scrollbar-hide">
+       <button
+                   onClick={() => {
+                     setShowSearch((prev) => !prev);
+                   }}
+                   className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full  ${
+                     showSearch
+                       ? "bg-orange-500 text-white"
+                       : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+                   }`}
+                 >
+                   Search <HiMagnifyingGlass size={18} color="#374151" />
+                 </button>
           {newsCategories.map((category) => (
             <button
               key={category.name}
@@ -149,7 +149,25 @@ export default function NewPage() {
           ))}
         </div>
       </div>
-
+      {showSearch && (
+        <>
+          {/* Search Bar */}
+          <motion.div
+            className="w-full mb-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <input
+              type="text"
+              placeholder="Search news..."
+              className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </motion.div>
+        </>
+      )}
       {/* Top News Section */}
       {!showNews && !showId && currentTopNews.length > 0 && (
         <motion.div
