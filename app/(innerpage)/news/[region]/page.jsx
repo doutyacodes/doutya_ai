@@ -103,7 +103,7 @@ export default function NewsSection() {
   return (
     <div className="p-4 text-gray-800 w-full">
       {/* Category Tabs */}
-      <div className="w-full max-w-[90vw]">
+      <div className="w-full max-w-[90vw] mb-3">
         <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
           <button
             onClick={() => {
