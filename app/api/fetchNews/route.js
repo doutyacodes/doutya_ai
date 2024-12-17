@@ -7,7 +7,7 @@ import {
   REGIONS,
 } from "@/utils/schema";
 import { authenticate } from "@/lib/jwtMiddleware";
-import { and, asc, desc, eq, gt, inArray, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, inArray, lt, or, sql } from "drizzle-orm";
 
 export async function POST(req) {
   // const authResult = await authenticate(req,true);
@@ -123,12 +123,25 @@ export async function POST(req) {
         eq(NEWS_TO_CATEGORIES.news_category_id, NEWS_CATEGORIES.id)
       )
       .where(
-        and(
-          eq(NEWS.age, age),
-          eq(NEWS.show_on_top, false),
-          or(
-            eq(NEWS_TO_CATEGORIES.region_id, region_id),
-            eq(NEWS_TO_CATEGORIES.region_id, 1)
+        or(
+          and(
+            eq(NEWS.age, age),
+            eq(NEWS.show_on_top, false),
+            or(
+              eq(NEWS_TO_CATEGORIES.region_id, region_id),
+              eq(NEWS_TO_CATEGORIES.region_id, 1)
+            )
+          ),
+          and(
+            eq(NEWS.age, age),
+            and(
+              eq(NEWS.show_on_top, true),
+              lt(NEWS.created_at, twentyFourHoursAgo)
+            ),
+            or(
+              eq(NEWS_TO_CATEGORIES.region_id, region_id),
+              eq(NEWS_TO_CATEGORIES.region_id, 1)
+            )
           )
         )
       )
