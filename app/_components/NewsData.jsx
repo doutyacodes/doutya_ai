@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 import { useChildren } from "@/context/CreateContext";
 import { useMediaQuery } from "react-responsive";
 import Link from "next/link";
-
+import { DateTime } from "luxon";
 const truncateDescription = (description, length) =>
   description.length > length
     ? `${description.slice(0, length)}...`
@@ -32,19 +32,17 @@ const formatDate = (date) => {
   return inputDate.fromNow();
 };
 
-const formatDate2 = (date) => {
-  const options = {
-    weekday: "long",
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-    timeZone: "Asia/Kolkata",
-  };
+const formatDate2 = (date, regionId) => {
+  // Determine the timezone based on regionId
+  console.log(regionId)
+  const timeZone =
+    regionId && regionId === "United States" ? "America/New_York" : "Asia/Kolkata";
 
-  return new Date(date).toLocaleString("en-IN", options).replace(",", "");
+  // Parse the date and set the desired timezone
+  const dateTime = DateTime.fromISO(date).setZone(timeZone);
+
+  // Format the date as "Tuesday 17 Dec, 2024, 11:20 am"
+  return dateTime.toFormat("cccc dd LLL, yyyy, hh:mm a");
 };
 
 const truncateTitle = (title, length = 80) =>
@@ -56,11 +54,12 @@ const NewsData = ({
   setShowNews,
   setShowNames,
   size = false,
+  regionId
 }) => {
   const [showReportPopup, setShowReportPopup] = useState(false);
   const [report_text, setReport_text] = useState("");
   const router = useRouter();
-  // console.log("article",article)
+  console.log("article", article);
   const { selectedRegion } = useChildren();
 
   const shareUrl = `https://www.axara.co/news/${
@@ -242,7 +241,7 @@ const NewsData = ({
                 whileTap={{ scale: 0.9 }}
                 className="text-[8px] font-medium relative"
               >
-                {formatDate2(article.created_at)}
+                {formatDate2(article.created_at,regionId)}
                 {/* {article.created_at} */}
               </motion.div>
               {console.log("article", article)}
@@ -251,9 +250,9 @@ const NewsData = ({
         </div>
         {size && (
           <Link
-            href={
-                `/news/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
-              }
+            href={`/news/${selectedRegion == "India" ? "in" : "us"}/${
+              article.id
+            }`}
             className="text-sm max-md:line-clamp-4 text-justify max-md:leading-5 text-gray-800 mb-2 max-md:mt-4 cursor-pointer max-md:text-xs  max-md:px-2 md:mt-6"
           >
             {article.description}

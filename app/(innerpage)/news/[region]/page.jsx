@@ -157,7 +157,7 @@ export default function NewsSection() {
         </>
       )}
       {/* Top News Section */}
-      {!showNews && !showId && currentTopNews.length > 0 && (
+      {!showNews && !showId && selectedRegion&& currentTopNews.length > 0 && (
         <motion.div
           className={cn(
             "grid grid-cols-1 py-4 gap-4",
@@ -175,6 +175,7 @@ export default function NewsSection() {
               setShowNews={setShowNews}
               key={article.id}
               size={true}
+              regionId={selectedRegion}
               getCategoryNamesByIds={getCategoryNamesByIds}
             />
           ))}
@@ -192,7 +193,7 @@ export default function NewsSection() {
           key={selectedCategory}
           transition={{ duration: 0.8 }}
         >
-          {filteredNews.length > 0 ? (
+          {filteredNews.length > 0 && selectedRegion ? (
             filteredNews.map((article) => (
               <NewsData
                 article={article}
@@ -200,6 +201,7 @@ export default function NewsSection() {
                 setShowNames={setShowNames}
                 setShowNews={setShowNews}
                 key={article.id}
+                regionId={selectedRegion}
               />
             ))
           ) : (
