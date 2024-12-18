@@ -281,6 +281,11 @@ const fetchOneNews = async (data) => {
     return axios.post(`https://www.axara.co/api/fetchNews/news`, data);
  
 };
+const fetchOneNews2 = async (data) => {
+
+    return axios.post(`https://www.axara.co/api/adult/fetchNews/news2`, data);
+ 
+};
 
 const ReportNews = async (data) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
@@ -711,7 +716,18 @@ const GetFeedbacksData = (month, year, week, childId, token,) => {
   });
 };
 
+// Adult News 
 
+// New function to fetch news
+const FetchNewsAdult = async () => {
+  const token = localStorage.getItem("token"); // Adjust based on your auth token storage
+
+  return axios.post(`/api/adult/fetchNews`, {}, {
+    headers: {
+      Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+    },
+  });
+};
 export default {
   SearchUser,
   SignUpUser,
@@ -778,5 +794,7 @@ export default {
   GetDaysData,
   ReportNews,
   fetchOneNews,
-  FetchLeaderboard
+  FetchLeaderboard,
+  FetchNewsAdult,
+  fetchOneNews2
 };

@@ -8,7 +8,7 @@ import LayoutWrapper from "../_components/LayoutWrapper";
 
 const ProtectLayout = ({ children }) => {
   return (
-    <ProtectedRoute allowedRoutes={["/","/search", "/our-story","/our-features","/about-us","/news","/testing3"]}>
+    <ProtectedRoute allowedRoutes={["/","/search", "/our-story","/our-features","/about-us","/news","/testing3","/viewpoint"]}>
       <ChildrenProvider>
         <div className="relative min-h-screen flex bg-white">
           <SideBar />

@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children, allowedRoutes = [] }) => {
 
   useEffect(() => {
     const isAllowed = 
-      allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/news/");
+      allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/news/")|| pathname.startsWith("/viewpoint/");
 
 
     if (!loading && !isAuthenticated && !isAllowed) {
@@ -25,7 +25,7 @@ const ProtectedRoute = ({ children, allowedRoutes = [] }) => {
   }
 
   const isAllowed = 
-    allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/news/");
+    allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/news/")|| pathname.startsWith("/viewpoint/");
 
   return isAuthenticated || isAllowed ? children : null;
 };
