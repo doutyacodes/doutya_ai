@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 
 export async function POST(req) {
   const { id } = await req.json();
-
+console.log(id)
   if (!id) {
     return NextResponse.json(
       { error: "News ID is required." },
@@ -28,38 +28,9 @@ export async function POST(req) {
       );
     }
 
-    const { news_group_id } = originalNews[0];
+    
 
-    // Fetch all news with the same news_group_id
-    const relatedNews = await db
-      .select({
-        id: ADULT_NEWS.id,
-        title: ADULT_NEWS.title,
-        description: ADULT_NEWS.description,
-        category: NEWS_CATEGORIES.name,
-        news_category_id: ADULT_NEWS.news_category_id,
-        image_url: ADULT_NEWS.image_url,
-        summary: ADULT_NEWS.summary,
-        viewpoint: ADULT_NEWS.viewpoint,
-        created_at: ADULT_NEWS.created_at,
-        updated_at: ADULT_NEWS.updated_at,
-      })
-      .from(ADULT_NEWS)
-      .leftJoin(
-        NEWS_CATEGORIES,
-        eq(ADULT_NEWS.news_category_id, NEWS_CATEGORIES.id)
-      ) // Join with categories
-      .where(eq(ADULT_NEWS.id, id)) // Filter by news_group_id
-      .execute();
-
-    if (relatedNews.length === 0) {
-      return NextResponse.json(
-        { error: "No related news found for the given group." },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({ newsData: relatedNews[0] }); // Return all related news
+    return NextResponse.json({ newsData: originalNews[0] }); // Return all related news
   } catch (error) {
     console.error("Error fetching related news:", error);
     return NextResponse.json(
