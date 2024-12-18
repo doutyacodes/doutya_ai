@@ -132,6 +132,24 @@ export default function NewsDetails2({ id, showNames }) {
   return (
     <div className="text-gray-800 p-2 pb-8 grid grid-cols-2 gap-2 md:gap-5 max-md:grid-cols-1">
       <div className="w-full">
+        {/* Viewpoints Toggle */}
+        <p className="mb-2 font-semibold text-xl">View different viewpoints on this news:</p>
+        <div className="flex gap-2 mb-4">
+          {allArticles.map((articleItem, index) => (
+            <button
+              key={index}
+              onClick={() => handleViewpointChange(index)}
+              className={`px-4 py-2 text-base rounded-md ${
+                index === currentArticleIndex
+                  ? "bg-orange-500 text-white"
+                  : "bg-gray-300 text-gray-700"
+              }`}
+            >
+              {/* {console.log(articleItem.viewpoint)} */}
+              {articleItem.viewpoint}
+            </button>
+          ))}
+        </div>
         <div className="mb-6">
           <h1 className="text-4xl font-bold text-gray-800">{title}</h1>
           <p className="text-sm text-gray-500 mt-2">{date}</p>
@@ -146,23 +164,6 @@ export default function NewsDetails2({ id, showNames }) {
         />
         <div className="text-xs text-slate-500">{formatDate(created_at)}</div>
 
-        {/* Viewpoints Toggle */}
-        <div className="flex gap-2 mt-4">
-          {allArticles.map((articleItem, index) => (
-            <button
-              key={index}
-              onClick={() => handleViewpointChange(index)}
-              className={`px-4 py-2 text-sm rounded-md ${
-                index === currentArticleIndex
-                  ? "bg-orange-500 text-white"
-                  : "bg-gray-300 text-gray-700"
-              }`}
-            >
-                {/* {console.log(articleItem.viewpoint)} */}
-              {articleItem.viewpoint}
-            </button>
-          ))}
-        </div>
         <div className="flex items-center space-x-8 w-fit  my-6">
           {/* Share Icon */}
           <div className="text-gray-500 cursor-pointer relative group">

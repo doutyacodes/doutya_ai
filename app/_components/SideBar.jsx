@@ -59,11 +59,12 @@ const SideBar = () => {
   //   // { label: "Challenges", links: "/challenges", icon: FaTrophy },
   // ];
   const navLinks = [
-    { label: "News", icon: FaNewspaper, links: "/news" },
-    { label: "Viewpoint", icon: GiPerspectiveDiceFive, links: "/viewpoint" },
+    { label: "News", icon: GiPerspectiveDiceFive, links: "/viewpoint" },
     // { label: "News", icon: IoGlobeSharp, links: "/news" },
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
     { label: "Magic Box", links: "/search", icon: FaGift  },
+    { label: "Kids News", icon: FaNewspaper, links: "/news" },
+
     // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
     // { label: "Community", icon: FaPeopleGroup, links: "/communities" },
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
