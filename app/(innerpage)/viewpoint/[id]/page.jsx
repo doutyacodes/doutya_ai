@@ -3,8 +3,8 @@ import NewPage2 from "./_component/NewPage2";
 
 export async function generateMetadata({ params }) {
   // Destructure the 'id' from params, assuming it's part of the URL
-  const { id } = params;  // Assuming params looks like { id: '123' }
-  
+  const { id } = await params; // Assuming params looks like { id: '123' }
+
   console.log("ID:", id);
 
   // Check if ID exists and is valid
@@ -30,14 +30,18 @@ export async function generateMetadata({ params }) {
       openGraph: {
         title: title || "News Details",
         description: description || "Explore the latest news.",
-        images: image_url ? [`https://wowfy.in/testusr/images/${image_url}`] : [],
+        images: image_url
+          ? [`https://wowfy.in/testusr/images/${image_url}`]
+          : [],
         type: "article",
       },
       twitter: {
         card: "summary_large_image",
         title: title || "News Details",
         description: description || "Explore the latest news.",
-        images: image_url ? [`https://wowfy.in/testusr/images/${image_url}`] : [],
+        images: image_url
+          ? [`https://wowfy.in/testusr/images/${image_url}`]
+          : [],
       },
     };
   } catch (error) {

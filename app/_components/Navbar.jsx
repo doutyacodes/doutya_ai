@@ -18,7 +18,7 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import { IoChevronDownOutline, IoGlobeSharp } from "react-icons/io5";
-import { GiBriefcase } from "react-icons/gi";
+import { GiBriefcase, GiPerspectiveDiceFive } from "react-icons/gi";
 import { IoIosTrophy, IoMdGlobe } from "react-icons/io";
 import { FaPeopleGroup } from "react-icons/fa6";
 
@@ -35,6 +35,8 @@ const Navbar = () => {
   const pathname = usePathname();
   const links = [
     { label: "News", icon: FaNewspaper, links: "/news" },
+    { label: "Viewpoint", icon: GiPerspectiveDiceFive, links: "/viewpoint" },
+
     // { label: "News", icon: IoGlobeSharp, links: "/news" },
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
     // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },

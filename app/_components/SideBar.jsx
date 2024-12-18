@@ -28,7 +28,7 @@ import { usePathname } from "next/navigation";
 import useAuth from "../hooks/useAuth";
 import { hp } from "@/utils/encryption";
 import { IoGlobeSharp } from "react-icons/io5";
-import { GiBriefcase } from "react-icons/gi";
+import { GiBriefcase, GiPerspectiveDiceFive } from "react-icons/gi";
 import { IoIosTrophy } from "react-icons/io";
 import { FaPeopleGroup } from "react-icons/fa6";
 
@@ -60,6 +60,7 @@ const SideBar = () => {
   // ];
   const navLinks = [
     { label: "News", icon: FaNewspaper, links: "/news" },
+    { label: "Viewpoint", icon: GiPerspectiveDiceFive, links: "/viewpoint" },
     // { label: "News", icon: IoGlobeSharp, links: "/news" },
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
     { label: "Magic Box", links: "/search", icon: FaGift  },

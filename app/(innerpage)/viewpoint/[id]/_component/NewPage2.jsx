@@ -10,7 +10,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { HiMagnifyingGlass } from "react-icons/hi2";
 
-export default function NewPage2() {
+export default function NewsSection() {
   const [newsCategories, setNewsCategories] = useState([]);
   const [newsTop, setNewsTop] = useState({});
   const [newsByCategory, setNewsByCategory] = useState({});
@@ -23,6 +23,7 @@ export default function NewPage2() {
   const [showSearch, setShowSearch] = useState(false);
   const params = useParams();
   const { id } = params;
+
   const fetchNews = async () => {
     try {
       setIsLoading(true);
@@ -64,17 +65,13 @@ export default function NewPage2() {
     fetchNews();
   }, []);
 
-  useEffect(() => {
-    setShowId(id);
-    setShowNews(true);
-  }, [id]);
   // Get news by selected category
   const currentCategoryNews =
     selectedCategory === "All"
-      ? Object.values(newsByCategory)
+      ? Object.values(newsByCategory) // Display all news if "All" is selected
       : Object.entries(newsByCategory)
           .filter(([groupId, article]) =>
-            article.categoryIds?.split(",").includes(selectedCategory)
+            article.categoryNames?.split(",").includes(selectedCategory)
           )
           .map(([, article]) => article);
 
@@ -83,7 +80,7 @@ export default function NewPage2() {
       ? Object.values(newsTop)
       : Object.entries(newsTop)
           .filter(([groupId, article]) =>
-            article.categoryIds?.split(",").includes(selectedCategory)
+            article.categoryNames?.split(",").includes(selectedCategory)
           )
           .map(([, article]) => article);
 
@@ -93,7 +90,10 @@ export default function NewPage2() {
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
+  useEffect(() => {
+    setShowId(id);
+    setShowNews(true);
+  }, [id]);
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -115,15 +115,15 @@ export default function NewPage2() {
           </button>
           {newsCategories.map((category) => (
             <button
-              key={category.id}
+              key={category.name}
               onClick={() => {
-                setSelectedCategory(category.id);
+                setSelectedCategory(category.name);
                 setShowId(null);
                 setShowNews(false);
                 setSearchQuery("");
               }}
               className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full  ${
-                selectedCategory === category.id
+                selectedCategory === category.name
                   ? "bg-orange-500 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-orange-200"
               }`}
@@ -162,16 +162,19 @@ export default function NewPage2() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          {currentTopNews.map((article) => (
-            <NewsData2
-              article={article}
-              setShowId={setShowId}
-              setShowNames={setShowNames}
-              setShowNews={setShowNews}
-              key={article.id}
-              size={true}
-            />
-          ))}
+          {currentTopNews.map((article) => {
+            console.log("article", article);
+            return (
+              <NewsData2
+                article={article}
+                setShowId={setShowId}
+                setShowNames={setShowNames}
+                setShowNews={setShowNews}
+                key={article.id}
+                size={true}
+              />
+            );
+          })}
         </motion.div>
       )}
 
