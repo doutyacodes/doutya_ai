@@ -2,33 +2,42 @@ import GlobalApi from "@/app/api/_services/GlobalApi";
 import NewPage2 from "./_component/NewPage2";
 
 export async function generateMetadata({ params }) {
-  const { id } = await params; // slug is an array, e.g., ['categories', '419']
-  // const id = slug[slug.length - 1]; // Extract the last element
-
+  // Destructure the 'id' from params, assuming it's part of the URL
+  const { id } = params;  // Assuming params looks like { id: '123' }
+  
   console.log("ID:", id);
 
+  // Check if ID exists and is valid
+  if (!id || isNaN(id)) {
+    console.error("Invalid or missing ID");
+    return {
+      title: "News Details",
+      description: "Explore the latest news.",
+    };
+  }
+
   try {
-    // Fetch the metadata for the news item
-    const response = await GlobalApi.fetchOneNews2({
-      id: parseInt(id),
-    });
-    console.log(response.data)
+    // Fetch the metadata for the news item using GlobalApi
+    const response = await GlobalApi.fetchOneNews2({ id: parseInt(id) });
+    console.log(response.data);
+
     const { title, description, image_url } = response.data.newsData || {};
 
+    // If no valid data is returned, fall back to defaults
     return {
       title: title || "News Details",
       description: description || "Explore the latest news.",
       openGraph: {
-        title: title,
-        description: description,
-        images: [`https://wowfy.in/testusr/images/${image_url}`],
+        title: title || "News Details",
+        description: description || "Explore the latest news.",
+        images: image_url ? [`https://wowfy.in/testusr/images/${image_url}`] : [],
         type: "article",
       },
       twitter: {
         card: "summary_large_image",
-        title: title,
-        description: description,
-        images: [`https://wowfy.in/testusr/images/${image_url}`],
+        title: title || "News Details",
+        description: description || "Explore the latest news.",
+        images: image_url ? [`https://wowfy.in/testusr/images/${image_url}`] : [],
       },
     };
   } catch (error) {

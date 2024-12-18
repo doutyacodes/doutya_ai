@@ -115,8 +115,8 @@ export async function POST() {
       news_group_id: groupId,
       newsItems: groupedNews[groupId],
     }));
-console.log("newsTopGroupedByGroupId",groupedNewsTopArray)
-console.log("newsGroupedByGroupId",groupedNewsArray[0].newsItems)
+// console.log("newsTopGroupedByGroupId",groupedNewsTopArray)
+// console.log("newsGroupedByGroupId",groupedNewsArray[0].newsItems)
     return NextResponse.json({
       categories: newsCategories,
       newsTopGroupedByGroupId: groupedNewsTopArray, // Return grouped top news

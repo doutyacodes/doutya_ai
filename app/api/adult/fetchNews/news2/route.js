@@ -4,35 +4,37 @@ import { ADULT_NEWS, NEWS_CATEGORIES } from "@/utils/schema";
 import { eq } from "drizzle-orm";
 
 export async function POST(req) {
+  // Parse the request body to extract the ID
   const { id } = await req.json();
-console.log(id)
-  if (!id) {
+
+  // Ensure that the ID is provided and is a valid number
+  if (!id || isNaN(id)) {
     return NextResponse.json(
-      { error: "News ID is required." },
+      { error: "A valid News ID is required." },
       { status: 400 }
     );
   }
 
   try {
-    // Fetch the specific news item to get its news_group_id
+    // Fetch the specific news item by its ID
     const originalNews = await db
       .select()
       .from(ADULT_NEWS)
       .where(eq(ADULT_NEWS.id, id))
       .execute();
 
+    // Check if no news was found with the provided ID
     if (originalNews.length === 0) {
       return NextResponse.json(
-        { error: "Original news not found." },
+        { error: "News item not found." },
         { status: 404 }
       );
     }
 
-    
-
-    return NextResponse.json({ newsData: originalNews[0] }); // Return all related news
+    // Return the news data
+    return NextResponse.json({ newsData: originalNews[0] });
   } catch (error) {
-    console.error("Error fetching related news:", error);
+    console.error("Error fetching news:", error);
     return NextResponse.json(
       { error: "An unexpected error occurred while fetching news." },
       { status: 500 }
