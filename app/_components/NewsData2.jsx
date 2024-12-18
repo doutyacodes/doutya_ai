@@ -62,7 +62,7 @@ const NewsData2 = ({
   console.log("article", article);
   const { selectedRegion } = useChildren();
 
-  const shareUrl = `https://www.axara.co/viewpoint/${article.id}`;
+  const shareUrl = `https://www.axaranews.com/viewpoint/${article.id}`;
   const title = article.title;
   const isBelowMd = useMediaQuery({ query: "(max-width: 768px)" });
 

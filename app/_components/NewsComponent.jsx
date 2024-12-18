@@ -155,7 +155,7 @@ export default function NewsDetails({ id, showNames }) {
     meanings,
     created_at,
   } = article;
-  const shareUrl = `https://www.axara.co/news/${
+  const shareUrl = `https://www.axaranews.com/news/${
     selectedRegion == "India" ? "in" : "us"
   }/${id}`;
 

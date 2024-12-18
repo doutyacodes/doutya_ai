@@ -87,7 +87,7 @@ export default function NewsDetails2({ id, showNames }) {
   };
 
   const handleCopyLink = () => {
-    const shareUrl = `https://www.axara.co/viewpoint/${id}`;
+    const shareUrl = `https://www.axaranews.com/viewpoint/${id}`;
     navigator.clipboard
       .writeText(shareUrl)
       .then(() => {
@@ -127,7 +127,7 @@ export default function NewsDetails2({ id, showNames }) {
 
   const { title, category, image_url, date, description, created_at } = article;
 
-  const shareUrl = `https://www.axara.co/viewpoint/${id}`;
+  const shareUrl = `https://www.axaranews.com/viewpoint/${id}`;
 
   return (
     <div className="text-gray-800 p-2 pb-8 grid grid-cols-2 gap-2 md:gap-5 max-md:grid-cols-1">
