@@ -132,22 +132,27 @@ export default function NewsDetails2({ id, showNames }) {
   return (
     <div className="text-gray-800 p-2 pb-8 grid grid-cols-2 gap-2 md:gap-5 max-md:grid-cols-1">
       <div className="w-full">
-        {/* Viewpoints Toggle */}
-        <p className="mb-2 font-semibold text-xl">View different viewpoints on this news:</p>
-        <div className="flex gap-2 mb-4">
+        {/* Viewpoints Header */}
+        <p className="mb-3 font-semibold text-lg md:text-xl">
+        View this news from the viewpoint of:
+        </p>
+
+        {/* Viewpoints Toggle with Horizontal Scroll */}
+        <div className="relative overflow-x-auto flex gap-2 scrollbar-hide mb-4 p-2">
           {allArticles.map((articleItem, index) => (
-            <button
+            <motion.button
               key={index}
               onClick={() => handleViewpointChange(index)}
-              className={`px-4 py-2 text-base rounded-md ${
+              className={`min-w-[120px] px-4 py-2 rounded-full text-sm md:text-base ${
                 index === currentArticleIndex
-                  ? "bg-orange-500 text-white"
-                  : "bg-gray-300 text-gray-700"
+                  ? "bg-orange-500 text-white shadow-lg"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              {/* {console.log(articleItem.viewpoint)} */}
               {articleItem.viewpoint}
-            </button>
+            </motion.button>
           ))}
         </div>
         <div className="mb-6">

@@ -104,7 +104,7 @@ const Navbar = () => {
           )}
         </div>
       </div>
-      <div className="md:hidden fixed z-[999999999999999999] bottom-0 left-0 bg-[#f04229] p-2 w-full flex justify-around items-center">
+      <div className="md:hidden fixed z-[999999999999999999] bottom-0 left-0 bg-orange-500 p-2 w-full flex justify-around items-center">
         {links.map(({ label, icon: Icon, links }, idx) => {
           const isActive =
             links === "/"
