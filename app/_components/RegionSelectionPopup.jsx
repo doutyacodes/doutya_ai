@@ -1,16 +1,22 @@
+"use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const RegionSelectionPopup = ({ selectedRegion, onSubmit, onClose }) => {
   const [region, setRegion] = useState(selectedRegion);
-const router = useRouter() 
+  const pathname = usePathname();
+  const router = useRouter();
   const handleSubmit = () => {
     onSubmit(region);
-    if (region == "India") {
-      router.replace("/news/in");
+    if (pathname.includes("viewpoint")) {
+      router.replace("/viewpoint");
     } else {
-      router.replace("/news/us");
+      if (region == "India") {
+        router.replace("/news/in");
+      } else {
+        router.replace("/news/us");
+      }
     }
   };
 

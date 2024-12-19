@@ -4,6 +4,7 @@ import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import NewsDetails2 from "@/app/_components/NewsComponent2";
 import NewsData2 from "@/app/_components/NewsData2";
 import GlobalApi from "@/app/api/_services/GlobalApi";
+import { useChildren } from "@/context/CreateContext";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -20,11 +21,14 @@ export default function NewsSection() {
   const [showId, setShowId] = useState(null);
   const [showNames, setShowNames] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
+  const { selectedRegion } = useChildren();
 
   const fetchNews = async () => {
     try {
       setIsLoading(true);
-      const response = await GlobalApi.FetchNewsAdult(); // Fetch news from backend
+      const response = await GlobalApi.FetchNewsAdult({
+        region: selectedRegion,
+      }); // Fetch news from backend
       const {
         categories = [],
         newsTopGroupedByGroupId = [],
@@ -67,7 +71,7 @@ export default function NewsSection() {
 
   useEffect(() => {
     fetchNews();
-  }, []);
+  }, [selectedRegion]);
 
   // Get news by selected category
   const currentCategoryNews =

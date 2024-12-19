@@ -1,15 +1,41 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
-import { ADULT_NEWS, NEWS_CATEGORIES, ADULT_NEWS_TO_CATEGORIES } from "@/utils/schema";
+import {
+  ADULT_NEWS,
+  NEWS_CATEGORIES,
+  ADULT_NEWS_TO_CATEGORIES,
+  REGIONS,
+} from "@/utils/schema";
 import { and, asc, desc, eq, gt, lt, or, sql } from "drizzle-orm";
 
-export async function POST() {
+export async function POST(req) {
   try {
+    const { region = "India" } = await req.json();
+    const Regions = await db
+      .select()
+      .from(REGIONS)
+      .where(eq(REGIONS.name, region))
+      .execute();
+
+    let region_id = 2;
+
+    if (Regions.length > 0) {
+      region_id = Regions[0].id;
+    }
     // Fetch news categories
     const newsCategories = await db
       .select()
       .from(NEWS_CATEGORIES)
       .orderBy(asc(NEWS_CATEGORIES.order_no))
+      .where(
+        or(
+          eq(NEWS_CATEGORIES.region, "no"),
+          and(
+            eq(NEWS_CATEGORIES.region, "yes"),
+            eq(NEWS_CATEGORIES.region_id, region_id)
+          )
+        )
+      )
       .execute();
 
     // Calculate 24-hour threshold
@@ -37,7 +63,10 @@ export async function POST() {
         news_group_id: ADULT_NEWS.news_group_id, // Include news_group_id
       })
       .from(ADULT_NEWS)
-      .leftJoin(ADULT_NEWS_TO_CATEGORIES, eq(ADULT_NEWS.id, ADULT_NEWS_TO_CATEGORIES.news_id))
+      .leftJoin(
+        ADULT_NEWS_TO_CATEGORIES,
+        eq(ADULT_NEWS.id, ADULT_NEWS_TO_CATEGORIES.news_id)
+      )
       .leftJoin(
         NEWS_CATEGORIES,
         eq(ADULT_NEWS_TO_CATEGORIES.news_category_id, NEWS_CATEGORIES.id)
@@ -45,7 +74,14 @@ export async function POST() {
       .groupBy(ADULT_NEWS.id)
       .orderBy(desc(ADULT_NEWS.created_at))
       .where(
-        and(eq(ADULT_NEWS.show_on_top, true), gt(ADULT_NEWS.created_at, twentyFourHoursAgo))
+        and(
+          eq(ADULT_NEWS.show_on_top, true),
+          gt(ADULT_NEWS.created_at, twentyFourHoursAgo), // Created within the last 24 hours
+          or(
+            eq(ADULT_NEWS_TO_CATEGORIES.region_id, region_id),
+            eq(ADULT_NEWS_TO_CATEGORIES.region_id, 1)
+          )
+        )
       )
       .execute();
 
@@ -69,18 +105,31 @@ export async function POST() {
         news_group_id: ADULT_NEWS.news_group_id, // Include news_group_id
       })
       .from(ADULT_NEWS)
-      .leftJoin(ADULT_NEWS_TO_CATEGORIES, eq(ADULT_NEWS.id, ADULT_NEWS_TO_CATEGORIES.news_id))
+      .leftJoin(
+        ADULT_NEWS_TO_CATEGORIES,
+        eq(ADULT_NEWS.id, ADULT_NEWS_TO_CATEGORIES.news_id)
+      )
       .leftJoin(
         NEWS_CATEGORIES,
         eq(ADULT_NEWS_TO_CATEGORIES.news_category_id, NEWS_CATEGORIES.id)
       )
       .where(
         or(
-          and(eq(ADULT_NEWS.show_on_top, false)),
+          and(
+            eq(ADULT_NEWS.show_on_top, false),
+            or(
+              eq(ADULT_NEWS_TO_CATEGORIES.region_id, region_id),
+              eq(ADULT_NEWS_TO_CATEGORIES.region_id, 1)
+            )
+          ),
           and(
             and(
               eq(ADULT_NEWS.show_on_top, true),
               lt(ADULT_NEWS.created_at, twentyFourHoursAgo)
+            ),
+            or(
+              eq(ADULT_NEWS_TO_CATEGORIES.region_id, region_id),
+              eq(ADULT_NEWS_TO_CATEGORIES.region_id, 1)
             )
           )
         )
@@ -115,8 +164,8 @@ export async function POST() {
       news_group_id: groupId,
       newsItems: groupedNews[groupId],
     }));
-// console.log("newsTopGroupedByGroupId",groupedNewsTopArray)
-// console.log("newsGroupedByGroupId",groupedNewsArray[0].newsItems)
+    // console.log("newsTopGroupedByGroupId",groupedNewsTopArray)
+    // console.log("newsGroupedByGroupId",groupedNewsArray[0].newsItems)
     return NextResponse.json({
       categories: newsCategories,
       newsTopGroupedByGroupId: groupedNewsTopArray, // Return grouped top news

@@ -1227,24 +1227,21 @@ export const OPTIONS2 = mysqlTable("options2", {
 });
 
 export const LEARN_DATAS = mysqlTable("learn_datas", {
-  id: int("id").primaryKey().autoincrement(),      // Unique identifier for each record
-  learn_subject_id: int("learn_subject_id") 
+  id: int("id").primaryKey().autoincrement(), // Unique identifier for each record
+  learn_subject_id: int("learn_subject_id")
     .notNull()
     .references(() => LEARN_SUBJECTS.id, { onDelete: "cascade" }),
   show_date: date("show_date").notNull(),
   topic: varchar("topic", { length: 255 }).notNull(), // Topic of the learning material
   image: varchar("image", { length: 255 }).default(null), // URL or path to the image (optional)
-  description:text('description').default(null),
+  description: text("description").default(null),
   created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
-  updated_at: timestamp("updated_at")
-    .defaultNow()
-    .onUpdateNow(),                               // Timestamp for record updates
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for record updates
 });
 
 export const NEWS_CATEGORIES = mysqlTable("news_categories", {
   id: int("id").primaryKey().autoincrement(),
-  order_no: int("order_no") 
-    .notNull(),
+  order_no: int("order_no").notNull(),
   name: varchar("name", { length: 255 }).notNull(), // Category name
   region: mysqlEnum("region", ["no", "yes"]).notNull().default("pending"),
   region_id: int("region_id").notNull(),
@@ -1291,12 +1288,11 @@ export const NEWS_TO_CATEGORIES = mysqlTable("news_to_categories", {
   news_id: int("news_id")
     .notNull()
     .references(() => NEWS.id, { onDelete: "cascade" }), // Foreign key referencing NEWS table
-    region_id: int("region_id").notNull(),
+  region_id: int("region_id").notNull(),
   news_category_id: int("news_category_id")
     .notNull()
     .references(() => NEWS_CATEGORIES.id, { onDelete: "cascade" }), // Foreign key referencing NEWS_CATEGORIES table
 });
-
 
 export const WORDS_MEANINGS = mysqlTable("words_meanings", {
   id: int("id").primaryKey().autoincrement(), // Primary key
@@ -1309,7 +1305,7 @@ export const WORDS_MEANINGS = mysqlTable("words_meanings", {
   created_at: timestamp("created_at").defaultNow(), // Timestamp for record creation
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(), // Timestamp for updates
 });
- 
+
 export const CHALLENGES = mysqlTable("challenges", {
   id: int("id").primaryKey().autoincrement(),
   title: varchar("title", { length: 255 }).notNull(),
@@ -1331,19 +1327,19 @@ export const CHALLENGES = mysqlTable("challenges", {
 
 export const USER_POINTS = mysqlTable("user_points", {
   id: int("id").primaryKey().autoincrement(),
-  user_id: int("user_id").notNull(),  // User identifier
-  child_id: int("child_id").notNull(),  // Child identifier
-  points: int("points").default(0),  // Points earned by the user for a child
-  created_at: timestamp("created_at").defaultNow(),  // Timestamp for record
+  user_id: int("user_id").notNull(), // User identifier
+  child_id: int("child_id").notNull(), // Child identifier
+  points: int("points").default(0), // Points earned by the user for a child
+  created_at: timestamp("created_at").defaultNow(), // Timestamp for record
 });
 
 export const USER_CHALLENGE_POINTS = mysqlTable("user_challenge_points", {
   id: int("id").primaryKey().autoincrement(),
-  user_id: int("user_id").notNull(),  // User identifier
-  child_id: int("child_id").notNull(),  // Child identifier
+  user_id: int("user_id").notNull(), // User identifier
+  child_id: int("child_id").notNull(), // Child identifier
   challenge_id: int("challenge_id").notNull(),
-  points: int("points").default(0),  // Points earned by the user for a child
-  created_at: timestamp("created_at").defaultNow(),  // Timestamp for record
+  points: int("points").default(0), // Points earned by the user for a child
+  created_at: timestamp("created_at").defaultNow(), // Timestamp for record
 });
 
 export const CHALLENGE_PROGRESS = mysqlTable("challenge_progress", {
@@ -1390,7 +1386,9 @@ export const CHALLENGE_USER_QUIZ = mysqlTable("challenge_user_quiz", {
 
 export const NEWS_REPORTS = mysqlTable("news_reports", {
   id: int("id").primaryKey().autoincrement(),
-  news_id: int("news_id").notNull().references(() => NEWS.id),
+  news_id: int("news_id")
+    .notNull()
+    .references(() => NEWS.id),
   user_id: int("user_id").references(() => USER_DETAILS.id), // Nullable
   report_text: text("report_text"),
   created_at: timestamp("created_at").defaultNow(),
@@ -1406,48 +1404,74 @@ export const QUIZ_SCORE = mysqlTable("quiz_score", {
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
-
 // Define the schema for the 'challenges' table
-export const CHALLENGES_MAIN = mysqlTable('challenges_main', {
-  challenge_id: int('challenge_id').primaryKey().autoincrement(),
-  page_id: int('page_id').notNull(),
-  career_group_id: int('career_group_id').references(() => CAREER_GROUP.id),
-  title: varchar('title', { length: 100 }).notNull(),
-  description: text('description').notNull(),
-  challenge_type: mysqlEnum('challenge_type', ['ordered', 'unordered']).notNull(),
-  frequency: mysqlEnum('frequency', [
-      'challenges', 'daily', 'bootcamp', 'contest', 'treasure', 'referral', 
-      'streak', 'refer', 'quiz', 'food', 'experience'
+export const CHALLENGES_MAIN = mysqlTable("challenges_main", {
+  challenge_id: int("challenge_id").primaryKey().autoincrement(),
+  page_id: int("page_id").notNull(),
+  career_group_id: int("career_group_id").references(() => CAREER_GROUP.id),
+  title: varchar("title", { length: 100 }).notNull(),
+  description: text("description").notNull(),
+  challenge_type: mysqlEnum("challenge_type", [
+    "ordered",
+    "unordered",
   ]).notNull(),
-  start_date: datetime('start_date').notNull(),
-  start_time: time('start_time').notNull(),
-  end_date: datetime('end_date').notNull(),
-  end_time: time('end_time').notNull(),
-  entry_points: int('entry_points').notNull(),
-  reward_points: int('reward_points').notNull(),
-  level: int('level').default(1).notNull(),
-  created_by: varchar('created_by', { length: 100 }).notNull(),
-  created_date: datetime('created_date').notNull(),
-  participants_count: int('participants_count').default(0).notNull(),
-  removed_date: datetime('removed_date'),
-  removed_by: varchar('removed_by', { length: 100 }),
-  arena: mysqlEnum('arena', ['no', 'yes']).notNull(),
-  district_id: int('district_id'),
-  visit: mysqlEnum('visit', ['no', 'yes']).notNull(),
-  active: mysqlEnum('active', ['no', 'yes']).notNull(),
-  days: int('days').default(0).notNull(),
-  referral_count: int('referral_count').default(0).notNull(),
-  open_for: mysqlEnum('open_for', ['everyone', 'location', 'specific']).notNull(),
-  like_based: mysqlEnum('like_based', ['no', 'yes']).notNull(),
-  live: mysqlEnum('live', ['no', 'yes']).notNull(),
-  questions: int('questions').default(0).notNull(),
-  exp_type: mysqlEnum('exp_type', ['biriyani', 'arts', 'breakfast', 'entertainment']).notNull(),
-  rewards: mysqlEnum('rewards', ['no', 'yes']).notNull(),
-  dep_id: int('dep_id').notNull(),
-  page_type: mysqlEnum('page_type', ['job','internship','tests','language','compatibility']).notNull(),
-  rounds: int('rounds').notNull(),
-  start_datetime: datetime('start_datetime').default(new Date()).notNull(),
-  language_id: int('language_id').notNull(),
+  frequency: mysqlEnum("frequency", [
+    "challenges",
+    "daily",
+    "bootcamp",
+    "contest",
+    "treasure",
+    "referral",
+    "streak",
+    "refer",
+    "quiz",
+    "food",
+    "experience",
+  ]).notNull(),
+  start_date: datetime("start_date").notNull(),
+  start_time: time("start_time").notNull(),
+  end_date: datetime("end_date").notNull(),
+  end_time: time("end_time").notNull(),
+  entry_points: int("entry_points").notNull(),
+  reward_points: int("reward_points").notNull(),
+  level: int("level").default(1).notNull(),
+  created_by: varchar("created_by", { length: 100 }).notNull(),
+  created_date: datetime("created_date").notNull(),
+  participants_count: int("participants_count").default(0).notNull(),
+  removed_date: datetime("removed_date"),
+  removed_by: varchar("removed_by", { length: 100 }),
+  arena: mysqlEnum("arena", ["no", "yes"]).notNull(),
+  district_id: int("district_id"),
+  visit: mysqlEnum("visit", ["no", "yes"]).notNull(),
+  active: mysqlEnum("active", ["no", "yes"]).notNull(),
+  days: int("days").default(0).notNull(),
+  referral_count: int("referral_count").default(0).notNull(),
+  open_for: mysqlEnum("open_for", [
+    "everyone",
+    "location",
+    "specific",
+  ]).notNull(),
+  like_based: mysqlEnum("like_based", ["no", "yes"]).notNull(),
+  live: mysqlEnum("live", ["no", "yes"]).notNull(),
+  questions: int("questions").default(0).notNull(),
+  exp_type: mysqlEnum("exp_type", [
+    "biriyani",
+    "arts",
+    "breakfast",
+    "entertainment",
+  ]).notNull(),
+  rewards: mysqlEnum("rewards", ["no", "yes"]).notNull(),
+  dep_id: int("dep_id").notNull(),
+  page_type: mysqlEnum("page_type", [
+    "job",
+    "internship",
+    "tests",
+    "language",
+    "compatibility",
+  ]).notNull(),
+  rounds: int("rounds").notNull(),
+  start_datetime: datetime("start_datetime").default(new Date()).notNull(),
+  language_id: int("language_id").notNull(),
 });
 
 export const ADULT_NEWS_GROUP = mysqlTable("adult_news_group", {
@@ -1481,6 +1505,7 @@ export const ADULT_NEWS_TO_CATEGORIES = mysqlTable("adult_news_to_categories", {
   news_id: int("news_id")
     .notNull()
     .references(() => ADULT_NEWS.id, { onDelete: "cascade" }), // Foreign key referencing NEWS table
+  region_id: int("region_id").notNull(),
   news_category_id: int("news_category_id")
     .notNull()
     .references(() => NEWS_CATEGORIES.id, { onDelete: "cascade" }), // Foreign key referencing NEWS_CATEGORIES table

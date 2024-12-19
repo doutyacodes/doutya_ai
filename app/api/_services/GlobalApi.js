@@ -719,10 +719,10 @@ const GetFeedbacksData = (month, year, week, childId, token,) => {
 // Adult News 
 
 // New function to fetch news
-const FetchNewsAdult = async () => {
+const FetchNewsAdult = async (data) => {
   const token = localStorage.getItem("token"); // Adjust based on your auth token storage
 
-  return axios.post(`/api/adult/fetchNews`, {}, {
+  return axios.post(`/api/adult/fetchNews`, data, {
     headers: {
       Authorization: `Bearer ${token}`, // Include the token in the Authorization header
     },
