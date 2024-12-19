@@ -24,7 +24,7 @@ export default function NewsSection() {
   const fetchNews = async () => {
     try {
       setIsLoading(true);
-      const response = await GlobalApi.FetchNewsAdult(); // fetch news from backend
+      const response = await GlobalApi.FetchNewsAdult(); // Fetch news from backend
       const {
         categories = [],
         newsTopGroupedByGroupId = [],
@@ -35,16 +35,23 @@ export default function NewsSection() {
       const allCategory = { id: "all", name: "All" };
       setNewsCategories([allCategory, ...categories]);
 
-      // Keep only the first news item for each group
+      // Process top news: Ensure descending order within each group
       const topNewsMap = newsTopGroupedByGroupId.reduce((acc, group) => {
-        acc[group.news_group_id] = group.newsItems[0]; // First item only
+        const sortedNewsItems = [...group.newsItems].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        ); // Sort by created_at descending
+        acc[group.news_group_id] = sortedNewsItems[0]; // First item only
         return acc;
       }, {});
 
       setNewsTop(topNewsMap);
 
+      // Process normal news: Ensure descending order within each group
       const normalNewsMap = newsGroupedByGroupId.reduce((acc, group) => {
-        acc[group.news_group_id] = group.newsItems[0]; // First item only
+        const sortedNewsItems = [...group.newsItems].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        ); // Sort by created_at descending
+        acc[group.news_group_id] = sortedNewsItems[0]; // First item only
         return acc;
       }, {});
 
@@ -72,6 +79,11 @@ export default function NewsSection() {
           )
           .map(([, article]) => article);
 
+  // Sort by created_at in descending order
+  const sortedCategoryNews = currentCategoryNews.sort(
+    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+  );
+
   const currentTopNews =
     selectedCategory === "All"
       ? Object.values(newsTop)
@@ -81,8 +93,13 @@ export default function NewsSection() {
           )
           .map(([, article]) => article);
 
+  // Sort by created_at in descending order
+  const sortedTopNews = currentTopNews.sort(
+    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+  );
+
   // Filtered news by search query
-  const filteredNews = currentCategoryNews.filter(
+  const filteredNews = sortedCategoryNews.filter(
     (article) =>
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.description?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -146,18 +163,18 @@ export default function NewsSection() {
       )}
 
       {/* Top News Section */}
-      {!showNews && !showId && currentTopNews.length > 0 && (
+      {!showNews && !showId && sortedTopNews.length > 0 && (
         <motion.div
           className={cn(
             "grid grid-cols-1 py-4 gap-4",
-            currentTopNews.length >= 2 && "md:grid-cols-2"
+            sortedTopNews.length >= 2 && "md:grid-cols-2"
           )}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          {currentTopNews.map((article) => {
-            console.log("article",article)
+          {sortedTopNews.map((article) => {
+            console.log("article", article);
             return (
               <NewsData2
                 article={article}
@@ -167,7 +184,7 @@ export default function NewsSection() {
                 key={article.id}
                 size={true}
               />
-            )
+            );
           })}
         </motion.div>
       )}

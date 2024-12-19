@@ -25,71 +25,90 @@ export default function NewsSection() {
   const { id } = params;
 
   const fetchNews = async () => {
-    try {
-      setIsLoading(true);
-      const response = await GlobalApi.FetchNewsAdult(); // fetch news from backend
-      const {
-        categories = [],
-        newsTopGroupedByGroupId = [],
-        newsGroupedByGroupId = [],
-      } = response.data;
-
-      // Set categories
-      const allCategory = { id: "all", name: "All" };
-      setNewsCategories([allCategory, ...categories]);
-
-      // Keep only the first news item for each group
-      const topNewsMap = newsTopGroupedByGroupId.reduce((acc, group) => {
-        acc[group.news_group_id] = group.newsItems[0]; // First item only
-        return acc;
-      }, {});
-
-      setNewsTop(topNewsMap);
-
-      const normalNewsMap = newsGroupedByGroupId.reduce((acc, group) => {
-        acc[group.news_group_id] = group.newsItems[0]; // First item only
-        return acc;
-      }, {});
-
-      setNewsByCategory(normalNewsMap);
-
-      setSelectedCategory("All"); // Default to "All" category
-    } catch (error) {
-      console.error("Error fetching news:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchNews();
-  }, []);
+      try {
+        setIsLoading(true);
+        const response = await GlobalApi.FetchNewsAdult(); // Fetch news from backend
+        const {
+          categories = [],
+          newsTopGroupedByGroupId = [],
+          newsGroupedByGroupId = [],
+        } = response.data;
+    
+        // Set categories
+        const allCategory = { id: "all", name: "All" };
+        setNewsCategories([allCategory, ...categories]);
+    
+        // Process top news: Ensure descending order within each group
+        const topNewsMap = newsTopGroupedByGroupId.reduce((acc, group) => {
+          const sortedNewsItems = [...group.newsItems].sort(
+            (a, b) => new Date(b.created_at) - new Date(a.created_at)
+          ); // Sort by created_at descending
+          acc[group.news_group_id] = sortedNewsItems[0]; // First item only
+          return acc;
+        }, {});
+    
+        setNewsTop(topNewsMap);
+    
+        // Process normal news: Ensure descending order within each group
+        const normalNewsMap = newsGroupedByGroupId.reduce((acc, group) => {
+          const sortedNewsItems = [...group.newsItems].sort(
+            (a, b) => new Date(b.created_at) - new Date(a.created_at)
+          ); // Sort by created_at descending
+          acc[group.news_group_id] = sortedNewsItems[0]; // First item only
+          return acc;
+        }, {});
+    
+        setNewsByCategory(normalNewsMap);
+    
+        setSelectedCategory("All"); // Default to "All" category
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+  
+    useEffect(() => {
+      fetchNews();
+    }, []);
 
   // Get news by selected category
-  const currentCategoryNews =
-    selectedCategory === "All"
-      ? Object.values(newsByCategory) // Display all news if "All" is selected
-      : Object.entries(newsByCategory)
-          .filter(([groupId, article]) =>
-            article.categoryNames?.split(",").includes(selectedCategory)
-          )
-          .map(([, article]) => article);
+  const currentCategoryNews = 
+  selectedCategory === "All"
+    ? Object.values(newsByCategory) // Display all news if "All" is selected
+    : Object.entries(newsByCategory)
+        .filter(([groupId, article]) =>
+          article.categoryNames?.split(",").includes(selectedCategory)
+        )
+        .map(([, article]) => article);
 
-  const currentTopNews =
-    selectedCategory === "All"
-      ? Object.values(newsTop)
-      : Object.entries(newsTop)
-          .filter(([groupId, article]) =>
-            article.categoryNames?.split(",").includes(selectedCategory)
-          )
-          .map(([, article]) => article);
+// Sort by created_at in descending order
+const sortedCategoryNews = currentCategoryNews.sort(
+  (a, b) => new Date(b.created_at) - new Date(a.created_at)
+);
 
-  // Filtered news by search query
-  const filteredNews = currentCategoryNews.filter(
-    (article) =>
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+const currentTopNews = 
+  selectedCategory === "All"
+    ? Object.values(newsTop)
+    : Object.entries(newsTop)
+        .filter(([groupId, article]) =>
+          article.categoryNames?.split(",").includes(selectedCategory)
+        )
+        .map(([, article]) => article);
+
+// Sort by created_at in descending order
+const sortedTopNews = currentTopNews.sort(
+  (a, b) => new Date(b.created_at) - new Date(a.created_at)
+);
+
+// Filtered news by search query
+const filteredNews = sortedCategoryNews.filter(
+  (article) =>
+    article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    article.description?.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
   useEffect(() => {
     setShowId(id);
     setShowNews(true);
@@ -152,17 +171,17 @@ export default function NewsSection() {
       )}
 
       {/* Top News Section */}
-      {!showNews && !showId && currentTopNews.length > 0 && (
+      {!showNews && !showId && sortedTopNews.length > 0 && (
         <motion.div
           className={cn(
             "grid grid-cols-1 py-4 gap-4",
-            currentTopNews.length >= 2 && "md:grid-cols-2"
+            sortedTopNews.length >= 2 && "md:grid-cols-2"
           )}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          {currentTopNews.map((article) => {
+          {sortedTopNews.map((article) => {
             console.log("article", article);
             return (
               <NewsData2

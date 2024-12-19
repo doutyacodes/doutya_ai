@@ -32,7 +32,7 @@ const Home = () => {
   const [type, setType] = useState("story");
   const { selectedChildId, selectedAge, selectedWeeks, loading } =
     useChildren(); // Accessing selected child ID from context
-  const [age, setAge] = useState(selectedAge ? selectedAge : 2); // New state for age input
+  const [age, setAge] = useState(2); // New state for age input
   const [error, setError] = useState("");
   const [latestCourse, setLatestCourse] = useState(null);
   const [base64Image, setBase64Image] = useState(null);
@@ -61,11 +61,11 @@ const Home = () => {
   const [meanings, setMeanings] = useState([]);
   const [posts, setPosts] = useState([]);
   console.log("selectedAge", selectedAge);
-  useEffect(() => {
-    if (selectedAge) {
-      setAge(selectedAge);
-    }
-  }, [selectedAge]);
+  // useEffect(() => {
+  //   if (selectedAge) {
+  //     setAge(selectedAge);
+  //   }
+  // }, [selectedAge]);
   const router = useRouter();
   // Function to handle scroll to a specific section and update visibility
   const [newsCategories, setNewsCategories] = useState([]);
@@ -173,8 +173,8 @@ const Home = () => {
       typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     if (!token) {
-      if (age > 12 || age < 2) {
-        toast.error("Age must be between 2 and 12.");
+      if ( age < 2) {
+        toast.error("Age must be atleast 2.");
         setIsLoading(false); // Ensure loading is stopped
         return; // Early return if age is out of bounds
       }
@@ -612,27 +612,27 @@ const Home = () => {
 
   // Effect to set genre options based on selected age
   useEffect(() => {
-    if (selectedAge) {
-      if (selectedAge >= 2 && selectedAge <= 5) {
-        setAgeGenres(genreOptions["2-5"]);
-      } else if (selectedAge >= 6 && selectedAge <= 8) {
-        setAgeGenres(genreOptions["6-8"]);
-      } else if (selectedAge >= 9 && selectedAge <= 12) {
-        setAgeGenres(genreOptions["9-12"]);
-      } else {
-        setAgeGenres([]); // Reset if age is out of bounds
-      }
+    // if (selectedAge) {
+    //   if (selectedAge >= 2 && selectedAge <= 5) {
+    //     setAgeGenres(genreOptions["2-5"]);
+    //   } else if (selectedAge >= 6 && selectedAge <= 8) {
+    //     setAgeGenres(genreOptions["6-8"]);
+    //   } else if (selectedAge >= 9 && selectedAge <= 12) {
+    //     setAgeGenres(genreOptions["9-12"]);
+    //   } else {
+    //     setAgeGenres(["9-12"]); // Reset if age is out of bounds
+    //   }
+    // } else {
+    if (age >= 2 && age <= 5) {
+      setAgeGenres(genreOptions["2-5"]);
+    } else if (age >= 6 && age <= 8) {
+      setAgeGenres(genreOptions["6-8"]);
+    } else if (age >= 9 && age <= 12) {
+      setAgeGenres(genreOptions["9-12"]);
     } else {
-      if (age >= 2 && age <= 5) {
-        setAgeGenres(genreOptions["2-5"]);
-      } else if (age >= 6 && age <= 8) {
-        setAgeGenres(genreOptions["6-8"]);
-      } else if (age >= 9 && age <= 12) {
-        setAgeGenres(genreOptions["9-12"]);
-      } else {
-        setAgeGenres([]); // Reset if age is out of bounds
-      }
+      setAgeGenres(genreOptions["9-12"]); // Reset if age is out of bounds
     }
+    // }
   }, [age, selectedAge]);
 
   const handleUpload = () => {
@@ -867,6 +867,37 @@ const Home = () => {
                     />
                   </div>
                 )} */}
+                  <div className="w-full text-center mb-4 text-black">
+                    <h2 className="text-lg font-semibold mb-2 ">Age</h2>
+                    <Select
+                      onValueChange={setAge}
+                      value={age}
+                      className="text-black"
+                    >
+                      <SelectTrigger className="w-full border text-center  bg-[#ede7e7] focus-visible:ring-transparent border-[#f59e1e] rounded-lg p-2">
+                        <SelectValue
+                          className="w-full text-center"
+                          placeholder="2"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="2">2</SelectItem>
+                          <SelectItem value="3">3</SelectItem>
+                          <SelectItem value="4">4</SelectItem>
+                          <SelectItem value="5">5</SelectItem>
+                          <SelectItem value="6">6</SelectItem>
+                          <SelectItem value="7">7</SelectItem>
+                          <SelectItem value="8">8</SelectItem>
+                          <SelectItem value="9">9</SelectItem>
+                          <SelectItem value="10">10</SelectItem>
+                          <SelectItem value="11">11</SelectItem>
+                          <SelectItem value="12">12</SelectItem>
+                          <SelectItem value="18">18+ </SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
                   <div className="w-full text-center mb-4">
                     <h2 className="text-lg font-semibold mb-2 ">Language</h2>
