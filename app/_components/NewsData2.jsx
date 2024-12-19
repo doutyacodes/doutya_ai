@@ -180,7 +180,7 @@ const NewsData2 = ({
             // }}
             onClick={() => {
               router.push(
-                `/news/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
+                `viewpoint/${article.id}`
               );
             }}
             className={cn(
