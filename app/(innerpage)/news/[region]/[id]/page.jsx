@@ -3,7 +3,7 @@ import NewPage from "./_component/NewPage";
 
 export async function generateMetadata({ params }) {
   // Destructure the 'id' from params
-  const { id } = params;
+  const { id } = await params;
 
   console.log("ID:", id);
 
