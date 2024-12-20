@@ -22,7 +22,7 @@ export async function generateMetadata({ params }) {
     console.log(response.data);
 
     const { title, description, image_url } = response.data.newsData || {};
-
+// console.log("response.data.newsData",response.data.newsData)
     // If no valid data is returned, fall back to defaults
     return {
       title: title || "News Details",
