@@ -34,7 +34,7 @@ export default async function RootLayout({ children }) {
 
         {/* Meta tags for social media and SEO */}
         <meta name="theme-color" content="#ffffff" />
-        <meta property="og:image" content={metadata.image} />
+        <meta property="og:image" content={"https://axaranews.com/logo2.png"} />
         <meta name="description" content={metadata.description} />
         <meta property="og:title" content={metadata.title} />
         <meta property="og:description" content={metadata.description} />
@@ -45,7 +45,7 @@ export default async function RootLayout({ children }) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={metadata.title} />
         <meta name="twitter:description" content={metadata.description} />
-        <meta name="twitter:image" content={metadata.image} />
+        <meta name="twitter:image" content={"https://axaranews.com/logo2.png"} />
         
         {/* Pinterest meta tags */}
         <meta name="pinterest" content="nopin" />
