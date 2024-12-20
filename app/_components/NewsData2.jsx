@@ -34,9 +34,11 @@ const formatDate = (date) => {
 
 const formatDate2 = (date, regionId) => {
   // Determine the timezone based on regionId
-  console.log(regionId)
+  console.log(regionId);
   const timeZone =
-    regionId && regionId === "United States" ? "America/New_York" : "Asia/Kolkata";
+    regionId && regionId === "United States"
+      ? "America/New_York"
+      : "Asia/Kolkata";
 
   // Parse the date and set the desired timezone
   const dateTime = DateTime.fromISO(date).setZone(timeZone);
@@ -54,7 +56,7 @@ const NewsData2 = ({
   setShowNews,
   setShowNames,
   size = false,
-  regionId
+  regionId,
 }) => {
   const [showReportPopup, setShowReportPopup] = useState(false);
   const [report_text, setReport_text] = useState("");
@@ -105,6 +107,24 @@ const NewsData2 = ({
       </>
     );
   };
+  const viewpointsList = (data) => {
+    if (!data) return null; // Handle cases where data is null or undefined
+    const categoryNames = data;
+    const result = categoryNames.split(",");
+
+    return (
+      <>
+        {result.map((item, index) => (
+          <div
+            key={index} // Always add a unique key when rendering lists
+            className="  text-[7.9px] md:text-xs text-black text-nowrap font-medium  bg-opacity-80  rounded-md"
+          >
+            {item.trim()} {/* Remove extra spaces */}
+          </div>
+        ))}
+      </>
+    );
+  };
 
   const handleCopyLink = () => {
     navigator.clipboard
@@ -127,9 +147,12 @@ const NewsData2 = ({
       )}
     >
       {/* Image with Date at the Top */}
-      <span className=" flex gap-[3px] items-center py-2 overflow-x-auto w-full">
-          {categoriesList(article.viewpoints)}
+      <p>
+        <span className="text-xs">Perspective of :</span>
+        <span className=" flex gap-[3px] items-center pb-2 overflow-x-auto w-full">
+          {viewpointsList(article.viewpoints)}
         </span>
+      </p>
       <div
         className={cn(
           "relative  w-full",
@@ -151,9 +174,7 @@ const NewsData2 = ({
           //   setShowNews(true);
           // }}
           onClick={() => {
-            router.push(
-              `/viewpoint/${article.id}`
-            );
+            router.push(`/viewpoint/${article.id}`);
           }}
         />
         {/* Date at the top */}
@@ -182,9 +203,7 @@ const NewsData2 = ({
             //   setShowNews(true);
             // }}
             onClick={() => {
-              router.push(
-                `viewpoint/${article.id}`
-              );
+              router.push(`viewpoint/${article.id}`);
             }}
             className={cn(
               "text-lg font-medium text-gray-800 mb-2 cursor-pointer",
@@ -242,7 +261,7 @@ const NewsData2 = ({
                 whileTap={{ scale: 0.9 }}
                 className="text-[8px] font-medium relative"
               >
-                {formatDate2(article.created_at,regionId)}
+                {formatDate2(article.created_at, regionId)}
                 {/* {article.created_at} */}
               </motion.div>
               {console.log("article", article)}
