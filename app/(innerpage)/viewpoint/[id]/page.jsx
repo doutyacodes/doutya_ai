@@ -2,8 +2,8 @@ import GlobalApi from "@/app/api/_services/GlobalApi";
 import NewPage2 from "./_component/NewPage2";
 
 export async function generateMetadata({ params }) {
-  // Destructure the 'id' from params, assuming it's part of the URL
-  const { id } = await params; // Assuming params looks like { id: '123' }
+  // Destructure the 'id' from params
+  const { id } = params;
 
   console.log("ID:", id);
 
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }) {
     console.log(response.data);
 
     const { title, description, image_url } = response.data.newsData || {};
-// console.log("response.data.newsData",response.data.newsData)
+
     // If no valid data is returned, fall back to defaults
     return {
       title: title || "News Details",
@@ -34,6 +34,8 @@ export async function generateMetadata({ params }) {
           ? [`https://wowfy.in/testusr/images/${image_url}`]
           : [],
         type: "article",
+        locale: "en_US",  // Optional: specify the locale
+        site_name: "Your Website", // Optional: specify your website name
       },
       twitter: {
         card: "summary_large_image",
