@@ -68,7 +68,7 @@ const RightSideBar = () => {
   console.log("selectedChild", selectedChild);
   return (
     <>
-      {isAuthenticated ? (
+      {isAuthenticated && (pathname.includes("news") ||pathname.includes("search")) ? (
         <>
           <div
             onClick={toggleCollapse}
