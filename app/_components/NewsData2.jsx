@@ -127,6 +127,9 @@ const NewsData2 = ({
       )}
     >
       {/* Image with Date at the Top */}
+      <span className=" flex gap-[3px] items-center py-2 overflow-x-auto w-full">
+          {categoriesList(article.viewpoints)}
+        </span>
       <div
         className={cn(
           "relative  w-full",

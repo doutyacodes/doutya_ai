@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import GlobalApi from "@/app/api/_services/GlobalApi";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import WelcomeCard from "@/app/_components/WelcomeCard";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import AgeSelectionPopup from "@/app/_components/AgeSelectionPopup"; // Create this component
@@ -28,6 +28,8 @@ export const ChildrenProvider = ({ children }) => {
   const [showRegionPopup, setShowRegionPopup] = useState(false); // Region selection popup
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+
+  const pathname = usePathname()
 
   const updateChildrenData = (data) => {
     setChildrenData(data);
@@ -101,14 +103,15 @@ export const ChildrenProvider = ({ children }) => {
       const storedAge = localStorage.getItem("selectedAge");
       if (storedAge) {
         setSelectedAge(Number(storedAge));
-      } else {
+      } else if(!storedAge && pathname.includes("news")) {
         setShowAgePopup(true); // Show popup for age selection
       }
     }
 
     // Fetch region
     fetchRegion();
-  }, [isAuthenticated]);
+    console.log("hi")
+  }, [isAuthenticated,pathname]);
 
   const handleAgeSubmit = (age) => {
     if (age >= 3 && age <= 12) {

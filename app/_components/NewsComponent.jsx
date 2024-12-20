@@ -188,7 +188,7 @@ export default function NewsDetails({ id, showNames }) {
     <div className="text-gray-800 p-2 pb-8 grid grid-cols-2 gap-2 md:gap-5 max-md:grid-cols-1">
       <div className="w-full ">
         <div className="mb-6">
-          <h1 className="text-4xl font-bold text-gray-800">{title}</h1>
+          <h1 className="text-4xl max-md:text-3xl font-bold text-gray-800">{title}</h1>
           <p className="text-sm text-gray-500 mt-2">{date}</p>
         </div>
         <div className="mb-3 flex gap-2">{categoriesList()}</div>

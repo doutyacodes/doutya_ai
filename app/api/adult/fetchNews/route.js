@@ -61,6 +61,7 @@ export async function POST(req) {
         updated_at: ADULT_NEWS.updated_at,
         main_news: ADULT_NEWS.main_news,
         news_group_id: ADULT_NEWS.news_group_id, // Include news_group_id
+        viewpoint: ADULT_NEWS.viewpoint, // Include news_group_id
       })
       .from(ADULT_NEWS)
       .leftJoin(
@@ -103,6 +104,8 @@ export async function POST(req) {
         created_at: ADULT_NEWS.created_at,
         updated_at: ADULT_NEWS.updated_at,
         news_group_id: ADULT_NEWS.news_group_id, // Include news_group_id
+        viewpoint: ADULT_NEWS.viewpoint, // Include news_group_id
+        // Ensure distinct viewpoints per group
       })
       .from(ADULT_NEWS)
       .leftJoin(
@@ -134,43 +137,66 @@ export async function POST(req) {
           )
         )
       )
-      .groupBy(ADULT_NEWS.id)
+      .groupBy(ADULT_NEWS.id, ADULT_NEWS.news_group_id) // Group by both id and news_group_id
       .orderBy(desc(ADULT_NEWS.created_at))
       .execute();
 
-    // Function to group news by news_group_id
-    const groupByNewsGroupId = (newsData) => {
-      return newsData.reduce((acc, currentNews) => {
-        const { news_group_id } = currentNews;
-        if (!acc[news_group_id]) {
-          acc[news_group_id] = [];
-        }
-        acc[news_group_id].push(currentNews);
-        return acc;
-      }, {});
-    };
-
-    // Group top news and normal news by news_group_id
-    const groupedNewsTop = groupByNewsGroupId(newsTop);
-    const groupedNews = groupByNewsGroupId(news);
-
-    // Format grouped news into arrays
-    const groupedNewsTopArray = Object.keys(groupedNewsTop).map((groupId) => ({
-      news_group_id: groupId,
-      newsItems: groupedNewsTop[groupId],
-    }));
-
-    const groupedNewsArray = Object.keys(groupedNews).map((groupId) => ({
-      news_group_id: groupId,
-      newsItems: groupedNews[groupId],
-    }));
-    // console.log("newsTopGroupedByGroupId",groupedNewsTopArray)
-    // console.log("newsGroupedByGroupId",groupedNewsArray[0].newsItems)
-    return NextResponse.json({
-      categories: newsCategories,
-      newsTopGroupedByGroupId: groupedNewsTopArray, // Return grouped top news
-      newsGroupedByGroupId: groupedNewsArray, // Return grouped normal news
-    });
+      const groupByNewsGroupId = (newsData) => {
+        return newsData.reduce((acc, currentNews) => {
+          const { news_group_id, viewpoint } = currentNews;
+      
+          if (!acc[news_group_id]) {
+            acc[news_group_id] = {
+              newsItems: [],
+              viewpoints: new Set(), // Use a Set to ensure viewpoints are unique
+            };
+          }
+      
+          // Add the current news item to the respective group
+          acc[news_group_id].newsItems.push(currentNews);
+          
+          // Add the viewpoint to the viewpoints set (to avoid duplicates)
+          if (viewpoint) {
+            acc[news_group_id].viewpoints.add(viewpoint);
+          }
+      
+          return acc;
+        }, {});
+      };
+      
+      // Function to format grouped data
+      const formatGroupedNews = (groupedNews) => {
+        return Object.keys(groupedNews).map((groupId) => {
+          const group = groupedNews[groupId];
+          const viewpoints = Array.from(group.viewpoints).join(','); // Combine viewpoints into a comma-separated string
+      
+          // Add viewpoints to each news item in the group
+          group.newsItems.forEach(newsItem => {
+            newsItem.viewpoints = viewpoints;
+          });
+      
+          return {
+            news_group_id: groupId,
+            newsItems: group.newsItems,
+          };
+        });
+      };
+      
+      // Group top news and normal news by news_group_id
+      const groupedNewsTop = groupByNewsGroupId(newsTop);
+      const groupedNews = groupByNewsGroupId(news);
+      
+      // Format grouped news
+      const groupedNewsTopArray = formatGroupedNews(groupedNewsTop);
+      const groupedNewsArray = formatGroupedNews(groupedNews);
+      
+      // Return the final JSON response
+      return NextResponse.json({
+        categories: newsCategories,
+        newsTopGroupedByGroupId: groupedNewsTopArray, // Return grouped top news
+        newsGroupedByGroupId: groupedNewsArray, // Return grouped normal news
+      });
+      
   } catch (error) {
     console.error("Error fetching news categories or news:", error);
     return NextResponse.json(
