@@ -15,7 +15,7 @@ export const metadata = {
   description:
     "Axara is an AI-powered educational platform for children aged 2-12, offering personalized stories, interactive learning, and fun explanations on any topic. Designed to fuel curiosity and learning through play, Axara adapts to each child's unique needs, helping them explore the world in an engaging, age-appropriate way.",
   url: "https://axaranews.com", // Add the URL for social media sharing
-  image: "https://axaranews.com/favicon.ico", // Add an image for preview (you can replace with a more specific image)
+  image: "https://axaranews.com/favicon-32x32.png", // Add an image for preview (you can replace with a more specific image)
 };
 
 export default async function RootLayout({ children }) {
