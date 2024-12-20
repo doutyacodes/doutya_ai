@@ -149,7 +149,7 @@ const NewsData2 = ({
       {/* Image with Date at the Top */}
       <p className="text-[10px] md:text-xs text-black text-nowrap font-medium bg-opacity-80 py-2 rounded-md">
   <span className="flex gap-[3px] items-center overflow-x-auto w-full">
-    Perspective of : {article.viewpoints.replace(/,/g, ', ')}
+   <span className="font-bold"> Perspectives of </span>: {article.viewpoints.replace(/,/g, ', ')}
   </span>
 </p>
 

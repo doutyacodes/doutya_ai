@@ -32,13 +32,23 @@ export async function POST(req) {
     }
 
     const { news_group_id } = originalNews[0];
-    const originalNews2 = await db
-    .select()
-    .from(ADULT_NEWS)
-    .where(eq(ADULT_NEWS.news_group_id, news_group_id))
-    .orderBy(asc(ADULT_NEWS.created_at))
-    .limit(1)
-    .execute();
+    let originalNews2 = await db
+      .select()
+      .from(ADULT_NEWS)
+      .where(eq(ADULT_NEWS.viewpoint, "Neutral"))
+      .orderBy(asc(ADULT_NEWS.created_at))
+      .limit(1)
+      .execute();
+
+    if (originalNews2.length == 0) {
+      originalNews2 = await db
+        .select()
+        .from(ADULT_NEWS)
+        .where(eq(ADULT_NEWS.news_group_id, news_group_id))
+        .orderBy(asc(ADULT_NEWS.created_at))
+        .limit(1)
+        .execute();
+    }
 
     // Return the news data
     return NextResponse.json({ newsData: originalNews2[0] });

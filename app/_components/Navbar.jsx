@@ -72,7 +72,7 @@ const Navbar = () => {
               className="mx-auto flex justify-center items-center relative h-[7.6vh] w-[40vw]"
             >
               <Image
-                src={"/images/logo2.png"}
+                src={pathname.includes("news") ? "/images/logo5.jpg" : "/images/logo4.jpg"}
                 fill
                 objectFit="contain"
                 alt="logo"
