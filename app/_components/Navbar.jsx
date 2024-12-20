@@ -88,7 +88,7 @@ const Navbar = () => {
                   Login
                 </Link>
               )} */}
-              {!isAuthenticated && pathname.includes("news")&& (
+              {!isAuthenticated && (
                 <div
                   onClick={() => showPopupForUser()}
                   className="flex flex-col w-fit gap-[1px] items-center"

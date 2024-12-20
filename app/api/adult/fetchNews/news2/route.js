@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
 import { ADULT_NEWS, NEWS_CATEGORIES } from "@/utils/schema";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 
 export async function POST(req) {
   // Parse the request body to extract the ID
@@ -31,8 +31,17 @@ export async function POST(req) {
       );
     }
 
+    const { news_group_id } = originalNews[0];
+    const originalNews2 = await db
+    .select()
+    .from(ADULT_NEWS)
+    .where(eq(ADULT_NEWS.news_group_id, news_group_id))
+    .orderBy(asc(ADULT_NEWS.created_at))
+    .limit(1)
+    .execute();
+
     // Return the news data
-    return NextResponse.json({ newsData: originalNews[0] });
+    return NextResponse.json({ newsData: originalNews2[0] });
   } catch (error) {
     console.error("Error fetching news:", error);
     return NextResponse.json(
