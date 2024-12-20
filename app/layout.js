@@ -11,9 +11,9 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "Axara | News for kids.",
+  title: "Axara News.",
   description:
-    "Axara is an AI-powered educational platform for children aged 2-12, offering personalized stories, interactive learning, and fun explanations on any topic. Designed to fuel curiosity and learning through play, Axara adapts to each child's unique needs, helping them explore the world in an engaging, age-appropriate way.",
+    "Experience news from every angle with an in-depth, multi-perspective coverage at its core. Plus, a dedicated Kids section for age-appropriate news and our Magic Box for AI-crafted explanations and stories. Axara News—tailored for every reader, every story, every perspective.",
   url: "https://axaranews.com", // Add the URL for social media sharing
   image: "https://axaranews.com/favicon-32x32.png", // Add an image for preview (you can replace with a more specific image)
 };
