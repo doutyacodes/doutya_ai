@@ -11,7 +11,7 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "Axara News.",
+  title: "Axara News : From All Angles, For All Ages",
   description:
     "Experience news from every angle with an in-depth, multi-perspective coverage at its core. Plus, a dedicated Kids section for age-appropriate news and our Magic Box for AI-crafted explanations and stories. Axara News—tailored for every reader, every story, every perspective.",
   url: "https://axaranews.com", // Add the URL for social media sharing
