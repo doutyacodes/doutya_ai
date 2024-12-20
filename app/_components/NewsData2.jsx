@@ -147,12 +147,13 @@ const NewsData2 = ({
       )}
     >
       {/* Image with Date at the Top */}
-      <p>
-        <span className="text-xs">Perspective of :</span>
-        <span className=" flex gap-[3px] items-center pb-2 overflow-x-auto w-full">
-          {viewpointsList(article.viewpoints)}
-        </span>
-      </p>
+      <p className="text-[10px] md:text-xs text-black text-nowrap font-medium bg-opacity-80 py-2 rounded-md">
+  <span className="flex gap-[3px] items-center overflow-x-auto w-full">
+    Perspective of : {article.viewpoints.replace(/,/g, ', ')}
+  </span>
+</p>
+
+
       <div
         className={cn(
           "relative  w-full",
