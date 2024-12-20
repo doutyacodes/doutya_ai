@@ -14,6 +14,8 @@ export const metadata = {
   title: "Axara | News for kids.",
   description:
     "Axara is an AI-powered educational platform for children aged 2-12, offering personalized stories, interactive learning, and fun explanations on any topic. Designed to fuel curiosity and learning through play, Axara adapts to each child's unique needs, helping them explore the world in an engaging, age-appropriate way.",
+  url: "https://axaranews.com", // Add the URL for social media sharing
+  image: "https://axaranews.com/favicon.ico", // Add an image for preview (you can replace with a more specific image)
 };
 
 export default async function RootLayout({ children }) {
@@ -32,49 +34,27 @@ export default async function RootLayout({ children }) {
 
         {/* Meta tags for social media and SEO */}
         <meta name="theme-color" content="#ffffff" />
-        <meta property="og:image" content="https://axaranews.com/favicon.ico" />
+        <meta property="og:image" content={metadata.image} />
         <meta name="description" content={metadata.description} />
-
-        {/* Structured Data for SearchAction */}
-        <script type="application/ld+json">
-          {`
-          {
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "url": "https://www.axaranews.com/",
-            "potentialAction": {
-              "@type": "SearchAction",
-              "target": "https://www.axaranews.com/search?q={search_term_string}",
-              "query-input": "required name=search_term_string"
-            }
-          }
-          `}
-        </script>
-
-        {/* Optional: Breadcrumb Schema */}
-        <script type="application/ld+json">
-          {`
-          {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://www.axaranews.com/"
-              },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "World",
-                "item": "https://www.axaranews.com/world"
-              }
-            ]
-          }
-          `}
-        </script>
-
+        <meta property="og:title" content={metadata.title} />
+        <meta property="og:description" content={metadata.description} />
+        <meta property="og:url" content={metadata.url} />
+        <meta property="og:type" content="website" />
+        
+        {/* Twitter meta tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={metadata.title} />
+        <meta name="twitter:description" content={metadata.description} />
+        <meta name="twitter:image" content={metadata.image} />
+        
+        {/* Pinterest meta tags */}
+        <meta name="pinterest" content="nopin" />
+        
+        {/* Facebook Open Graph meta tags */}
+        <meta property="fb:app_id" content="your-facebook-app-id" /> {/* Replace with your FB app ID */}
+        
+        {/* LinkedIn Share meta tags */}
+        <meta name="linkedin:share" content="true" />
       </Head>
       <body className={`${poppins.className} min-h-screen`}>
         <NextIntlClientProvider messages={messages}>
