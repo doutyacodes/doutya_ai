@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import moment from "moment";
 import Image from "next/image";
@@ -68,16 +68,6 @@ const NewsData2 = ({
   const shareUrl = `https://www.axaranews.com/viewpoint/${article.id}`;
   const title = article.title;
   const isBelowMd = useMediaQuery({ query: "(max-width: 768px)" });
-
-  // Add this console log to verify your meta data
-useEffect(() => {
-  console.log('Meta Debug:', {
-    title: article.title,
-    description: article.description,
-    imageUrl: `https://wowfy.in/testusr/images/${article.image_url}`,
-    shareUrl: shareUrl
-  });
-}, [article]);
 
   // Set truncate length based on screen size
   const descriptionLength = isBelowMd ? 250 : 300; // Use 100 below `md`, otherwise 200
@@ -150,10 +140,12 @@ useEffect(() => {
   };
   return (
     <>
-    {/* <Head>
+    <Head>
+        {/* Essential Meta Tags */}
         <title>{article.title}</title>
         <meta name="description" content={article.description} />
 
+        {/* OpenGraph Meta Tags */}
         <meta property="og:title" content={article.title} />
         <meta property="og:description" content={article.description} />
         <meta property="og:image" content={`https://wowfy.in/testusr/images/${article.image_url}`} />
@@ -161,14 +153,16 @@ useEffect(() => {
         <meta property="og:type" content="article" />
         <meta property="og:site_name" content="Axara News" />
 
+        {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={article.title} />
         <meta name="twitter:description" content={article.description} />
         <meta name="twitter:image" content={`https://wowfy.in/testusr/images/${article.image_url}`} />
 
+        {/* WhatsApp Preview Tags */}
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-    </Head> */}
+    </Head>
       <div
         //   whileTap={{ scale: 0.95 }}
         className={cn(
