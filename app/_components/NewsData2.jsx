@@ -150,12 +150,10 @@ useEffect(() => {
   };
   return (
     <>
-    <Head>
-        {/* Essential Meta Tags */}
+    {/* <Head>
         <title>{article.title}</title>
         <meta name="description" content={article.description} />
 
-        {/* OpenGraph Meta Tags */}
         <meta property="og:title" content={article.title} />
         <meta property="og:description" content={article.description} />
         <meta property="og:image" content={`https://wowfy.in/testusr/images/${article.image_url}`} />
@@ -163,16 +161,14 @@ useEffect(() => {
         <meta property="og:type" content="article" />
         <meta property="og:site_name" content="Axara News" />
 
-        {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={article.title} />
         <meta name="twitter:description" content={article.description} />
         <meta name="twitter:image" content={`https://wowfy.in/testusr/images/${article.image_url}`} />
 
-        {/* WhatsApp Preview Tags */}
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-    </Head>
+    </Head> */}
       <div
         //   whileTap={{ scale: 0.95 }}
         className={cn(
