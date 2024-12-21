@@ -168,8 +168,15 @@ export async function POST(req) {
       const formatGroupedNews = (groupedNews) => {
         return Object.keys(groupedNews).map((groupId) => {
           const group = groupedNews[groupId];
-          const viewpoints = Array.from(group.viewpoints).join(','); // Combine viewpoints into a comma-separated string
-      
+          // const viewpoints = Array.from(group.viewpoints).join(','); // Combine viewpoints into a comma-separated string
+
+          // Combine viewpoints into a comma-separated string
+          // Reverse the viewpoints to convert descending to ascending
+            const viewpoints = Array.from(group.viewpoints)
+            .sort()
+            .reverse() // Reverse the order to get ascending
+            .join(","); // Combine viewpoints into a comma-separated string
+
           // Add viewpoints to each news item in the group
           group.newsItems.forEach(newsItem => {
             newsItem.viewpoints = viewpoints;
