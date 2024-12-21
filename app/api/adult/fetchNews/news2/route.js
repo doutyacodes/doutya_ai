@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
 import { ADULT_NEWS, NEWS_CATEGORIES } from "@/utils/schema";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 
 export async function POST(req) {
   // Parse the request body to extract the ID
@@ -35,7 +35,12 @@ export async function POST(req) {
     let originalNews2 = await db
       .select()
       .from(ADULT_NEWS)
-      .where(eq(ADULT_NEWS.viewpoint, "Neutral"))
+      .where(
+        and(
+          eq(ADULT_NEWS.viewpoint, "Neutral"),
+          eq(ADULT_NEWS.news_group_id, news_group_id)
+        )
+      )
       .orderBy(asc(ADULT_NEWS.created_at))
       .limit(1)
       .execute();
