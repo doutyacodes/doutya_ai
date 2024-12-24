@@ -173,9 +173,12 @@ export async function POST(req) {
         return Object.keys(groupedNews).map((groupId) => {
           const group = groupedNews[groupId];
       
-          // Sort viewpoints by created_at descending
+          // Sort newsItems by created_at ascending
+          group.newsItems.sort((a, b) => new Date(a.id) - new Date(b.id)); // Ascending order
+      
+          // Sort viewpoints by id ascending
           const sortedViewpoints = group.viewpoints
-            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // Descending order
+            .sort((a, b) => new Date(a.id) - new Date(b.id)) // Ascending order
             .map((vp) => vp.viewpoint) // Extract the viewpoint strings
             .join(","); // Combine viewpoints into a comma-separated string
       
@@ -190,6 +193,8 @@ export async function POST(req) {
           };
         });
       };
+      
+      
 
     // Group top news and normal news by news_group_id
     const groupedNewsTop = groupByNewsGroupId(newsTop);

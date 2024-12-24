@@ -35,7 +35,7 @@ const formatDate = (date) => {
 
 const formatDate2 = (date, regionId) => {
   // Determine the timezone based on regionId
-  console.log(regionId);
+  // console.log(regionId);
   const timeZone =
     regionId && regionId === "United States"
       ? "America/New_York"
@@ -62,7 +62,7 @@ const NewsData2 = ({
   const [showReportPopup, setShowReportPopup] = useState(false);
   const [report_text, setReport_text] = useState("");
   const router = useRouter();
-  console.log("article", article);
+  // console.log("article", article);
   const { selectedRegion } = useChildren();
 
   const shareUrl = `https://www.axaranews.com/viewpoint/${article.id}`;
@@ -290,7 +290,7 @@ const NewsData2 = ({
                   {formatDate2(article.created_at, regionId)}
                   {/* {article.created_at} */}
                 </motion.div>
-                {console.log("article", article)}
+                {/* {console.log("article", article)} */}
               </div>
             </div>
           </div>

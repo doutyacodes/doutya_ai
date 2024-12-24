@@ -45,8 +45,8 @@ export default function NewsSection() {
         // Process top news: Ensure descending order within each group
         const topNewsMap = newsTopGroupedByGroupId.reduce((acc, group) => {
           const sortedNewsItems = [...group.newsItems].sort(
-            (a, b) => new Date(b.created_at) - new Date(a.created_at)
-          ); // Sort by created_at descending
+            (a, b) => new Date(a.id) - new Date(b.id)
+          ); // Sort by id descending
           acc[group.news_group_id] = sortedNewsItems[0]; // First item only
           return acc;
         }, {});
@@ -56,8 +56,8 @@ export default function NewsSection() {
         // Process normal news: Ensure descending order within each group
         const normalNewsMap = newsGroupedByGroupId.reduce((acc, group) => {
           const sortedNewsItems = [...group.newsItems].sort(
-            (a, b) => new Date(b.created_at) - new Date(a.created_at)
-          ); // Sort by created_at descending
+            (a, b) => new Date(a.id) - new Date(b.id)
+          ); // Sort by id descending
           acc[group.news_group_id] = sortedNewsItems[0]; // First item only
           return acc;
         }, {});
