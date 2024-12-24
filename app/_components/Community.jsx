@@ -16,7 +16,9 @@ const CommunityList = () => {
   const router = useRouter();
 
   const fetchCourse = async () => {
-    if (selectedAge) {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
       router.replace("/login");
       return;
     }

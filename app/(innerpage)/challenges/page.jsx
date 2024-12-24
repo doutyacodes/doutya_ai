@@ -14,11 +14,13 @@ const Challenges = () => {
   const router = useRouter();
 
   const fetchChallenges = async () => {
-    if(selectedAge)
-    {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
       router.replace("/login");
-return;
+      return;
     }
+
     try {
       setIsLoading(true);
       const response = await GlobalApi.FetchChallenges({

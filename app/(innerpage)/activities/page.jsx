@@ -23,7 +23,9 @@ const ActivitiesList = () => {
 
   // Fetch activities based on selected child and age
   const fetchActivities = async () => {
-    if (!selectedAge) {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
       router.replace("/login");
       return;
     }
