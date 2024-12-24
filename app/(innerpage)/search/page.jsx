@@ -19,7 +19,8 @@ export default function MagicBox() {
   
   return (
     <div className="w-full mx-auto flex items-center">
-      <Tabs defaultValue="magicbox" className="w-full">
+      <Search />
+      {/* <Tabs defaultValue="magicbox" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="magicbox">Magic Box</TabsTrigger>
           <TabsTrigger value="contest">Contest</TabsTrigger>
@@ -39,7 +40,7 @@ export default function MagicBox() {
           <ActivitiesList />
         </TabsContent>
         
-      </Tabs>
+      </Tabs> */}
     </div>
   );
 }

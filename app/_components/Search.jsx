@@ -728,7 +728,7 @@ const Search = () => {
   return (
     <div
       className={cn(
-        "  text-gray-800 md:p-1  pt-0 relative",
+        "w-full text-gray-800 md:p-1 pt-0 relative",
         !latestCourse && !advanced && "max-md:h-screen"
       )}
     >
