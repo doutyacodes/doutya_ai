@@ -30,7 +30,7 @@ const PostComponent = ({ post }) => {
 
   return (
     <motion.div
-      className="p-4 bg-white shadow-md rounded-lg max-w-xl"
+      className="p-4 bg-white shadow-md rounded-lg max-w-xl border border-slate-100"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}

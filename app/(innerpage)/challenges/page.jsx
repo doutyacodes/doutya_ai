@@ -5,13 +5,20 @@ import { motion } from "framer-motion";
 import { useChildren } from "@/context/CreateContext";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
+import { useRouter } from "next/navigation";
 
 const Challenges = () => {
   const { selectedAge, selectedChildId } = useChildren();
   const [challengesData, setChallengesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   const fetchChallenges = async () => {
+    if(selectedAge)
+    {
+      router.replace("/login");
+return;
+    }
     try {
       setIsLoading(true);
       const response = await GlobalApi.FetchChallenges({

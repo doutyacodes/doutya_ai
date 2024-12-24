@@ -143,21 +143,25 @@ export async function POST(req) {
 
       const groupByNewsGroupId = (newsData) => {
         return newsData.reduce((acc, currentNews) => {
-          const { news_group_id, viewpoint } = currentNews;
+          const { news_group_id, viewpoint, created_at } = currentNews;
       
           if (!acc[news_group_id]) {
             acc[news_group_id] = {
               newsItems: [],
-              viewpoints: new Set(), // Use a Set to ensure viewpoints are unique
+              viewpoints: [], // Store viewpoints with their created_at
             };
           }
       
           // Add the current news item to the respective group
           acc[news_group_id].newsItems.push(currentNews);
-          
-          // Add the viewpoint to the viewpoints set (to avoid duplicates)
-          if (viewpoint) {
-            acc[news_group_id].viewpoints.add(viewpoint);
+      
+          // Check if the viewpoint already exists
+          const existingViewpoint = acc[news_group_id].viewpoints.find(
+            (vp) => vp.viewpoint === viewpoint
+          );
+      
+          if (!existingViewpoint && viewpoint) {
+            acc[news_group_id].viewpoints.push({ viewpoint, created_at });
           }
       
           return acc;
@@ -168,18 +172,16 @@ export async function POST(req) {
       const formatGroupedNews = (groupedNews) => {
         return Object.keys(groupedNews).map((groupId) => {
           const group = groupedNews[groupId];
-          // const viewpoints = Array.from(group.viewpoints).join(','); // Combine viewpoints into a comma-separated string
-
-          // Combine viewpoints into a comma-separated string
-          // Reverse the viewpoints to convert descending to ascending
-            const viewpoints = Array.from(group.viewpoints)
-            .sort()
-            .reverse() // Reverse the order to get ascending
+      
+          // Sort viewpoints by created_at descending
+          const sortedViewpoints = group.viewpoints
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // Descending order
+            .map((vp) => vp.viewpoint) // Extract the viewpoint strings
             .join(","); // Combine viewpoints into a comma-separated string
-
+      
           // Add viewpoints to each news item in the group
-          group.newsItems.forEach(newsItem => {
-            newsItem.viewpoints = viewpoints;
+          group.newsItems.forEach((newsItem) => {
+            newsItem.viewpoints = sortedViewpoints;
           });
       
           return {
@@ -188,22 +190,21 @@ export async function POST(req) {
           };
         });
       };
-      
-      // Group top news and normal news by news_group_id
-      const groupedNewsTop = groupByNewsGroupId(newsTop);
-      const groupedNews = groupByNewsGroupId(news);
-      
-      // Format grouped news
-      const groupedNewsTopArray = formatGroupedNews(groupedNewsTop);
-      const groupedNewsArray = formatGroupedNews(groupedNews);
-      
-      // Return the final JSON response
-      return NextResponse.json({
-        categories: newsCategories,
-        newsTopGroupedByGroupId: groupedNewsTopArray, // Return grouped top news
-        newsGroupedByGroupId: groupedNewsArray, // Return grouped normal news
-      });
-      
+
+    // Group top news and normal news by news_group_id
+    const groupedNewsTop = groupByNewsGroupId(newsTop);
+    const groupedNews = groupByNewsGroupId(news);
+
+    // Format grouped news
+    const groupedNewsTopArray = formatGroupedNews(groupedNewsTop);
+    const groupedNewsArray = formatGroupedNews(groupedNews);
+
+    // Return the final JSON response
+    return NextResponse.json({
+      categories: newsCategories,
+      newsTopGroupedByGroupId: groupedNewsTopArray, // Return grouped top news
+      newsGroupedByGroupId: groupedNewsArray, // Return grouped normal news
+    });
   } catch (error) {
     console.error("Error fetching news categories or news:", error);
     return NextResponse.json(
