@@ -23,6 +23,7 @@ import { useMediaQuery } from "react-responsive";
 import Link from "next/link";
 import { DateTime } from "luxon";
 import Head from "next/head";
+import { GrFormView } from "react-icons/gr";
 const truncateDescription = (description, length) =>
   description.length > length
     ? `${description.slice(0, length)}...`
@@ -204,9 +205,10 @@ const NewsData2 = ({
             }}
           />
           {/* Date at the top */}
-          {/* <span className="absolute top-2 left-2 text-white text-xs font-medium bg-black bg-opacity-60 px-2 py-1 rounded-md">
-            {formatDate(article.created_at)}
-          </span> */}
+          <span className="absolute top-2 left-2 text-white text-xs flex items-center font-medium bg-black bg-opacity-60 px-2 py-1 rounded-md">
+            <GrFormView size={18} />
+            {allArticles[currentIndex]?.viewpoint || article.viewpoint}
+          </span>
           <span className="absolute bottom-2 left-2 flex gap-[3px] items-center ">
             {categoriesList(article.categoryNames)}
           </span>
@@ -241,7 +243,7 @@ const NewsData2 = ({
                 //   setShowNews(true);
                 // }}
                 onClick={() => {
-                  router.push(`viewpoint/${article.id}`);
+                  router.push(`/viewpoint/${article.id}`);
                 }}
                 className={cn(
                   "text-lg font-medium text-gray-800 mb-2 cursor-pointer line-clamp-3",
