@@ -130,7 +130,7 @@ export default function NewsDetails2({ id, showNames }) {
   const shareUrl = `https://www.axaranews.com/viewpoint/${id}`;
 
   return (
-    <div className="text-gray-800 p-2 pb-8 grid grid-cols-2 gap-2 md:gap-5 max-md:grid-cols-1 bg-white shadow-md rounded-md border border-slate-200">
+    <div className="text-gray-800 p-4 pb-8 grid grid-cols-2 gap-2 md:gap-5 max-md:grid-cols-1 bg-white shadow-md rounded-md border border-slate-200">
       <div className="w-full">
         {/* Viewpoints Header */}
         <p className="mb-3 font-semibold text-lg md:text-xl">
