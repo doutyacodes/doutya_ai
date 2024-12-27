@@ -28,10 +28,10 @@ const truncateDescription = (description, length) =>
     ? `${description.slice(0, length)}...`
     : description;
 
-const formatDate = (date) => {
-  const inputDate = moment(date);
-  return inputDate.fromNow();
-};
+// const formatDate = (date) => {
+//   const inputDate = moment(date);
+//   return inputDate.fromNow();
+// };
 
 const formatDate2 = (date, regionId) => {
   // Determine the timezone based on regionId
@@ -204,9 +204,9 @@ const NewsData2 = ({
             }}
           />
           {/* Date at the top */}
-          <span className="absolute top-2 left-2 text-white text-xs font-medium bg-black bg-opacity-60 px-2 py-1 rounded-md">
+          {/* <span className="absolute top-2 left-2 text-white text-xs font-medium bg-black bg-opacity-60 px-2 py-1 rounded-md">
             {formatDate(article.created_at)}
-          </span>
+          </span> */}
           <span className="absolute bottom-2 left-2 flex gap-[3px] items-center ">
             {categoriesList(article.categoryNames)}
           </span>
