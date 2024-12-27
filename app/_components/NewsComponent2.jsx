@@ -138,12 +138,12 @@ export default function NewsDetails2({ id, showNames }) {
         </p>
 
         {/* Viewpoints Toggle with Horizontal Scroll */}
-        <div className="relative overflow-x-auto flex gap-2 scrollbar-hide mb-4 p-2">
+        <div className="relative overflow-x-auto flex  scrollbar-hide mb-4 p-2">
           {allArticles.map((articleItem, index) => (
             <motion.button
               key={index}
               onClick={() => handleViewpointChange(index)}
-              className={` px-4 py-2 rounded-full text-nowrap text-sm md:text-base ${
+              className={` px-4 py-2 border-[0.5px] border-slate-100 text-nowrap text-sm md:text-base ${
                 index === currentArticleIndex
                   ? "bg-orange-500 text-white shadow-lg"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
