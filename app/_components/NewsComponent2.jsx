@@ -134,7 +134,7 @@ export default function NewsDetails2({ id, showNames }) {
       <div className="w-full">
         {/* Viewpoints Header */}
         <p className="mb-3 font-semibold text-lg md:text-xl">
-        Explore this article through the lens of:
+          View this news from the perspective of:{" "}
         </p>
 
         {/* Viewpoints Toggle with Horizontal Scroll */}
@@ -156,7 +156,9 @@ export default function NewsDetails2({ id, showNames }) {
           ))}
         </div>
         <div className="mb-6">
-          <h1 className="text-4xl max-md:text-3xl font-bold text-gray-800">{title}</h1>
+          <h1 className="text-4xl max-md:text-3xl font-bold text-gray-800">
+            {title}
+          </h1>
           <p className="text-sm text-gray-500 mt-2">{date}</p>
         </div>
         <div className="mb-3 flex gap-2">{categoriesList()}</div>
