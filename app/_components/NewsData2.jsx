@@ -24,6 +24,8 @@ import Link from "next/link";
 import { DateTime } from "luxon";
 import Head from "next/head";
 import { GrFormView } from "react-icons/gr";
+import { useSwipeable } from "react-swipeable"; // Add this import at the top
+
 const truncateDescription = (description, length) =>
   description.length > length
     ? `${description.slice(0, length)}...`
@@ -102,7 +104,7 @@ const NewsData2 = ({
         {result.map((item, index) => (
           <div
             key={index} // Always add a unique key when rendering lists
-            className="  text-[7.9px] text-white text-xs font-medium bg-orange-500 bg-opacity-80 px-2 py-[2px] rounded-md"
+            className="  text-[7.9px] text-white text-xs font-medium bg-black/60  px-2 py-[2px] rounded-md"
           >
             {item.trim()} {/* Remove extra spaces */}
           </div>
@@ -132,7 +134,12 @@ const NewsData2 = ({
   const handleDotClick = (index) => {
     setCurrentIndex(index);
   };
-
+  const handlers = useSwipeable({
+    onSwipedLeft: () => setCurrentIndex((prevIndex) => (prevIndex + 1) % allArticles.length), // Go to next article
+    onSwipedRight: () => setCurrentIndex((prevIndex) => (prevIndex - 1 + allArticles.length) % allArticles.length), // Go to previous article
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+  });
   return (
     <>
       <Head>
@@ -165,6 +172,7 @@ const NewsData2 = ({
         <meta property="og:image:height" content="630" />
       </Head>
       <div
+      {...handlers} 
         //   whileTap={{ scale: 0.95 }}
         className={cn(
           "bg-[#f5f5f5] shadow-md cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col p-1 ",
@@ -205,9 +213,14 @@ const NewsData2 = ({
             }}
           />
           {/* Date at the top */}
-          <span className="absolute top-2 left-2 text-white text-xs flex items-center font-medium bg-black bg-opacity-60 px-2 py-1 rounded-md">
+          {/* <span className="absolute top-2 left-2 text-white text-xs flex items-center font-medium bg-black bg-opacity-60 px-2 py-1 rounded-md">
             <GrFormView size={18} />
-            {allArticles[currentIndex]?.viewpoint || article.viewpoint}
+            {allArticles[currentIndex]?.viewpoint || article.viewpoint} Viewpoint
+          </span> */}
+          <span className="absolute top-2 left-2 text-white text-xs flex items-center font-medium bg-orange-500  px-2 py-1 rounded-md">
+            <GrFormView size={18} />
+            {allArticles[currentIndex]?.viewpoint || article.viewpoint}{" "}
+            Viewpoint
           </span>
           <span className="absolute bottom-2 left-2 flex gap-[3px] items-center ">
             {categoriesList(article.categoryNames)}
@@ -236,6 +249,11 @@ const NewsData2 = ({
               transition={{ duration: 0.5 }}
               className="scrollable-container"
             >
+              <span className=" text-xs flex items-center font-medium ">
+                <GrFormView size={18} />
+                {allArticles[currentIndex]?.viewpoint || article.viewpoint}{" "}
+                Viewpoint
+              </span>
               <h3
                 // onClick={() => {
                 //   setShowId(article.id);
