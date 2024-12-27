@@ -249,7 +249,7 @@ const NewsData2 = ({
               transition={{ duration: 0.5 }}
               className="scrollable-container"
             >
-              <span className=" text-xs flex items-center font-medium ">
+              <span className=" text-xs flex items-center font-semibold text-orange-500 ">
                 <GrFormView size={18} />
                 {allArticles[currentIndex]?.viewpoint || article.viewpoint}{" "}
                 Viewpoint
