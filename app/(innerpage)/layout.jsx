@@ -16,7 +16,9 @@ const ProtectLayout = ({ children }) => {
           {/* Content */}
           <LayoutWrapper >
             <Navbar />
+            <div className="w-full py-8">
             {children}
+            </div>
           </LayoutWrapper>
           <RightSideBar />
         </div>
