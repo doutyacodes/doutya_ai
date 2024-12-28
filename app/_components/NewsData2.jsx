@@ -59,10 +59,10 @@ const viewpointColors2 = {
 const viewpointColors = {
   0: { bg: "bg-[#FF4500]", text: "text-[#FF4500]" }, // Orange-Red
   1: { bg: "bg-[#DC143C]", text: "text-[#DC143C]" }, // Crimson (Red)
-  2: { bg: "bg-[#FFD700]", text: "text-[#FFD700]" }, // Gold (Yellow)
-  3: { bg: "bg-[#FF8C00]", text: "text-[#FF8C00]" }, // Dark Orange
-  4: { bg: "bg-[#FF6347]", text: "text-[#FF6347]" }, // Tomato (Red-Orange)
-  5: { bg: "bg-[#FFA500]", text: "text-[#FFA500]" }, // Orange
+  2: { bg: "bg-[#4682B4]", text: "text-[#4682B4]" }, // Steel Blue
+  3: { bg: "bg-[#00bf62]", text: "text-[#00bf62]" },
+  4: { bg: "bg-[#FF8C00]", text: "text-[#FF8C00]" }, // Dark Orange
+  5: { bg: "bg-[#FF6347]", text: "text-[#FF6347]" }, // Tomato (Red-Orange)
 };
 
 const truncateDescription = (description, length) =>
@@ -289,7 +289,7 @@ const NewsData2 = ({
           {/* Viewpoint label above image - with background color */}
           <span className={cn(
             "absolute top-2 left-2 text-white text-xs flex items-center font-medium px-2 py-1 rounded-md",
-            getViewpointColor(currentIndex, 'bg')  + " bg-opacity-80"
+            getViewpointColor(currentIndex, 'bg')  + " bg-opacity-90"
           )}>
             <GrFormView size={18} />
             {allArticles[currentIndex]?.viewpoint || article.viewpoint} Viewpoint
