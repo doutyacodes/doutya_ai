@@ -123,6 +123,25 @@ export default function NewsSection() {
 
   return (
     <div className="p-4 text-gray-800 w-full">
+      <div className="w-full bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 mb-6 md:mb-8">
+      <div className="max-w-7xl mx-auto px-3 py-3 md:px-4 md:py-12">
+        <div className="flex flex-col md:flex-row items-center justify-between">
+          {/* Text Section */}
+          <div className="text-white space-y-1 md:space-y-3 md:w-1/2">
+            <h1 className="text-xl md:text-4xl font-bold text-center md:text-left">
+              One News, Different Perspectives
+            </h1>
+            <p className="text-sm md:text-lg text-center md:text-left text-white/90">
+              Where different perspectives come together to tell the complete story.
+            </p>
+          </div>
+          
+          {/* Right section - only visible on desktop */}
+          <div className="hidden md:block md:w-1/2">
+          </div>
+        </div>
+      </div>
+    </div>
       {/* Category Tabs */}
       <div className="w-full max-w-[90vw] mb-3">
         <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
