@@ -47,13 +47,22 @@ const viewpointColors2 = {
   5: { bg: "bg-[#2F3E46]", text: "text-[#1C2B30]" },
 };
 
+// const viewpointColors = {
+//   0: { bg: "bg-[#8B0000]", text: "text-[#8B0000]" },
+//   1: { bg: "bg-[#00008B]", text: "text-[#00008B]" },
+//   2: { bg: "bg-[#006400]", text: "text-[#006400]" },
+//   3: { bg: "bg-[#4B0082]", text: "text-[#4B0082]" },
+//   4: { bg: "bg-[#8B4513]", text: "text-[#8B4513]" },
+//   5: { bg: "bg-[#2F4F4F]", text: "text-[#2F4F4F]" },
+// };
+
 const viewpointColors = {
-  0: { bg: "bg-[#8B0000]", text: "text-[#8B0000]" },
-  1: { bg: "bg-[#00008B]", text: "text-[#00008B]" },
-  2: { bg: "bg-[#006400]", text: "text-[#006400]" },
-  3: { bg: "bg-[#4B0082]", text: "text-[#4B0082]" },
-  4: { bg: "bg-[#8B4513]", text: "text-[#8B4513]" },
-  5: { bg: "bg-[#2F4F4F]", text: "text-[#2F4F4F]" },
+  0: { bg: "bg-[#FF4500]", text: "text-[#FF4500]" }, // Orange-Red
+  1: { bg: "bg-[#DC143C]", text: "text-[#DC143C]" }, // Crimson (Red)
+  2: { bg: "bg-[#FFD700]", text: "text-[#FFD700]" }, // Gold (Yellow)
+  3: { bg: "bg-[#FF8C00]", text: "text-[#FF8C00]" }, // Dark Orange
+  4: { bg: "bg-[#FF6347]", text: "text-[#FF6347]" }, // Tomato (Red-Orange)
+  5: { bg: "bg-[#FFA500]", text: "text-[#FFA500]" }, // Orange
 };
 
 const truncateDescription = (description, length) =>
@@ -280,7 +289,7 @@ const NewsData2 = ({
           {/* Viewpoint label above image - with background color */}
           <span className={cn(
             "absolute top-2 left-2 text-white text-xs flex items-center font-medium px-2 py-1 rounded-md",
-            getViewpointColor(currentIndex, 'bg')
+            getViewpointColor(currentIndex, 'bg')  + " bg-opacity-80"
           )}>
             <GrFormView size={18} />
             {allArticles[currentIndex]?.viewpoint || article.viewpoint} Viewpoint
