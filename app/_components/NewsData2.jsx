@@ -58,9 +58,9 @@ const viewpointColors2 = {
 
 const viewpointColors = {
   0: { bg: "bg-[#FF4500]", text: "text-[#FF4500]" }, // Orange-Red
-  1: { bg: "bg-[#DC143C]", text: "text-[#DC143C]" }, // Crimson (Red)
+  1: { bg: "bg-[#00bf62]", text: "text-[#00bf62]" },
   2: { bg: "bg-[#4682B4]", text: "text-[#4682B4]" }, // Steel Blue
-  3: { bg: "bg-[#00bf62]", text: "text-[#00bf62]" },
+  3: { bg: "bg-[#DC143C]", text: "text-[#DC143C]" }, // Crimson (Red)
   4: { bg: "bg-[#FF8C00]", text: "text-[#FF8C00]" }, // Dark Orange
   5: { bg: "bg-[#FF6347]", text: "text-[#FF6347]" }, // Tomato (Red-Orange)
 };
@@ -292,7 +292,7 @@ const NewsData2 = ({
             getViewpointColor(currentIndex, 'bg')  + " bg-opacity-90"
           )}>
             <GrFormView size={18} />
-            {allArticles[currentIndex]?.viewpoint || article.viewpoint} Viewpoint
+            {allArticles[currentIndex]?.viewpoint || article.viewpoint} Perspective
           </span>
 
           <span className="absolute bottom-2 left-2 flex gap-[3px] items-center ">
@@ -345,7 +345,7 @@ const NewsData2 = ({
                 getViewpointColor(currentIndex, 'text')
               )}>
                 <GrFormView size={18} className={getViewpointColor(currentIndex, 'text')} />
-                {allArticles[currentIndex]?.viewpoint || article.viewpoint} Viewpoint
+                {allArticles[currentIndex]?.viewpoint || article.viewpoint} Perspective
               </span>
               
               <h3
