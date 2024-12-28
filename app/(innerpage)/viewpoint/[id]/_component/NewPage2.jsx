@@ -24,94 +24,96 @@ export default function NewsSection() {
   const [showSearch, setShowSearch] = useState(false);
   const params = useParams();
   const { id } = params;
-  const {  selectedRegion } = useChildren();
+  const { selectedRegion } = useChildren();
 
   const fetchNews = async () => {
-      try {
-        setIsLoading(true);
-        const response = await GlobalApi.FetchNewsAdult({
-          region: selectedRegion,
-        }); // Fetch news from backend
-        const {
-          categories = [],
-          newsTopGroupedByGroupId = [],
-          newsGroupedByGroupId = [],
-        } = response.data;
-  
-        // Set categories
-        const allCategory = { id: "all", name: "All" };
-        setNewsCategories([allCategory, ...categories]);
-  
-        // Process top news: Include both the first article and the full array
-        const topNewsMap = newsTopGroupedByGroupId.reduce((acc, group) => {
-          const sortedNewsItems = [...group.newsItems].sort(
-            (a, b) => new Date(a.id) - new Date(b.id)
-          ); // Sort by id descending
-          acc[group.news_group_id] = {
-            topArticle: sortedNewsItems[0], // The top article
-            allArticles: sortedNewsItems,  // The full array of articles
-          };
-          return acc;
-        }, {});
-  
-        setNewsTop(topNewsMap);
-  
-        // Process normal news: Include both the main article and the full array
-        const normalNewsMap = newsGroupedByGroupId.reduce((acc, group) => {
-          const sortedNewsItems = [...group.newsItems].sort(
-            (a, b) => new Date(a.id) - new Date(b.id)
-          ); // Sort by id descending
-          acc[group.news_group_id] = {
-            mainArticle: sortedNewsItems[0], // The main article
-            allArticles: sortedNewsItems,   // The full array of articles
-          };
-          return acc;
-        }, {});
-  
-        setNewsByCategory(normalNewsMap);
-        setSelectedCategory("All"); // Default to "All" category
-      } catch (error) {
-        console.error("Error fetching news:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-  
-    useEffect(() => {
-      fetchNews();
-    }, [selectedRegion]);
-  
-    // Get news by selected category
-    const currentCategoryNews =
-      selectedCategory === "All"
-        ? Object.values(newsByCategory)
-        : Object.values(newsByCategory).filter(({ mainArticle }) =>
-            mainArticle.categoryNames?.split(",").includes(selectedCategory)
-          );
-  
-    // Sort by created_at in descending order
-    const sortedCategoryNews = currentCategoryNews.sort(
-      (a, b) => new Date(b.mainArticle.created_at) - new Date(a.mainArticle.created_at)
-    );
-  
-    const currentTopNews =
-      selectedCategory === "All"
-        ? Object.values(newsTop)
-        : Object.values(newsTop).filter(({ topArticle }) =>
-            topArticle.categoryNames?.split(",").includes(selectedCategory)
-          );
-  
-    // Sort by created_at in descending order
-    const sortedTopNews = currentTopNews.sort(
-      (a, b) => new Date(b.topArticle.created_at) - new Date(a.topArticle.created_at)
-    );
-  
-    // Filtered news by search query
-    const filteredNews = sortedCategoryNews.filter(
-      ({ mainArticle }) =>
-        mainArticle.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        mainArticle.description?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    try {
+      setIsLoading(true);
+      const response = await GlobalApi.FetchNewsAdult({
+        region: selectedRegion,
+      }); // Fetch news from backend
+      const {
+        categories = [],
+        newsTopGroupedByGroupId = [],
+        newsGroupedByGroupId = [],
+      } = response.data;
+
+      // Set categories
+      const allCategory = { id: "all", name: "All" };
+      setNewsCategories([allCategory, ...categories]);
+
+      // Process top news: Include both the first article and the full array
+      const topNewsMap = newsTopGroupedByGroupId.reduce((acc, group) => {
+        const sortedNewsItems = [...group.newsItems].sort(
+          (a, b) => new Date(a.id) - new Date(b.id)
+        ); // Sort by id descending
+        acc[group.news_group_id] = {
+          topArticle: sortedNewsItems[0], // The top article
+          allArticles: sortedNewsItems, // The full array of articles
+        };
+        return acc;
+      }, {});
+
+      setNewsTop(topNewsMap);
+
+      // Process normal news: Include both the main article and the full array
+      const normalNewsMap = newsGroupedByGroupId.reduce((acc, group) => {
+        const sortedNewsItems = [...group.newsItems].sort(
+          (a, b) => new Date(a.id) - new Date(b.id)
+        ); // Sort by id descending
+        acc[group.news_group_id] = {
+          mainArticle: sortedNewsItems[0], // The main article
+          allArticles: sortedNewsItems, // The full array of articles
+        };
+        return acc;
+      }, {});
+
+      setNewsByCategory(normalNewsMap);
+      setSelectedCategory("All"); // Default to "All" category
+    } catch (error) {
+      console.error("Error fetching news:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNews();
+  }, [selectedRegion]);
+
+  // Get news by selected category
+  const currentCategoryNews =
+    selectedCategory === "All"
+      ? Object.values(newsByCategory)
+      : Object.values(newsByCategory).filter(({ mainArticle }) =>
+          mainArticle.categoryNames?.split(",").includes(selectedCategory)
+        );
+
+  // Sort by created_at in descending order
+  const sortedCategoryNews = currentCategoryNews.sort(
+    (a, b) =>
+      new Date(b.mainArticle.created_at) - new Date(a.mainArticle.created_at)
+  );
+
+  const currentTopNews =
+    selectedCategory === "All"
+      ? Object.values(newsTop)
+      : Object.values(newsTop).filter(({ topArticle }) =>
+          topArticle.categoryNames?.split(",").includes(selectedCategory)
+        );
+
+  // Sort by created_at in descending order
+  const sortedTopNews = currentTopNews.sort(
+    (a, b) =>
+      new Date(b.topArticle.created_at) - new Date(a.topArticle.created_at)
+  );
+
+  // Filtered news by search query
+  const filteredNews = sortedCategoryNews.filter(
+    ({ mainArticle }) =>
+      mainArticle.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      mainArticle.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     setShowId(id);
@@ -124,24 +126,25 @@ export default function NewsSection() {
   return (
     <div className="p-4 text-gray-800 w-full">
       <div className="w-full bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 mb-6 md:mb-8">
-      <div className="max-w-7xl mx-auto px-3 py-3 md:px-4 md:py-12">
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          {/* Text Section */}
-          <div className="text-white space-y-1 md:space-y-3 md:w-1/2">
-            <h1 className="text-xl md:text-4xl font-bold text-center md:text-left">
-              One News, Different Perspectives
-            </h1>
-            <p className="text-sm md:text-lg text-center md:text-left text-white/90">
-              Where different perspectives come together to tell the complete story.
-            </p>
-          </div>
-          
-          {/* Right section - only visible on desktop */}
-          <div className="hidden md:block md:w-1/2">
+        <div className="w-full mx-auto px-3 py-3 md:px-4 md:py-3">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            {/* Text Section */}
+            <div className="text-white space-y-1 md:space-y-3 ">
+              <h1 className="text-lg md:text-3xl font-bold text-center md:text-left">
+                One News, Different Perspectives
+              </h1>
+              <p className="text-xs md:text-lg text-center md:text-left text-white/90">
+                Where different perspectives come together to tell the complete
+                story.
+              </p>
+            </div>
+
+            {/* Right section - only visible on desktop */}
+            {/* <div className="hidden md:block md:w-1/2">
+          </div> */}
           </div>
         </div>
       </div>
-    </div>
       {/* Category Tabs */}
       <div className="w-full max-w-[90vw] mb-3">
         <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
