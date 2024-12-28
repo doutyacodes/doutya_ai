@@ -28,14 +28,23 @@ import { useSwipeable } from "react-swipeable"; // Add this import at the top
 
 
 // Define viewpoint colors with both background and text variants
+// const viewpointColors = {
+//   0: { bg: "bg-indigo-600", text: "text-indigo-600" },
+//   1: { bg: "bg-emerald-600", text: "text-emerald-600" },
+//   2: { bg: "bg-purple-600", text: "text-purple-600" },
+//   3: { bg: "bg-blue-600", text: "text-blue-600" },
+//   4: { bg: "bg-teal-600", text: "text-teal-600" },
+//   5: { bg: "bg-rose-600", text: "text-rose-600" },
+//   6: { bg: "bg-cyan-600", text: "text-cyan-600" }
+// };
+
 const viewpointColors = {
-  0: { bg: "bg-indigo-600", text: "text-indigo-600" },
-  1: { bg: "bg-emerald-600", text: "text-emerald-600" },
-  2: { bg: "bg-purple-600", text: "text-purple-600" },
-  3: { bg: "bg-blue-600", text: "text-blue-600" },
-  4: { bg: "bg-teal-600", text: "text-teal-600" },
-  5: { bg: "bg-rose-600", text: "text-rose-600" },
-  6: { bg: "bg-cyan-600", text: "text-cyan-600" }
+  0: { bg: "bg-[#3B1F2B]", text: "text-[#3B1F2B]" },
+  1: { bg: "bg-[#1F2A44]", text: "text-[#1F2A44]" },
+  2: { bg: "bg-[#183D3D]", text: "text-[#183D3D]" },
+  3: { bg: "bg-[#332A4D]", text: "text-[#332A4D]" },
+  4: { bg: "bg-[#3A332A]", text: "text-[#3A332A]" },
+  5: { bg: "bg-[#2F3E46]", text: "text-[#2F3E46]" },
 };
 
 // const viewpointColors = {
