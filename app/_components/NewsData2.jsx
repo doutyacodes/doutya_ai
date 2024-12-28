@@ -38,54 +38,23 @@ import { useSwipeable } from "react-swipeable"; // Add this import at the top
 //   6: { bg: "bg-cyan-600", text: "text-cyan-600" }
 // };
 
-const viewpointColors = {
-  0: { bg: "bg-[#3B1F2B]", text: "text-[#3B1F2B]" },
-  1: { bg: "bg-[#1F2A44]", text: "text-[#1F2A44]" },
-  2: { bg: "bg-[#183D3D]", text: "text-[#183D3D]" },
-  3: { bg: "bg-[#332A4D]", text: "text-[#332A4D]" },
-  4: { bg: "bg-[#3A332A]", text: "text-[#3A332A]" },
-  5: { bg: "bg-[#2F3E46]", text: "text-[#2F3E46]" },
+const viewpointColors2 = {
+  0: { bg: "bg-[#2A1721]", text: "text-[#2A1721]" },
+  1: { bg: "bg-[#151C2E]", text: "text-[#151C2E]" },
+  2: { bg: "bg-[#102828]", text: "text-[#102828]" },
+  3: { bg: "bg-[#261F37]", text: "text-[#261F37]" },
+  4: { bg: "bg-[#2D2923]", text: "text-[#2D2923]" },
+  5: { bg: "bg-[#2F3E46]", text: "text-[#1C2B30]" },
 };
 
-// const viewpointColors = {
-//   0: { bg: "bg-slate-600", text: "text-slate-600" },      // Deep slate
-//   1: { bg: "bg-stone-600", text: "text-stone-600" },      // Warm stone
-//   2: { bg: "bg-zinc-600", text: "text-zinc-600" },        // Cool zinc
-//   3: { bg: "bg-neutral-600", text: "text-neutral-600" },  // True neutral
-//   4: { bg: "bg-gray-600", text: "text-gray-600" },        // Classic gray
-//   5: { bg: "bg-lime-700", text: "text-lime-700" },        // Deep lime
-//   6: { bg: "bg-emerald-700", text: "text-emerald-700" }   // Deep emerald
-// };
-
-// const viewpointColors = {
-//   0: { bg: "bg-blue-700", text: "text-blue-700" },        // Deep blue
-//   1: { bg: "bg-slate-600", text: "text-slate-600" },      // Business slate
-//   2: { bg: "bg-zinc-700", text: "text-zinc-700" },        // Deep zinc
-//   3: { bg: "bg-cyan-700", text: "text-cyan-700" },        // Deep cyan
-//   4: { bg: "bg-emerald-700", text: "text-emerald-700" },  // Deep emerald
-//   5: { bg: "bg-stone-700", text: "text-stone-700" },      // Deep stone
-//   6: { bg: "bg-gray-700", text: "text-gray-700" }         // Deep gray
-// };
-
-// const viewpointColors = {
-//   0: { bg: "bg-teal-700", text: "text-teal-700" },        // Deep teal
-//   1: { bg: "bg-emerald-700", text: "text-emerald-700" },  // Deep emerald
-//   2: { bg: "bg-stone-600", text: "text-stone-600" },      // Earthy stone
-//   3: { bg: "bg-slate-700", text: "text-slate-700" },      // Deep slate
-//   4: { bg: "bg-zinc-600", text: "text-zinc-600" },        // Cool zinc
-//   5: { bg: "bg-gray-700", text: "text-gray-700" },        // Deep gray
-//   6: { bg: "bg-neutral-700", text: "text-neutral-700" }   // Deep neutral
-// };
-
-// const viewpointColors = {
-//   0: { bg: "bg-zinc-600", text: "text-zinc-600" },        // Cool zinc
-//   1: { bg: "bg-stone-700", text: "text-stone-700" },      // Deep stone
-//   2: { bg: "bg-slate-700", text: "text-slate-700" },      // Deep slate
-//   3: { bg: "bg-neutral-600", text: "text-neutral-600" },  // Medium neutral
-//   4: { bg: "bg-amber-700", text: "text-amber-700" },      // Deep amber
-//   5: { bg: "bg-gray-700", text: "text-gray-700" },        // Deep gray
-//   6: { bg: "bg-zinc-700", text: "text-zinc-700" }         // Deep zinc
-// };
+const viewpointColors = {
+  0: { bg: "bg-[#8B0000]", text: "text-[#8B0000]" },
+  1: { bg: "bg-[#00008B]", text: "text-[#00008B]" },
+  2: { bg: "bg-[#006400]", text: "text-[#006400]" },
+  3: { bg: "bg-[#4B0082]", text: "text-[#4B0082]" },
+  4: { bg: "bg-[#8B4513]", text: "text-[#8B4513]" },
+  5: { bg: "bg-[#2F4F4F]", text: "text-[#2F4F4F]" },
+};
 
 const truncateDescription = (description, length) =>
   description.length > length
