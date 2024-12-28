@@ -11,7 +11,7 @@ const ProtectLayout = ({ children }) => {
     <ProtectedRoute allowedRoutes={["/","/search", "/our-story","/our-features","/about-us","/news","/testing3","/viewpoint"]}>
       <ChildrenProvider>
         <div className="relative min-h-screen flex bg-white">
-          <SideBar />
+          {/* <SideBar /> */}
 
           {/* Content */}
           <LayoutWrapper >
@@ -20,7 +20,7 @@ const ProtectLayout = ({ children }) => {
             {children}
             </div>
           </LayoutWrapper>
-          <RightSideBar />
+          {/* <RightSideBar /> */}
         </div>
       </ChildrenProvider>
     </ProtectedRoute>
