@@ -128,7 +128,7 @@ export default function NewsSection() {
                 One News, Different Perspectives
               </h1>
               <p className="text-[9px] md:text-lg text-center text-white/90">
-              View all sides of the story to see the complete picture.
+              View all sides of the story to get the full picture.
               </p>
             </div>
 
