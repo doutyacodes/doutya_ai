@@ -69,7 +69,7 @@ const Navbar = () => {
           <div className="flex justify-center items-center">
             <Link
               href={"/"}
-              className="mx-auto flex justify-center items-center relative h-[7.6vh] w-[40vw]"
+              className="mx-auto flex justify-center items-center relative h-[7.6vh] w-[40vw] md:h-[9vh] md:w-[50vw]"
             >
               <Image
                 src={pathname.includes("news") ? "/images/logo5.png" :pathname.includes("search") ? "/images/logo6.png" : "/images/logo4.png"}

@@ -121,7 +121,7 @@ export default function NewsSection() {
     <div className="p-4 text-gray-800 w-full">
       <div className="w-full bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 mb-6 md:mb-8">
         <div className="w-full mx-auto px-3 py-3 md:px-4 md:py-3">
-          <div className="flex flex-col md:flex-row items-center justify-between">
+          <div className="flex flex-col  items-center justify-between">
             {/* Text Section */}
             <div className="text-white space-y-1 md:space-y-3 ">
               <h1 className="text-lg md:text-3xl font-bold text-center">
