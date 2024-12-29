@@ -119,7 +119,7 @@ export default function NewsSection() {
 
   return (
     <div className="p-4 text-gray-800 w-full">
-      <div className="w-full bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 mb-6 md:mb-8">
+      <div className="w-full bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 mb-4">
         <div className="w-full mx-auto px-3 py-3 md:px-4 md:py-3">
           <div className="flex flex-col  items-center justify-between">
             {/* Text Section */}
@@ -128,8 +128,7 @@ export default function NewsSection() {
                 One News, Different Perspectives
               </h1>
               <p className="text-xs md:text-lg text-center text-white/90">
-                Where different perspectives come together to tell the complete
-                story.
+              View all sides of the story to see the complete picture.
               </p>
             </div>
 
