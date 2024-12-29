@@ -124,10 +124,10 @@ export default function NewsSection() {
           <div className="flex flex-col  items-center justify-between">
             {/* Text Section */}
             <div className="text-white space-y-1 md:space-y-3 ">
-              <h1 className="text-lg md:text-3xl font-bold text-center">
+              <h1 className="text-base md:text-3xl font-bold text-center">
                 One News, Different Perspectives
               </h1>
-              <p className="text-xs md:text-lg text-center text-white/90">
+              <p className="text-[9px] md:text-lg text-center text-white/90">
               View all sides of the story to see the complete picture.
               </p>
             </div>
