@@ -105,7 +105,6 @@ const NewsData2 = ({
   const [showReportPopup, setShowReportPopup] = useState(false);
   const [report_text, setReport_text] = useState("");
   const router = useRouter();
-  console.log("allArticles", allArticles);
   const { selectedRegion } = useChildren();
   const [currentIndex, setCurrentIndex] = useState(0); // State to track the title index
   const shareUrl = `https://www.axaranews.com/viewpoint/${article.id}`;

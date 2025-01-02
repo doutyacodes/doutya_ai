@@ -4,9 +4,6 @@ import NewPage2 from "./_component/NewPage2";
 export async function generateMetadata({ params }) {
   // Destructure the 'id' from params
   const { id } = await params;
-
-  console.log("ID:", id);
-
   // Check if ID exists and is valid
   if (!id || isNaN(id)) {
     console.error("Invalid or missing ID");
@@ -19,8 +16,6 @@ export async function generateMetadata({ params }) {
   try {
     // Fetch the metadata for the news item using GlobalApi
     const response = await GlobalApi.fetchOneNews2({ id: parseInt(id) });
-    console.log(response.data);
-
     const { title, description, image_url } = response.data.newsData || {};
 
     // If no valid data is returned, fall back to defaults

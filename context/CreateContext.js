@@ -21,7 +21,12 @@ export const ChildrenProvider = ({ children }) => {
   const [selectedName, setSelectedName] = useState(null);
   const [selectedChild, setSelectedChild] = useState(null);
   const [selectedGrade, setSelectedGrade] = useState(null);
-  const [selectedRegion, setSelectedRegion] = useState("India"); // Default to India
+  // const [selectedRegion, setSelectedRegion] = useState("India"); // Default to India
+  const [selectedRegion, setSelectedRegion] = useState(() => {
+    // Fetch the region from localStorage on initial render
+    const storedRegion = typeof window !== "undefined" ? localStorage.getItem("userRegion") : null;
+    return storedRegion || "India"; // Default to India if no value is stored
+  });
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [showAgePopup, setShowAgePopup] = useState(false); // For unauthenticated age selection
@@ -30,6 +35,8 @@ export const ChildrenProvider = ({ children }) => {
   const { isAuthenticated } = useAuth();
 
   const pathname = usePathname()
+
+  // console.log('selectedRegion', selectedRegion)
 
   const updateChildrenData = (data) => {
     setChildrenData(data);
@@ -80,10 +87,14 @@ export const ChildrenProvider = ({ children }) => {
 
   const fetchRegion = async () => {
     try {
+      console.log("fetch region");
+      
       const storedRegion = localStorage.getItem("userRegion");
       if (storedRegion) {
+        console.log("storedRegion region", storedRegion);
         setSelectedRegion(storedRegion);
       } else {
+        console.log("Else");
         // Default to India if geolocation is not available
         setSelectedRegion("India");
         localStorage.setItem("userRegion", "India");
