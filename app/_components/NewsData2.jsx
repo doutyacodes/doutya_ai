@@ -56,13 +56,34 @@ const viewpointColors2 = {
 //   5: { bg: "bg-[#2F4F4F]", text: "text-[#2F4F4F]" },
 // };
 
+
+/* Latest */
+
+// const viewpointColors = {
+//   0: { bg: "bg-[#FF4500]", text: "text-[#FF4500]" }, // Orange-Red
+//   1: { bg: "bg-[#00bf62]", text: "text-[#00bf62]" }, // green
+//   2: { bg: "bg-[#4682B4]", text: "text-[#4682B4]" }, // Steel Blue
+//   3: { bg: "bg-[#DC143C]", text: "text-[#DC143C]" }, // Crimson (Red)
+//   4: { bg: "bg-[#FF8C00]", text: "text-[#FF8C00]" }, // Dark Orange
+//   5: { bg: "bg-[#FF6347]", text: "text-[#FF6347]" }, // Tomato (Red-Orange)
+// };
+
+// const viewpointColors = {
+//   0: { bg: "bg-[#1E90FF]", text: "text-[#1E90FF]" }, // Dodger Blue
+//   1: { bg: "bg-[#32CD32]", text: "text-[#32CD32]" }, // Lime Green
+//   2: { bg: "bg-[#6A5ACD]", text: "text-[#6A5ACD]" }, // Slate Blue
+//   3: { bg: "bg-[#20B2AA]", text: "text-[#20B2AA]" }, // Light Sea Green
+//   4: { bg: "bg-[#FFD700]", text: "text-[#FFD700]" }, // Gold
+//   5: { bg: "bg-[#00CED1]", text: "text-[#00CED1]" }, // Dark Turquoise
+// };
+
 const viewpointColors = {
-  0: { bg: "bg-[#FF4500]", text: "text-[#FF4500]" }, // Orange-Red
-  1: { bg: "bg-[#00bf62]", text: "text-[#00bf62]" },
-  2: { bg: "bg-[#4682B4]", text: "text-[#4682B4]" }, // Steel Blue
-  3: { bg: "bg-[#DC143C]", text: "text-[#DC143C]" }, // Crimson (Red)
-  4: { bg: "bg-[#FF8C00]", text: "text-[#FF8C00]" }, // Dark Orange
-  5: { bg: "bg-[#FF6347]", text: "text-[#FF6347]" }, // Tomato (Red-Orange)
+  0: { bg: "bg-[#1E90FF]", text: "text-[#1E90FF]" }, // Dodger Blue
+  1: { bg: "bg-[#00bf62]", text: "text-[#00bf62]" }, // green
+  2: { bg: "bg-[#6A5ACD]", text: "text-[#6A5ACD]" }, // Slate Blue
+  3: { bg: "bg-[#20B2AA]", text: "text-[#20B2AA]" }, // Light Sea Green
+  4: { bg: "bg-[#DAA520]", text: "text-[#DAA520]" }, // Goldenrod
+  5: { bg: "bg-[#00CED1]", text: "text-[#00CED1]" }, // Dark Turquoise
 };
 
 const truncateDescription = (description, length) =>
