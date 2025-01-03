@@ -11,17 +11,26 @@ import { and, asc, desc, eq, gt, lt, or, sql } from "drizzle-orm";
 export async function POST(req) {
   try {
     const { region = "India" } = await req.json();
-    const Regions = await db
-      .select()
-      .from(REGIONS)
-      .where(eq(REGIONS.name, region))
-      .execute();
 
-    let region_id = 2;
+    let region_id = null;
 
-    if (Regions.length > 0) {
-      region_id = Regions[0].id;
+    if (region !== "International") {
+
+      region_id = 2;
+
+      const Regions = await db
+        .select()
+        .from(REGIONS)
+        .where(eq(REGIONS.name, region))
+        .execute();
+
+      console.log('Regions', Regions);
+
+      if (Regions.length > 0) {
+        region_id = Regions[0].id;
+      }
     }
+
     // Fetch news categories
     const newsCategories = await db
       .select()
@@ -32,7 +41,9 @@ export async function POST(req) {
           eq(NEWS_CATEGORIES.region, "no"),
           and(
             eq(NEWS_CATEGORIES.region, "yes"),
-            eq(NEWS_CATEGORIES.region_id, region_id)
+            // eq(NEWS_CATEGORIES.region_id, region_id)
+            region !== "International" ? eq(NEWS_CATEGORIES.region_id, region_id) : true
+
           )
         )
       )
@@ -78,10 +89,16 @@ export async function POST(req) {
         and(
           eq(ADULT_NEWS.show_on_top, true),
           gt(ADULT_NEWS.created_at, twentyFourHoursAgo), // Created within the last 24 hours
-          or(
-            eq(ADULT_NEWS_TO_CATEGORIES.region_id, region_id),
-            eq(ADULT_NEWS_TO_CATEGORIES.region_id, 1)
-          )
+          // or(
+          //   eq(ADULT_NEWS_TO_CATEGORIES.region_id, region_id),
+          //   eq(ADULT_NEWS_TO_CATEGORIES.region_id, 1)
+          // )
+          region !== "International"
+            ? or(
+                eq(ADULT_NEWS_TO_CATEGORIES.region_id, region_id),
+                eq(ADULT_NEWS_TO_CATEGORIES.region_id, 1)
+              )
+            : true // No region filtering for "International"
         )
       )
       .execute();
@@ -120,20 +137,32 @@ export async function POST(req) {
         or(
           and(
             eq(ADULT_NEWS.show_on_top, false),
-            or(
-              eq(ADULT_NEWS_TO_CATEGORIES.region_id, region_id),
-              eq(ADULT_NEWS_TO_CATEGORIES.region_id, 1)
-            )
+            // or(
+            //   eq(ADULT_NEWS_TO_CATEGORIES.region_id, region_id),
+            //   eq(ADULT_NEWS_TO_CATEGORIES.region_id, 1)
+            // )
+            region !== "International"
+              ? or(
+                  eq(ADULT_NEWS_TO_CATEGORIES.region_id, region_id),
+                  eq(ADULT_NEWS_TO_CATEGORIES.region_id, 1)
+                )
+              : true
           ),
           and(
             and(
               eq(ADULT_NEWS.show_on_top, true),
               lt(ADULT_NEWS.created_at, twentyFourHoursAgo)
             ),
-            or(
-              eq(ADULT_NEWS_TO_CATEGORIES.region_id, region_id),
-              eq(ADULT_NEWS_TO_CATEGORIES.region_id, 1)
-            )
+            // or(
+            //   eq(ADULT_NEWS_TO_CATEGORIES.region_id, region_id),
+            //   eq(ADULT_NEWS_TO_CATEGORIES.region_id, 1)
+            // )
+            region !== "International"
+              ? or(
+                  eq(ADULT_NEWS_TO_CATEGORIES.region_id, region_id),
+                  eq(ADULT_NEWS_TO_CATEGORIES.region_id, 1)
+                )
+              : true
           )
         )
       )
