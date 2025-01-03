@@ -63,8 +63,13 @@ const Navbar = () => {
               {/* <IoMdGlobe size={28} color="#845EC2" /> */}
               <span className="text-[1.3vh] text-black flex gap-1 items-center">
                 <span>
-                  {selectedRegion == "India" ? "Indian Edition" : "USA Edition"}
-                </span>{" "}
+                {selectedRegion === "India"
+                  ? "Indian Edition"
+                  : selectedRegion === "United States"
+                  ? "USA Edition"
+                  : "International Edition"
+                }
+                  </span>{" "}
                 <IoChevronDownOutline size={10} />
               </span>
             </div>
