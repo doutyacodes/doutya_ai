@@ -5,3 +5,28 @@
     }
   }
 }
+
+// {
+//   "compilerOptions": {
+//     "target": "ES6",
+//     "lib": ["dom", "esnext"],
+//     "moduleResolution": "node",
+//     "baseUrl": ".",                   // The base directory for resolving non-relative module names
+//     "paths": {
+//       "@/*": ["*"]                    // Maps '@' to the root of your project (useful for imports)
+//     }
+//   },
+//   "include": [
+//     "next-env.d.ts",                  // Include the Next.js environment type file (auto-generated)
+//     "**/*.js",                        // Include all JavaScript files in your project
+//     "**/*.jsx",                       // Include all JSX files (since you're using JSX)
+//     "**/*.ts",                         // Include TypeScript files if used
+//     "**/*.tsx",                        // Include TypeScript JSX files if used
+//     "app/sitemap.js",                 // Explicitly include the sitemap.js file for your sitemap generation
+//     "app/robots.js"                   // Include the robots.js file if you have it for SEO purposes
+//   ],
+//   "exclude": [
+//     "node_modules"                    // Exclude the node_modules folder from the build
+//   ]
+// }
+

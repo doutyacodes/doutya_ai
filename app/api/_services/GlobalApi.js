@@ -281,8 +281,6 @@ const fetchOneNews = async (data) => {
     return axios.post(`https://www.axaranews.com/api/fetchNews/news`, data);
  
 };
-
-/* Fetch One news Data */
 const fetchOneNews2 = async (data) => {
 
     return axios.post(`https://www.axaranews.com/api/adult/fetchNews/news2`, data);
