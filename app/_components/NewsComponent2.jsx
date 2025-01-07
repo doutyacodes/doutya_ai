@@ -18,6 +18,7 @@ import {
 } from "react-share";
 import toast from "react-hot-toast";
 import { FiCopy } from "react-icons/fi";
+import Cookies from 'js-cookie';
 
 export default function NewsDetails2({ id, showNames }) {
   const [article, setArticle] = useState(null);
@@ -27,6 +28,8 @@ export default function NewsDetails2({ id, showNames }) {
   const [allArticles, setAllArticles] = useState([]); // Store all articles in the group
   const [showReportPopup, setShowReportPopup] = useState(false);
   const [report_text, setReport_text] = useState("");
+  const [engagementTime, setEngagementTime] = useState(0); // Track engagement time
+  const [sessionId, setSessionId] = useState(Cookies.get('session_id') || "");
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -54,6 +57,55 @@ export default function NewsDetails2({ id, showNames }) {
     fetchArticle();
   }, [id]);
 
+  const updateViews = async (articleId, viewpoint, engagementTime) => {
+    try {
+      // Update perspective views only
+      await fetch(`/api/updateViews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          articleId,
+          sessionId,
+          viewpoint,
+          engagementTime,
+        }),
+      });
+    } catch (err) {
+      console.error(`Failed to update perspective views:`, err);
+    }
+  };
+
+    // Track engagement time (simple example using setInterval)
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setEngagementTime((prevTime) => prevTime + 1); // Increment every second
+      }, 1000);
+  
+      return () => clearInterval(interval); // Cleanup on unmount
+    }, []);
+
+     // Save engagement time and viewpoint when user exits the page or closes the tab
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      // Update views before the user leaves or closes the page
+      updateViews(allArticles[currentArticleIndex]?.id, allArticles[currentArticleIndex]?.viewpoint, engagementTime);
+    };
+
+    // Listen for the page unload event
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      // Cleanup the event listener when the component unmounts
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      // Ensure views are updated when the component is unmounted
+      updateViews(allArticles[currentArticleIndex]?.id, allArticles[currentArticleIndex]?.viewpoint, engagementTime);
+    };
+  }, [allArticles, currentArticleIndex]);
+  
+    // console.log("engage',", engagementTime);
+    console.log("All ARticl',", allArticles);
+    console.log("cuerrent ind", currentArticleIndex);
+    
   const categoriesList = () => {
     if (!showNames) return null;
     const categoryNames = showNames;
@@ -99,6 +151,14 @@ export default function NewsDetails2({ id, showNames }) {
   };
 
   const handleViewpointChange = (index) => {
+    // Check if the user clicked the same perspective
+    if (index === currentArticleIndex) {
+      return; // Do nothing if the same perspective is selected
+    }
+
+    updateViews(allArticles[currentArticleIndex].id, allArticles[currentArticleIndex].viewpoint, engagementTime); // Update perspective views
+    setEngagementTime(0); // Reset engagement time when switching viewpoints
+
     setCurrentArticleIndex(index);
     setArticle(allArticles[index]); // Switch to the selected viewpoint
   };

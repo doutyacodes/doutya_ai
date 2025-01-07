@@ -77,12 +77,15 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Analytics } from '@vercel/analytics/react';
 import { Inter } from 'next/font/google'
+import VisitorTracker from "./_components/(analytics)/VisitorTracker";
+
 
 const inter = Inter({ subsets: ['latin'] })
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
 });
+
 
 export const metadata = {
   title: {
@@ -153,7 +156,8 @@ export default async function RootLayout({ children }) {
       <body className={`${poppins.className} min-h-screen`}>
         <NextIntlClientProvider messages={messages}>
           <Toaster />
-          {children}
+          <VisitorTracker /> {/* Client-side logic */}
+          {children} 
           <Analytics />
         </NextIntlClientProvider>
       </body>
