@@ -23,7 +23,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, handleViewpoi
       const isMobile = window.innerWidth < 768; // md breakpoint
       if (isMobile) {
         const timeSinceLastInteraction = Date.now() - lastInteractionTime;
-        if (timeSinceLastInteraction > 2000) { // 3 seconds
+        if (timeSinceLastInteraction > 1500) { // Hide after 1.5 seconds
           setIsVisible(false);
         }
       } else {
