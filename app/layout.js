@@ -89,7 +89,7 @@ const poppins = Poppins({
 
 export const metadata = {
   title: {
-    default: "Axara News : From All Angles, For All Ages",
+    default: "Axara News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
     template: '%s | Axara News'
   },
   description: "Experience news from every angle with an in-depth, multi-perspective coverage at its core. Plus, a dedicated Kids section for age-appropriate news and our Magic Box for AI-crafted explanations and stories. Axara News—tailored for every reader, every story, every perspective.",
@@ -98,7 +98,7 @@ export const metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "Axara News : From All Angles, For All Ages",
+    title: "Axara News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
     description: "Experience news from every angle with an in-depth, multi-perspective coverage at its core. Plus, a dedicated Kids section for age-appropriate news and our Magic Box for AI-crafted explanations and stories. Axara News—tailored for every reader, every story, every perspective.",
     url: 'https://axaranews.com',
     siteName: 'Axara News',
@@ -115,7 +115,7 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Axara News : From All Angles, For All Ages",
+    title: "Axara News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
     description: "Experience news from every angle with an in-depth, multi-perspective coverage at its core.",
     images: ['https://axaranews.com/logo2.png'],
   },

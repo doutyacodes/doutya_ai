@@ -25,7 +25,7 @@ export const ChildrenProvider = ({ children }) => {
   const [selectedRegion, setSelectedRegion] = useState(() => {
     // Fetch the region from localStorage on initial render
     const storedRegion = typeof window !== "undefined" ? localStorage.getItem("userRegion") : null;
-    return storedRegion || "India"; // Default to India if no value is stored
+    return storedRegion || "International"; // Default to India if no value is stored
   });
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
@@ -96,8 +96,8 @@ export const ChildrenProvider = ({ children }) => {
       } else {
         console.log("Else");
         // Default to India if geolocation is not available
-        setSelectedRegion("India");
-        localStorage.setItem("userRegion", "India");
+        setSelectedRegion("International");
+        localStorage.setItem("userRegion", "International");
       }
     } catch (error) {
       console.error("Error fetching region:", error);
