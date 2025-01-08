@@ -102,13 +102,13 @@ export default function NewsDetails2({ id, showNames }) {
   };
 
     // // Track engagement time (simple example using setInterval)
-    // useEffect(() => {
-    //   const interval = setInterval(() => {
-    //     setEngagementTime((prevTime) => prevTime + 1); // Increment every second
-    //   }, 1000);
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setEngagementTime((prevTime) => prevTime + 1); // Increment every second
+      }, 1000);
   
-    //   return () => clearInterval(interval); // Cleanup on unmount
-    // }, []);
+      return () => clearInterval(interval); // Cleanup on unmount
+    }, []);
 
      // Save engagement time and viewpoint when user exits the page or closes the tab
   useEffect(() => {
@@ -285,123 +285,6 @@ export default function NewsDetails2({ id, showNames }) {
   const { title, category, image_url, date, description, created_at } = article;
 
   const shareUrl = `https://www.axaranews.com/viewpoint/${id}`;
-
-  // const PerspectiveNavigation = () => {
-  //   const isFirstPerspective = currentArticleIndex === 0;
-  //   const hasNext = currentArticleIndex < allArticles.length - 1;
-
-  //   const handlePreviousClick = () => {
-  //     if (isFirstPerspective) {
-  //       router.push('/');
-  //     } else {
-  //       handleViewpointChange(currentArticleIndex - 1);
-  //     }
-  //   };
-
-  //   return (
-  //     <>
-  //       {/* Left Navigation Button */}
-  //       <div className="fixed top-1/2 -translate-y-1/2 left-2 md:left-6 z-30">
-  //         <motion.div
-  //           initial={{ opacity: 0, x: -20 }}
-  //           animate={{ opacity: 1, x: 0 }}
-  //           className="group"
-  //         >
-  //           <button 
-  //             onClick={handlePreviousClick}
-  //             // bg-white/90
-  //             className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105"
-  //           >
-  //             <div className="flex items-center gap-1 md:gap-2">
-  //               <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 text-orange-500" />
-  //               <div className="pr-1 md:pr-2">
-  //                 <div className="text-[10px] md:text-xs text-orange-600">
-  //                   {isFirstPerspective ? "Back to News" : "Previous Perspective"}
-  //                 </div>
-  //                 {!isFirstPerspective && (
-  //                   <div className="text-[10px] md:text-sm font-medium  max-w-[80px] md:max-w-[150px]">
-  //                     {allArticles[currentArticleIndex - 1].viewpoint}
-  //                   </div>
-  //                 )}
-  //               </div>
-  //             </div>
-  //           </button>
-  //         </motion.div>
-  //       </div>
-
-  //       {/* Right Navigation Button */}
-  //       <div className="fixed top-1/2 -translate-y-1/2 right-2 md:right-6 z-30">
-  //         {hasNext && (
-  //           <motion.div
-  //             initial={{ opacity: 0, x: 20 }}
-  //             animate={{ opacity: 1, x: 0 }}
-  //             className="group"
-  //           >
-  //             <button 
-  //               onClick={() => handleViewpointChange(currentArticleIndex + 1)}
-  //               /* bg-white/90 */
-  //               className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105"
-  //             >
-  //               <div className="flex items-center gap-1 md:gap-2">
-  //                 <div className="pl-1 md:pl-2">
-  //                   <div className="text-[10px] md:text-xs text-orange-600">Next Perspective</div>
-  //                   <div className="text-[10px] md:text-sm font-medium max-w-[80px] md:max-w-[150px]">
-  //                     {allArticles[currentArticleIndex + 1].viewpoint}
-  //                   </div>
-  //                 </div>
-  //                 <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-orange-500" />
-  //               </div>
-  //             </button>
-  //           </motion.div>
-  //         )}
-  //       </div>
-
-  //       {/* Introduction Tooltip */}
-  //        {/* <AnimatePresence>
-  //          {showIntroTooltip && (
-  //           <motion.div 
-  //             initial={{ opacity: 0, y: 20 }}
-  //             animate={{ opacity: 1, y: 0 }}
-  //             exit={{ opacity: 0, y: 20 }}
-  //             className="fixed top-4 left-1/2 -translate-x-1/2 bg-orange-500 text-white px-6 py-3 rounded-lg shadow-xl z-40 max-w-sm text-center"
-  //           >
-  //             <button 
-  //               onClick={() => setShowIntroTooltip(false)}
-  //               className="absolute -top-2 -right-2 bg-white text-orange-500 rounded-full p-1 shadow-md"
-  //             >
-  //               ✕
-  //             </button>
-  //             <p className="font-medium">Explore Multiple Perspectives!</p>
-  //             <p className="text-sm mt-1">This article offers {allArticles.length} different viewpoints. Use the side arrows to navigate between them.</p>
-  //           </motion.div>
-  //         )}
-  //       </AnimatePresence> */}
-
-  //       {/* Progress Bar */}
-  //       {/* <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-40">
-  //         <motion.div 
-  //           className="h-full bg-orange-500"
-  //           initial={{ width: 0 }}
-  //           animate={{ width: `${((currentArticleIndex + 1) / allArticles.length) * 100}%` }}
-  //           transition={{ duration: 0.3 }}
-  //         />
-  //       </div> */}
-
-  //       {/* Mobile Bottom Navigation Hint */}
-  //       {/* {hasNext && (
-  //         <motion.div 
-  //           initial={{ opacity: 0, y: 20 }}
-  //           animate={{ opacity: 1, y: 0 }}
-  //           className="md:hidden fixed bottom-20 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur shadow-lg rounded-lg px-4 py-2 z-30 text-sm text-orange-600"
-  //         >
-  //           Next: {allArticles[currentArticleIndex + 1].viewpoint}
-  //         </motion.div>
-  //       )} */}
-  //     </>
-  //   );
-  // };
-
-  
 
   return (
     <div className="min-h-screen bg-gray-50">
