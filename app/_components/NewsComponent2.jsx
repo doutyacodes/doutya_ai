@@ -293,7 +293,7 @@ export default function NewsDetails2({ id, showNames }) {
 
   return (
       <>
-      <div className="min-h-screen px-4 bg-gray-50">
+      <div className="min-h-screen px-4 bg-gray-50 mb-14">
         <div className="max-w-6xl mx-auto py-8">
           <div className="bg-white shadow-md rounded-md border border-slate-200">
             <div className="grid grid-cols-1 gap-2 md:gap-5">

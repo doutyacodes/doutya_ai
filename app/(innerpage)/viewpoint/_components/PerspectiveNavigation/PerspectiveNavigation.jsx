@@ -366,6 +366,28 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
             transition={{ duration: 0.3 }}
           >
             <div className='flex flex-col gap-3'>
+              {/* Previous Article Button - Show when on first perspective */}
+              {isFirstPerspective && previousArticle && (
+                  <button 
+                      onClick={() => router.push(`/viewpoint/${previousArticle.id}`)}
+                      className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105 group relative"
+                      >
+                      <div className="flex items-center gap-2">
+                          <ArrowLeft className="w-6 h-6 md:w-8 md:h-8 text-orange-500 flex-shrink-0" />
+                          <div>
+                          <div className="text-[10px] md:text-xs text-orange-600">Previous Article</div>
+                          <div className="text-[10px] md:text-sm font-medium max-w-[120px] md:max-w-[180px] truncate">
+                              {previousArticle.title.substring(0, 30)}...
+                          </div>
+                          </div>
+                      </div>
+                      {/* Tooltip */}
+                      <div className="absolute left-0 top-full mt-2 bg-white p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-64 z-50">
+                          <p className="text-sm">{previousArticle.title}</p>
+                      </div>
+                  </button>
+              )}
+
               <button 
                 onClick={handlePreviousClick}
                 className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105"
@@ -390,28 +412,6 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                   </div>
                 </div>
               </button>
-
-            {/* Previous Article Button - Show when on first perspective */}
-            {isFirstPerspective && previousArticle && (
-                <button 
-                    onClick={() => router.push(`/viewpoint/${previousArticle.id}`)}
-                    className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105 group relative"
-                    >
-                    <div className="flex items-center gap-2">
-                        <ArrowLeft className="w-6 h-6 md:w-8 md:h-8 text-orange-500 flex-shrink-0" />
-                        <div>
-                        <div className="text-[10px] md:text-xs text-orange-600">Previous Article</div>
-                        <div className="text-[10px] md:text-sm font-medium max-w-[120px] md:max-w-[180px] truncate">
-                            {previousArticle.title.substring(0, 30)}...
-                        </div>
-                        </div>
-                    </div>
-                    {/* Tooltip */}
-                    <div className="absolute left-0 top-full mt-2 bg-white p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-64 z-50">
-                        <p className="text-sm">{previousArticle.title}</p>
-                    </div>
-                </button>
-            )}
           </div>
           </motion.div>
         )}
@@ -429,19 +429,6 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
           >
               {isLastPerspective ? (
                 <div className="flex flex-col gap-3">
-                  <button 
-                    onClick={() => router.push('/viewpoint')}
-                    className="bg-[rgba(255,255,255,0.95)] p-2 md:p-4 hover:bg-orange-50 transition-colors rounded-t-lg rounded-lg shadow-lg border border-orange-300"
-                  >
-                    <div className="flex items-center justify-between gap-1 md:gap-2">
-                      <div className="pl-1 md:pl-2">
-                        <div className="text-[10px] md:text-xs text-orange-600">Back to Home</div>
-                        <div className="text-[10px] md:text-sm font-medium">View all articles</div>
-                        </div>
-                      <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-orange-500" />
-                    </div>
-                  </button>
-                  
                   {nextArticle && (
                     <button 
                       onClick={() => router.push(`/viewpoint/${nextArticle.id}`)}
@@ -458,11 +445,25 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                       </div>
                       
                       {/* Tooltip */}
-                      <div className="absolute left-0 top-full mt-2 bg-white p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-64 z-50">
+                      <div className="absolute right-0 top-full mt-2 bg-white p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-64 z-50">
                           <p className="text-sm">{nextArticle.title}</p>
                       </div>
                     </button>
                   )}
+
+                  <button 
+                    onClick={() => router.push('/viewpoint')}
+                    className="bg-[rgba(255,255,255,0.95)] p-2 md:p-4 hover:bg-orange-50 transition-colors rounded-t-lg rounded-lg shadow-lg border border-orange-300"
+                  >
+                    <div className="flex items-center justify-between gap-1 md:gap-2">
+                      <div className="pl-1 md:pl-2">
+                        <div className="text-[10px] md:text-xs text-orange-600">Back to Home</div>
+                        <div className="text-[10px] md:text-sm font-medium">View all articles</div>
+                        </div>
+                      <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-orange-500" />
+                    </div>
+                  </button>
+                  
                 </div>
               ) : (
                 <button 
