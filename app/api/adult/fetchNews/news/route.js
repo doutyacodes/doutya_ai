@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/utils";
 import { ADULT_NEWS, NEWS_CATEGORIES } from "@/utils/schema";
-import { asc, desc, eq, gt, gte } from "drizzle-orm";
+import { asc, desc, eq, gt, gte, lt } from "drizzle-orm";
 
 export async function POST(req) {
   const { id } = await req.json();
@@ -56,38 +56,92 @@ export async function POST(req) {
       );
     }
 
-   // Fetch the next news group ID (greater than current news_group_id)
+    // Fetch the next news group ID (greater than current news_group_id)
     let nextNewsGroup = await db
     .select({ id: ADULT_NEWS.id, title: ADULT_NEWS.title })
     .from(ADULT_NEWS)
-    .where(eq(ADULT_NEWS.news_group_id, news_group_id - 1)) // Looking for the next group
-    .orderBy(ADULT_NEWS.id) // Get the first news in the next group
-    .limit(1) // Only fetch the first news item
+    .where(lt(ADULT_NEWS.news_group_id, news_group_id)) // Looking for the previous group
+    .orderBy(desc(ADULT_NEWS.id)) // Get the most recent news in the previous group
+    .limit(1)
     .execute();
 
-    // If the next news group doesn't exist, fetch the most recently updated news from the last 24 hours
+    // If the next news group doesn't exist, fetch the most recent news (newest article)
     if (nextNewsGroup.length === 0) {
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000); // Calculate 24 hours ago
-
     nextNewsGroup = await db
       .select({ id: ADULT_NEWS.id, title: ADULT_NEWS.title })
       .from(ADULT_NEWS)
-      .where(
-        gt(ADULT_NEWS.updated_at, twentyFourHoursAgo)
-      ) // Filter by updated_at within the last 24 hours
-      .orderBy(asc(ADULT_NEWS.updated_at)) // Get the most recently updated news
-      .limit(1) // Only fetch the first news item
+      .orderBy(desc(ADULT_NEWS.id)) // Get the most recent news (newest article)
+      .limit(1)
       .execute();
     }
 
-    // Check if the next news exists
-    const nextNews = nextNewsGroup.length > 0 ? nextNewsGroup[0] : null;
+    // Fetch the previous news group ID (less than current news_group_id)
+    let prevNewsGroup = await db
+    .select({ id: ADULT_NEWS.id, title: ADULT_NEWS.title })
+    .from(ADULT_NEWS)
+    .where(gt(ADULT_NEWS.news_group_id, news_group_id)) // Looking for the next group
+    .orderBy(asc(ADULT_NEWS.id)) // Get the first news in the next group
+    .limit(1) // Only fetch the first news item
+    .execute();
 
-    // Format the response to include the related news and next news group info
+    // If the previous news group doesn't exist, fetch the oldest news (earliest article)
+    if (prevNewsGroup.length === 0) {
+      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000); // Calculate 24 hours ago
+
+      prevNewsGroup = await db
+        .select({ id: ADULT_NEWS.id, title: ADULT_NEWS.title })
+        .from(ADULT_NEWS)
+        .where(
+          gt(ADULT_NEWS.updated_at, twentyFourHoursAgo)
+        ) // Filter by updated_at within the last 24 hours
+        .orderBy(asc(ADULT_NEWS.updated_at)) // Get the most recently updated news
+        .limit(1) // Only fetch the first news item
+        .execute();
+      }
+
+    // Extract the next and previous news
+    const nextNews = nextNewsGroup.length > 0 ? nextNewsGroup[0] : null;
+    const prevNews = prevNewsGroup.length > 0 ? prevNewsGroup[0] : null;
+
+    // Format the response to include the related news, next news, and previous news
     const formattedResponse = {
-      newsArticle, // Related news items from the same group
-      nextNews, // Information about the first news in the next group, if available
+    newsArticle, // Related news items from the same group
+    nextNews,    // Information about the first news in the next group, or the most recent news
+    prevNews,    // Information about the last news in the previous group, or the oldest news
     };
+
+  //  // Fetch the next news group ID (greater than current news_group_id)
+  //   let nextNewsGroup = await db
+  //   .select({ id: ADULT_NEWS.id, title: ADULT_NEWS.title })
+  //   .from(ADULT_NEWS)
+  //   .where(eq(ADULT_NEWS.news_group_id, news_group_id - 1)) // Looking for the next group
+  //   .orderBy(ADULT_NEWS.id) // Get the first news in the next group
+  //   .limit(1) // Only fetch the first news item
+  //   .execute();
+
+  //   // If the next news group doesn't exist, fetch the most recently updated news from the last 24 hours
+  //   if (nextNewsGroup.length === 0) {
+  //   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000); // Calculate 24 hours ago
+
+  //   nextNewsGroup = await db
+  //     .select({ id: ADULT_NEWS.id, title: ADULT_NEWS.title })
+  //     .from(ADULT_NEWS)
+  //     .where(
+  //       gt(ADULT_NEWS.updated_at, twentyFourHoursAgo)
+  //     ) // Filter by updated_at within the last 24 hours
+  //     .orderBy(asc(ADULT_NEWS.updated_at)) // Get the most recently updated news
+  //     .limit(1) // Only fetch the first news item
+  //     .execute();
+  //   }
+
+  //   // Check if the next news exists
+  //   const nextNews = nextNewsGroup.length > 0 ? nextNewsGroup[0] : null;
+
+  //   // Format the response to include the related news and next news group info
+  //   const formattedResponse = {
+  //     newsArticle, // Related news items from the same group
+  //     nextNews, // Information about the first news in the next group, if available
+  //   };
 
     return NextResponse.json({ newsData: formattedResponse }); // Return all related news
   } catch (error) {
