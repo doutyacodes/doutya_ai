@@ -21,7 +21,7 @@ import toast from "react-hot-toast";
 import { FiCopy } from "react-icons/fi";
 import Cookies from 'js-cookie';
 import { useRouter } from "next/navigation";
-import PerspectiveNavigation from "../(innerpage)/viewpoint/_components/PerspectiveNavigation/PerspectiveNavigation ";
+import PerspectiveNavigation from "../(innerpage)/viewpoint/_components/PerspectiveNavigation/PerspectiveNavigation";
 
 export default function NewsDetails2({ id, showNames }) {
   const [article, setArticle] = useState(null);
@@ -29,6 +29,7 @@ export default function NewsDetails2({ id, showNames }) {
   const [error, setError] = useState(null);
   const [currentArticleIndex, setCurrentArticleIndex] = useState(0); // Track the current viewpoint
   const [allArticles, setAllArticles] = useState([]); // Store all articles in the group
+  const [nextArticle, setNextArticle] = useState([]); // Store all articles in the group
   const [showReportPopup, setShowReportPopup] = useState(false);
   const [report_text, setReport_text] = useState("");
   const [engagementTime, setEngagementTime] = useState(0); // Track engagement time
@@ -47,8 +48,10 @@ export default function NewsDetails2({ id, showNames }) {
         });
         const data = await response.json();
         if (response.ok) {
-          setAllArticles(data.newsData);
-          setArticle(data.newsData[0]); // Default to the first article
+          setAllArticles(data.newsData.newsArticle);
+          setArticle(data.newsData.newsArticle[0]); // Default to the first article
+
+          setNextArticle(data.newsData.nextNews);
         } else {
           setError(data.error || "Failed to fetch news");
         }
@@ -298,6 +301,7 @@ export default function NewsDetails2({ id, showNames }) {
               allArticles={allArticles}
               handleViewpointChange={handleViewpointChange}
               router={router}
+              nextArticle = {nextArticle}
             />
                         
             <div className="w-full p-4 md:p-6">

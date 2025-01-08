@@ -94,6 +94,18 @@ export async function POST(req) {
       );
     }
 
+    // Fetch the next news group ID (greater than current news_group_id)
+    const nextNewsGroup = await db
+      .select({ id: NEWS.id, title: NEWS.title })
+      .from(NEWS)
+      .where(eq(NEWS.news_group_id, newId + 1)) // Looking for the next group
+      .orderBy(NEWS.id) // Get the first news in the next group
+      .limit(1) // Only fetch the first news item
+      .execute();
+
+    // Check if the next group exists
+    const nextNews = nextNewsGroup.length > 0 ? nextNewsGroup[0] : null;
+
     // Fetch all word meanings
     const allMeanings = await db
       .select({
@@ -111,6 +123,7 @@ export async function POST(req) {
         .map((item) => item.questions)
         .filter(Boolean), // Extract questions
       meanings: allMeanings, // Include all word meanings
+      nextNews: nextNews, // Add next news information
     };
 
     return NextResponse.json({ newsData: formattedResponse }); // Return the formatted response
