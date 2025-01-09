@@ -250,6 +250,13 @@ const NewsData2 = ({
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
       </Head>
+
+      <style jsx global>{`
+        video::-webkit-media-controls-timeline {
+          display: none !important;
+        }
+      `}</style>
+
       <div
       {...handlers} 
         //   whileTap={{ scale: 0.95 }}
@@ -297,19 +304,19 @@ const NewsData2 = ({
           /> */}
 
           {article.media_type === 'video' ? (
-            <video
+            <video 
               src={`https://wowfy.in/testusr/images/${article.image_url}`}
-              poster={`https://wowfy.in/testusr/images/${article.image_url}`}
-              className={cn(
-                "w-full h-full object-cover max-md:rounded-md cursor-pointer",
-                size && "md:rounded-lg"
-              )}
-              onClick={() => {
-                router.push(`/viewpoint/${article.id}`);
-              }}
-            >
-              Your browser does not support the video tag.
-            </video>
+              poster={`https://wowfy.in/testusr/images/${article.image_url.replace('.mp4', '.jpg')}`}
+              className={cn("w-full h-full object-cover max-md:rounded-md cursor-pointer")}
+              controls
+              controlsList="nodownload noplaybackrate nofullscreen"
+              disablePictureInPicture
+              autoPlay
+              muted // Required for autoplay to work in most browsers
+              loop
+            >           
+            Your browser does not support the video tag.
+          </video>
           ) : (
             <Image
               src={`https://wowfy.in/testusr/images/${article.image_url}`}

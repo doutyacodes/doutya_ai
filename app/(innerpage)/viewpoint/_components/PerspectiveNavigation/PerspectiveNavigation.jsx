@@ -367,7 +367,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
           >
             <div className='flex flex-col gap-3'>
               {/* Previous Article Button - Show when on first perspective */}
-              {isFirstPerspective && previousArticle && (
+              {isFirstPerspective && previousArticle ? (
                   <button 
                       onClick={() => router.push(`/viewpoint/${previousArticle.id}`)}
                       className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105 group relative"
@@ -386,7 +386,24 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                           <p className="text-sm">{previousArticle.title}</p>
                       </div>
                   </button>
-              )}
+              ) : (
+                <button 
+                  onClick={handlePreviousClick}
+                  className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105"
+                >
+                  <div className="flex items-center gap-1 md:gap-2">
+                    <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 text-orange-500" />
+                    <div className="pr-1 md:pr-2">
+                      <div className="text-[10px] md:text-xs text-orange-600">
+                        Previous Perspective
+                      </div>
+                      <div className="text-[10px] md:text-sm font-medium max-w-[80px] md:max-w-[150px] truncate">
+                        {allArticles[currentArticleIndex - 1].viewpoint}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ) }
 
               {/* <button 
                 onClick={handlePreviousClick}

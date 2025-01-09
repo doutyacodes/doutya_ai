@@ -6,7 +6,7 @@ import Image from "next/image";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import { IoIosCloseCircle } from "react-icons/io";
 import { FaEllipsisH, FaShareAlt } from "react-icons/fa";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -299,12 +299,35 @@ export default function NewsDetails2({ id, showNames }) {
 
   return (
       <>
-      <div className="min-h-screen px-4 bg-gray-50 mb-14">
-        <div className="max-w-6xl mx-auto py-8">
-          <div className="bg-white shadow-md rounded-md border border-slate-200">
-            <div className="grid grid-cols-1 gap-2 md:gap-5">
-              {/* <PerspectiveNavigation /> */}
 
+      <style jsx global>
+        {`
+          video::-webkit-media-controls-timeline {
+            display: none !important;
+          }
+        `}
+      </style>
+      <div className="min-h-screen px-4 bg-gray-50 mb-14">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-white shadow-md rounded-md border border-slate-200">
+            <div className="grid grid-cols-1 gap-2 md:gap-5 relative">
+              {/* <PerspectiveNavigation /> */}
+              <div className="md:hidden">
+                <button
+                  onClick={() => router.push('/')}
+                  className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg hover:shadow-lg transition-all duration-200 border border-slate-200"
+                >
+                  <Home size={18} />
+                  <span className="text-sm">Back to home</span>
+                </button>
+              </div>
+              <button
+                onClick={() => router.push('/')}
+                className="absolute top-4 left-4 hidden md:block md:left-8 flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-slate-200 z-10"
+              >
+                <Home size={18} />
+                <span className="hidden md:inline text-sm">Back to home</span>
+              </button>
               <PerspectiveNavigation
                 currentArticleIndex={currentArticleIndex}
                 allArticles={allArticles}
@@ -383,16 +406,20 @@ export default function NewsDetails2({ id, showNames }) {
                       className="rounded-md"
                     /> */}
 
-                    {article.media_type === 'video' ? (
-                      <video
-                        src={`https://wowfy.in/testusr/images/${article.image_url}`}
-                        poster={`https://wowfy.in/testusr/images/${article.image_url}`}
-                        className={cn(
-                          "w-full h-full object-cover max-md:rounded-md cursor-pointer",
-                        )}
-                      >
-                        Your browser does not support the video tag.
-                      </video>
+                  {article.media_type === 'video' ? (
+                    <video 
+                      src={`https://wowfy.in/testusr/images/${image_url}`}
+                      poster={`https://wowfy.in/testusr/images/${image_url.replace('.mp4', '.jpg')}`}
+                      className={cn("w-full h-full object-cover max-md:rounded-md cursor-pointer")}
+                      controls
+                      controlsList="nodownload noplaybackrate nofullscreen"
+                      disablePictureInPicture
+                      autoPlay
+                      muted // Required for autoplay to work in most browsers
+                      loop
+                    >
+                      Your browser does not support the video tag.
+                    </video>
                     ) : (
                       <Image
                         src={`https://wowfy.in/testusr/images/${image_url}`}
@@ -404,8 +431,6 @@ export default function NewsDetails2({ id, showNames }) {
                     )}
 
                   </div>
-
-
 
                   <div className="text-xs text-slate-500">{formatDate(created_at)}</div>
 

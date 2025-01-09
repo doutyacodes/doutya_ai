@@ -178,7 +178,7 @@ export default function NewsSection() {
         </div>
       </div> */}
 
-      <div className="w-full max-w-[90vw] mb-3 mx-8">
+      {/* <div className="w-full max-w-[90vw] mb-3 mx-8">
         {showNews && showId ? (
           <button
             onClick={() => {
@@ -223,7 +223,7 @@ export default function NewsSection() {
             ))}
           </div>
         )}
-      </div>
+      </div> */}
 
       {showSearch && (
         <motion.div

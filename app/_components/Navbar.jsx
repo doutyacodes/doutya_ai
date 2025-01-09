@@ -55,12 +55,11 @@ const Navbar = () => {
         )}
       >
         <div className="max-w-7xl mx-auto">
-          <div className="grid items-center w-full grid-cols-3">
-            <div
+          <div className="grid items-center w-full grid-cols-2">
+            {/* <div
               onClick={() => showPopupRegion()}
               className="flex flex-col w-fit gap-[1px] items-center ml-3"
             >
-              {/* <IoMdGlobe size={28} color="#845EC2" /> */}
               <span className="text-[1.3vh] text-black flex gap-1 items-center">
                 <span>
                 {selectedRegion === "India"
@@ -72,9 +71,9 @@ const Navbar = () => {
                   </span>{" "}
                 <IoChevronDownOutline size={10} />
               </span>
-            </div>
+            </div> */}
             {/* <div className="opacity-0 text-xs">Login</div> */}
-            <div className="flex justify-center items-center">
+            {/* <div className="flex justify-center items-center">
               <div>
                 <Link
                   href={"/"}
@@ -87,9 +86,29 @@ const Navbar = () => {
                     alt="logo"
                   />
                 </Link>
-                {/* <SocialMediaNav /> */}
+              </div>
+            </div> */}
+            <div className="flex justify-center items-center">
+              <div className="flex items-start relative h-[8vh] w-[60vw] md:h-[10vh] md:w-[70vw]">
+                <Link href={"/"}>
+                  <Image
+                    src={
+                      pathname.includes("news")
+                        ? "/images/logo5.png"
+                        : pathname.includes("search")
+                        ? "/images/logo6.png"
+                        : "/images/logo4.png"
+                    }
+                    layout="intrinsic" // Ensures the image is sized based on its natural dimensions
+                    objectFit="contain"
+                    width={160} // Increase the width for a bigger image
+                    height={50} // Increase the height for a bigger image
+                    alt="logo"
+                  />
+                </Link>
               </div>
             </div>
+
             {loading ? (
               <p>Loading...</p>
             ) : (
