@@ -49,12 +49,8 @@ const Navbar = () => {
   ];
   return (
     <>
-      <nav
-        className={cn(
-          "w-full bg-transparent md:min-h-16 max-md:py-[0.8vh] border-b-4 border-orange-600 max-md:max-h-[8.5vh]"
-        )}
-      >
-        <div className="max-w-7xl mx-auto">
+      <nav className={cn("w-full bg-transparent md:min-h-16 max-md:py-[0.8vh] border-b-4 border-orange-600 max-md:max-h-[8.5vh]")}>
+        <div className="max-w-7xl mx-auto px-4">
           <div className="grid items-center w-full grid-cols-2">
             {/* <div
               onClick={() => showPopupRegion()}
@@ -73,22 +69,22 @@ const Navbar = () => {
               </span>
             </div> */}
             {/* <div className="opacity-0 text-xs">Login</div> */}
-            {/* <div className="flex justify-center items-center">
-              <div>
-                <Link
-                  href={"/"}
-                  className="mx-auto flex justify-center items-center relative h-[7.6vh] w-[40vw] md:h-[9vh] md:w-[50vw]"
-                >
+            <div className="flex justify-start items-center pl-2 md:pl-4">
+              <Link href="/">
+                <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[45vw]">
                   <Image
-                    src={pathname.includes("news") ? "/images/logo5.png" :pathname.includes("search") ? "/images/logo6.png" : "/images/logo4.png"}
+                    src={pathname.includes("news") ? "/images/logo5.png" : 
+                        pathname.includes("search") ? "/images/logo6.png" : 
+                        "/images/logo4.png"}
                     fill
                     objectFit="contain"
                     alt="logo"
+                    className="object-left"
                   />
-                </Link>
-              </div>
-            </div> */}
-            <div className="flex justify-center items-center">
+                </div>
+              </Link>
+            </div>
+            {/* <div className="flex justify-center items-center">
               <div className="flex items-start relative h-[8vh] w-[60vw] md:h-[10vh] md:w-[70vw]">
                 <Link href={"/"}>
                   <Image
@@ -107,12 +103,12 @@ const Navbar = () => {
                   />
                 </Link>
               </div>
-            </div>
+            </div> */}
 
             {loading ? (
               <p>Loading...</p>
             ) : (
-              <div className="max-md:mr-3 w-full justify-end items-center flex">
+              <div className="flex justify-end items-center max-md:mr-3">
                 {/* {!isAuthenticated && (
                   <Link href={"/login"} className="font-semibold">
                     Login
@@ -133,7 +129,7 @@ const Navbar = () => {
                   {!isAuthenticated && pathname.includes("news") && (
                     <div onClick={() => showPopupForUser()} className="flex flex-col w-fit gap-[1px] items-center">
                       <span className="text-[1.5vh] font-bold text-black flex items-center gap-1">
-                        <span> Age - {selectedAge}</span>{" "}
+                        <span>Age - {selectedAge}</span>
                         <IoChevronDownOutline size={10} />
                       </span>
                     </div>
