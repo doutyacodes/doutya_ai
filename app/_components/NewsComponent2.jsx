@@ -552,7 +552,7 @@ export default function NewsDetails2({ id, showNames }) {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mx-auto bg-white/90 shadow-xl rounded-full px-4 py-3 border-2 border-orange-300 max-w-[250px] w-fit"
+          className="mx-auto bg-white/90 shadow-xl rounded-full px-4 py-2 border-2 border-orange-300 w-fit"
         >
           <div className="text-center w-full">
             <div className="text-xs text-orange-600">You are now reading the perspective of</div>

@@ -51,7 +51,7 @@ const Navbar = () => {
     <>
       <nav className={cn("w-full bg-transparent md:min-h-16 max-md:py-[0.8vh] border-b-4 border-orange-600 max-md:max-h-[8.5vh]")}>
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid items-center w-full grid-cols-2">
+          <div className="grid items-center w-full grid-cols-3">
             {/* <div
               onClick={() => showPopupRegion()}
               className="flex flex-col w-fit gap-[1px] items-center ml-3"
@@ -69,6 +69,9 @@ const Navbar = () => {
               </span>
             </div> */}
             {/* <div className="opacity-0 text-xs">Login</div> */}
+            <div>
+              
+            </div>
             <div className="flex justify-start items-center pl-2 md:pl-4">
               <Link href="/">
                 <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[45vw]">

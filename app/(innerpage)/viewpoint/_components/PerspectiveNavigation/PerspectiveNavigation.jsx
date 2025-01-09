@@ -285,7 +285,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Newspaper, ArrowRight, ArrowLeft } from 'lucide-react';
 
 const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, previousArticle, handleViewpointChange, router }) => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const [lastInteractionTime, setLastInteractionTime] = useState(Date.now());
   const isFirstPerspective = currentArticleIndex === 0;
   const hasNext = currentArticleIndex < allArticles.length - 1;
@@ -368,24 +368,23 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
             <div className='flex flex-col gap-3'>
               {/* Previous Article Button - Show when on first perspective */}
               {isFirstPerspective && previousArticle ? (
-                  <button 
-                      onClick={() => router.push(`/viewpoint/${previousArticle.id}`)}
-                      className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105 group relative"
-                      >
-                      <div className="flex items-center gap-2">
-                          <ArrowLeft className="w-6 h-6 md:w-8 md:h-8 text-orange-500 flex-shrink-0" />
-                          <div>
-                          <div className="text-[10px] md:text-xs text-orange-600">Previous Article</div>
-                          <div className="text-[10px] md:text-sm font-medium max-w-[120px] md:max-w-[180px] truncate">
-                              {previousArticle.title.substring(0, 30)}...
-                          </div>
-                          </div>
-                      </div>
-                      {/* Tooltip */}
-                      <div className="absolute left-0 top-full mt-2 bg-white p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-64 z-50">
-                          <p className="text-sm">{previousArticle.title}</p>
-                      </div>
-                  </button>
+                <button 
+                onClick={() => router.push(`/viewpoint/${previousArticle.id}`)}
+                className="bg-orange-400 rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-600 border border-orange-600 transition-all hover:scale-105 group relative"
+              >
+                <div className="flex items-center gap-2">
+                  <ArrowLeft className="w-6 h-6 md:w-8 md:h-8 text-white flex-shrink-0" />
+                  <div>
+                    <div className="text-[10px] md:text-xs text-orange-50">Previous Article</div>
+                    <div className="text-[10px] md:text-sm font-medium max-w-[120px] md:max-w-[180px] truncate text-white">
+                      {previousArticle.title.substring(0, 30)}...
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute left-0 top-full mt-2 bg-white p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-64 z-50">
+                  <p className="text-sm">{previousArticle.title}</p>
+                </div>
+              </button>
               ) : (
                 <button 
                   onClick={handlePreviousClick}
@@ -448,24 +447,23 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                 <div className="flex flex-col gap-3">
                   {nextArticle && (
                     <button 
-                      onClick={() => router.push(`/viewpoint/${nextArticle.id}`)}
-                      className="bg-[rgba(255,255,255,0.95)] p-2 md:p-4 hover:bg-orange-50 transition-colors rounded-b-lg group relative rounded-lg shadow-lg border border-orange-300"
-                    >
-                      <div className="flex items-center justify-between gap-1 md:gap-2">
-                        <div className="pl-1 md:pl-2">
-                          <div className="text-[10px] md:text-xs text-orange-600">Next Article</div>
-                          <div className="text-[10px] md:text-sm font-medium max-w-[80px] md:max-w-[150px] truncate">
-                            {nextArticle.title.substring(0, 30)}...
-                          </div>
+                    onClick={() => router.push(`/viewpoint/${nextArticle.id}`)}
+                    className="bg-orange-400 p-2 md:p-4 hover:bg-orange-600 transition-colors rounded-lg shadow-lg border border-orange-600 group relative"
+                  >
+                    <div className="flex items-center justify-between gap-1 md:gap-2">
+                      <div className="pl-1 md:pl-2">
+                        <div className="text-[10px] md:text-xs text-orange-50">Next Article</div>
+                        <div className="text-[10px] md:text-sm font-medium max-w-[80px] md:max-w-[150px] truncate text-white">
+                          {nextArticle.title.substring(0, 30)}...
                         </div>
-                        <ArrowRight className="w-6 h-6 md:w-8 md:h-8 text-orange-500" />
                       </div>
-                      
-                      {/* Tooltip */}
-                      <div className="absolute right-0 top-full mt-2 bg-white p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-64 z-50">
-                          <p className="text-sm">{nextArticle.title}</p>
-                      </div>
-                    </button>
+                      <ArrowRight className="w-6 h-6 md:w-8 md:h-8 text-white" />
+                    </div>
+                    
+                    <div className="absolute right-0 top-full mt-2 bg-white p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-64 z-50">
+                      <p className="text-sm">{nextArticle.title}</p>
+                    </div>
+                  </button>
                   )}
 
                   {/* <button 
