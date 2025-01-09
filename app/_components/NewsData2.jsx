@@ -277,7 +277,7 @@ const NewsData2 = ({
             !size ? "h-48" : "h-48 md:h-80  md:w-2/4"
           )}
         >
-          <Image
+          {/* <Image
             src={`https://wowfy.in/testusr/images/${article.image_url}`}
             alt={article.title}
             width={size ? 1000 : 400}
@@ -294,7 +294,37 @@ const NewsData2 = ({
             onClick={() => {
               router.push(`/viewpoint/${article.id}`);
             }}
-          />
+          /> */}
+
+          {article.media_type === 'video' ? (
+            <video
+              src={`https://wowfy.in/testusr/images/${article.image_url}`}
+              poster={`https://wowfy.in/testusr/images/${article.image_url}`}
+              className={cn(
+                "w-full h-full object-cover max-md:rounded-md cursor-pointer",
+                size && "md:rounded-lg"
+              )}
+              onClick={() => {
+                router.push(`/viewpoint/${article.id}`);
+              }}
+            >
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <Image
+              src={`https://wowfy.in/testusr/images/${article.image_url}`}
+              alt={article.title}
+              width={size ? 1000 : 400}
+              height={size ? 500 : 300}
+              className={cn(
+                "w-full h-full object-cover max-md:rounded-md",
+                size && "md:rounded-lg"
+              )}
+              onClick={() => {
+                router.push(`/viewpoint/${article.id}`);
+              }}
+            />
+          )}
           {/* Date at the top */}
           {/* <span className="absolute top-2 left-2 text-white text-xs flex items-center font-medium bg-black bg-opacity-60 px-2 py-1 rounded-md">
             <GrFormView size={18} />

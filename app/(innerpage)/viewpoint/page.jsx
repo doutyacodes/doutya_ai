@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Circle, Eye, Scale, Vote } from "lucide-react";
 import { useEffect, useState } from "react";
-import { HiMagnifyingGlass } from "react-icons/hi2";
+import { HiArrowLeft, HiMagnifyingGlass } from "react-icons/hi2";
 
 export default function NewsSection() {
   const [newsCategories, setNewsCategories] = useState([]);
@@ -140,7 +140,7 @@ export default function NewsSection() {
       </div>
 
       {/* Category Tabs */}
-      <div className="w-full max-w-[90vw] mb-3">
+      {/* <div className="w-full max-w-[90vw] mb-3">
         <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
           <button
             onClick={() => setShowSearch((prev) => !prev)}
@@ -171,6 +171,53 @@ export default function NewsSection() {
             </button>
           ))}
         </div>
+      </div> */}
+
+      <div className="w-full max-w-[90vw] mb-3">
+        {showNews && showId ? (
+          <button 
+            onClick={() => {
+              setShowNews(true);
+              setShowId(null);
+              setSearchQuery("");
+            }}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-orange-200"
+          >
+            <HiArrowLeft size={18} />
+            Back to Home
+          </button>
+        ) : (
+          <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
+            <button
+              onClick={() => setShowSearch((prev) => !prev)}
+              className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full ${
+                showSearch
+                  ? "bg-orange-500 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+              }`}
+            >
+              Search <HiMagnifyingGlass size={18} />
+            </button>
+            {newsCategories.map((category) => (
+              <button
+                key={category.name}
+                onClick={() => {
+                  setSelectedCategory(category.name);
+                  setShowId(null);
+                  setShowNews(false);
+                  setSearchQuery("");
+                }}
+                className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full  ${
+                  selectedCategory === category.name
+                    ? "bg-orange-500 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {showSearch && (

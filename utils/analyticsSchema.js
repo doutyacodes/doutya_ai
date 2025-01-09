@@ -28,8 +28,8 @@ import { ADULT_NEWS } from "./schema";
   export const SESSIONS = mysqlTable("sessions", {
     id: int("id").primaryKey().autoincrement(),
     visitor_id: int("visitor_id").notNull().references(() => VISITORS.id), // Reference to visitor
-    session_start: timestamp("session_start").defaultNow(), // Session start time
-    session_end: timestamp("session_end").default(null), // Session end time (when the user leaves the page)
+    session_start: timestamp("session_start"), // Session start time
+    session_end: timestamp("session_end") // Session end time (when the user leaves the page)
   });
   
   export const PAGE_VIEWS = mysqlTable("page_views", {

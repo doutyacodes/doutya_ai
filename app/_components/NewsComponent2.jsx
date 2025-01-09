@@ -22,6 +22,7 @@ import { FiCopy } from "react-icons/fi";
 import Cookies from 'js-cookie';
 import { useRouter } from "next/navigation";
 import PerspectiveNavigation from "../(innerpage)/viewpoint/_components/PerspectiveNavigation/PerspectiveNavigation";
+import { cn } from "@/lib/utils";
 
 export default function NewsDetails2({ id, showNames }) {
   const [article, setArticle] = useState(null);
@@ -85,7 +86,7 @@ export default function NewsDetails2({ id, showNames }) {
     return () => window.removeEventListener('resize', checkOverflow);
   }, [scrollRef.current]);
 
-  console.log("isOverflowing", isOverflowing);
+  // console.log("isOverflowing", isOverflowing);
   
 
   const updateViews = async (articleId, viewpoint, engagementTime) => {
@@ -106,36 +107,41 @@ export default function NewsDetails2({ id, showNames }) {
     }
   };
 
-    // // Track engagement time (simple example using setInterval)
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setEngagementTime((prevTime) => prevTime + 1); // Increment every second
-      }, 1000);
-  
-      return () => clearInterval(interval); // Cleanup on unmount
-    }, []);
-
-     // Save engagement time and viewpoint when user exits the page or closes the tab
   useEffect(() => {
-    const handleBeforeUnload = (event) => {
-      // Update views before the user leaves or closes the page
+    const updateViewImmediately = () => {
+      // Ensure that we register the view when the user arrives on the perspective
+      if (allArticles[currentArticleIndex]?.id) {
+        updateViews(allArticles[currentArticleIndex]?.id, allArticles[currentArticleIndex]?.viewpoint, 0);
+      }
+    };
+  
+    // Update view immediately when the component mounts
+    updateViewImmediately();
+  
+    // Track engagement time (increment every second)
+    const interval = setInterval(() => {
+      setEngagementTime((prevTime) => prevTime + 1); // Increment every second
+    }, 1000);
+  
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [currentArticleIndex]); // Only trigger when the perspective changes
+  
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Ensure views and engagement time are saved before the user exits or reloads the page
       updateViews(allArticles[currentArticleIndex]?.id, allArticles[currentArticleIndex]?.viewpoint, engagementTime);
     };
-
-    // Listen for the page unload event
+  
+    // Listen for the page unload event (when user navigates away or closes the tab)
     window.addEventListener("beforeunload", handleBeforeUnload);
-
+  
     return () => {
-      // Cleanup the event listener when the component unmounts
+      // Cleanup on component unmount
       window.removeEventListener("beforeunload", handleBeforeUnload);
       // Ensure views are updated when the component is unmounted
       updateViews(allArticles[currentArticleIndex]?.id, allArticles[currentArticleIndex]?.viewpoint, engagementTime);
     };
-  }, [allArticles, currentArticleIndex]);
-  
-    // console.log("engage',", engagementTime);
-    console.log("All ARticl',", allArticles);
-    console.log("cuerrent ind", currentArticleIndex);
+  }, [allArticles, currentArticleIndex]); // Update views and engagement time on perspective change or exit
     
   const categoriesList = () => {
     if (!showNames) return null;
@@ -187,8 +193,8 @@ export default function NewsDetails2({ id, showNames }) {
       return; // Do nothing if the same perspective is selected
     }
 
-    updateViews(allArticles[currentArticleIndex].id, allArticles[currentArticleIndex].viewpoint, engagementTime); // Update perspective views
-    setEngagementTime(0); // Reset engagement time when switching viewpoints
+    // updateViews(allArticles[currentArticleIndex].id, allArticles[currentArticleIndex].viewpoint, engagementTime); // Update perspective views
+    // setEngagementTime(0); // Reset engagement time when switching viewpoints
 
     setCurrentArticleIndex(index);
     setArticle(allArticles[index]); // Switch to the selected viewpoint
@@ -369,14 +375,37 @@ export default function NewsDetails2({ id, showNames }) {
                   </div>
 
                   <div className="relative w-full aspect-video mb-6">
-                    <Image
+                    {/* <Image
                       src={`https://wowfy.in/testusr/images/${image_url}`}
                       alt={title}
                       layout="fill"
                       objectFit="cover"
                       className="rounded-md"
-                    />
+                    /> */}
+
+                    {article.media_type === 'video' ? (
+                      <video
+                        src={`https://wowfy.in/testusr/images/${article.image_url}`}
+                        poster={`https://wowfy.in/testusr/images/${article.image_url}`}
+                        className={cn(
+                          "w-full h-full object-cover max-md:rounded-md cursor-pointer",
+                        )}
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    ) : (
+                      <Image
+                        src={`https://wowfy.in/testusr/images/${image_url}`}
+                        alt={title}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-md"
+                      /> 
+                    )}
+
                   </div>
+
+
 
                   <div className="text-xs text-slate-500">{formatDate(created_at)}</div>
 

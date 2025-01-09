@@ -12,6 +12,16 @@ export async function POST(req) {
             return NextResponse.json({ message: 'Session ID is required' }, { status: 400 });
         }
 
+        const session = await db
+            .select()
+            .from(SESSIONS)
+            .where(eq(SESSIONS.id, sessionId))
+            .execute();
+
+        if (!session.length || session[0].session_end) {
+            return NextResponse.json({ message: 'Session already ended or not found' }, { status: 400 });
+        }
+
         // Update the session end time
         await db
             .update(SESSIONS)

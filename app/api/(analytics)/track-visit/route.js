@@ -16,26 +16,30 @@ export async function POST(req) {
     try {
         // Check if the visitor exists
         const existingVisitor = await db
-            .select()
-            .from(VISITORS)
-            .where(eq(VISITORS.uuid, uuid))
-            .execute();
-
-        console.log("lexistingVisitor", existingVisitor)
-
+        .select()
+        .from(VISITORS)
+        .where(eq(VISITORS.uuid, uuid))
+        .execute();
 
         if (existingVisitor.length > 0) {
-            console.log("lexistingVisitor Length")
+            console.log("log 2")
+            const visitor = existingVisitor[0];
 
-            // Update the last_visit timestamp for the existing visitor
+            console.log("visitor.last_visit", visitor, "new Date()", new Date())
+
+            // Determine if the visitor is returning
+            const isReturningVisitor = visitor.returning_visitor || visitor.last_visit < new Date();
+
+            // Update the last_visit timestamp and set returning_visitor to true if applicable
             await db
                 .update(VISITORS)
-                .set({ last_visit: new Date() })
+                .set({
+                    last_visit: new Date(),
+                    returning_visitor: isReturningVisitor,
+                })
                 .where(eq(VISITORS.uuid, uuid))
                 .execute();
         } else {
-            console.log("elkse")
-
             // Insert a new visitor record
             await db
                 .insert(VISITORS)

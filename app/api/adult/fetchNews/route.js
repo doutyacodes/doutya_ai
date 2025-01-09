@@ -73,6 +73,7 @@ export async function POST(req) {
         main_news: ADULT_NEWS.main_news,
         news_group_id: ADULT_NEWS.news_group_id, // Include news_group_id
         viewpoint: ADULT_NEWS.viewpoint, // Include news_group_id
+        media_type: ADULT_NEWS.media_type
       })
       .from(ADULT_NEWS)
       .leftJoin(
@@ -123,6 +124,7 @@ export async function POST(req) {
         news_group_id: ADULT_NEWS.news_group_id, // Include news_group_id
         viewpoint: ADULT_NEWS.viewpoint, // Include news_group_id
         // Ensure distinct viewpoints per group
+        media_type: ADULT_NEWS.media_type
       })
       .from(ADULT_NEWS)
       .leftJoin(

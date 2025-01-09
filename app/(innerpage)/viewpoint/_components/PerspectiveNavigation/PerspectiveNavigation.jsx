@@ -388,7 +388,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                   </button>
               )}
 
-              <button 
+              {/* <button 
                 onClick={handlePreviousClick}
                 className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105"
               >
@@ -411,7 +411,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                     )}
                   </div>
                 </div>
-              </button>
+              </button> */}
           </div>
           </motion.div>
         )}
@@ -451,7 +451,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                     </button>
                   )}
 
-                  <button 
+                  {/* <button 
                     onClick={() => router.push('/viewpoint')}
                     className="bg-[rgba(255,255,255,0.95)] p-2 md:p-4 hover:bg-orange-50 transition-colors rounded-t-lg rounded-lg shadow-lg border border-orange-300"
                   >
@@ -462,7 +462,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                         </div>
                       <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-orange-500" />
                     </div>
-                  </button>
+                  </button> */}
                   
                 </div>
               ) : (

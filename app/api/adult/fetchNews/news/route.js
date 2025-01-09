@@ -41,6 +41,7 @@ export async function POST(req) {
         image_url: ADULT_NEWS.image_url,
         summary: ADULT_NEWS.summary,
         viewpoint: ADULT_NEWS.viewpoint,
+        media_type: ADULT_NEWS.media_type,
         created_at: ADULT_NEWS.created_at,
         updated_at: ADULT_NEWS.updated_at,
       })

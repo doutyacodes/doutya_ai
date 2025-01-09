@@ -164,7 +164,6 @@ export default async function NewsSection({ params }) {
   try {
     const response = await GlobalApi.fetchOneNews2({ id: parseInt(id) });
     const newsData = response.data.newsData;
-    console.log(newsData)
     if (!newsData) {
       return notFound();
     }

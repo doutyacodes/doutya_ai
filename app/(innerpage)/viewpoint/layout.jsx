@@ -4,7 +4,7 @@ import { usePageViewTracker } from "@/app/_components/(analytics)/usePageViewTra
  // Indicating this is a Client Component
 
 export default function HomeLayout({ children }) {
-usePageViewTracker();
+// usePageViewTracker();
 
   return (
     <div>
