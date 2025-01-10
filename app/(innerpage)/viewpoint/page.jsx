@@ -8,8 +8,10 @@ import { useChildren } from "@/context/CreateContext";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Circle, Eye, Scale, Vote } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HiArrowLeft, HiMagnifyingGlass } from "react-icons/hi2";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
 
 export default function NewsSection() {
   const [newsCategories, setNewsCategories] = useState([]);
@@ -23,6 +25,13 @@ export default function NewsSection() {
   const [showNames, setShowNames] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
   const { selectedRegion } = useChildren();
+
+  const scrollRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
 
   const fetchNews = async () => {
     try {
@@ -113,6 +122,50 @@ export default function NewsSection() {
       mainArticle.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const checkScrollButtons = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 5);
+    }
+  };
+
+  useEffect(() => {
+    checkScrollButtons();
+    window.addEventListener('resize', checkScrollButtons);
+    return () => window.removeEventListener('resize', checkScrollButtons);
+  }, []);
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 200;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -173,7 +226,7 @@ export default function NewsSection() {
         </div>
       </div> */}
 
-      <div className="w-full max-w-[90vw] mb-3">
+      <div className="w-full max-w-[90vw] md:max-w-none mb-3">
         {showNews && showId ? (
           <button 
             onClick={() => {
@@ -187,35 +240,145 @@ export default function NewsSection() {
             Back to Home
           </button>
         ) : (
-          <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
-            <button
-              onClick={() => setShowSearch((prev) => !prev)}
-              className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full ${
-                showSearch
-                  ? "bg-orange-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-              }`}
-            >
-              Search <HiMagnifyingGlass size={18} />
-            </button>
-            {newsCategories.map((category) => (
+          // <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
+          //   <button
+          //     onClick={() => setShowSearch((prev) => !prev)}
+          //     className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full ${
+          //       showSearch
+          //         ? "bg-orange-500 text-white"
+          //         : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+          //     }`}
+          //   >
+          //     Search <HiMagnifyingGlass size={18} />
+          //   </button>
+          //   {newsCategories.map((category) => (
+          //     <button
+          //       key={category.name}
+          //       onClick={() => {
+          //         setSelectedCategory(category.name);
+          //         setShowId(null);
+          //         setShowNews(false);
+          //         setSearchQuery("");
+          //       }}
+          //       className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full  ${
+          //         selectedCategory === category.name
+          //           ? "bg-orange-500 text-white"
+          //           : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+          //       }`}
+          //     >
+          //       {category.name}
+          //     </button>
+          //   ))}
+          // </div>
+
+          // <div 
+          //   ref={scrollRef}
+          //   className="flex space-x-1 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
+          //   onMouseDown={handleMouseDown}
+          //   onMouseUp={handleMouseUp}
+          //   onMouseLeave={handleMouseUp}
+          //   onMouseMove={handleMouseMove}
+          //   style={{
+          //     scrollbarWidth: 'none',
+          //     msOverflowStyle: 'none',
+          //     WebkitOverflowScrolling: 'touch'
+          //   }}
+          // >
+          //   <button
+          //     onClick={() => setShowSearch((prev) => !prev)}
+          //     className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full select-none ${
+          //       showSearch
+          //         ? "bg-orange-500 text-white"
+          //         : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+          //     }`}
+          //   >
+          //     Search <HiMagnifyingGlass size={18} />
+          //   </button>
+          //   {newsCategories.map((category) => (
+          //     <button
+          //       key={category.name}
+          //       onClick={() => {
+          //         setSelectedCategory(category.name);
+          //         setShowId(null);
+          //         setShowNews(false);
+          //         setSearchQuery("");
+          //       }}
+          //       className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full select-none ${
+          //         selectedCategory === category.name
+          //           ? "bg-orange-500 text-white"
+          //           : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+          //       }`}
+          //     >
+          //       {category.name}
+          //     </button>
+          //   ))}
+          // </div>
+
+          <div className="relative group">
+            {/* Left Arrow */}
+            {showLeftArrow && (
               <button
-                key={category.name}
-                onClick={() => {
-                  setSelectedCategory(category.name);
-                  setShowId(null);
-                  setShowNews(false);
-                  setSearchQuery("");
-                }}
-                className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full  ${
-                  selectedCategory === category.name
+                onClick={() => scroll('left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-1 transition-opacity duration-200 focus:outline-none"
+              >
+                <ChevronLeft className="w-4 h-4 text-orange-500" />
+              </button>
+            )}
+
+            {/* Right Arrow */}
+            {showRightArrow && (
+              <button
+                onClick={() => scroll('right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-1 transition-opacity duration-200 focus:outline-none"
+              >
+                <ChevronRight className="w-4 h-4 text-orange-500" />
+              </button>
+            )}
+
+            {/* Main scroll container */}
+            <div 
+              ref={scrollRef}
+              className="flex space-x-1 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing px-6"
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onMouseMove={handleMouseMove}
+              onScroll={checkScrollButtons}
+              style={{
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                WebkitOverflowScrolling: 'touch'
+              }}
+            >
+              <button
+                onClick={() => setShowSearch((prev) => !prev)}
+                className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full select-none ${
+                  showSearch
                     ? "bg-orange-500 text-white"
                     : "bg-gray-100 text-gray-700 hover:bg-orange-200"
                 }`}
               >
-                {category.name}
+                Search <HiMagnifyingGlass size={18} />
               </button>
-            ))}
+              {newsCategories.map((category) => (
+                <button
+                  key={category.name}
+                  onClick={() => {
+                    setSelectedCategory(category.name);
+                    setShowId(null);
+                    setShowNews(false);
+                    setSearchQuery("");
+                  }}
+                  className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full select-none ${
+                    selectedCategory === category.name
+                      ? "bg-orange-500 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
