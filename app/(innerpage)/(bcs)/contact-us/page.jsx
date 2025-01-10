@@ -60,15 +60,6 @@ const ContactPage = () => {
               </div>
             </div>
 
-            {/* Map Placeholder */}
-            {/* <div className="mt-12 rounded-xl overflow-hidden shadow-lg">
-              <img 
-                src="https://www.google.com/maps?q=AWHO,+Whitefield+-+Hoskote+Rd,+Whitefield,+SV,+Kannamangala,+Bengaluru,+Karnataka+560067" 
-                alt="Location Map" 
-                className="w-full h-64 object-cover"
-              />
-            </div> */}
-
             {/* Get In Touch Button */}
             <div className="mt-12 text-center">
               <a 
