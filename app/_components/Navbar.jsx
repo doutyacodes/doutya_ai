@@ -86,14 +86,14 @@ const Navbar = () => {
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-orange-600 transform scale-x-0 group-hover:scale-x-100 transition-transform"></span>
                 </Link>
                 <Link 
-                  href="/about" 
+                  href="/our-story" 
                   className="text-gray-800 hover:text-orange-600 font-medium transition-colors relative group"
                 >
-                  About Us
+                  Our Story
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-orange-600 transform scale-x-0 group-hover:scale-x-100 transition-transform"></span>
                 </Link>
                 <Link 
-                  href="/contact" 
+                  href="/contact-us" 
                   className="text-gray-800 hover:text-orange-600 font-medium transition-colors relative group"
                 >
                   Contact
