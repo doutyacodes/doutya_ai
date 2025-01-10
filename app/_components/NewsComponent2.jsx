@@ -23,6 +23,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from "next/navigation";
 import PerspectiveNavigation from "../(innerpage)/viewpoint/_components/PerspectiveNavigation/PerspectiveNavigation";
 import { cn } from "@/lib/utils";
+import { trackAction } from "./(analytics)/shareUrlTracker";
 
 export default function NewsDetails2({ id, showNames }) {
   const [article, setArticle] = useState(null);
@@ -87,6 +88,14 @@ export default function NewsDetails2({ id, showNames }) {
   }, [scrollRef.current]);
 
   // console.log("isOverflowing", isOverflowing);
+
+  useEffect(() => {
+    // Scroll to the top whenever currentPerspective changes
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Optional: Smooth scrolling effect
+    });
+  }, [currentArticleIndex]); // Dependency array listens for changes in currentPerspective
   
 
   const updateViews = async (articleId, viewpoint, engagementTime) => {
@@ -181,6 +190,7 @@ export default function NewsDetails2({ id, showNames }) {
       .writeText(shareUrl)
       .then(() => {
         toast.success("Link copied to clipboard!");
+         trackAction('copy_link', article.id); // Call tracking function
       })
       .catch((err) => {
         console.log(err);
@@ -221,77 +231,6 @@ export default function NewsDetails2({ id, showNames }) {
       </div>
     );
   }
-
-  const CenteredScrollingTabs = ({ allArticles, currentArticleIndex, handleViewpointChange }) => {
-    const scrollContainerRef = useRef(null);
-    const [showGradients, setShowGradients] = useState({ left: false, right: false });
-    
-    // Check if scroll indicators should be shown
-    const checkScroll = () => {
-      const container = scrollContainerRef.current;
-      if (container) {
-        const hasLeftScroll = container.scrollLeft > 0;
-        const hasRightScroll = 
-          container.scrollLeft < (container.scrollWidth - container.clientWidth);
-        
-        setShowGradients({
-          left: hasLeftScroll,
-          right: hasRightScroll
-        });
-      }
-    };
-  
-    useEffect(() => {
-      const container = scrollContainerRef.current;
-      if (container) {
-        container.addEventListener('scroll', checkScroll);
-        window.addEventListener('resize', checkScroll);
-        checkScroll();
-      }
-      
-      return () => {
-        if (container) {
-          container.removeEventListener('scroll', checkScroll);
-          window.removeEventListener('resize', checkScroll);
-        }
-      };
-    }, []);
-  
-    return (
-      <div className="relative w-full max-w-full mb-4">
-       
-        {/* Scroll container */}
-        <div 
-          ref={scrollContainerRef}
-          className="flex overflow-x-auto scrollbar-hide relative mx-auto"
-          style={{
-            scrollBehavior: 'smooth',
-            WebkitOverflowScrolling: 'touch',
-            paddingLeft: 'calc(50% - 100px)',  // Adjust based on your content
-            paddingRight: 'calc(50% - 100px)'   // Adjust based on your content
-          }}
-        >
-          <div className="flex gap-2 py-2">
-            {allArticles.map((articleItem, index) => (
-              <motion.button
-                key={index}
-                onClick={() => handleViewpointChange(index)}
-                className={`px-4 py-2 border-[0.5px] border-slate-100 text-nowrap text-sm md:text-base rounded-md flex-shrink-0 ${
-                  index === currentArticleIndex
-                    ? "bg-orange-500 text-white shadow-lg"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {articleItem.viewpoint}
-              </motion.button>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   const { title, category, image_url, date, description, created_at } = article;
 
@@ -439,16 +378,16 @@ export default function NewsDetails2({ id, showNames }) {
                     <div className="text-gray-500 cursor-pointer relative group">
                       <FaShareAlt size={16} />
                       <div className="hidden group-hover:flex gap-2 absolute -top-10 left-0 bg-white border shadow-lg rounded-md p-2 z-50">
-                        <FacebookShareButton url={shareUrl} quote={title}>
+                        <FacebookShareButton url={shareUrl} quote={title} onClick={() => trackAction('share_facebook', allArticles[currentArticleIndex].id)}>
                           <FacebookIcon size={32} round />
                         </FacebookShareButton>
-                        <TwitterShareButton url={shareUrl} title={title}>
+                        <TwitterShareButton url={shareUrl} title={title} onClick={() => trackAction('share_twitter', allArticles[currentArticleIndex].id)}>
                           <TwitterIcon size={32} round />
                         </TwitterShareButton>
-                        <WhatsappShareButton url={shareUrl} title={title}>
+                        <WhatsappShareButton url={shareUrl} title={title} onClick={() => trackAction('share_whatsapp', allArticles[currentArticleIndex].id)}>
                           <WhatsappIcon size={32} round />
                         </WhatsappShareButton>
-                        <TelegramShareButton url={shareUrl} title={title}>
+                        <TelegramShareButton url={shareUrl} title={title} onClick={() => trackAction('share_telegram', allArticles[currentArticleIndex].id)}>
                           <TelegramIcon size={32} round />
                         </TelegramShareButton>
                         <button

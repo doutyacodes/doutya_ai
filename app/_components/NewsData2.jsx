@@ -25,7 +25,8 @@ import { DateTime } from "luxon";
 import Head from "next/head";
 import { GrFormView } from "react-icons/gr";
 import { useSwipeable } from "react-swipeable"; // Add this import at the top
-
+import Cookies from 'js-cookie';
+import { trackAction } from "./(analytics)/shareUrlTracker";
 
 // Define viewpoint colors with both background and text variants
 // const viewpointColors = {
@@ -184,6 +185,7 @@ const NewsData2 = ({
       .writeText(shareUrl)
       .then(() => {
         toast.success("Link copied to clipboard!"); // Optional success toast
+        trackAction('copy_link', article.id); // Call tracking function
       })
       .catch((err) => {
         // toast.error('Failed to copy link.'); // Optional error toast
@@ -314,6 +316,9 @@ const NewsData2 = ({
               autoPlay
               muted // Required for autoplay to work in most browsers
               loop
+              onClick={() => {
+                router.push(`/viewpoint/${article.id}`);
+              }}
             >           
             Your browser does not support the video tag.
           </video>
@@ -445,16 +450,16 @@ const NewsData2 = ({
                   <FaShareAlt size={16} />
                   {/* Share Options */}
                   <div className="hidden group-hover:flex gap-2 absolute -top-10 right-0 bg-white border shadow-lg rounded-md p-2 z-50">
-                    <FacebookShareButton url={shareUrl} quote={title}>
+                    <FacebookShareButton url={shareUrl} quote={title} onClick={() => trackAction('share_facebook', article.id)}>
                       <FacebookIcon size={32} round />
                     </FacebookShareButton>
-                    <TwitterShareButton url={shareUrl} title={title}>
+                    <TwitterShareButton url={shareUrl} title={title} onClick={() => trackAction('share_twitter', article.id)}>
                       <TwitterIcon size={32} round />
                     </TwitterShareButton>
-                    <WhatsappShareButton url={shareUrl} title={title}>
+                    <WhatsappShareButton url={shareUrl} title={title} onClick={() => trackAction('share_whatsapp', article.id)}>
                       <WhatsappIcon size={32} round />
                     </WhatsappShareButton>
-                    <TelegramShareButton url={shareUrl} title={title}>
+                    <TelegramShareButton url={shareUrl} title={title} onClick={() => trackAction('share_telegram', article.id)}>
                       <TelegramIcon size={32} round />
                     </TelegramShareButton>
                     <button

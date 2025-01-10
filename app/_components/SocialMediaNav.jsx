@@ -41,7 +41,7 @@ const SocialMediaNav = () => {
       ];
   
   return (
-    <div className="hidden md:flex justify-center items-center gap-2 mb-4">
+    <div className="hidden md:flex justify-center items-center gap-2">
       {socialLinks.map((social) => {
         const Icon = social.icon;
         return (
