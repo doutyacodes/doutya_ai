@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu } from "lucide-react";
@@ -35,6 +35,12 @@ const Navbar = () => {
   } = useChildren();
   const { isAuthenticated } = useAuth();
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   const links = [
     { label: "News", icon: GiPerspectiveDiceFive, links: "/viewpoint" },
 
@@ -49,32 +55,13 @@ const Navbar = () => {
   ];
   return (
     <>
-      <nav className={cn("w-full bg-transparent md:min-h-16 max-md:py-[0.8vh] border-b-4 border-orange-600 max-md:max-h-[8.5vh]")}>
+       <nav className={cn("w-full bg-transparent md:min-h-16 max-md:py-[0.8vh] border-b-4 border-orange-600 max-md:max-h-[8.5vh] relative")}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid items-center w-full grid-cols-3">
-            {/* <div
-              onClick={() => showPopupRegion()}
-              className="flex flex-col w-fit gap-[1px] items-center ml-3"
-            >
-              <span className="text-[1.3vh] text-black flex gap-1 items-center">
-                <span>
-                {selectedRegion === "India"
-                  ? "Indian Edition"
-                  : selectedRegion === "United States"
-                  ? "USA Edition"
-                  : "International Edition"
-                }
-                  </span>{" "}
-                <IoChevronDownOutline size={10} />
-              </span>
-            </div> */}
-            {/* <div className="opacity-0 text-xs">Login</div> */}
-            <div>
-              
-            </div>
-            <div className="flex justify-start items-center pl-2 md:pl-4">
+            {/* Logo Column */}
+            <div className="flex items-center">
               <Link href="/">
-                <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[45vw]">
+                <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
                   <Image
                     src={pathname.includes("news") ? "/images/logo5.png" : 
                         pathname.includes("search") ? "/images/logo6.png" : 
@@ -87,47 +74,37 @@ const Navbar = () => {
                 </div>
               </Link>
             </div>
-            {/* <div className="flex justify-center items-center">
-              <div className="flex items-start relative h-[8vh] w-[60vw] md:h-[10vh] md:w-[70vw]">
-                <Link href={"/"}>
-                  <Image
-                    src={
-                      pathname.includes("news")
-                        ? "/images/logo5.png"
-                        : pathname.includes("search")
-                        ? "/images/logo6.png"
-                        : "/images/logo4.png"
-                    }
-                    layout="intrinsic" // Ensures the image is sized based on its natural dimensions
-                    objectFit="contain"
-                    width={160} // Increase the width for a bigger image
-                    height={50} // Increase the height for a bigger image
-                    alt="logo"
-                  />
-                </Link>
-              </div>
-            </div> */}
 
-            {loading ? (
-              <p>Loading...</p>
-            ) : (
-              <div className="flex justify-end items-center max-md:mr-3">
-                {/* {!isAuthenticated && (
-                  <Link href={"/login"} className="font-semibold">
-                    Login
-                  </Link>
-                )} */}
-                {/* {!isAuthenticated && pathname.includes("news") && (
-                  <div
-                    onClick={() => showPopupForUser()}
-                    className="flex flex-col w-fit gap-[1px] items-center"
-                  >
-                    <span className="text-[1.5vh] font-bold text-black flex items-center gap-1">
-                      <span> Age - {selectedAge}</span>{" "}
-                      <IoChevronDownOutline size={10} />
-                    </span>
-                  </div>
-                )} */}
+            {/* Navigation Links Column - Desktop */}
+            <div className="hidden md:flex justify-center items-center">
+              <nav className="flex items-center space-x-8">
+                <Link 
+                  href="/" 
+                  className="text-gray-800 hover:text-orange-600 font-medium transition-colors relative group"
+                >
+                  Home
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-orange-600 transform scale-x-0 group-hover:scale-x-100 transition-transform"></span>
+                </Link>
+                <Link 
+                  href="/about" 
+                  className="text-gray-800 hover:text-orange-600 font-medium transition-colors relative group"
+                >
+                  About Us
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-orange-600 transform scale-x-0 group-hover:scale-x-100 transition-transform"></span>
+                </Link>
+                <Link 
+                  href="/contact" 
+                  className="text-gray-800 hover:text-orange-600 font-medium transition-colors relative group"
+                >
+                  Contact
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-orange-600 transform scale-x-0 group-hover:scale-x-100 transition-transform"></span>
+                </Link>
+              </nav>
+            </div>
+
+            {/* Right Column - Social Media & Age Selector - Desktop Only */}
+            {!loading && (
+              <div className="hidden md:flex justify-end items-center max-md:mr-3">
                 <div className="flex items-center gap-4">
                   {!isAuthenticated && pathname.includes("news") && (
                     <div onClick={() => showPopupForUser()} className="flex flex-col w-fit gap-[1px] items-center">
@@ -141,31 +118,62 @@ const Navbar = () => {
                 </div>
               </div>
             )}
+
+            {/* Mobile Menu Button - Right aligned on mobile */}
+            <div className="md:hidden col-start-3 flex justify-end">
+              <button 
+                onClick={toggleMobileMenu}
+                className="text-gray-800 p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+            </div>
           </div>
         </div>
-        {/* <div className="md:hidden fixed z-[999999999999999999] bottom-0 left-0 bg-orange-500 p-2 w-full flex justify-around items-center">
-          {links.map(({ label, icon: Icon, links }, idx) => {
-            const isActive =
-              links === "/"
-                ? pathname === links // Exact match for the root path
-                : pathname.includes(links); // Partial match for sub-paths
 
-            return (
-              <Link
-                href={links}
-                key={idx}
-                className={`flex flex-col items-center gap-0 ${
-                  isActive || (label == "Home" && pathname.includes("news"))
-                    ? "opacity-100"
-                    : "opacity-50"
-                }`}
+        {/* Mobile Menu Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg z-50">
+            <div className="px-4 py-2 space-y-2">
+              <Link 
+                href="/" 
+                className="block py-2 text-gray-800 hover:text-orange-600"
+                onClick={toggleMobileMenu}
               >
-                <Icon size={24} color="white" />
-                <p className="text-[9px] text-white">{label}</p>
+                Home
               </Link>
-            );
-          })}
-        </div> */}
+              <Link 
+                href="/about" 
+                className="block py-2 text-gray-800 hover:text-orange-600"
+                onClick={toggleMobileMenu}
+              >
+                About Us
+              </Link>
+              <Link 
+                href="/contact" 
+                className="block py-2 text-gray-800 hover:text-orange-600"
+                onClick={toggleMobileMenu}
+              >
+                Contact
+              </Link>
+              
+              {/* Mobile Social Media & Age Selector */}
+              {!loading && !isAuthenticated && pathname.includes("news") && (
+                <div className="py-2 border-t">
+                  <div onClick={() => showPopupForUser()} className="flex items-center gap-1">
+                    <span className="text-[1.5vh] font-bold text-black">
+                      Age - {selectedAge}
+                    </span>
+                    <IoChevronDownOutline size={10} />
+                  </div>
+                </div>
+              )}
+              <div className="py-2">
+                <SocialMediaNav />
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
       <FloatingBubbleNav />
     </>

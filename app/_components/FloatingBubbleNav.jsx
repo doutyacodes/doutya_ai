@@ -49,12 +49,12 @@ function FloatingBubbleNav() {
           icon: BookOpen,
           tooltip: 'Our Story'
         },
-        // { 
-        //   name: 'Contact', 
-        //   href: '/contact',
-        //   icon: PhoneCall,
-        //   tooltip: 'Contact'
-        // }
+        { 
+          name: 'Contact', 
+          href: '/contact-us',
+          icon: PhoneCall,
+          tooltip: 'Contact'
+        }
       ];
 
 
@@ -93,7 +93,7 @@ function FloatingBubbleNav() {
                     ))}
                 </div>
                 {/* Horizontal Row (Nav Links) */}
-                {/* <div className={`absolute bottom-0 right-14 flex flex-row gap-3 ${isMobileMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
+                <div className={`absolute bottom-0 right-14 flex flex-row gap-3 ${isMobileMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
                     {navLinks.map((link, index) => (
                         <Link
                             key={link.name}
@@ -110,7 +110,7 @@ function FloatingBubbleNav() {
                             </span>
                         </Link>
                     ))}
-                </div> */}
+                </div>
             </div>
 
         </>
