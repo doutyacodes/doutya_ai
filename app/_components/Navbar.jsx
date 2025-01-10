@@ -143,7 +143,7 @@ const Navbar = () => {
                 Home
               </Link>
               <Link 
-                href="/about" 
+                href="/about-us" 
                 className="block py-2 text-gray-800 hover:text-orange-600"
                 onClick={toggleMobileMenu}
               >
