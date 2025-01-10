@@ -86,10 +86,10 @@ const Navbar = () => {
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-orange-600 transform scale-x-0 group-hover:scale-x-100 transition-transform"></span>
                 </Link>
                 <Link 
-                  href="/our-story" 
+                  href="/about-us" 
                   className="text-gray-800 hover:text-orange-600 font-medium transition-colors relative group"
                 >
-                  Our Story
+                  About Us
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-orange-600 transform scale-x-0 group-hover:scale-x-100 transition-transform"></span>
                 </Link>
                 <Link 

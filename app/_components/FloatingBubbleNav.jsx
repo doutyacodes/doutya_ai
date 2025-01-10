@@ -44,10 +44,10 @@ function FloatingBubbleNav() {
 
     const navLinks = [
         { 
-          name: 'Our Story', 
-          href: '/our-story',
+          name: 'About Us', 
+          href: '/about-us',
           icon: BookOpen,
-          tooltip: 'Our Story'
+          tooltip: 'About Us'
         },
         { 
           name: 'Contact', 
