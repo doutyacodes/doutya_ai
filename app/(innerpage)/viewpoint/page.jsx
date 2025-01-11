@@ -226,7 +226,7 @@ export default function NewsSection() {
         </div>
       </div> */}
 
-      <div className="w-full max-w-[90vw] md:max-w-none mb-3">
+      <div className="w-full max-w-[90vw] md:max-w-[95vw] mb-3">
         {showNews && showId ? (
           <button 
             onClick={() => {
