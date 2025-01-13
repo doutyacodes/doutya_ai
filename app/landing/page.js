@@ -1437,6 +1437,85 @@
 
 /* Light theme */
 
+/* hero */
+
+// <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 to-gray-100">
+// {/* Animated background grid */}
+// <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:24px_24px]">
+//   <div style={{
+//     transform: `translate(${mousePosition.x * 20}px, ${mousePosition.y * 20}px)`,
+//     transition: 'transform 0.2s ease-out'
+//   }} className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-orange-600/10 opacity-50"></div>
+// </div>
+
+// {/* Floating orbs */}
+// <div className="absolute inset-0">
+//   <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
+//   <div className="absolute bottom-1/3 right-1/3 w-40 h-40 bg-orange-600/10 rounded-full blur-3xl animate-pulse delay-700"></div>
+//   <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-orange-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+// </div>
+
+// {/* Main content wrapper with improved spacing */}
+// <div className="relative w-full flex flex-col min-h-screen">
+//   {/* Hero content */}
+//   <div className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8">
+//     <div className="relative z-10 text-center max-w-7xl mx-auto">
+//       <h1 className="text-5xl md:text-8xl font-bold mb-6">
+//         <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700">
+//           Every Perspective
+//         </span>
+//         <br />
+//         <span className="text-4xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600">
+//           Every Voice
+//         </span>
+//       </h1>
+//       <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+//         Uncover the complete story through AI-powered news analysis
+//       </p>
+//       <div className="flex justify-center">
+//         <button className="group px-8 md:px-12 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full hover:from-orange-600 hover:to-orange-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 flex items-center">
+//           <span className="mr-2">Start Reading</span>
+//           <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+//         </button>
+//       </div>
+//     </div>
+//   </div>
+
+//   {/* Stats section with improved mobile layout */}
+//   <div className="relative bottom-0 w-full px-4 pb-8 md:pb-12">
+//     <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
+//       <div className="bg-white/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300 shadow-sm">
+//         <h3 className="text-4xl font-bold text-orange-600 mb-2">50M+</h3>
+//         <p className="text-gray-600">Daily Readers</p>
+//       </div>
+//       <div className="bg-white/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300 shadow-sm">
+//         <h3 className="text-4xl font-bold text-orange-600 mb-2">99%</h3>
+//         <p className="text-gray-600">Accuracy Rate</p>
+//       </div>
+//       <div className="bg-white/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300 shadow-sm">
+//         <h3 className="text-4xl font-bold text-orange-600 mb-2">200+</h3>
+//         <p className="text-gray-600">Global Sources</p>
+//       </div>
+//     </div>
+//   </div>
+
+//   {/* Animated lines */}
+//   <div className="absolute inset-0 overflow-hidden">
+//     {[...Array(5)].map((_, i) => (
+//       <div
+//         key={i}
+//         className="absolute h-px w-full bg-gradient-to-r from-transparent via-orange-500/10 to-transparent"
+//         style={{
+//           top: `${20 * i}%`,
+//           animation: `moveLeft ${10 + i * 2}s linear infinite`,
+//           opacity: 0.3
+//         }}
+//       ></div>
+//     ))}
+//   </div>
+// </div>
+// </section>
+
 import React, { useState, useEffect } from 'react';
 import { Globe, Users, Briefcase, Instagram, Twitter, Linkedin, Network, ChevronRight, MessageSquare, Bot, Brain, Shield } from 'lucide-react';
 import Image from 'next/image';
@@ -1445,26 +1524,55 @@ const ModernLanding = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     setScrolled(window.scrollY > 50);
+  //   };
+    
+  //   const handleMouseMove = (e) => {
+  //     setMousePosition({
+  //       x: (e.clientX / window.innerWidth) * 2 - 1,
+  //       y: (e.clientY / window.innerHeight) * 2 - 1
+  //     });
+  //   };
+
+  //   window.addEventListener('scroll', handleScroll);
+  //   window.addEventListener('mousemove', handleMouseMove);
+  //   return () => {
+  //     window.removeEventListener('scroll', handleScroll);
+  //     window.removeEventListener('mousemove', handleMouseMove);
+  //   };
+  // }, []);
+
   useEffect(() => {
+    // Check initial scroll position when the component mounts
+    if (window.scrollY > 50) {
+      setScrolled(true);
+    }
+  
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-    
+  
     const handleMouseMove = (e) => {
       setMousePosition({
         x: (e.clientX / window.innerWidth) * 2 - 1,
-        y: (e.clientY / window.innerHeight) * 2 - 1
+        y: (e.clientY / window.innerHeight) * 2 - 1,
       });
     };
-
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('mousemove', handleMouseMove);
+  
+    // Add event listeners for scroll and mouse move
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("mousemove", handleMouseMove);
+  
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('mousemove', handleMouseMove);
+      // Cleanup event listeners
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
 
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Enhanced Navbar */}
@@ -1472,7 +1580,7 @@ const ModernLanding = () => {
         scrolled ? 'bg-white/80 backdrop-blur-lg shadow-sm' : 'bg-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-center sm:justify-between items-center h-20">
             <div className="flex items-center justify-start">
               <div className="flex items-center justify-start">
                 <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
@@ -1501,82 +1609,6 @@ const ModernLanding = () => {
         </div>
       </nav>
 
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 to-gray-100">
-      {/* Animated background grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:24px_24px]">
-        <div style={{
-          transform: `translate(${mousePosition.x * 20}px, ${mousePosition.y * 20}px)`,
-          transition: 'transform 0.2s ease-out'
-        }} className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-orange-600/10 opacity-50"></div>
-      </div>
-
-      {/* Floating orbs */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/3 right-1/3 w-40 h-40 bg-orange-600/10 rounded-full blur-3xl animate-pulse delay-700"></div>
-        <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-orange-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
-
-      {/* Main content wrapper with improved spacing */}
-      <div className="relative w-full flex flex-col min-h-screen">
-        {/* Hero content */}
-        <div className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8">
-          <div className="relative z-10 text-center max-w-7xl mx-auto">
-            <h1 className="text-5xl md:text-8xl font-bold mb-6">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700">
-                Every Perspective
-              </span>
-              <br />
-              <span className="text-4xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600">
-                Every Voice
-              </span>
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-              Uncover the complete story through AI-powered news analysis
-            </p>
-            <div className="flex justify-center">
-              <button className="group px-8 md:px-12 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full hover:from-orange-600 hover:to-orange-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 flex items-center">
-                <span className="mr-2">Start Reading</span>
-                <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats section with improved mobile layout */}
-        <div className="relative bottom-0 w-full px-4 pb-8 md:pb-12">
-          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300 shadow-sm">
-              <h3 className="text-4xl font-bold text-orange-600 mb-2">50M+</h3>
-              <p className="text-gray-600">Daily Readers</p>
-            </div>
-            <div className="bg-white/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300 shadow-sm">
-              <h3 className="text-4xl font-bold text-orange-600 mb-2">99%</h3>
-              <p className="text-gray-600">Accuracy Rate</p>
-            </div>
-            <div className="bg-white/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300 shadow-sm">
-              <h3 className="text-4xl font-bold text-orange-600 mb-2">200+</h3>
-              <p className="text-gray-600">Global Sources</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Animated lines */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute h-px w-full bg-gradient-to-r from-transparent via-orange-500/10 to-transparent"
-              style={{
-                top: `${20 * i}%`,
-                animation: `moveLeft ${10 + i * 2}s linear infinite`,
-                opacity: 0.3
-              }}
-            ></div>
-          ))}
-        </div>
-      </div>
-    </section>
 
       {/* Enhanced About Section */}
       <section id="about" className="py-32 px-4 sm:px-6 lg:px-8 bg-gray-50 relative overflow-hidden">
