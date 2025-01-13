@@ -1000,6 +1000,442 @@
 
 // export default ModernLanding;
 
+/* Dark theme  */
+
+// import React, { useState, useEffect } from 'react';
+// import { Globe, Users, Briefcase, Instagram, Twitter, Linkedin, Network, ChevronRight, MessageSquare, Bot, Brain, Shield } from 'lucide-react';
+// import Image from 'next/image';
+
+// const ModernLanding = () => {
+//   const [scrolled, setScrolled] = useState(false);
+//   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+
+//   useEffect(() => {
+//     const handleScroll = () => {
+//       setScrolled(window.scrollY > 50);
+//     };
+    
+//     const handleMouseMove = (e) => {
+//       setMousePosition({
+//         x: (e.clientX / window.innerWidth) * 2 - 1,
+//         y: (e.clientY / window.innerHeight) * 2 - 1
+//       });
+//     };
+
+//     window.addEventListener('scroll', handleScroll);
+//     window.addEventListener('mousemove', handleMouseMove);
+//     return () => {
+//       window.removeEventListener('scroll', handleScroll);
+//       window.removeEventListener('mousemove', handleMouseMove);
+//     };
+//   }, []);
+
+//   return (
+//     <div className="min-h-screen bg-black">
+//       {/* Enhanced Navbar */}
+//       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+//         scrolled ? 'bg-black/80 backdrop-blur-lg' : 'bg-transparent'
+//       }`}>
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//           <div className="flex justify-between items-center h-20">
+//             <div className="flex items-center justify-start">
+//               <div className="flex items-center justify-start">
+//                 <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
+//                    <Image
+//                     src={"/images/logo4.png"}
+//                     fill
+//                     objectFit="contain"
+//                     alt="Axara News Logo"
+//                     className="object-contain brightness-200"
+//                   />
+//                 </div>
+//             </div>
+//             </div>
+//             <div className="hidden md:flex space-x-1">
+//               {['Home', 'About', 'Features', 'Careers', 'Social', 'Contact'].map((item) => (
+//                 <a
+//                   key={item}
+//                   href={`#${item.toLowerCase()}`}
+//                   className="px-4 py-2 rounded-full text-gray-400 hover:text-orange-400 hover:bg-orange-900/20 transition-all duration-200"
+//                 >
+//                   {item}
+//                 </a>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+//       </nav>
+
+//       <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
+//       {/* Animated background grid */}
+//       <div className="absolute inset-0 bg-[linear-gradient(to_right,#080808_1px,transparent_1px),linear-gradient(to_bottom,#080808_1px,transparent_1px)] bg-[size:24px_24px]">
+//         <div style={{
+//           transform: `translate(${mousePosition.x * 20}px, ${mousePosition.y * 20}px)`,
+//           transition: 'transform 0.2s ease-out'
+//         }} className="absolute inset-0 bg-gradient-to-br from-orange-500/20 via-transparent to-orange-900/20 opacity-50"></div>
+//       </div>
+
+//       {/* Floating orbs */}
+//       <div className="absolute inset-0">
+//         <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
+//         <div className="absolute bottom-1/3 right-1/3 w-40 h-40 bg-orange-700/20 rounded-full blur-3xl animate-pulse delay-700"></div>
+//         <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-orange-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+//       </div>
+
+//       {/* Main content wrapper with improved spacing */}
+//       <div className="relative w-full flex flex-col min-h-screen">
+//         {/* Hero content */}
+//         <div className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8">
+//           <div className="relative z-10 text-center max-w-7xl mx-auto">
+//             <h1 className="text-5xl md:text-8xl font-bold mb-6">
+//               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600">
+//                 Every Perspective
+//               </span>
+//               <br />
+//               <span className="text-4xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-orange-400 to-orange-500">
+//                 Every Voice
+//               </span>
+//             </h1>
+//             <p className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
+//               Uncover the complete story through AI-powered news analysis
+//             </p>
+//             <div className="flex justify-center">
+//               <button className="group px-8 md:px-12 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full hover:from-orange-600 hover:to-orange-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 flex items-center">
+//                 <span className="mr-2">Start Reading</span>
+//                 <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Stats section with improved mobile layout */}
+//         <div className="relative bottom-0 w-full px-4 pb-8 md:pb-12">
+//           <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
+//             <div className="bg-black/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300">
+//               <h3 className="text-4xl font-bold text-orange-500 mb-2">50M+</h3>
+//               <p className="text-gray-400">Daily Readers</p>
+//             </div>
+//             <div className="bg-black/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300">
+//               <h3 className="text-4xl font-bold text-orange-500 mb-2">99%</h3>
+//               <p className="text-gray-400">Accuracy Rate</p>
+//             </div>
+//             <div className="bg-black/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300">
+//               <h3 className="text-4xl font-bold text-orange-500 mb-2">200+</h3>
+//               <p className="text-gray-400">Global Sources</p>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Animated lines */}
+//         <div className="absolute inset-0 overflow-hidden">
+//           {[...Array(5)].map((_, i) => (
+//             <div
+//               key={i}
+//               className="absolute h-px w-full bg-gradient-to-r from-transparent via-orange-500/20 to-transparent"
+//               style={{
+//                 top: `${20 * i}%`,
+//                 animation: `moveLeft ${10 + i * 2}s linear infinite`,
+//                 opacity: 0.3
+//               }}
+//             ></div>
+//           ))}
+//         </div>
+//       </div>
+//     </section>
+
+//       {/* Enhanced About Section */}
+//       <section id="about" className="py-32 px-4 sm:px-6 lg:px-8 bg-black relative overflow-hidden">
+//         {/* Animated background elements */}
+//         <div className="absolute inset-0">
+//           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_50%,rgba(251,146,60,0.1)_0%,rgba(0,0,0,0)_100%)]"></div>
+//           <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_90%,rgba(251,146,60,0.1)_0%,rgba(0,0,0,0)_100%)]"></div>
+//         </div>
+
+//         <div className="max-w-7xl mx-auto relative">
+//           <div className="flex flex-col items-center mb-16">
+//             <span className="text-orange-500 text-sm uppercase tracking-wider mb-4">About Us</span>
+//             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 text-center">
+//               Transforming News Consumption
+//             </h2>
+//           </div>
+          
+//           <div className="bg-black/40 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-orange-500/20 shadow-[0_0_50px_rgba(251,146,60,0.1)]">
+//             <div className="relative">
+//               {/* Decorative elements */}
+//               <div className="absolute -top-4 -left-4 w-8 h-8 border-l-2 border-t-2 border-orange-500/30"></div>
+//               <div className="absolute -bottom-4 -right-4 w-8 h-8 border-r-2 border-b-2 border-orange-500/30"></div>
+              
+//               <p className="text-gray-300 leading-relaxed mb-6 text-lg">
+//                 Axara News is the world&apos;s first AI-powered multi-perspective news portal, designed to provide a comprehensive and unbiased understanding of global events. Our platform offers news from a range of viewpoints, including neutral, aligned, differing, and opposing perspectives, as well as offering insights from all parties impacted by each story. This unique approach allows readers to gain a well-rounded understanding of complex issues, fostering critical thinking, empathy, and a deeper appreciation for the intricacies of the world around us.
+//               </p>
+//               <p className="text-gray-300 leading-relaxed text-lg">
+//                 Axara News leverages advanced AI technology to deliver content that is accurate, engaging, and accessible. Our platform provides an opportunity to break free from echo chambers by offering a broader spectrum of viewpoints, helping readers understand all sides of the story. In doing so, we aim to foster informed decision-making and promote a more discerning, interconnected global community. At Axara News, we believe that understanding differing perspectives is essential to navigating the complexities of the world today.
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* Enhanced Features Section */}
+//       <section id="features" className="py-32 px-4 sm:px-6 lg:px-8 bg-black relative">
+//         {/* Animated grid background */}
+//         <div className="absolute inset-0 bg-[linear-gradient(to_right,#080808_1px,transparent_1px),linear-gradient(to_bottom,#080808_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+        
+//         <div className="max-w-7xl mx-auto relative">
+//           <div className="flex flex-col items-center mb-16">
+//             <span className="text-orange-500 text-sm uppercase tracking-wider mb-4">Features</span>
+//             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 text-center">
+//               Why Choose Axara
+//             </h2>
+//           </div>
+
+//           <div className="grid md:grid-cols-3 gap-8">
+//             {[
+//               {
+//                 icon: Brain,
+//                 title: "AI-Powered Analysis",
+//                 description: "Advanced algorithms process and analyze news from multiple sources to provide comprehensive insights."
+//               },
+//               {
+//                 icon: Globe,
+//                 title: "Global Perspectives",
+//                 description: "Access diverse viewpoints from around the world, breaking free from single-narrative journalism."
+//               },
+//               {
+//                 icon: Shield,
+//                 title: "Unbiased Reporting",
+//                 description: "Our AI ensures balanced coverage by presenting multiple viewpoints for every story."
+//               }
+//             ].map((feature, index) => (
+//               <div key={index} className="group relative">
+//                 {/* Glowing background effect */}
+//                 <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+//                 <div className="relative bg-black/40 backdrop-blur-xl border border-orange-500/20 p-8 rounded-2xl transition-all duration-300 group-hover:-translate-y-2">
+//                   <div className="w-14 h-14 bg-orange-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+//                     <feature.icon className="h-7 w-7 text-orange-500" />
+//                   </div>
+//                   <h3 className="text-xl font-semibold mb-4 text-white">{feature.title}</h3>
+//                   <p className="text-gray-400">{feature.description}</p>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* Enhanced Careers Section */}
+//       <section id="careers" className="py-32 px-4 sm:px-6 lg:px-8 bg-black relative overflow-hidden">
+//         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(251,146,60,0.1),transparent_70%)]"></div>
+        
+//         <div className="max-w-7xl mx-auto relative">
+//           <div className="flex flex-col items-center mb-16">
+//             <span className="text-orange-500 text-sm uppercase tracking-wider mb-4">Careers</span>
+//             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 text-center">
+//               Join Our Mission
+//             </h2>
+//           </div>
+
+//           <div className="bg-black/40 backdrop-blur-xl rounded-3xl p-12 border border-orange-500/20 shadow-[0_0_50px_rgba(251,146,60,0.1)]">
+//             <div className="text-center max-w-3xl mx-auto">
+//               <Bot className="h-16 w-16 text-orange-500 mx-auto mb-6" />
+//               <h3 className="text-2xl font-semibold mb-4 text-white">Be Part of Our Story</h3>
+//               <p className="text-gray-300 text-lg mb-8">
+//                 Join the revolution in AI-powered news delivery. We&apos;re looking for passionate individuals who believe in the power of multiple perspectives and want to make a difference.
+//               </p>
+//               <button className="group relative px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-orange-500/25">
+//                 <span className="relative flex items-center">
+//                   View Open Positions
+//                   <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+//                 </span>
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* Enhanced Social Media Section */}
+//       <section id="social" className="py-32 px-4 sm:px-6 lg:px-8 bg-black relative">
+//         <div className="absolute inset-0 bg-[linear-gradient(to_right,#080808_1px,transparent_1px),linear-gradient(to_bottom,#080808_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+        
+//         <div className="max-w-7xl mx-auto relative">
+//           <div className="flex flex-col items-center mb-16">
+//             <span className="text-orange-500 text-sm uppercase tracking-wider mb-4">Social</span>
+//             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 text-center">
+//               Connect With Us
+//             </h2>
+//           </div>
+
+//           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+//             {[
+//               { icon: Instagram, label: 'Instagram' },
+//               { icon: Twitter, label: 'Twitter' },
+//               { icon: Users, label: 'Threads' },
+//               { icon: Linkedin, label: 'LinkedIn' }
+//             ].map((social, index) => (
+//               <a key={index} href="#" className="group">
+//                 <div className="relative bg-black/40 backdrop-blur-xl border border-orange-500/20 p-8 rounded-2xl transition-all duration-300 hover:-translate-y-2">
+//                   <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+//                   <social.icon className="h-12 w-12 text-gray-500 group-hover:text-orange-500 mx-auto mb-4 transition-colors" />
+//                   <p className="text-center text-gray-400 group-hover:text-orange-500 transition-colors">{social.label}</p>
+//                 </div>
+//               </a>
+//             ))}
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* Enhanced Contact Section */}
+//       <section id="contact" className="py-32 px-4 sm:px-6 lg:px-8 bg-black relative overflow-hidden">
+//         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(251,146,60,0.1)_0%,rgba(0,0,0,0)_100%)]"></div>
+        
+//         <div className="max-w-7xl mx-auto relative">
+//           <div className="flex flex-col items-center mb-16">
+//             <span className="text-orange-500 text-sm uppercase tracking-wider mb-4">Contact</span>
+//             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 text-center">
+//               Get in Touch
+//             </h2>
+//           </div>
+
+//           <div className="bg-black/40 backdrop-blur-xl rounded-3xl border border-orange-500/20 overflow-hidden shadow-[0_0_50px_rgba(251,146,60,0.1)]">
+//             <div className="grid md:grid-cols-2 gap-8 p-8 md:p-12">
+//               <div className="space-y-6">
+//                 <div className="bg-orange-500/5 p-8 rounded-2xl border border-orange-500/10">
+//                   <h3 className="text-2xl font-semibold mb-6 text-white">Our Office</h3>
+//                   <div className="space-y-4 text-gray-400">
+//                     <p>Axara News,</p>
+//                     <p>(Doutya Technologies),</p>
+//                     <p>Whitefield, Bengaluru,</p>
+//                     <p>Karnataka, India - 560067</p>
+//                     <p>Phone : +91 - 6361400800</p>
+//                     <p>Email : contact@axaranews.com</p>
+//                   </div>
+//                   <div className="mt-8 flex space-x-6">
+//                     <a href="#" className="text-gray-500 hover:text-orange-500 transition-colors">
+//                       <Instagram className="h-6 w-6" />
+//                     </a>
+//                     <a href="#" className="text-gray-500 hover:text-orange-500 transition-colors">
+//                       <Twitter className="h-6 w-6" />
+//                     </a>
+//                     <a href="#" className="text-gray-500 hover:text-orange-500 transition-colors">
+//                       <Linkedin className="h-6 w-6" />
+//                     </a>
+//                   </div>
+//                 </div>
+//               </div>
+              
+//               <div>
+//                 <form className="space-y-6">
+//                   <div className="space-y-4">
+//                     <input
+//                       type="text"
+//                       placeholder="Name"
+//                       className="w-full px-6 py-4 bg-black/40 border border-orange-500/20 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-white placeholder-gray-500"
+//                     />
+//                     <input
+//                       type="email"
+//                       placeholder="Email"
+//                       className="w-full px-6 py-4 bg-black/40 border border-orange-500/20 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-white placeholder-gray-500"
+//                     />
+//                     <textarea
+//                       placeholder="Message"
+//                       rows="6"
+//                       className="w-full px-6 py-4 bg-black/40 border border-orange-500/20 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-white placeholder-gray-500"
+//                     ></textarea>
+//                   </div>
+
+// <button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-orange-500/25 flex items-center justify-center">
+//                     <MessageSquare className="w-5 h-5 mr-2" />
+//                     Send Message
+//                   </button>
+//                 </form>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* Enhanced Footer */}
+//       <footer className="bg-black/40 border-t border-orange-500/20">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+//           <div className="grid md:grid-cols-4 gap-8">
+//             <div className="col-span-2 md:col-span-1">
+//               <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
+//                    <Image
+//                     src={"/images/logo4.png"}
+//                     fill
+//                     objectFit="contain"
+//                     alt="Axara News Logo"
+//                     className="object-contain brightness-200"
+//                   />
+//                 </div>
+//               <p className="text-gray-400 text-sm">
+//                 Bringing multiple perspectives to every story, enhanced by AI technology.
+//               </p>
+//             </div>
+//             <div>
+//               <h4 className="text-sm font-semibold text-white mb-4">Quick Links</h4>
+//               <ul className="space-y-2">
+//                 {['About', 'Features', 'Careers', 'Contact'].map((item) => (
+//                   <li key={item}>
+//                     <a href={`#${item.toLowerCase()}`} className="text-gray-400 hover:text-orange-500 text-sm transition-colors">
+//                       {item}
+//                     </a>
+//                   </li>
+//                 ))}
+//               </ul>
+//             </div>
+//             <div>
+//               <h4 className="text-sm font-semibold text-white mb-4">Connect</h4>
+//               <ul className="space-y-2">
+//                 {['Twitter', 'Instagram', 'LinkedIn', 'Threads'].map((item) => (
+//                   <li key={item}>
+//                     <a href="#" className="text-gray-400 hover:text-orange-500 text-sm transition-colors">
+//                       {item}
+//                     </a>
+//                   </li>
+//                 ))}
+//               </ul>
+//             </div>
+//             <div>
+//               <h4 className="text-sm font-semibold text-white mb-4">Contact</h4>
+//               <ul className="space-y-2 text-sm text-gray-400">
+//                 <li>Whitefield, Bengaluru</li>
+//                 <li>Karnataka, India - 560067</li>
+//                 <li>contact@axaranews.com</li>
+//                 <li>+91 - 6361400800</li>
+//               </ul>
+//             </div>
+//           </div>
+//           <div className="mt-12 pt-8 border-t border-orange-500/10">
+//             <div className="flex flex-col md:flex-row justify-between items-center">
+//               <p className="text-gray-400 text-sm">
+//                 © {new Date().getFullYear()} Axara News. All rights reserved.
+//               </p>
+//               <div className="flex space-x-6 mt-4 md:mt-0">
+//                 <a href="#" className="text-gray-500 hover:text-orange-500 transition-colors">
+//                   <Instagram className="h-5 w-5" />
+//                 </a>
+//                 <a href="#" className="text-gray-500 hover:text-orange-500 transition-colors">
+//                   <Twitter className="h-5 w-5" />
+//                 </a>
+//                 <a href="#" className="text-gray-500 hover:text-orange-500 transition-colors">
+//                   <Linkedin className="h-5 w-5" />
+//                 </a>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </footer>
+//     </div>
+//   );
+// };
+
+// export default ModernLanding;
+
+
+/* Light theme */
 
 import React, { useState, useEffect } from 'react';
 import { Globe, Users, Briefcase, Instagram, Twitter, Linkedin, Network, ChevronRight, MessageSquare, Bot, Brain, Shield } from 'lucide-react';
@@ -1008,7 +1444,6 @@ import Image from 'next/image';
 const ModernLanding = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -1031,10 +1466,10 @@ const ModernLanding = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-gray-50">
       {/* Enhanced Navbar */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-black/80 backdrop-blur-lg' : 'bg-transparent'
+        scrolled ? 'bg-white/80 backdrop-blur-lg shadow-sm' : 'bg-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
@@ -1046,17 +1481,17 @@ const ModernLanding = () => {
                     fill
                     objectFit="contain"
                     alt="Axara News Logo"
-                    className="object-contain brightness-200"
+                    className="object-contain brightness-75"
                   />
                 </div>
-            </div>
+              </div>
             </div>
             <div className="hidden md:flex space-x-1">
               {['Home', 'About', 'Features', 'Careers', 'Social', 'Contact'].map((item) => (
                 <a
                   key={item}
                   href={`#${item.toLowerCase()}`}
-                  className="px-4 py-2 rounded-full text-gray-400 hover:text-orange-400 hover:bg-orange-900/20 transition-all duration-200"
+                  className="px-4 py-2 rounded-full text-gray-600 hover:text-orange-600 hover:bg-orange-50 transition-all duration-200"
                 >
                   {item}
                 </a>
@@ -1066,20 +1501,20 @@ const ModernLanding = () => {
         </div>
       </nav>
 
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 to-gray-100">
       {/* Animated background grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#080808_1px,transparent_1px),linear-gradient(to_bottom,#080808_1px,transparent_1px)] bg-[size:24px_24px]">
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:24px_24px]">
         <div style={{
           transform: `translate(${mousePosition.x * 20}px, ${mousePosition.y * 20}px)`,
           transition: 'transform 0.2s ease-out'
-        }} className="absolute inset-0 bg-gradient-to-br from-orange-500/20 via-transparent to-orange-900/20 opacity-50"></div>
+        }} className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-orange-600/10 opacity-50"></div>
       </div>
 
       {/* Floating orbs */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/3 right-1/3 w-40 h-40 bg-orange-700/20 rounded-full blur-3xl animate-pulse delay-700"></div>
-        <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-orange-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/3 right-1/3 w-40 h-40 bg-orange-600/10 rounded-full blur-3xl animate-pulse delay-700"></div>
+        <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-orange-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
 
       {/* Main content wrapper with improved spacing */}
@@ -1088,15 +1523,15 @@ const ModernLanding = () => {
         <div className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8">
           <div className="relative z-10 text-center max-w-7xl mx-auto">
             <h1 className="text-5xl md:text-8xl font-bold mb-6">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700">
                 Every Perspective
               </span>
               <br />
-              <span className="text-4xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-orange-400 to-orange-500">
+              <span className="text-4xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600">
                 Every Voice
               </span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
               Uncover the complete story through AI-powered news analysis
             </p>
             <div className="flex justify-center">
@@ -1111,17 +1546,17 @@ const ModernLanding = () => {
         {/* Stats section with improved mobile layout */}
         <div className="relative bottom-0 w-full px-4 pb-8 md:pb-12">
           <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-black/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300">
-              <h3 className="text-4xl font-bold text-orange-500 mb-2">50M+</h3>
-              <p className="text-gray-400">Daily Readers</p>
+            <div className="bg-white/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300 shadow-sm">
+              <h3 className="text-4xl font-bold text-orange-600 mb-2">50M+</h3>
+              <p className="text-gray-600">Daily Readers</p>
             </div>
-            <div className="bg-black/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300">
-              <h3 className="text-4xl font-bold text-orange-500 mb-2">99%</h3>
-              <p className="text-gray-400">Accuracy Rate</p>
+            <div className="bg-white/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300 shadow-sm">
+              <h3 className="text-4xl font-bold text-orange-600 mb-2">99%</h3>
+              <p className="text-gray-600">Accuracy Rate</p>
             </div>
-            <div className="bg-black/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300">
-              <h3 className="text-4xl font-bold text-orange-500 mb-2">200+</h3>
-              <p className="text-gray-400">Global Sources</p>
+            <div className="bg-white/50 backdrop-blur-lg border border-orange-500/20 rounded-2xl p-6 transform hover:-translate-y-2 transition-transform duration-300 shadow-sm">
+              <h3 className="text-4xl font-bold text-orange-600 mb-2">200+</h3>
+              <p className="text-gray-600">Global Sources</p>
             </div>
           </div>
         </div>
@@ -1131,7 +1566,7 @@ const ModernLanding = () => {
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className="absolute h-px w-full bg-gradient-to-r from-transparent via-orange-500/20 to-transparent"
+              className="absolute h-px w-full bg-gradient-to-r from-transparent via-orange-500/10 to-transparent"
               style={{
                 top: `${20 * i}%`,
                 animation: `moveLeft ${10 + i * 2}s linear infinite`,
@@ -1144,8 +1579,7 @@ const ModernLanding = () => {
     </section>
 
       {/* Enhanced About Section */}
-      <section id="about" className="py-32 px-4 sm:px-6 lg:px-8 bg-black relative overflow-hidden">
-        {/* Animated background elements */}
+      <section id="about" className="py-32 px-4 sm:px-6 lg:px-8 bg-gray-50 relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_50%,rgba(251,146,60,0.1)_0%,rgba(0,0,0,0)_100%)]"></div>
           <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_90%,rgba(251,146,60,0.1)_0%,rgba(0,0,0,0)_100%)]"></div>
@@ -1153,22 +1587,21 @@ const ModernLanding = () => {
 
         <div className="max-w-7xl mx-auto relative">
           <div className="flex flex-col items-center mb-16">
-            <span className="text-orange-500 text-sm uppercase tracking-wider mb-4">About Us</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 text-center">
+            <span className="text-orange-600 text-sm uppercase tracking-wider mb-4">About Us</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 text-center">
               Transforming News Consumption
             </h2>
           </div>
           
-          <div className="bg-black/40 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-orange-500/20 shadow-[0_0_50px_rgba(251,146,60,0.1)]">
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-orange-500/20 shadow-lg">
             <div className="relative">
-              {/* Decorative elements */}
               <div className="absolute -top-4 -left-4 w-8 h-8 border-l-2 border-t-2 border-orange-500/30"></div>
               <div className="absolute -bottom-4 -right-4 w-8 h-8 border-r-2 border-b-2 border-orange-500/30"></div>
               
-              <p className="text-gray-300 leading-relaxed mb-6 text-lg">
+              <p className="text-gray-700 leading-relaxed mb-6 text-lg">
                 Axara News is the world&apos;s first AI-powered multi-perspective news portal, designed to provide a comprehensive and unbiased understanding of global events. Our platform offers news from a range of viewpoints, including neutral, aligned, differing, and opposing perspectives, as well as offering insights from all parties impacted by each story. This unique approach allows readers to gain a well-rounded understanding of complex issues, fostering critical thinking, empathy, and a deeper appreciation for the intricacies of the world around us.
               </p>
-              <p className="text-gray-300 leading-relaxed text-lg">
+              <p className="text-gray-700 leading-relaxed text-lg">
                 Axara News leverages advanced AI technology to deliver content that is accurate, engaging, and accessible. Our platform provides an opportunity to break free from echo chambers by offering a broader spectrum of viewpoints, helping readers understand all sides of the story. In doing so, we aim to foster informed decision-making and promote a more discerning, interconnected global community. At Axara News, we believe that understanding differing perspectives is essential to navigating the complexities of the world today.
               </p>
             </div>
@@ -1177,14 +1610,13 @@ const ModernLanding = () => {
       </section>
 
       {/* Enhanced Features Section */}
-      <section id="features" className="py-32 px-4 sm:px-6 lg:px-8 bg-black relative">
-        {/* Animated grid background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#080808_1px,transparent_1px),linear-gradient(to_bottom,#080808_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+      <section id="features" className="py-32 px-4 sm:px-6 lg:px-8 bg-gray-100 relative">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:32px_32px]"></div>
         
         <div className="max-w-7xl mx-auto relative">
           <div className="flex flex-col items-center mb-16">
-            <span className="text-orange-500 text-sm uppercase tracking-wider mb-4">Features</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 text-center">
+            <span className="text-orange-600 text-sm uppercase tracking-wider mb-4">Features</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 text-center">
               Why Choose Axara
             </h2>
           </div>
@@ -1208,15 +1640,14 @@ const ModernLanding = () => {
               }
             ].map((feature, index) => (
               <div key={index} className="group relative">
-                {/* Glowing background effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-orange-600/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                <div className="relative bg-black/40 backdrop-blur-xl border border-orange-500/20 p-8 rounded-2xl transition-all duration-300 group-hover:-translate-y-2">
+                <div className="relative bg-white/70 backdrop-blur-xl border border-orange-500/20 p-8 rounded-2xl transition-all duration-300 group-hover:-translate-y-2 shadow-sm">
                   <div className="w-14 h-14 bg-orange-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <feature.icon className="h-7 w-7 text-orange-500" />
+                    <feature.icon className="h-7 w-7 text-orange-600" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-4 text-white">{feature.title}</h3>
-                  <p className="text-gray-400">{feature.description}</p>
+                  <h3 className="text-xl font-semibold mb-4 text-gray-800">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
                 </div>
               </div>
             ))}
@@ -1225,22 +1656,21 @@ const ModernLanding = () => {
       </section>
 
       {/* Enhanced Careers Section */}
-      <section id="careers" className="py-32 px-4 sm:px-6 lg:px-8 bg-black relative overflow-hidden">
+      <section id="careers" className="py-32 px-4 sm:px-6 lg:px-8 bg-gray-50 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(251,146,60,0.1),transparent_70%)]"></div>
         
         <div className="max-w-7xl mx-auto relative">
           <div className="flex flex-col items-center mb-16">
-            <span className="text-orange-500 text-sm uppercase tracking-wider mb-4">Careers</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 text-center">
+            <span className="text-orange-600 text-sm uppercase tracking-wider mb-4">Careers</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 text-center">
               Join Our Mission
             </h2>
           </div>
-
-          <div className="bg-black/40 backdrop-blur-xl rounded-3xl p-12 border border-orange-500/20 shadow-[0_0_50px_rgba(251,146,60,0.1)]">
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-12 border border-orange-500/20 shadow-lg">
             <div className="text-center max-w-3xl mx-auto">
-              <Bot className="h-16 w-16 text-orange-500 mx-auto mb-6" />
-              <h3 className="text-2xl font-semibold mb-4 text-white">Be Part of Our Story</h3>
-              <p className="text-gray-300 text-lg mb-8">
+              <Bot className="h-16 w-16 text-orange-600 mx-auto mb-6" />
+              <h3 className="text-2xl font-semibold mb-4 text-gray-800">Be Part of Our Story</h3>
+              <p className="text-gray-600 text-lg mb-8">
                 Join the revolution in AI-powered news delivery. We&apos;re looking for passionate individuals who believe in the power of multiple perspectives and want to make a difference.
               </p>
               <button className="group relative px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-orange-500/25">
@@ -1255,13 +1685,13 @@ const ModernLanding = () => {
       </section>
 
       {/* Enhanced Social Media Section */}
-      <section id="social" className="py-32 px-4 sm:px-6 lg:px-8 bg-black relative">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#080808_1px,transparent_1px),linear-gradient(to_bottom,#080808_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+      <section id="social" className="py-32 px-4 sm:px-6 lg:px-8 bg-gray-100 relative">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:32px_32px]"></div>
         
         <div className="max-w-7xl mx-auto relative">
           <div className="flex flex-col items-center mb-16">
-            <span className="text-orange-500 text-sm uppercase tracking-wider mb-4">Social</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 text-center">
+            <span className="text-orange-600 text-sm uppercase tracking-wider mb-4">Social</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 text-center">
               Connect With Us
             </h2>
           </div>
@@ -1274,10 +1704,10 @@ const ModernLanding = () => {
               { icon: Linkedin, label: 'LinkedIn' }
             ].map((social, index) => (
               <a key={index} href="#" className="group">
-                <div className="relative bg-black/40 backdrop-blur-xl border border-orange-500/20 p-8 rounded-2xl transition-all duration-300 hover:-translate-y-2">
-                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <social.icon className="h-12 w-12 text-gray-500 group-hover:text-orange-500 mx-auto mb-4 transition-colors" />
-                  <p className="text-center text-gray-400 group-hover:text-orange-500 transition-colors">{social.label}</p>
+                <div className="relative bg-white/70 backdrop-blur-xl border border-orange-500/20 p-8 rounded-2xl transition-all duration-300 hover:-translate-y-2 shadow-sm">
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-orange-600/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <social.icon className="h-12 w-12 text-gray-400 group-hover:text-orange-600 mx-auto mb-4 transition-colors" />
+                  <p className="text-center text-gray-600 group-hover:text-orange-600 transition-colors">{social.label}</p>
                 </div>
               </a>
             ))}
@@ -1286,23 +1716,23 @@ const ModernLanding = () => {
       </section>
 
       {/* Enhanced Contact Section */}
-      <section id="contact" className="py-32 px-4 sm:px-6 lg:px-8 bg-black relative overflow-hidden">
+      <section id="contact" className="py-32 px-4 sm:px-6 lg:px-8 bg-gray-50 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(251,146,60,0.1)_0%,rgba(0,0,0,0)_100%)]"></div>
         
         <div className="max-w-7xl mx-auto relative">
           <div className="flex flex-col items-center mb-16">
-            <span className="text-orange-500 text-sm uppercase tracking-wider mb-4">Contact</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 text-center">
+            <span className="text-orange-600 text-sm uppercase tracking-wider mb-4">Contact</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 text-center">
               Get in Touch
             </h2>
           </div>
 
-          <div className="bg-black/40 backdrop-blur-xl rounded-3xl border border-orange-500/20 overflow-hidden shadow-[0_0_50px_rgba(251,146,60,0.1)]">
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl border border-orange-500/20 overflow-hidden shadow-lg">
             <div className="grid md:grid-cols-2 gap-8 p-8 md:p-12">
               <div className="space-y-6">
-                <div className="bg-orange-500/5 p-8 rounded-2xl border border-orange-500/10">
-                  <h3 className="text-2xl font-semibold mb-6 text-white">Our Office</h3>
-                  <div className="space-y-4 text-gray-400">
+                <div className="bg-orange-50 p-8 rounded-2xl border border-orange-500/10">
+                  <h3 className="text-2xl font-semibold mb-6 text-gray-800">Our Office</h3>
+                  <div className="space-y-4 text-gray-600">
                     <p>Axara News,</p>
                     <p>(Doutya Technologies),</p>
                     <p>Whitefield, Bengaluru,</p>
@@ -1311,13 +1741,13 @@ const ModernLanding = () => {
                     <p>Email : contact@axaranews.com</p>
                   </div>
                   <div className="mt-8 flex space-x-6">
-                    <a href="#" className="text-gray-500 hover:text-orange-500 transition-colors">
+                    <a href="#" className="text-gray-400 hover:text-orange-600 transition-colors">
                       <Instagram className="h-6 w-6" />
                     </a>
-                    <a href="#" className="text-gray-500 hover:text-orange-500 transition-colors">
+                    <a href="#" className="text-gray-400 hover:text-orange-600 transition-colors">
                       <Twitter className="h-6 w-6" />
                     </a>
-                    <a href="#" className="text-gray-500 hover:text-orange-500 transition-colors">
+                    <a href="#" className="text-gray-400 hover:text-orange-600 transition-colors">
                       <Linkedin className="h-6 w-6" />
                     </a>
                   </div>
@@ -1330,21 +1760,21 @@ const ModernLanding = () => {
                     <input
                       type="text"
                       placeholder="Name"
-                      className="w-full px-6 py-4 bg-black/40 border border-orange-500/20 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-white placeholder-gray-500"
+                      className="w-full px-6 py-4 bg-white/70 border border-orange-500/20 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-gray-800 placeholder-gray-400"
                     />
                     <input
                       type="email"
                       placeholder="Email"
-                      className="w-full px-6 py-4 bg-black/40 border border-orange-500/20 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-white placeholder-gray-500"
+                      className="w-full px-6 py-4 bg-white/70 border border-orange-500/20 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-gray-800 placeholder-gray-400"
                     />
                     <textarea
                       placeholder="Message"
                       rows="6"
-                      className="w-full px-6 py-4 bg-black/40 border border-orange-500/20 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-white placeholder-gray-500"
+                      className="w-full px-6 py-4 bg-white/70 border border-orange-500/20 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-gray-800 placeholder-gray-400"
                     ></textarea>
                   </div>
 
-<button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-orange-500/25 flex items-center justify-center">
+                  <button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-orange-500/25 flex items-center justify-center">
                     <MessageSquare className="w-5 h-5 mr-2" />
                     Send Message
                   </button>
@@ -1356,7 +1786,7 @@ const ModernLanding = () => {
       </section>
 
       {/* Enhanced Footer */}
-      <footer className="bg-black/40 border-t border-orange-500/20">
+      <footer className="bg-white/70 border-t border-orange-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="col-span-2 md:col-span-1">
@@ -1366,19 +1796,19 @@ const ModernLanding = () => {
                     fill
                     objectFit="contain"
                     alt="Axara News Logo"
-                    className="object-contain brightness-200"
+                    className="object-contain brightness-75"
                   />
                 </div>
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-600 text-sm">
                 Bringing multiple perspectives to every story, enhanced by AI technology.
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white mb-4">Quick Links</h4>
+              <h4 className="text-sm font-semibold text-gray-800 mb-4">Quick Links</h4>
               <ul className="space-y-2">
                 {['About', 'Features', 'Careers', 'Contact'].map((item) => (
                   <li key={item}>
-                    <a href={`#${item.toLowerCase()}`} className="text-gray-400 hover:text-orange-500 text-sm transition-colors">
+                    <a href={`#${item.toLowerCase()}`} className="text-gray-600 hover:text-orange-600 text-sm transition-colors">
                       {item}
                     </a>
                   </li>
@@ -1386,11 +1816,11 @@ const ModernLanding = () => {
               </ul>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white mb-4">Connect</h4>
+              <h4 className="text-sm font-semibold text-gray-800 mb-4">Connect</h4>
               <ul className="space-y-2">
                 {['Twitter', 'Instagram', 'LinkedIn', 'Threads'].map((item) => (
                   <li key={item}>
-                    <a href="#" className="text-gray-400 hover:text-orange-500 text-sm transition-colors">
+                    <a href="#" className="text-gray-600 hover:text-orange-600 text-sm transition-colors">
                       {item}
                     </a>
                   </li>
@@ -1398,8 +1828,8 @@ const ModernLanding = () => {
               </ul>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white mb-4">Contact</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <h4 className="text-sm font-semibold text-gray-800 mb-4">Contact</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
                 <li>Whitefield, Bengaluru</li>
                 <li>Karnataka, India - 560067</li>
                 <li>contact@axaranews.com</li>
@@ -1409,17 +1839,17 @@ const ModernLanding = () => {
           </div>
           <div className="mt-12 pt-8 border-t border-orange-500/10">
             <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-600 text-sm">
                 © {new Date().getFullYear()} Axara News. All rights reserved.
               </p>
               <div className="flex space-x-6 mt-4 md:mt-0">
-                <a href="#" className="text-gray-500 hover:text-orange-500 transition-colors">
+                <a href="#" className="text-gray-400 hover:text-orange-600 transition-colors">
                   <Instagram className="h-5 w-5" />
                 </a>
-                <a href="#" className="text-gray-500 hover:text-orange-500 transition-colors">
+                <a href="#" className="text-gray-400 hover:text-orange-600 transition-colors">
                   <Twitter className="h-5 w-5" />
                 </a>
-                <a href="#" className="text-gray-500 hover:text-orange-500 transition-colors">
+                <a href="#" className="text-gray-400 hover:text-orange-600 transition-colors">
                   <Linkedin className="h-5 w-5" />
                 </a>
               </div>
