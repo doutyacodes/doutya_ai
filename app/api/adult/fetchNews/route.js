@@ -10,7 +10,8 @@ import { and, asc, desc, eq, gt, lt, or, sql } from "drizzle-orm";
 
 export async function POST(req) {
   try {
-    const { region = "India" } = await req.json();
+    // const { region = "India" } = await req.json(); /* backup */
+    const { region = "International" } = await req.json();
 
     let region_id = null;
 

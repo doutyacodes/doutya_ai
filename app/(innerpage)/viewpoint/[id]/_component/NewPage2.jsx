@@ -30,7 +30,8 @@ export default function NewsSection() {
     try {
       setIsLoading(true);
       const response = await GlobalApi.FetchNewsAdult({
-        region: selectedRegion,
+        // region: selectedRegion, backup
+        region: "International",
       }); // Fetch news from backend
       const {
         categories = [],
