@@ -339,7 +339,7 @@ export default function NewsSection() {
             {/* Main scroll container */}
             <div 
               ref={scrollRef}
-              className="flex space-x-1 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing px-6"
+              className="flex space-x-1 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
               onMouseDown={handleMouseDown}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
@@ -353,7 +353,7 @@ export default function NewsSection() {
             >
               <button
                 onClick={() => setShowSearch((prev) => !prev)}
-                className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full select-none ${
+                className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-[9px] md:text-sm font-medium rounded-full select-none ${
                   showSearch
                     ? "bg-orange-500 text-white"
                     : "bg-gray-100 text-gray-700 hover:bg-orange-200"
@@ -370,7 +370,7 @@ export default function NewsSection() {
                     setShowNews(false);
                     setSearchQuery("");
                   }}
-                  className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full select-none ${
+                  className={`whitespace-nowrap px-3 py-2 text-[9px] md:text-sm font-medium rounded-full select-none ${
                     selectedCategory === category.name
                       ? "bg-orange-500 text-white"
                       : "bg-gray-100 text-gray-700 hover:bg-orange-200"
