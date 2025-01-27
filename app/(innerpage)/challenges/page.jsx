@@ -56,7 +56,7 @@ const Challenges = () => {
       {/* Header Section */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">
-          Axara Added Challenges
+        Zaeser Added Challenges
         </h1>
       </div>
 
@@ -83,7 +83,7 @@ const Challenges = () => {
               )}
                 {/* Title Section */}
                 <div className="p-3 text-center font-medium">
-                  Axara Added a Challenge
+                Zaeser Added a Challenge
                 </div>
 
                 {/* Image */}

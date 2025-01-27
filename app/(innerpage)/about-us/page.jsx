@@ -34,7 +34,7 @@ export default function OurStory() {
     //           <h2 className="text-2xl font-semibold text-gray-800">Multi Perspective</h2>
     //         </div>
     //         <p className="text-gray-600 leading-relaxed">
-    //           Axara News is the world&apos;s first AI-powered multi-perspective news portal, designed to provide a comprehensive and unbiased understanding of global events. Our platform offers news from a range of viewpoints, including neutral, aligned, differing, and opposing perspectives, as well as offering insights from all parties impacted by each story. This unique approach allows readers to gain a well-rounded understanding of complex issues, fostering critical thinking, empathy, and a deeper appreciation for the intricacies of the world around us.
+    //           Zaeser News is the world&apos;s first AI-powered multi-perspective news portal, designed to provide a comprehensive and unbiased understanding of global events. Our platform offers news from a range of viewpoints, including neutral, aligned, differing, and opposing perspectives, as well as offering insights from all parties impacted by each story. This unique approach allows readers to gain a well-rounded understanding of complex issues, fostering critical thinking, empathy, and a deeper appreciation for the intricacies of the world around us.
     //         </p>
     //       </div>
 
@@ -44,7 +44,7 @@ export default function OurStory() {
     //           <h2 className="text-2xl font-semibold text-gray-800">AI Innovation</h2>
     //         </div>
     //         <p className="text-gray-600 leading-relaxed">
-    //           Axara News leverages advanced AI technology to deliver content that is accurate, engaging, and accessible. Our platform provides an opportunity to break free from echo chambers by offering a broader spectrum of viewpoints, helping readers understand all sides of the story. In doing so, we aim to foster informed decision-making and promote a more discerning, interconnected global community. At Axara News, we believe that understanding differing perspectives is essential to navigating the complexities of the world today.
+    //           Zaeser News leverages advanced AI technology to deliver content that is accurate, engaging, and accessible. Our platform provides an opportunity to break free from echo chambers by offering a broader spectrum of viewpoints, helping readers understand all sides of the story. In doing so, we aim to foster informed decision-making and promote a more discerning, interconnected global community. At Zaeser News, we believe that understanding differing perspectives is essential to navigating the complexities of the world today.
     //         </p>
     //       </div>
     //     </div>
@@ -56,7 +56,7 @@ export default function OurStory() {
     //         <h2 className="text-3xl font-bold">Our Mission</h2>
     //       </div>
     //       <p className="text-lg leading-relaxed text-center">
-    //         At Axara News, we believe that understanding differing perspectives is essential to navigating the complexities of the world today. We&apos;re committed to fostering informed decision-making and promoting a more discerning, interconnected global community.
+    //         At Zaeser News, we believe that understanding differing perspectives is essential to navigating the complexities of the world today. We&apos;re committed to fostering informed decision-making and promoting a more discerning, interconnected global community.
     //       </p>
     //     </div>
 
@@ -82,11 +82,11 @@ export default function OurStory() {
         {/* Content */}
         <div className="max-w-4xl mx-auto space-y-8">
           <p className="text-gray-800 leading-relaxed text-lg text-justify">
-            Axara News is the world&apos;s first AI-powered multi-perspective news portal, designed to provide a comprehensive and unbiased understanding of global events. Our platform offers news from a range of viewpoints, including neutral, aligned, differing, and opposing perspectives, as well as offering insights from all parties impacted by each story. This unique approach allows readers to gain a well-rounded understanding of complex issues, fostering critical thinking, empathy, and a deeper appreciation for the intricacies of the world around us.
+            Zaeser News is the world&apos;s first AI-powered multi-perspective news portal, designed to provide a comprehensive and unbiased understanding of global events. Our platform offers news from a range of viewpoints, including neutral, aligned, differing, and opposing perspectives, as well as offering insights from all parties impacted by each story. This unique approach allows readers to gain a well-rounded understanding of complex issues, fostering critical thinking, empathy, and a deeper appreciation for the intricacies of the world around us.
           </p>
 
           <p className="text-gray-800 leading-relaxed text-lg text-justify">
-            Axara News leverages advanced AI technology to deliver content that is accurate, engaging, and accessible. Our platform provides an opportunity to break free from echo chambers by offering a broader spectrum of viewpoints, helping readers understand all sides of the story. In doing so, we aim to foster informed decision-making and promote a more discerning, interconnected global community. At Axara News, we believe that understanding differing perspectives is essential to navigating the complexities of the world today.
+            Zaeser News leverages advanced AI technology to deliver content that is accurate, engaging, and accessible. Our platform provides an opportunity to break free from echo chambers by offering a broader spectrum of viewpoints, helping readers understand all sides of the story. In doing so, we aim to foster informed decision-making and promote a more discerning, interconnected global community. At Zaeser News, we believe that understanding differing perspectives is essential to navigating the complexities of the world today.
           </p>
         </div>
         {/* Call to Action */}

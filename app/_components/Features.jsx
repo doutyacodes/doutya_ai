@@ -14,7 +14,7 @@ export default function Features() {
     {
       title: "Tailored Learning Experiences",
       description:
-        "Content Aligned to Learning Style and Personality: Based on each child’s unique personality and learning preferences, Axara customizes content and instructional methods to match how they naturally grasp new information, fostering curiosity and making learning feel intuitive and enjoyable.",
+        "Content Aligned to Learning Style and Personality: Based on each child’s unique personality and learning preferences, Zaeser customizes content and instructional methods to match how they naturally grasp new information, fostering curiosity and making learning feel intuitive and enjoyable.",
       iconPath: "M19 11l-7-7-7 7",
     },
     {
@@ -26,7 +26,7 @@ export default function Features() {
     {
       title: "Personalized Career Suggestions (Ages 6+)",
       description:
-        "Early Career Exploration: Axara’s assessments analyze personality traits and interests, guiding children toward career paths aligned with their natural strengths.",
+        "Early Career Exploration: Zaeser’s assessments analyze personality traits and interests, guiding children toward career paths aligned with their natural strengths.",
       iconPath: "M19 11l-7-7-7 7",
     },
     {
@@ -38,7 +38,7 @@ export default function Features() {
     {
       title: "Interactive Activities & Challenges",
       description:
-        "Hands-On, Offline Engagement: Axara promotes real-world exploration with weekly activities and challenges that kids can complete offline, with progress easily verified via photo or video submissions. This hands-on approach reinforces learning through play and practice.",
+        "Hands-On, Offline Engagement: Zaeser promotes real-world exploration with weekly activities and challenges that kids can complete offline, with progress easily verified via photo or video submissions. This hands-on approach reinforces learning through play and practice.",
       iconPath: "M19 11l-7-7-7 7",
     },
     {
@@ -80,7 +80,7 @@ export default function Features() {
     {
       title: "Data Privacy & Safety Features",
       description:
-        "COPPA-Compliant Design: Axara follows strict privacy regulations, including COPPA, to protect children’s data, ensuring a secure and private learning environment.",
+        "COPPA-Compliant Design: Zaeser follows strict privacy regulations, including COPPA, to protect children’s data, ensuring a secure and private learning environment.",
       iconPath: "M19 11l-7-7-7 7",
     },
   ];
@@ -104,7 +104,7 @@ export default function Features() {
           transition={{ duration: 0.5 }}
           className="text-2xl font-bold text-gray-800"
         >
-          Axara Website Features
+          Zaeser Website Features
         </motion.h2>
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {features.map((feature, index) => (

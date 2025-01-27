@@ -11,7 +11,7 @@ export default function robots() {
           '/.next/',
         ],
       },
-      sitemap: 'https://axaranews.com/sitemap.xml',
+      sitemap: 'www.zaeser.com/sitemap.xml',
     };
   }
   

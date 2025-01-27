@@ -116,7 +116,7 @@ const Page = () => {
                 <p className="text-sm">for successfully completing</p>
                 <span className="font-bold">{badgeData.condition}</span> 
                 <p className="text-sm">
-                on Axara, on{" "}
+                on Zaeser, on{" "}
                 <span className="font-bold text-base">
                   {formatDateToDDMMYYYY(badgeData.earned_at)}
                 </span>

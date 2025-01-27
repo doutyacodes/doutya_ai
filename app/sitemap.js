@@ -9,7 +9,7 @@ export default async function sitemap() {
 
     const sitemapEntries = [
       {
-        url: 'https://axaranews.com',
+        url: 'https://www.zaeser.com',
         lastModified: new Date(),
         changeFrequency: 'daily',
         priority: 1,
@@ -19,7 +19,7 @@ export default async function sitemap() {
     // Process top news groups
     const topNewsEntries = articlesData.newsTopGroupedByGroupId.flatMap(group => 
       group.newsItems.map(article => ({
-        url: `https://axaranews.com/viewpoint/${article.id}`,
+        url: `https://www.zaeser.com/viewpoint/${article.id}`,
         lastModified: new Date(article.updated_at || article.created_at),
         changeFrequency: 'daily',
         priority: 0.9,
@@ -29,7 +29,7 @@ export default async function sitemap() {
     // Process regular news groups
     const regularNewsEntries = articlesData.newsGroupedByGroupId.flatMap(group =>
       group.newsItems.map(article => ({
-        url: `https://axaranews.com/viewpoint/${article.id}`,
+        url: `https://www.zaeser.com/viewpoint/${article.id}`,
         lastModified: new Date(article.updated_at || article.created_at),
         changeFrequency: 'daily',
         priority: 0.9,
@@ -42,7 +42,7 @@ export default async function sitemap() {
     console.error('Error generating sitemap:', error);
     return [
       {
-        url: 'https://axaranews.com',
+        url: 'https://www.zaeser.com',
         lastModified: new Date(),
         changeFrequency: 'daily',
         priority: 1,

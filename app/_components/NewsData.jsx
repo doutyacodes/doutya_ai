@@ -62,7 +62,7 @@ const NewsData = ({
   console.log("article", article);
   const { selectedRegion } = useChildren();
 
-  const shareUrl = `https://www.axaranews.com/news/${
+  const shareUrl = `https://www.zaeser.com/news/${
     selectedRegion == "India" ? "in" : "us"
   }/${article.id}`;
   const title = article.title;
