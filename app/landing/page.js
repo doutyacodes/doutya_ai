@@ -254,7 +254,7 @@ const ModernLanding = () => {
                     <p>Whitefield, Bengaluru,</p>
                     <p>Karnataka, India - 560067</p>
                     <p>Phone : +91 - 6361400800</p>
-                    <p>Email : contact@zaesernews.com</p>
+                    <p>Email : contact@axaranews.com</p>
                   </div>
                   <div className="mt-8 flex space-x-6">
                     <a href="#" className="text-gray-400 hover:text-orange-600 transition-colors">
@@ -348,7 +348,7 @@ const ModernLanding = () => {
               <ul className="space-y-2 text-sm text-gray-600">
                 <li>Whitefield, Bengaluru</li>
                 <li>Karnataka, India - 560067</li>
-                <li>contact@zaesernews.com</li>
+                <li>contact@axaranews.com</li>
                 <li>+91 - 6361400800</li>
               </ul>
             </div>

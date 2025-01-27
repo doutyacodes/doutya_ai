@@ -52,8 +52,8 @@ const ContactPage = () => {
                   <Mail className="w-6 h-6 text-orange-500 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-2">Email</h3>
-                    <a href="mailto:contact@zaesernews.com" className="text-orange-600 hover:text-orange-700 transition-colors">
-                      contact@zaesernews.com
+                    <a href="mailto:contact@axaranews.com" className="text-orange-600 hover:text-orange-700 transition-colors">
+                      contact@axaranews.com
                     </a>
                   </div>
                 </div>
@@ -63,7 +63,7 @@ const ContactPage = () => {
             {/* Get In Touch Button */}
             <div className="mt-12 text-center">
               <a 
-                href="mailto:contact@zaesernews.com" 
+                href="mailto:contact@axaranews.com" 
                 className="group inline-flex items-center bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-colors duration-300"
               >
                 Get In Touch
@@ -99,7 +99,7 @@ export default ContactPage;
 //             <div className="flex items-start space-x-4">
 //               <MapPin className="w-6 h-6 text-orange-500 mt-1 flex-shrink-0" />
 //               <div className="space-y-2">
-//                 <p className="text-xl font-semibold text-gray-900">Zaeser News</p>
+//                 <p className="text-xl font-semibold text-gray-900">Axara News</p>
 //                 <p className="text-gray-600">(Doutya Technologies)</p>
 //                 <p className="text-gray-600">
 //                   Whitefield, Bengaluru,<br />
@@ -122,8 +122,8 @@ export default ContactPage;
 //             <div className="flex items-center space-x-4">
 //               <Mail className="w-6 h-6 text-orange-500 flex-shrink-0" />
 //               <div>
-//                 <a href="mailto:contact@zaesernews.com" className="text-gray-600 hover:text-orange-600 transition-colors">
-//                   contact@zaesernews.com
+//                 <a href="mailto:contact@axaranews.com" className="text-gray-600 hover:text-orange-600 transition-colors">
+//                   contact@axaranews.com
 //                 </a>
 //               </div>
 //             </div>

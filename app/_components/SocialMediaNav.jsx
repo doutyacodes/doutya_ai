@@ -14,27 +14,27 @@ const SocialMediaNav = () => {
           {
               name: 'Threads',
               icon: FaThreads,
-              href: 'https://www.threads.net/@zaeser',
+              href: 'https://www.threads.net/@axaranews',
               color: 'hover:bg-black'
           },
           {
               name: 'Instagram',
               icon: FaInstagram,
-              href: 'https://www.instagram.com/zaeser/',
+              href: 'https://www.instagram.com/axaranews/',
               // color: 'bg-orange-600 hover:bg-orange-700'
               color: 'hover:bg-pink-600'
           },
           {
               name: 'X',
               icon: FaXTwitter,
-              href: 'https://x.com/zaeser',
+              href: 'https://x.com/AxaraNews',
               // color: 'bg-orange-600 hover:bg-orange-700'
               color: 'hover:bg-black'
           },
           {
               name: 'LinkedIn',
               icon: FaLinkedinIn,
-              href: 'https://www.linkedin.com/company/zaeser',
+              href: 'https://www.linkedin.com/company/axaranews',
               // color: 'bg-orange-600 hover:bg-orange-700'
               color: 'hover:bg-blue-700'
           }
