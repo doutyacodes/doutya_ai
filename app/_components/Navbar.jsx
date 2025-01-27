@@ -112,9 +112,7 @@ const Navbar = () => {
               <Link href="/">
                 <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
                   <Image
-                    src={pathname.includes("news") ? "/images/logo5.png" : 
-                        pathname.includes("search") ? "/images/logo6.png" : 
-                        "/images/logo4.png"}
+                    src="/images/logo2.png"
                     fill
                     objectFit="contain"
                     alt="logo"
