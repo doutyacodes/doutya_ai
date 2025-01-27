@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useEffect } from 'react';
 import { Globe, Users, Briefcase, Instagram, Twitter, Linkedin, Network, ChevronRight, MessageSquare, Bot, Brain, Shield } from 'lucide-react';
 import Image from 'next/image';
