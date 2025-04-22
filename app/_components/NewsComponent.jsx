@@ -85,7 +85,7 @@ export default function NewsDetails({ id, showNames }) {
         {result.map((item, index) => (
           <div
             key={index} // Always add a unique key when rendering lists
-            className="  text-[7.9px] text-white text-xs font-medium bg-orange-500 bg-opacity-80 px-2 py-[2px] rounded-md"
+            className="  text-[7.9px] text-white text-xs font-medium bg-red-800 bg-opacity-80 px-2 py-[2px] rounded-md"
           >
             {item.trim()} {/* Remove extra spaces */}
           </div>
@@ -129,7 +129,7 @@ export default function NewsDetails({ id, showNames }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-100 via-white to-orange-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-red-200 via-white to-red-100 flex items-center justify-center">
         <h2 className="text-2xl font-bold text-gray-700">{error}</h2>
       </div>
     );
@@ -137,7 +137,7 @@ export default function NewsDetails({ id, showNames }) {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-100 via-white to-orange-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-red-200 via-white to-red-100 flex items-center justify-center">
         <h2 className="text-2xl font-bold text-gray-700">
           Article not found. Please try another one!
         </h2>

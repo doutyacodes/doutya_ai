@@ -99,7 +99,7 @@ const NewsData = ({
         {result.map((item, index) => (
           <div
             key={index} // Always add a unique key when rendering lists
-            className="  text-[7.9px] text-white text-xs font-medium bg-orange-500 bg-opacity-80 px-2 py-[2px] rounded-md"
+            className="  text-[7.9px] text-white text-xs font-medium bg-red-800 bg-opacity-80 px-2 py-[2px] rounded-md"
           >
             {item.trim()} {/* Remove extra spaces */}
           </div>

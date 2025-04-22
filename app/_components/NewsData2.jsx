@@ -434,7 +434,7 @@ const NewsData2 = ({
                   className={cn(
                     "w-2 h-2 rounded-full transition",
                     currentIndex === index
-                      ? "bg-orange-500"
+                      ? "bg-red-800"
                       : "bg-gray-400 hover:bg-gray-600"
                   )}
                   onClick={() => handleDotClick(index)}

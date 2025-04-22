@@ -7,8 +7,9 @@ import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { HiMagnifyingGlass } from "react-icons/hi2";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { HiArrowLeft, HiMagnifyingGlass } from "react-icons/hi2";
 export default function NewsSection() {
   const [newsCategories, setNewsCategories] = useState([]);
   const [newsTop, setNewsTop] = useState({});
@@ -21,6 +22,14 @@ export default function NewsSection() {
   const [showNames, setShowNames] = useState(null);
   const { selectedAge, selectedRegion } = useChildren();
   const [showSearch, setShowSearch] = useState(false);
+
+  const scrollRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+
   const fetchNews = async () => {
     try {
       setIsLoading(true);
@@ -68,6 +77,9 @@ export default function NewsSection() {
     }
   };
 
+  console.log("showNews", showNews, "showId", showId)
+
+
   useEffect(() => {
     if (selectedAge) {
       fetchNews();
@@ -96,47 +108,165 @@ export default function NewsSection() {
     return categoryNames.filter((name) => name !== null).join(", ");
   }
 
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const checkScrollButtons = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 5);
+    }
+  };
+
+  useEffect(() => {
+    checkScrollButtons();
+    window.addEventListener('resize', checkScrollButtons);
+    return () => window.removeEventListener('resize', checkScrollButtons);
+  }, []);
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 200;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
   return (
     <div className="p-4 text-gray-800 w-full">
-      {/* Category Tabs */}
-      <div className="w-full max-w-[90vw] mb-3">
-        <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
-          <button
-            onClick={() => {
-              setShowSearch((prev) => !prev);
-            }}
-            className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full  ${
-              showSearch
-                ? "bg-orange-500 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-            }`}
-          >
-            Search <HiMagnifyingGlass size={18} />
-          </button>
-          {newsCategories.map((category) => (
-            <button
-              key={category.name}
-              onClick={() => {
-                setSelectedCategory(category.name);
-                setShowId(null);
-                setShowNews(false);
-                setSearchQuery("");
-              }}
-              className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full  ${
-                selectedCategory === category.name && !showId
-                  ? "bg-orange-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
+
+      <div className="w-full bg-gradient-to-r from-blue-400 via-blue-300 to-red-500 mb-4 rounded-lg shadow-md">
+        <div className="w-full mx-auto px-3 py-3 md:px-4 md:py-4">
+          <div className="flex flex-col items-center justify-between">
+            {/* Text Section */}
+            <div className="text-white space-y-1 md:space-y-3">
+              <h1 className="text-base md:text-3xl font-bold text-center flex items-center justify-center">
+                <span className="mr-2">News For Young Explorers</span>
+                <span className="hidden md:inline">✨</span>
+              </h1>
+              <p className="text-[9px] md:text-lg text-center text-white/90">
+                Big stories explained simply, just for you!
+              </p>
+            </div>
+            
+            {/* Small decorative elements visible on larger screens */}
+            <div className="hidden md:flex justify-center mt-1">
+              <div className="flex space-x-3">
+                <div className="w-2 h-2 rounded-full bg-white/80"></div>
+                <div className="w-2 h-2 rounded-full bg-white/80"></div>
+                <div className="w-2 h-2 rounded-full bg-white/80"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Category Tabs */}
+      <div className="w-full max-w-[90vw] md:max-w-[95vw] mb-3">
+        {showNews && showId ? (
+          <button 
+            onClick={() => {
+              setShowNews(true);
+              setShowId(null);
+              setSearchQuery("");
+            }}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-800 rounded-full hover:bg-red-400"
+          >
+            <HiArrowLeft size={18} />
+            Back to Home
+          </button>
+        ) : (
+          <div className="relative group">
+            {/* Left Arrow */}
+            {showLeftArrow && (
+              <button
+                onClick={() => scroll('left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-1 transition-opacity duration-200 focus:outline-none"
+              >
+                <ChevronLeft className="w-4 h-4 text-red-800" />
+              </button>
+            )}
+
+            {/* Right Arrow */}
+            {showRightArrow && (
+              <button
+                onClick={() => scroll('right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-1 transition-opacity duration-200 focus:outline-none"
+              >
+                <ChevronRight className="w-4 h-4 text-red-800" />
+              </button>
+            )}
+
+            {/* Main scroll container */}
+            <div 
+              ref={scrollRef}
+              className="flex space-x-1 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onMouseMove={handleMouseMove}
+              onScroll={checkScrollButtons}
+              style={{
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                WebkitOverflowScrolling: 'touch'
+              }}
+            >
+              <button
+                onClick={() => setShowSearch((prev) => !prev)}
+                className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-[9px] md:text-sm font-medium rounded-full select-none ${
+                  showSearch
+                    ? "bg-red-800 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-red-400"
+                }`}
+              >
+                Search <HiMagnifyingGlass size={18} />
+              </button>
+              {newsCategories.map((category) => (
+                <button
+                  key={category.name}
+                  onClick={() => {
+                    setSelectedCategory(category.name);
+                    setShowId(null);
+                    setShowNews(false);
+                    setSearchQuery("");
+                  }}
+                  className={`whitespace-nowrap px-3 py-2 text-[9px] md:text-sm font-medium rounded-full select-none ${
+                    selectedCategory === category.name
+                      ? "bg-red-800 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-red-400"
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+          </div>
+       )}
+      </div>
+
       {showSearch && (
         <>
           {/* Search Bar */}
@@ -149,7 +279,7 @@ export default function NewsSection() {
             <input
               type="text"
               placeholder="Search news..."
-              className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-800"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -187,7 +317,7 @@ export default function NewsSection() {
         <NewsDetails showNames={showNames} id={showId} />
       ) : (
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-7xl mx-auto gap-6  md:mt-6"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  mx-auto gap-6  md:mt-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           key={selectedCategory}

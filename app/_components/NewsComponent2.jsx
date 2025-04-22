@@ -161,7 +161,7 @@ export default function NewsDetails2({ id, showNames }) {
         {result.map((item, index) => (
           <div
             key={index}
-            className="text-[7.9px] text-white text-xs font-medium bg-orange-500 bg-opacity-80 px-2 py-[2px] rounded-md"
+            className="text-[7.9px] text-white text-xs font-medium bg-red-800 bg-opacity-80 px-2 py-[2px] rounded-md"
           >
             {item.trim()}
           </div>
@@ -216,7 +216,7 @@ export default function NewsDetails2({ id, showNames }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-100 via-white to-orange-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-red-200 via-white to-red-100 flex items-center justify-center">
         <h2 className="text-2xl font-bold text-gray-700">{error}</h2>
       </div>
     );
@@ -224,7 +224,7 @@ export default function NewsDetails2({ id, showNames }) {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-orange-100 via-white to-orange-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-red-200 via-white to-red-100 flex items-center justify-center">
         <h2 className="text-2xl font-bold text-gray-700">
           Article not found. Please try another one!
         </h2>
@@ -306,7 +306,7 @@ export default function NewsDetails2({ id, showNames }) {
                             index !== allArticles.length - 1 ? 'mr-2' : ''
                           } ${
                             index === currentArticleIndex
-                              ? 'bg-orange-500 text-white shadow-lg'
+                              ? 'bg-red-800 text-white shadow-lg'
                               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                           }`}
                           whileHover={{ scale: 1.05 }}
@@ -491,10 +491,10 @@ export default function NewsDetails2({ id, showNames }) {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mx-auto bg-white/90 shadow-xl rounded-full px-4 py-2 border-2 border-orange-300 w-fit"
+          className="mx-auto bg-white/90 shadow-xl rounded-full px-4 py-2 border-2 border-red-500 w-fit"
         >
           <div className="text-center w-full">
-            <div className="text-xs text-orange-600">You are now reading the perspective of</div>
+            <div className="text-xs text-red-900">You are now reading the perspective of</div>
             <div className="font-medium">{article.viewpoint}</div>
           </div>
         </motion.div>

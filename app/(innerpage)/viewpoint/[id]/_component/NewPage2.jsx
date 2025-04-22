@@ -126,7 +126,7 @@ export default function NewsSection() {
 
   return (
     <div className="text-gray-800 w-full">
-      <div className="w-full bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 mb-4">
+      <div className="w-full bg-gradient-to-r from-red-800 via-red-600 to-red-800 mb-4">
         <div className="w-full mx-auto px-3 py-3 md:px-4 md:py-3">
           <div className="flex flex-col items-center justify-between">
             {/* Text Section */}
@@ -236,7 +236,7 @@ export default function NewsSection() {
           <input
             type="text"
             placeholder="Search news..."
-            className="w-full max-w-md mx-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full max-w-md mx-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-700"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

@@ -173,7 +173,7 @@ export default function NewsSection() {
 
   return (
     <div className="p-4 text-gray-800 w-full">
-      <div className="w-full bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 mb-4">
+      <div className="w-full bg-gradient-to-r from-red-800 via-red-700 to-red-800 mb-4">
         <div className="w-full mx-auto px-3 py-3 md:px-4 md:py-3">
           <div className="flex flex-col  items-center justify-between">
             {/* Text Section */}
@@ -194,39 +194,6 @@ export default function NewsSection() {
       </div>
 
       {/* Category Tabs */}
-      {/* <div className="w-full max-w-[90vw] mb-3">
-        <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
-          <button
-            onClick={() => setShowSearch((prev) => !prev)}
-            className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full ${
-              showSearch
-                ? "bg-orange-500 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-            }`}
-          >
-            Search <HiMagnifyingGlass size={18} />
-          </button>
-          {newsCategories.map((category) => (
-            <button
-              key={category.name}
-              onClick={() => {
-                setSelectedCategory(category.name);
-                setShowId(null);
-                setShowNews(false);
-                setSearchQuery("");
-              }}
-              className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full  ${
-                selectedCategory === category.name
-                  ? "bg-orange-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-      </div> */}
-
       <div className="w-full max-w-[90vw] md:max-w-[95vw] mb-3">
         {showNews && showId ? (
           <button 
@@ -235,86 +202,12 @@ export default function NewsSection() {
               setShowId(null);
               setSearchQuery("");
             }}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-orange-200"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-red-400"
           >
             <HiArrowLeft size={18} />
             Back to Home
           </button>
         ) : (
-          // <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
-          //   <button
-          //     onClick={() => setShowSearch((prev) => !prev)}
-          //     className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full ${
-          //       showSearch
-          //         ? "bg-orange-500 text-white"
-          //         : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-          //     }`}
-          //   >
-          //     Search <HiMagnifyingGlass size={18} />
-          //   </button>
-          //   {newsCategories.map((category) => (
-          //     <button
-          //       key={category.name}
-          //       onClick={() => {
-          //         setSelectedCategory(category.name);
-          //         setShowId(null);
-          //         setShowNews(false);
-          //         setSearchQuery("");
-          //       }}
-          //       className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full  ${
-          //         selectedCategory === category.name
-          //           ? "bg-orange-500 text-white"
-          //           : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-          //       }`}
-          //     >
-          //       {category.name}
-          //     </button>
-          //   ))}
-          // </div>
-
-          // <div 
-          //   ref={scrollRef}
-          //   className="flex space-x-1 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
-          //   onMouseDown={handleMouseDown}
-          //   onMouseUp={handleMouseUp}
-          //   onMouseLeave={handleMouseUp}
-          //   onMouseMove={handleMouseMove}
-          //   style={{
-          //     scrollbarWidth: 'none',
-          //     msOverflowStyle: 'none',
-          //     WebkitOverflowScrolling: 'touch'
-          //   }}
-          // >
-          //   <button
-          //     onClick={() => setShowSearch((prev) => !prev)}
-          //     className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full select-none ${
-          //       showSearch
-          //         ? "bg-orange-500 text-white"
-          //         : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-          //     }`}
-          //   >
-          //     Search <HiMagnifyingGlass size={18} />
-          //   </button>
-          //   {newsCategories.map((category) => (
-          //     <button
-          //       key={category.name}
-          //       onClick={() => {
-          //         setSelectedCategory(category.name);
-          //         setShowId(null);
-          //         setShowNews(false);
-          //         setSearchQuery("");
-          //       }}
-          //       className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full select-none ${
-          //         selectedCategory === category.name
-          //           ? "bg-orange-500 text-white"
-          //           : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-          //       }`}
-          //     >
-          //       {category.name}
-          //     </button>
-          //   ))}
-          // </div>
-
           <div className="relative group">
             {/* Left Arrow */}
             {showLeftArrow && (
@@ -322,7 +215,7 @@ export default function NewsSection() {
                 onClick={() => scroll('left')}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-1 transition-opacity duration-200 focus:outline-none"
               >
-                <ChevronLeft className="w-4 h-4 text-orange-500" />
+                <ChevronLeft className="w-4 h-4 text-red-800" />
               </button>
             )}
 
@@ -332,7 +225,7 @@ export default function NewsSection() {
                 onClick={() => scroll('right')}
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-1 transition-opacity duration-200 focus:outline-none"
               >
-                <ChevronRight className="w-4 h-4 text-orange-500" />
+                <ChevronRight className="w-4 h-4 text-red-800" />
               </button>
             )}
 
@@ -355,8 +248,8 @@ export default function NewsSection() {
                 onClick={() => setShowSearch((prev) => !prev)}
                 className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-[9px] md:text-sm font-medium rounded-full select-none ${
                   showSearch
-                    ? "bg-orange-500 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+                    ? "bg-red-800 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-red-400"
                 }`}
               >
                 Search <HiMagnifyingGlass size={18} />
@@ -372,8 +265,8 @@ export default function NewsSection() {
                   }}
                   className={`whitespace-nowrap px-3 py-2 text-[9px] md:text-sm font-medium rounded-full select-none ${
                     selectedCategory === category.name
-                      ? "bg-orange-500 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-orange-200"
+                      ? "bg-red-800 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-red-400"
                   }`}
                 >
                   {category.name}
@@ -394,7 +287,7 @@ export default function NewsSection() {
           <input
             type="text"
             placeholder="Search news..."
-            className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-800"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -431,7 +324,7 @@ export default function NewsSection() {
         <NewsDetails2 showNames={showNames} id={showId} />
       ) : (
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  mx-auto gap-6  md:mt-6"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mx-auto gap-6 md:mt-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           key={selectedCategory}
