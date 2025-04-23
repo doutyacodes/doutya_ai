@@ -18,12 +18,21 @@ const AgeSelectionPopup = ({ onSubmit, onClose }) => {
 
   return (
     <div className="fixed inset-0 h-screen z-[999999999999] bg-gradient-to-br from-orange-200 via-white to-orange-100 bg-opacity-40">
-      <div className="flex justify-center items-center">
-        <Link href={"/"} className="flex justify-center items-center">
-          <Image src={"/images/logo2.png"} width={90} height={120} alt="logo" />
-        </Link>
-      </div>
-      <div className="flex items-center justify-center h-full">
+      {/* Remove the separate div for logo and integrate it into the main container */}
+      <div className="flex flex-col items-center justify-center h-full">
+        {/* Logo positioned above the popup */}
+        <div className="mb-6">
+          <Link href={"/"} className="flex justify-center items-center">
+            <Image
+              src="/images/logo5.png"
+              width={350}
+              height={450}
+              alt="logo"
+              className="w-[250px] sm:w-[300px] md:w-[350px] h-auto"
+            />
+          </Link>
+        </div>
+        
         {/* Popup container */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
@@ -38,7 +47,6 @@ const AgeSelectionPopup = ({ onSubmit, onClose }) => {
           
           {/* Standard select input with Tailwind styling */}
           <div className="mb-6">
-            
             <select
               id="age"
               name="age"

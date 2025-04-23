@@ -12,51 +12,17 @@ const Navbar = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  const [selectedAge, setSelectedAge] = useState(() => {
+    // Check if running in browser environment
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('selectedAge') || '6';
+    }
+    return '6'; // Default age if not in browser or no stored age
+  });
   
   // Check if we're in the kids section
   const isKidsSection = pathname.startsWith("/news");
-
-
-  const NavDropdown = () => {
-    return (
-      <div className="relative">
-        {/* Option 1: Using a "More" icon */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-orange-50 text-gray-700 hover:text-orange-500 transition-all duration-200"
-          aria-label="Additional navigation"
-        >
-          <MoreVertical className="w-5 h-5" />
-        </button>
-  
-        {/* Dropdown Menu */}
-        {isOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 transform opacity-100 scale-100 transition-all duration-200 origin-top-right ring-1 ring-black ring-opacity-5">
-            {/* Decorative pointer */}
-            <div className="absolute right-3 -top-2 w-4 h-4 bg-white transform rotate-45 border-l border-t border-black/5" />
-            
-            <div className="relative bg-white rounded-lg">
-              <Link 
-                href="/about"
-                className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition-colors duration-200"
-              >
-                <Info className="w-4 h-4" />
-                <span className="font-medium">About Us</span>
-              </Link>
-              
-              <Link 
-                href="/contact"
-                className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition-colors duration-200"
-              >
-                <Mail className="w-4 h-4" />
-                <span className="font-medium">Contact Us</span>
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
 
   const NavDropdownAlt = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -106,16 +72,12 @@ const Navbar = () => {
     return (
       <Link 
         href={isKidsSection ? "/viewpoint" : "/news"}
-        className={`flex items-center justify-center p-1 rounded-full border-2 overflow-hidden ${
-          isKidsSection 
-            ? "bg-red-100 border-red-300" 
-            : "border-gray-200 hover:border-red-200 hover:bg-red-50"
-        } transition-all duration-200`}
+        className="flex items-center justify-center p-1 overflow-hidden"
         aria-label={isKidsSection ? "Go to Zeaser Home" : "Go to Zeaser Kids"}
       >
         <div className="relative h-16 w-60">
           <Image
-            src={isKidsSection ? "/images/logo2.png" : "/images/logo5.jpg"}
+            src={isKidsSection ? "/images/logo2.png" : "/images/logo5.png"}
             fill
             objectFit="contain"
             alt={isKidsSection ? "Zeaser Home logo" : "Zeaser Kids logo"}
@@ -124,48 +86,72 @@ const Navbar = () => {
       </Link>
     );
   };
-  
-  // // Mobile toggle with icons
-  // const MobileZeaserKidsToggle = () => {
-  //   return (
-  //     <Link 
-  //       href={isKidsSection ? "/viewpoint" : "/news"}
-  //       className={`flex items-center justify-center w-8 h-8 rounded-full ${
-  //         isKidsSection 
-  //           ? "bg-orange-100 text-orange-600 border border-orange-300" 
-  //           : "hover:bg-orange-50 text-gray-700 hover:text-orange-500 border border-gray-200"
-  //       } transition-all duration-200`}
-  //       aria-label={isKidsSection ? "Go to Zeaser Home" : "Go to Zeaser Kids"}
-  //     >
-  //       {isKidsSection ? (
-  //         <Home className="w-4 h-4" />
-  //       ) : (
-  //        <Users className="w-4 h-4" />
-  //       )}
-  //     </Link>
-  //   );
-  // };
 
   const MobileZeaserKidsToggle = () => {
     return (
       <Link 
         href={isKidsSection ? "/viewpoint" : "/news"}
-        className={`flex items-center justify-center rounded-full ${
-          isKidsSection 
-            ? "bg-red-100 border-1" 
-            : "border-2 border-red-300 hover:bg-red-50"
-        } transition-all duration-200 overflow-hidden`}
+        className="flex items-center justify-center overflow-hidden"
         aria-label={isKidsSection ? "Go to Zeaser Home" : "Go to Zeaser Kids"}
       >
         <div className="relative h-8 w-20">
           <Image
-            src={isKidsSection ? "/images/logo2.png" : "/images/logo5.jpg"}
+            src={isKidsSection ? "/images/logo2.png" : "/images/logo5.png"}
             fill
             objectFit="contain"
             alt={isKidsSection ? "Zeaser Home logo" : "Zeaser Kids logo"}
           />
         </div>
       </Link>
+    );
+  };
+
+  const AgeSelector = () => {
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    
+    const handleAgeChange = (age) => {
+      localStorage.setItem('selectedAge', age);
+      setSelectedAge(age);
+      setIsDropdownOpen(false);
+      // Reload the page to fetch new data
+      window.location.reload();
+    };
+  
+    const ages = Array.from({length: 10}, (_, i) => i + 3); // Creates array [3,4,5,...12]
+    return (
+      <div className="relative">
+        <button
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-400 text-red-800 hover:border-red-500 hover:text-red-900 transition-all duration-200"
+        >
+          <span className="text-sm font-medium">Age: {selectedAge}</span>
+          <ChevronDown 
+            className={`w-4 h-4 transition-transform duration-200 ${
+              isDropdownOpen ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
+  
+        {isDropdownOpen && (
+          <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg py-2 z-50 transform opacity-100 scale-100 transition-all duration-200 origin-top-right ring-1 ring-black ring-opacity-5">
+            <div className="absolute right-3 -top-2 w-4 h-4 bg-white transform rotate-45 border-l border-t border-black/5" />
+            
+            <div className="relative bg-white rounded-lg max-h-48 overflow-y-auto">
+              {ages.map((age) => (
+                <button
+                  key={age}
+                  onClick={() => handleAgeChange(age.toString())}
+                  className={`w-full text-left flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200 ${
+                    selectedAge === age.toString() ? 'bg-red-200 text-red-800 font-semibold' : 'hover:bg-red-100 hover:text-red-700'
+                  }`}
+                >
+                  <span>{age}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     );
   };
   
@@ -189,7 +175,7 @@ const Navbar = () => {
               <Link href="/">
                 <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
                   <Image
-                    src={isKidsSection ? "/images/logo5.jpg" : "/images/logo2.png"}
+                    src={isKidsSection ? "/images/logo5.png" : "/images/logo2.png"}
                     fill
                     objectFit="contain"
                     alt={isKidsSection ? "Zeaser Kids logo" : "Zeaser logo"}
@@ -197,11 +183,16 @@ const Navbar = () => {
                   />
                 </div>
               </Link>
+                {/* Mobile Age Selector - Right of Logo */}
+              <div className="md:hidden absolute right-0">
+                <AgeSelector />
+              </div>
             </div>
 
             {/* Social Media Column - Desktop Only */}
             <div className="hidden md:flex justify-end items-center">
               <div className="flex items-center gap-4">
+              <AgeSelector /> 
                 <SocialMediaNav />
                 <NavDropdownAlt />
               </div>
