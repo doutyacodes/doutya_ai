@@ -184,15 +184,15 @@ const Navbar = () => {
                 </div>
               </Link>
                 {/* Mobile Age Selector - Right of Logo */}
-              <div className="md:hidden absolute right-0">
-                <AgeSelector />
-              </div>
+                <div className="md:hidden absolute right-0">
+                  {isKidsSection && <AgeSelector />}
+                </div>
             </div>
 
             {/* Social Media Column - Desktop Only */}
             <div className="hidden md:flex justify-end items-center">
               <div className="flex items-center gap-4">
-              <AgeSelector /> 
+                {isKidsSection && <AgeSelector />}
                 <SocialMediaNav />
                 <NavDropdownAlt />
               </div>
