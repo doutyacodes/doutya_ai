@@ -5,10 +5,11 @@ import Navbar from "../_components/Navbar";
 import SideBar from "../_components/SideBar";
 import RightSideBar from "../_components/RightSideBar";
 import LayoutWrapper from "../_components/LayoutWrapper";
+import BottomNavigation from "../_components/BottomNav";
 
 const ProtectLayout = ({ children }) => {
   return (
-    <ProtectedRoute allowedRoutes={["/","/search", "/our-story","/our-features","/about-us", "/contact-us", "/news","/testing3","/viewpoint", "/landing"]}>
+    <ProtectedRoute allowedRoutes={["/","/search", "/our-story","/our-features","/about-us", "/contact-us", "/news", "news-map", "/testing3","/viewpoint", "/landing"]}>
       <ChildrenProvider>
         <div className="relative min-h-screen flex bg-white">
           {/* <SideBar /> */}
@@ -19,6 +20,7 @@ const ProtectLayout = ({ children }) => {
             <div className="w-full">
             {children}
             </div>
+            <BottomNavigation />
           </LayoutWrapper>
           {/* <RightSideBar /> */}
         </div>

@@ -1550,3 +1550,21 @@ export const ADULT_NEWS_REPORTS = mysqlTable("adult_news_reports", {
   report_text: text("report_text"),
   created_at: timestamp("created_at").defaultNow(),
 });
+
+// map_news table schema
+export const MAP_NEWS = mysqlTable("map_news", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
+  image_url: text("image_url").notNull(),
+  article_url: text("article_url").notNull(),
+  source_name: varchar("source_name", { length: 100 }),
+  latitude: decimal("latitude", { precision: 10, scale: 7 }),
+  longitude: decimal("longitude", { precision: 10, scale: 7 }),
+  category_id: int("category_id").references(() => MAP_NEWS_CATEGORIES.id),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const MAP_NEWS_CATEGORIES = mysqlTable("map_news_categories", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 100 }).notNull(),
+});

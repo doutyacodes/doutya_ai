@@ -23,6 +23,8 @@ const Navbar = () => {
   
   // Check if we're in the kids section
   const isKidsSection = pathname.startsWith("/news");
+  // Check if we're in the maps section
+  const isMapsSection = pathname.startsWith("/news-map");
 
   const NavDropdownAlt = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -69,6 +71,26 @@ const Navbar = () => {
 
   // Desktop toggle with text
   const DesktopZeaserKidsToggle = () => {
+    // For maps section, we'll keep the viewpoint logo but display a different target page
+    if (isMapsSection) {
+      return (
+        <Link 
+          href="/viewpoint"
+          className="flex flex-col items-center justify-center p-1 overflow-hidden"
+          aria-label="Go to Zeaser Home"
+        >
+          <div className="relative h-16 w-60">
+            <Image
+              src="/images/logo2.png"
+              fill
+              objectFit="contain"
+              alt="Zeaser Home logo"
+            />
+          </div>
+        </Link>
+      );
+    }
+    
     return (
       <Link 
         href={isKidsSection ? "/viewpoint" : "/news"}
@@ -88,6 +110,26 @@ const Navbar = () => {
   };
 
   const MobileZeaserKidsToggle = () => {
+    // For maps section, we'll keep the viewpoint logo but display a different target page
+    if (isMapsSection) {
+      return (
+        <Link 
+          href="/viewpoint"
+          className="flex flex-col items-center justify-center overflow-hidden"
+          aria-label="Go to Zeaser Home"
+        >
+          <div className="relative h-8 w-20">
+            <Image
+              src="/images/logo2.png"
+              fill
+              objectFit="contain"
+              alt="Zeaser Home logo"
+            />
+          </div>
+        </Link>
+      );
+    }
+    
     return (
       <Link 
         href={isKidsSection ? "/viewpoint" : "/news"}
@@ -155,6 +197,38 @@ const Navbar = () => {
     );
   };
   
+  // Function to determine which logo to show in the center
+  const getMainLogo = () => {
+    if (isMapsSection) {
+      return (
+        <div className="flex flex-col items-center">
+          <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
+            <Image
+              src="/images/logo2.png"
+              fill
+              objectFit="contain"
+              alt="Zeaser logo"
+              className="object-center"
+            />
+          </div>
+          <span className="font-bold text-red-800 ">ZEASER MAPS</span>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
+        <Image
+          src={isKidsSection ? "/images/logo5.png" : "/images/logo2.png"}
+          fill
+          objectFit="contain"
+          alt={isKidsSection ? "Zeaser Kids logo" : "Zeaser logo"}
+          className="object-center"
+        />
+      </div>
+    );
+  };
+  
   return (
     <>
       <nav className={cn("w-full bg-transparent md:min-h-16 max-md:py-[0.8vh]  max-md:max-h-[8.5vh] relative")}>
@@ -173,26 +247,18 @@ const Navbar = () => {
               </div>
               
               <Link href="/">
-                <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
-                  <Image
-                    src={isKidsSection ? "/images/logo5.png" : "/images/logo2.png"}
-                    fill
-                    objectFit="contain"
-                    alt={isKidsSection ? "Zeaser Kids logo" : "Zeaser logo"}
-                    className="object-center"
-                  />
-                </div>
+                {getMainLogo()}
               </Link>
                 {/* Mobile Age Selector - Right of Logo */}
                 <div className="md:hidden absolute right-0">
-                  {isKidsSection && <AgeSelector />}
+                  {isKidsSection && !isMapsSection && <AgeSelector />}
                 </div>
             </div>
 
             {/* Social Media Column - Desktop Only */}
             <div className="hidden md:flex justify-end items-center">
               <div className="flex items-center gap-4">
-                {isKidsSection && <AgeSelector />}
+                {isKidsSection && !isMapsSection && <AgeSelector />}
                 <SocialMediaNav />
                 <NavDropdownAlt />
               </div>

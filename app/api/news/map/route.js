@@ -1,0 +1,131 @@
+// // app/api/news/map/route.js
+// import { db } from "@/utils";
+// import { MAP_NEWS, MAP_NEWS_CATEGORIES } from "@/utils/schema";
+// import { NextResponse } from "next/server";
+// import { and, eq, gte, lte, sql } from "drizzle-orm";
+
+// export async function GET(req) {
+//   try {
+//     const url = new URL(req.url);
+    
+//     // Extract bounding box parameters from query string (if present)
+//     const north = url.searchParams.get('north');
+//     const south = url.searchParams.get('south');
+//     const east = url.searchParams.get('east');
+//     const west = url.searchParams.get('west');
+    
+//     // Build query based on whether map bounds are provided
+//     let query = db
+//       .select({
+//         id: MAP_NEWS.id,
+//         title: MAP_NEWS.title,
+//         image_url: MAP_NEWS.image_url,
+//         article_url: MAP_NEWS.article_url,
+//         source_name: MAP_NEWS.source_name,
+//         latitude: MAP_NEWS.latitude,
+//         longitude: MAP_NEWS.longitude,
+//         category: MAP_NEWS_CATEGORIES.name,
+//         created_at: MAP_NEWS.created_at,
+//       })
+//       .from(MAP_NEWS)
+//       .leftJoin(MAP_NEWS_CATEGORIES, eq(MAP_NEWS.category_id, MAP_NEWS_CATEGORIES.id));
+    
+//     // Apply geographic filtering if bounds are provided
+//     if (north && south && east && west) {
+//       query = query.where(
+//         and(
+//           gte(MAP_NEWS.latitude, parseFloat(south)),
+//           lte(MAP_NEWS.latitude, parseFloat(north)),
+//           // Handle cases where the map crosses the 180th meridian
+//           east < west 
+//             ? or(
+//                 gte(MAP_NEWS.longitude, parseFloat(west)),
+//                 lte(MAP_NEWS.longitude, parseFloat(east))
+//               )
+//             : and(
+//                 gte(MAP_NEWS.longitude, parseFloat(west)),
+//                 lte(MAP_NEWS.longitude, parseFloat(east))
+//               )
+//         )
+//       );
+//     }
+    
+//     // Execute the query
+//     const news = await query.orderBy(sql`${MAP_NEWS.created_at} DESC`);
+
+//     // Return the news data
+//     return NextResponse.json(news);
+//   } catch (error) {
+//     console.error("News Map API Error:", error);
+//     return NextResponse.json(
+//       { message: "Error fetching news data" },
+//       { status: 500 }
+//     );
+//   }
+// }
+
+// app/api/news/map/route.js
+import { db } from "@/utils";
+import { MAP_NEWS, MAP_NEWS_CATEGORIES } from "@/utils/schema";
+import { NextResponse } from "next/server";
+import { and, eq, gte, lte, sql, or } from "drizzle-orm";
+
+export async function GET(req) {
+  try {
+    const url = new URL(req.url);
+    
+    // Extract bounding box parameters from query string (if present)
+    const north = url.searchParams.get('north');
+    const south = url.searchParams.get('south');
+    const east = url.searchParams.get('east');
+    const west = url.searchParams.get('west');
+    
+    // Build query based on whether map bounds are provided
+    let query = db
+      .select({
+        id: MAP_NEWS.id,
+        title: MAP_NEWS.title,
+        image_url: MAP_NEWS.image_url,
+        article_url: MAP_NEWS.article_url,
+        source_name: MAP_NEWS.source_name,
+        latitude: MAP_NEWS.latitude,
+        longitude: MAP_NEWS.longitude,
+        category: MAP_NEWS_CATEGORIES.name,
+        created_at: MAP_NEWS.created_at,
+      })
+      .from(MAP_NEWS)
+      .leftJoin(MAP_NEWS_CATEGORIES, eq(MAP_NEWS.category_id, MAP_NEWS_CATEGORIES.id));
+    
+    // Apply geographic filtering if bounds are provided
+    if (north && south && east && west) {
+      query = query.where(
+        and(
+          gte(MAP_NEWS.latitude, parseFloat(south)),
+          lte(MAP_NEWS.latitude, parseFloat(north)),
+          // Handle cases where the map crosses the 180th meridian
+          east < west 
+            ? or(
+                gte(MAP_NEWS.longitude, parseFloat(west)),
+                lte(MAP_NEWS.longitude, parseFloat(east))
+              )
+            : and(
+                gte(MAP_NEWS.longitude, parseFloat(west)),
+                lte(MAP_NEWS.longitude, parseFloat(east))
+              )
+        )
+      );
+    }
+    
+    // Execute the query
+    const news = await query.orderBy(sql`${MAP_NEWS.created_at} DESC`);
+
+    // Return the news data
+    return NextResponse.json(news);
+  } catch (error) {
+    console.error("News Map API Error:", error);
+    return NextResponse.json(
+      { message: "Error fetching news data" },
+      { status: 500 }
+    );
+  }
+}

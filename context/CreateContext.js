@@ -5,8 +5,8 @@ import GlobalApi from "@/app/api/_services/GlobalApi";
 import { usePathname, useRouter } from "next/navigation";
 import WelcomeCard from "@/app/_components/WelcomeCard";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
-import AgeSelectionPopup from "@/app/_components/AgeSelectionPopup"; // Create this component
-import RegionSelectionPopup from "@/app/_components/RegionSelectionPopup"; // Create this component
+import AgeSelectionPopup from "@/app/_components/AgeSelectionPopup";
+import RegionSelectionPopup from "@/app/_components/RegionSelectionPopup";
 import useAuth from "@/app/hooks/useAuth";
 
 const ChildrenContext = createContext();
@@ -21,11 +21,10 @@ export const ChildrenProvider = ({ children }) => {
   const [selectedName, setSelectedName] = useState(null);
   const [selectedChild, setSelectedChild] = useState(null);
   const [selectedGrade, setSelectedGrade] = useState(null);
-  // const [selectedRegion, setSelectedRegion] = useState("India"); // Default to India
   const [selectedRegion, setSelectedRegion] = useState(() => {
     // Fetch the region from localStorage on initial render
     const storedRegion = typeof window !== "undefined" ? localStorage.getItem("userRegion") : null;
-    return storedRegion || "International"; // Default to India if no value is stored
+    return storedRegion || "International"; // Default to International if no value is stored
   });
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
@@ -34,9 +33,7 @@ export const ChildrenProvider = ({ children }) => {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
 
-  const pathname = usePathname()
-
-  // console.log('selectedRegion', selectedRegion)
+  const pathname = usePathname();
 
   const updateChildrenData = (data) => {
     setChildrenData(data);
@@ -62,7 +59,6 @@ export const ChildrenProvider = ({ children }) => {
     if (showPopup) {
       const timer = setTimeout(() => {
         setShowPopup(false);
-        // router.push("/");
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -87,15 +83,11 @@ export const ChildrenProvider = ({ children }) => {
 
   const fetchRegion = async () => {
     try {
-      console.log("fetch region");
-      
       const storedRegion = localStorage.getItem("userRegion");
       if (storedRegion) {
-        console.log("storedRegion region", storedRegion);
         setSelectedRegion(storedRegion);
       } else {
-        console.log("Else");
-        // Default to India if geolocation is not available
+        // Default to International if geolocation is not available
         setSelectedRegion("International");
         localStorage.setItem("userRegion", "International");
       }
@@ -112,17 +104,25 @@ export const ChildrenProvider = ({ children }) => {
     } else {
       // Check localStorage for age data when not authenticated
       const storedAge = localStorage.getItem("selectedAge");
+      
+      // Check if current path is excluded from showing the popup
+      const isExcludedPath = pathname.startsWith("/viewpoint") || pathname.startsWith("/news-maps");
+      
+      // Only show age popup if pathname includes "news" and is not an excluded path
+      const shouldShowAgePopup = !storedAge && 
+                                pathname.includes("news") && 
+                                !isExcludedPath;
+      
       if (storedAge) {
         setSelectedAge(Number(storedAge));
-      } else if(!storedAge && pathname.includes("news")) {
+      } else if (shouldShowAgePopup) {
         setShowAgePopup(true); // Show popup for age selection
       }
     }
 
     // Fetch region
     fetchRegion();
-    console.log("hi")
-  }, [isAuthenticated,pathname]);
+  }, [isAuthenticated, pathname]);
 
   const handleAgeSubmit = (age) => {
     if (age >= 3 && age <= 12) {
@@ -139,7 +139,13 @@ export const ChildrenProvider = ({ children }) => {
   };
 
   const showPopupForUser = () => {
-    setShowAgePopup(true);
+    // Check if current path is excluded from showing the popup
+    const isExcludedPath = pathname.startsWith("/viewpoint") || pathname.startsWith("/news-maps");
+    
+    // Don't show age popup on excluded paths
+    if (!isExcludedPath) {
+      setShowAgePopup(true);
+    }
   };
 
   const showPopupRegion = () => {
