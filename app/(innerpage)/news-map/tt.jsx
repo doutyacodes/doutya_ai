@@ -1,6 +1,7 @@
+
 "use client"
 import ReactDOMServer from "react-dom/server";
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { GoogleMap, useLoadScript, MarkerF, InfoWindowF } from "@react-google-maps/api";
 import { 
     MapPin, AlertTriangle, Building2, UserRound, Car, Cloud, 
@@ -53,13 +54,13 @@ const categoryIcons = {
 // Category colors for markers
 const categoryColors = {
   "Natural Disaster": "#ef4444",
-  "Crime": "#4a044e", // Deep purple for crime
+  "Crime": "#b91c1c",
   "Politics": "#1e40af",
   "Protest": "#f97316",
   "Accident": "#d97706",
   "Weather": "#60a5fa",
   "Festival / Event": "#a855f7",
-  "Conflict / War": "#dc2626", // Bright red for conflict
+  "Conflict / War": "#991b1b",
   "Public Announcement": "#2563eb",
   "Emergency Alert": "#ef4444",
   "Sports": "#ca8a04",
@@ -74,6 +75,7 @@ const categoryColors = {
   "Transportation": "#06b6d4",
   "Default": "#6b7280"
 };
+
 // Get website favicon
 const getFavicon = (articleUrl) => {
   try {
@@ -198,117 +200,6 @@ const createCategoryMarkerIcon = (category, newsCount = 0) => {
   };
 };
 
-// const createCategoryMarkerIcon = (category, newsCount = 0) => {
-//   const color = category ? categoryColors[category] || categoryColors.Default : categoryColors.Default;
-  
-//   // Get the corresponding icon for the category
-//   let IconComponent;
-  
-//   switch(category) {
-//     case "Natural Disaster":
-//       IconComponent = AlertTriangle;
-//       break;
-//     case "Crime":
-//       IconComponent = AlertCircle;
-//       break;
-//     case "Politics":
-//       IconComponent = Building2;
-//       break;
-//     case "Protest":
-//       IconComponent = UserRound;
-//       break;
-//     case "Accident":
-//       IconComponent = Car;
-//       break;
-//     case "Weather":
-//       IconComponent = Cloud;
-//       break;
-//     case "Festival / Event":
-//       IconComponent = PartyPopper;
-//       break;
-//     case "Conflict / War":
-//       IconComponent = Swords;
-//       break;
-//     case "Public Announcement":
-//       IconComponent = Megaphone;
-//       break;
-//     case "Emergency Alert":
-//       IconComponent = AlertCircle;
-//       break;
-//     case "Sports":
-//       IconComponent = Trophy;
-//       break;
-//     case "Health":
-//       IconComponent = Heart;
-//       break;
-//     case "Business":
-//       IconComponent = Briefcase;
-//       break;
-//     case "Entertainment":
-//       IconComponent = Film;
-//       break;
-//     case "Technology":
-//       IconComponent = Laptop;
-//       break;
-//     case "Science":
-//       IconComponent = FlaskConical;
-//       break;
-//     case "Education":
-//       IconComponent = GraduationCap;
-//       break;
-//     case "Environment":
-//       IconComponent = Leaf;
-//       break;
-//     case "Social Issues":
-//       IconComponent = Users;
-//       break;
-//     case "Transportation":
-//       IconComponent = Train;
-//       break;
-//     default:
-//       IconComponent = Globe;
-//   }
-  
-//   // Create SVG string from the icon component with improved styling
-//   const iconSvg = ReactDOMServer.renderToString(
-//     <IconComponent color="white" size={18} strokeWidth={2.5} />
-//   );
-  
-//   // Create the SVG marker with improved visibility
-//   return {
-//     url: `data:image/svg+xml,${encodeURIComponent(`
-//       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 48" width="40" height="48">
-//         <!-- Drop shadow filter -->
-//         <defs>
-//           <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-//             <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.3" />
-//           </filter>
-//         </defs>
-        
-//         <!-- Marker background with white border -->
-//         <path 
-//           d="M20 2C12.13 2 6 8.13 6 16c0 7.5 14 26 14 26s14-18.5 14-26c0-7.87-6.13-14-14-14z" 
-//           fill="${color}"
-//           stroke="white"
-//           stroke-width="2"
-//           filter="url(#shadow)"
-//         />
-        
-//         <!-- Icon positioned in center of marker -->
-//         <g transform="translate(11, 9) scale(1)">${iconSvg}</g>
-        
-//         <!-- Counter background circle for multiple items -->
-//         ${newsCount > 1 ? `
-//           <circle cx="30" cy="12" r="9" fill="white" stroke="#333" stroke-width="1" />
-//         ` : ''}
-//       </svg>
-//     `)}`,
-//     scaledSize: { width: 40, height: 48 },
-//     anchor: { x: 20, y: 42 },
-//     labelOrigin: { x: 20, y: 16 }
-//   };
-// };
-
 // Group news by location
 const groupNewsByLocation = (newsItems) => {
   const groupedNews = {};
@@ -331,61 +222,6 @@ const groupNewsByLocation = (newsItems) => {
   });
   
   return groupedNews;
-};
-
-const MapLegend = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  return (
-    <div className="absolute top-4 right-4 z-10">
-      {/* Mobile and Desktop Toggle Button */}
-      <button 
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="bg-white shadow-md rounded-full p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 block md:hidden"
-      >
-        {isExpanded ? 'Hide Legend' : 'Show Legend'}
-      </button>
-
-      {/* Legend Container */}
-      <div 
-        className={`
-          bg-white shadow-lg rounded-lg p-4 
-          ${isExpanded ? 'block' : 'hidden md:block'}
-          max-h-[70vh] overflow-y-auto
-          w-64 max-w-[calc(100vw-2rem)]
-        `}
-      >
-        <h3 className="text-lg font-semibold mb-3 border-b pb-2">News Categories</h3>
-        
-        <div className="grid grid-cols-1 gap-2">
-          {Object.entries(categoryIcons).map(([category, icon]) => (
-            category !== 'Default' && (
-              <div 
-                key={category} 
-                className="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded transition-colors"
-              >
-                {/* Render the icon */}
-                <div 
-                  className="w-8 h-8 flex items-center justify-center rounded-full"
-                  style={{ 
-                    backgroundColor: categoryColors[category] || categoryColors.Default,
-                    color: 'white'
-                  }}
-                >
-                  {React.cloneElement(icon, { 
-                    size: 20, 
-                    strokeWidth: 2.5,
-                    color: 'white'
-                  })}
-                </div>
-                <span className="text-sm text-gray-700">{category}</span>
-              </div>
-            )
-          ))}
-        </div>
-      </div>
-    </div>
-  );
 };
 
 export default function NewsMap() {
@@ -551,9 +387,6 @@ export default function NewsMap() {
 
   return (
     <div className="relative">
-
-      <MapLegend /> {/* the legends */}
-
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={userLocation || center}
@@ -602,146 +435,16 @@ export default function NewsMap() {
               pixelOffset: new window.google.maps.Size(0, -5)
             }}
           >
-            <div className="max-w-xs relative select-none">
-              {/* Custom header with category badge and custom close button */}
-              <div className="relative w-full mb-2">
-              {/* Category badge centered */}
-              <div className="flex justify-center">
-                <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
-                  <span className="flex items-center justify-center">
-                    {currentNews.category ? 
-                      categoryIcons[currentNews.category] || categoryIcons.Default : 
-                      categoryIcons.Default}
-                  </span>
-                  <span>{currentNews.category || "News"}</span>
-                </span>
-              </div>
-
-              {/* Close button at top-right corner */}
-              <button 
-                onClick={() => setSelectedLocation(null)}
-                className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors"
-                aria-label="Close"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-              
-              {/* Add CSS to hide the default close button */}
-              <style jsx>{`
-                .gm-ui-hover-effect {
-                  display: none !important;
-                }
-                
-                /* Target the parent container's top padding to remove extra space */
-                .gm-style .gm-style-iw-c {
-                  padding-top: 12px !important;
-                }
-              `}</style>
-              
-              {/* News Image */}
-              <div className="relative h-40 w-full overflow-hidden rounded-lg mb-3">
-                <img 
-                  src={currentNews.image_url} 
-                  alt={currentNews.title}
-                  className="object-cover w-full h-full"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/placeholders/news-placeholder.jpg";
-                  }}
-                />
-              </div>
-              
-              {/* News Content */}
-              <h3 className="font-semibold text-lg mb-2 line-clamp-2">{currentNews.title}</h3>
-              
-              {/* Source with Favicon */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  {currentNews.article_url && (
-                    <img
-                      src={getFavicon(currentNews.article_url)}
-                      alt=""
-                      className="w-4 h-4"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  )}
-                  <p className="text-sm text-gray-600">
-                    Source: {currentNews.source_name}
-                  </p>
-                </div>
-                <p className="text-xs text-gray-500">
-                  {new Date(currentNews.created_at).toLocaleDateString()}
-                </p>
-              </div>
-              
-              {/* Action Button */}
-              <button
-                onClick={() => openArticle(currentNews.article_url)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
-              >
-                Read Full Article
-              </button>
-              
-              {/* Navigation Controls for Multiple News */}
-              {hasMultipleNews && (
-                <div className="flex items-center justify-between mt-3">
-                  <button
-                    onClick={handlePrevNews}
-                    disabled={currentNewsIndex === 0}
-                    className={`p-1 rounded ${
-                      currentNewsIndex === 0
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-blue-600 hover:bg-blue-50"
-                    }`}
-                  >
-                    ← Previous
-                  </button>
-                  <span className="text-xs text-gray-500">
-                    {currentNewsIndex + 1} of {selectedNewsGroup.length}
-                  </span>
-                  <button
-                    onClick={handleNextNews}
-                    disabled={currentNewsIndex === selectedNewsGroup.length - 1}
-                    className={`p-1 rounded ${
-                      currentNewsIndex === selectedNewsGroup.length - 1
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-blue-600 hover:bg-blue-50"
-                    }`}
-                  >
-                    Next →
-                  </button>
-                </div>
-              )}
-            </div>
+            {/* the news card code */}
           </InfoWindowF>
         )}
       </GoogleMap>
 
       {/* Loading overlay */}
-      {isLoading && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white py-2 px-4 rounded-full shadow-md z-10">
-          <div className="flex items-center space-x-2">
-            <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>Loading news...</span>
-          </div>
-        </div>
-      )}
+
 
       {/* Error message */}
-      {error && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-700 py-2 px-4 rounded-full shadow-md z-10">
-          {error}
-        </div>
-      )}
+
     </div>
   );
 }
