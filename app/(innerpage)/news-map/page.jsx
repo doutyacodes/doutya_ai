@@ -407,25 +407,54 @@ export default function NewsMap() {
                 />
           );
         })}
-
         {/* Info Window */}
         {currentNews && (
           <InfoWindowF
             position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
             onCloseClick={() => setSelectedLocation(null)}
+            options={{
+              pixelOffset: new window.google.maps.Size(0, -5)
+            }}
           >
-            <div className="max-w-xs">
-              {/* Category Badge */}
-              <div className="mb-3 text-center">
-                <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
-                  <span className="flex items-center justify-center">
-                    {currentNews.category ? 
-                      categoryIcons[currentNews.category] || categoryIcons.Default : 
-                      categoryIcons.Default}
+            <div className="max-w-xs relative select-none">
+              {/* Custom header with category badge and custom close button */}
+              <div className="relative w-full mb-2">
+                {/* Category badge centered */}
+                <div className="flex justify-center">
+                  <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
+                    <span className="flex items-center justify-center">
+                      {currentNews.category ? 
+                        categoryIcons[currentNews.category] || categoryIcons.Default : 
+                        categoryIcons.Default}
+                    </span>
+                    <span>{currentNews.category || "News"}</span>
                   </span>
-                  <span>{currentNews.category || "News"}</span>
-                </span>
+                </div>
+
+                {/* Close button at top-right corner */}
+                <button 
+                  onClick={() => setSelectedLocation(null)}
+                  className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors"
+                  aria-label="Close"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
+
+              
+              {/* Add CSS to hide the default close button */}
+              <style jsx>{`
+                .gm-ui-hover-effect {
+                  display: none !important;
+                }
+                
+                /* Target the parent container's top padding to remove extra space */
+                .gm-style .gm-style-iw-c {
+                  padding-top: 12px !important;
+                }
+              `}</style>
               
               {/* News Image */}
               <div className="relative h-40 w-full overflow-hidden rounded-lg mb-3">
@@ -446,24 +475,24 @@ export default function NewsMap() {
               {/* Source with Favicon */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    {currentNews.article_url && (
+                  {currentNews.article_url && (
                     <img
-                        src={getFavicon(currentNews.article_url)}
-                        alt=""
-                        className="w-4 h-4"
-                        onError={(e) => {
+                      src={getFavicon(currentNews.article_url)}
+                      alt=""
+                      className="w-4 h-4"
+                      onError={(e) => {
                         e.target.style.display = 'none';
-                        }}
+                      }}
                     />
-                    )}
-                    <p className="text-sm text-gray-600">
+                  )}
+                  <p className="text-sm text-gray-600">
                     Source: {currentNews.source_name}
-                    </p>
+                  </p>
                 </div>
                 <p className="text-xs text-gray-500">
-                    {new Date(currentNews.created_at).toLocaleDateString()}
+                  {new Date(currentNews.created_at).toLocaleDateString()}
                 </p>
-                </div>
+              </div>
               
               {/* Action Button */}
               <button

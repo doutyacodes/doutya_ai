@@ -69,7 +69,8 @@ const Navbar = () => {
     );
   };
 
-  // Desktop toggle with text
+  // Desktop toggle with text - COMMENTED OUT
+  /* 
   const DesktopZeaserKidsToggle = () => {
     // For maps section, we'll keep the viewpoint logo but display a different target page
     if (isMapsSection) {
@@ -108,7 +109,9 @@ const Navbar = () => {
       </Link>
     );
   };
+  */
 
+  /* 
   const MobileZeaserKidsToggle = () => {
     // For maps section, we'll keep the viewpoint logo but display a different target page
     if (isMapsSection) {
@@ -147,6 +150,7 @@ const Navbar = () => {
       </Link>
     );
   };
+  */
 
   const AgeSelector = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -204,14 +208,13 @@ const Navbar = () => {
         <div className="flex flex-col items-center">
           <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
             <Image
-              src="/images/logo2.png"
+              src="/images/newsmap.png"
               fill
               objectFit="contain"
               alt="Zeaser logo"
               className="object-center"
             />
           </div>
-          <span className="font-bold text-red-800 ">ZEASER MAPS</span>
         </div>
       );
     }
@@ -234,25 +237,28 @@ const Navbar = () => {
       <nav className={cn("w-full bg-transparent md:min-h-16 max-md:py-[0.8vh]  max-md:max-h-[8.5vh] relative")}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="relative grid items-center w-full md:grid-cols-3">
-            {/* Left Column - Kids Toggle (Desktop) */}
-            <div className="hidden md:flex items-center">
-              <DesktopZeaserKidsToggle />
+            {/* Left Column - Empty space to maintain layout (previously Kids Toggle) */}
+            <div className="hidden md:flex items-center justify-start">
+              {/* DesktopZeaserKidsToggle is commented out but space is maintained */}
+              <div className="h-16 w-60"></div>
             </div>
             
-            {/* Logo Column with Mobile Toggle on Left */}
+            {/* Logo Column with Mobile Empty Space on Left */}
             <div className="flex items-center justify-center relative">
-              {/* Mobile Kids Toggle - Left of Logo */}
+              {/* Mobile Kids Toggle Space - Left of Logo */}
               <div className="md:hidden absolute left-0">
-                <MobileZeaserKidsToggle />
+                {/* MobileZeaserKidsToggle is commented out but space is maintained */}
+                <div className="h-8 w-20"></div>
               </div>
               
               <Link href="/">
                 {getMainLogo()}
               </Link>
-                {/* Mobile Age Selector - Right of Logo */}
-                <div className="md:hidden absolute right-0">
-                  {isKidsSection && !isMapsSection && <AgeSelector />}
-                </div>
+              
+              {/* Mobile Age Selector - Right of Logo */}
+              <div className="md:hidden absolute right-0">
+                {isKidsSection && !isMapsSection && <AgeSelector />}
+              </div>
             </div>
 
             {/* Social Media Column - Desktop Only */}
