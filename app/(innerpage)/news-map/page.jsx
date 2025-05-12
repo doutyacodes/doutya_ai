@@ -86,15 +86,13 @@ const getFavicon = (articleUrl) => {
   }
 };
 
-// Create SVG marker URLs with embedded category icons
-// Update the createCategoryMarkerIcon function to use the Lucide React components
-
-const createCategoryMarkerIcon = (category) => {
-    const color = category ? categoryColors[category] || categoryColors.Default : categoryColors.Default;
-    
+const createCategoryMarkerIcon = (category, newsCount = 0) => {
+  const color = category ? categoryColors[category] || categoryColors.Default : categoryColors.Default;
+  
+  // Get the corresponding icon for the category
     // Get the corresponding icon for the category
     let IconComponent;
-    
+  
     switch(category) {
       case "Natural Disaster":
         IconComponent = AlertTriangle;
@@ -160,24 +158,157 @@ const createCategoryMarkerIcon = (category) => {
         IconComponent = Globe;
     }
   
-    // Create SVG string from the icon component
-    const iconSvg = ReactDOMServer.renderToString(
-      <IconComponent color="white" size={16} />
-    );
-    
-    // Create the SVG marker with the rendered icon
-    return {
-      url: `data:image/svg+xml,${encodeURIComponent(`
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36">
-          <path fill="${color}" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-          <g transform="translate(6, 5) scale(0.75)">${iconSvg}</g>
-        </svg>
-      `)}`,
-      scaledSize: { width: 36, height: 36 },
-      anchor: { x: 18, y: 36 },
-      labelOrigin: { x: 18, y: 36 }
-    };
+  // Create SVG string from the icon component with improved styling
+  const iconSvg = ReactDOMServer.renderToString(
+    <IconComponent color="white" size={22} strokeWidth={2.5} />
+  );
+  
+  // Create the SVG marker with improved visibility
+  return {
+    url: `data:image/svg+xml,${encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 58" width="48" height="58">
+        <!-- Enhanced drop shadow filter -->
+        <defs>
+          <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.4" />
+          </filter>
+        </defs>
+        
+        <!-- Marker background with stronger white border -->
+        <path 
+          d="M24 2C14.06 2 6 10.06 6 20c0 9.5 18 32 18 32s18-22.5 18-32c0-9.94-8.06-18-18-18z" 
+          fill="${color}"
+          stroke="white"
+          stroke-width="3"
+          filter="url(#shadow)"
+        />
+        
+        <!-- Icon positioned in center of marker -->
+        <g transform="translate(13, 11) scale(1)">${iconSvg}</g>
+        
+        <!-- Counter background circle for multiple items -->
+        ${newsCount > 1 ? `
+          <circle cx="36" cy="12" r="10" fill="white" stroke="#333" stroke-width="1.5" />
+          <text x="36" y="16" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle" fill="#333">${newsCount}</text>
+        ` : ''}
+      </svg>
+    `)}`,
+    scaledSize: { width: 48, height: 58 },
+    anchor: { x: 24, y: 52 },
+    labelOrigin: { x: 24, y: 20 }
   };
+};
+
+// const createCategoryMarkerIcon = (category, newsCount = 0) => {
+//   const color = category ? categoryColors[category] || categoryColors.Default : categoryColors.Default;
+  
+//   // Get the corresponding icon for the category
+//   let IconComponent;
+  
+//   switch(category) {
+//     case "Natural Disaster":
+//       IconComponent = AlertTriangle;
+//       break;
+//     case "Crime":
+//       IconComponent = AlertCircle;
+//       break;
+//     case "Politics":
+//       IconComponent = Building2;
+//       break;
+//     case "Protest":
+//       IconComponent = UserRound;
+//       break;
+//     case "Accident":
+//       IconComponent = Car;
+//       break;
+//     case "Weather":
+//       IconComponent = Cloud;
+//       break;
+//     case "Festival / Event":
+//       IconComponent = PartyPopper;
+//       break;
+//     case "Conflict / War":
+//       IconComponent = Swords;
+//       break;
+//     case "Public Announcement":
+//       IconComponent = Megaphone;
+//       break;
+//     case "Emergency Alert":
+//       IconComponent = AlertCircle;
+//       break;
+//     case "Sports":
+//       IconComponent = Trophy;
+//       break;
+//     case "Health":
+//       IconComponent = Heart;
+//       break;
+//     case "Business":
+//       IconComponent = Briefcase;
+//       break;
+//     case "Entertainment":
+//       IconComponent = Film;
+//       break;
+//     case "Technology":
+//       IconComponent = Laptop;
+//       break;
+//     case "Science":
+//       IconComponent = FlaskConical;
+//       break;
+//     case "Education":
+//       IconComponent = GraduationCap;
+//       break;
+//     case "Environment":
+//       IconComponent = Leaf;
+//       break;
+//     case "Social Issues":
+//       IconComponent = Users;
+//       break;
+//     case "Transportation":
+//       IconComponent = Train;
+//       break;
+//     default:
+//       IconComponent = Globe;
+//   }
+  
+//   // Create SVG string from the icon component with improved styling
+//   const iconSvg = ReactDOMServer.renderToString(
+//     <IconComponent color="white" size={18} strokeWidth={2.5} />
+//   );
+  
+//   // Create the SVG marker with improved visibility
+//   return {
+//     url: `data:image/svg+xml,${encodeURIComponent(`
+//       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 48" width="40" height="48">
+//         <!-- Drop shadow filter -->
+//         <defs>
+//           <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+//             <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.3" />
+//           </filter>
+//         </defs>
+        
+//         <!-- Marker background with white border -->
+//         <path 
+//           d="M20 2C12.13 2 6 8.13 6 16c0 7.5 14 26 14 26s14-18.5 14-26c0-7.87-6.13-14-14-14z" 
+//           fill="${color}"
+//           stroke="white"
+//           stroke-width="2"
+//           filter="url(#shadow)"
+//         />
+        
+//         <!-- Icon positioned in center of marker -->
+//         <g transform="translate(11, 9) scale(1)">${iconSvg}</g>
+        
+//         <!-- Counter background circle for multiple items -->
+//         ${newsCount > 1 ? `
+//           <circle cx="30" cy="12" r="9" fill="white" stroke="#333" stroke-width="1" />
+//         ` : ''}
+//       </svg>
+//     `)}`,
+//     scaledSize: { width: 40, height: 48 },
+//     anchor: { x: 20, y: 42 },
+//     labelOrigin: { x: 20, y: 16 }
+//   };
+// };
 
 // Group news by location
 const groupNewsByLocation = (newsItems) => {
@@ -375,38 +506,36 @@ export default function NewsMap() {
           streetViewControl: false,
           mapTypeControl: true,
           zoomControl: true,
+          gestureHandling: "greedy", // This enables one finger pan on mobile
         }}
         onLoad={(map) => setMapRef(map)}
         onIdle={(map) => handleBoundsChanged(map)}
       >
         {/* News Markers */}
         {Object.keys(groupedNews).map((locationKey) => {
-          const [lat, lng] = locationKey.split(',').map(parseFloat);
-          const newsAtLocation = groupedNews[locationKey];
-          const mainNews = newsAtLocation[0]; // Use the first (most recent) news for the marker
-          const categoryColor = mainNews.category ? 
-            categoryColors[mainNews.category] || categoryColors.Default : 
-            categoryColors.Default;
-          
-          return (
-            <MarkerF
-                key={locationKey}
-                position={{ lat, lng }}
-                onClick={() => handleMarkerClick(locationKey)}
-                icon={createCategoryMarkerIcon(mainNews.category)}
-                label={
-                    newsAtLocation.length > 1 
-                    ? {
-                        text: `${newsAtLocation.length}`,
-                        color: "#333",
-                        fontSize: "10px",
-                        fontWeight: "bold",
-                    }
-                    : null
-                }
-                />
-          );
-        })}
+        const [lat, lng] = locationKey.split(',').map(parseFloat);
+        const newsAtLocation = groupedNews[locationKey];
+        const mainNews = newsAtLocation[0]; // Use the first (most recent) news for the marker
+        
+        return (
+          <MarkerF
+            key={locationKey}
+            position={{ lat, lng }}
+            onClick={() => handleMarkerClick(locationKey)}
+            icon={createCategoryMarkerIcon(mainNews.category, newsAtLocation.length)}
+            label={
+              newsAtLocation.length > 1 
+              ? {
+                  text: `${newsAtLocation.length}`,
+                  color: "#333",
+                  fontSize: "12px",
+                  fontWeight: "bold"
+              }
+              : null
+            }
+          />
+        );
+      })}
         {/* Info Window */}
         {currentNews && (
           <InfoWindowF
@@ -419,29 +548,29 @@ export default function NewsMap() {
             <div className="max-w-xs relative select-none">
               {/* Custom header with category badge and custom close button */}
               <div className="relative w-full mb-2">
-                {/* Category badge centered */}
-                <div className="flex justify-center">
-                  <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
-                    <span className="flex items-center justify-center">
-                      {currentNews.category ? 
-                        categoryIcons[currentNews.category] || categoryIcons.Default : 
-                        categoryIcons.Default}
-                    </span>
-                    <span>{currentNews.category || "News"}</span>
+              {/* Category badge centered */}
+              <div className="flex justify-center">
+                <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
+                  <span className="flex items-center justify-center">
+                    {currentNews.category ? 
+                      categoryIcons[currentNews.category] || categoryIcons.Default : 
+                      categoryIcons.Default}
                   </span>
-                </div>
-
-                {/* Close button at top-right corner */}
-                <button 
-                  onClick={() => setSelectedLocation(null)}
-                  className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors"
-                  aria-label="Close"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                  <span>{currentNews.category || "News"}</span>
+                </span>
               </div>
+
+              {/* Close button at top-right corner */}
+              <button 
+                onClick={() => setSelectedLocation(null)}
+                className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors"
+                aria-label="Close"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
               
               {/* Add CSS to hide the default close button */}
