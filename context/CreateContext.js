@@ -106,7 +106,7 @@ export const ChildrenProvider = ({ children }) => {
       const storedAge = localStorage.getItem("selectedAge");
       
       // Check if current path is excluded from showing the popup
-      const isExcludedPath = pathname.startsWith("/viewpoint") || pathname.startsWith("/news-maps");
+      const isExcludedPath = pathname.startsWith("/viewpoint") || pathname.startsWith("/news-map");
       
       // Only show age popup if pathname includes "news" and is not an excluded path
       const shouldShowAgePopup = !storedAge && 

@@ -49,31 +49,30 @@ const categoryIcons = {
   "Transportation": <Train size={24} className="text-cyan-600" />,
   "Default": <Globe size={24} className="text-gray-500" />
 };
-
-// Category colors for markers
 const categoryColors = {
-  "Natural Disaster": "#ef4444",
-  "Crime": "#4a044e", // Deep purple for crime
-  "Politics": "#1e40af",
-  "Protest": "#f97316",
-  "Accident": "#d97706",
-  "Weather": "#60a5fa",
-  "Festival / Event": "#a855f7",
-  "Conflict / War": "#dc2626", // Bright red for conflict
-  "Public Announcement": "#2563eb",
-  "Emergency Alert": "#ef4444",
-  "Sports": "#ca8a04",
-  "Health": "#16a34a",
-  "Business": "#4b5563",
-  "Entertainment": "#ec4899",
-  "Technology": "#6366f1",
-  "Science": "#0d9488",
-  "Education": "#1d4ed8",
-  "Environment": "#22c55e",
-  "Social Issues": "#9333ea",
-  "Transportation": "#06b6d4",
-  "Default": "#6b7280"
+  "Natural Disaster": "#FF8C00",     // Dark Orange
+  "Crime": "#2E8B57",                // Sea Green
+  "Politics": "#1E90FF",             // Dodger Blue
+  "Protest": "#FF4500",              // Orangered
+  "Accident": "#8A2BE2",             // Blue Violet
+  "Weather": "#00CED1",              // Dark Turquoise
+  "Festival / Event": "#FF1493",     // Deep Pink
+  "Conflict / War": "#B22222",       // Firebrick (your red)
+  "Public Announcement": "#FFD700",  // Gold
+  "Emergency Alert": "#FF00FF",      // Fuchsia
+  "Sports": "#00FF00",               // Bright Lime
+  "Health": "#DC143C",               // Crimson (reddish but distinct from Firebrick)
+  "Business": "#4682B4",             // Steel Blue
+  "Entertainment": "#FF69B4",        // Hot Pink
+  "Technology": "#7B68EE",           // Medium Slate Blue
+  "Science": "#A9A9A9",              // Dark Gray (as you requested)
+  "Education": "#000000",            // Black
+  "Environment": "#228B22",          // Forest Green
+  "Social Issues": "#FF6347",        // Tomato (warmer, more orange-red)
+  "Transportation": "#40E0D0",       // Turquoise
+  "Default": "#A52A2A"               // Brown
 };
+
 // Get website favicon
 const getFavicon = (articleUrl) => {
   try {
@@ -346,10 +345,10 @@ const MapLegend = () => {
         {isExpanded ? 'Hide Legend' : 'Show Legend'}
       </button>
 
-      {/* Legend Container */}
+      {/* Legend Container with added bg-opacity */}
       <div 
         className={`
-          bg-white shadow-lg rounded-lg p-4 
+          bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-4 
           ${isExpanded ? 'block' : 'hidden md:block'}
           max-h-[70vh] overflow-y-auto
           w-64 max-w-[calc(100vw-2rem)]
@@ -362,7 +361,7 @@ const MapLegend = () => {
             category !== 'Default' && (
               <div 
                 key={category} 
-                className="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded transition-colors"
+                className="flex items-center space-x-3 hover:bg-gray-50/90 p-2 rounded transition-colors"
               >
                 {/* Render the icon */}
                 <div 
