@@ -50,7 +50,7 @@ import { ADULT_NEWS } from "./schema";
   export const PERSPECTIVE_VIEWS = mysqlTable("perspective_views", {
     id: int("id").primaryKey().autoincrement(),
     article_id: int("article_id").notNull().references(() => ADULT_NEWS.id), // Reference to the article
-    viewpoint: varchar("viewpoint", { length: 255 }).notNull(), // Perspective/viewpoint name (e.g., Political, Positive, Negative)
+    viewpoint: varchar("viewpoint", { length: 255 }).notNull(), // Perspective/news name (e.g., Political, Positive, Negative)
     views: int("views").default(0), // Total views for this viewpoint
     engagement_time: int("engagement_time").default(0), // Total engagement time for this perspective
     session_id: varchar("session_id", { length: 255 }).notNull(), // Session ID of the user (or user ID if authenticated)

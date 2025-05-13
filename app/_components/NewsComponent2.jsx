@@ -21,7 +21,7 @@ import toast from "react-hot-toast";
 import { FiCopy } from "react-icons/fi";
 import Cookies from 'js-cookie';
 import { useRouter } from "next/navigation";
-import PerspectiveNavigation from "../(innerpage)/viewpoint/_components/PerspectiveNavigation/PerspectiveNavigation";
+import PerspectiveNavigation from "../(innerpage)/news/_components/PerspectiveNavigation/PerspectiveNavigation";
 import { cn } from "@/lib/utils";
 import { trackAction } from "./(analytics)/shareUrlTracker";
 
@@ -185,7 +185,7 @@ export default function NewsDetails2({ id, showNames }) {
   };
 
   const handleCopyLink = () => {
-    const shareUrl = `https://www.doutya.com/viewpoint/${id}`;
+    const shareUrl = `https://www.doutya.com/news/${id}`;
     navigator.clipboard
       .writeText(shareUrl)
       .then(() => {
@@ -234,7 +234,7 @@ export default function NewsDetails2({ id, showNames }) {
 
   const { title, category, image_url, date, description, created_at } = article;
 
-  const shareUrl = `https://www.doutya.com/viewpoint/${id}`;
+  const shareUrl = `https://www.doutya.com/news/${id}`;
 
   return (
       <>

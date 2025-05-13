@@ -74,11 +74,11 @@ export default function NewsSection() {
     //   fetchNews();
     // }
     // if (selectedRegion == "India") {
-    //   router.replace("/news/in");
+    //   router.replace("/news-kids/in");
     // } else {
-    //   router.replace("/news/us");
+    //   router.replace("/news-kids/us");
     // }
-    router.replace("/viewpoint");
+    router.replace("/news");
   }, [selectedAge, selectedRegion]);
 
   const currentCategoryNews = newsByCategory[selectedCategory] || [];

@@ -129,7 +129,7 @@ const NewsData2 = ({
   const router = useRouter();
   const { selectedRegion } = useChildren();
   const [currentIndex, setCurrentIndex] = useState(0); // State to track the title index
-  const shareUrl = `https://www.doutya.com/viewpoint/${article.id}`;
+  const shareUrl = `https://www.doutya.com/news/${article.id}`;
   const title = article.title;
   const isBelowMd = useMediaQuery({ query: "(max-width: 768px)" });
   const [isPaused, setIsPaused] = useState(false);
@@ -301,7 +301,7 @@ const NewsData2 = ({
             //   setShowNews(true);
             // }}
             onClick={() => {
-              router.push(`/viewpoint/${article.id}`);
+              router.push(`/news/${article.id}`);
             }}
           /> */}
 
@@ -317,7 +317,7 @@ const NewsData2 = ({
               muted // Required for autoplay to work in most browsers
               loop
               onClick={() => {
-                router.push(`/viewpoint/${article.id}`);
+                router.push(`/news/${article.id}`);
               }}
             >           
             Your browser does not support the video tag.
@@ -333,7 +333,7 @@ const NewsData2 = ({
                 size && "md:rounded-lg"
               )}
               onClick={() => {
-                router.push(`/viewpoint/${article.id}`);
+                router.push(`/news/${article.id}`);
               }}
             />
           )}
@@ -417,7 +417,7 @@ const NewsData2 = ({
                 //   setShowNews(true);
                 // }}
                 onClick={() => {
-                  router.push(`/viewpoint/${article.id}`);
+                  router.push(`/news/${article.id}`);
                 }}
                 className={cn(
                   "text-lg font-medium text-gray-800 mb-2 cursor-pointer line-clamp-3",
@@ -499,7 +499,7 @@ const NewsData2 = ({
           </div>
           {size && (
             <Link
-              href={`/news/${selectedRegion == "India" ? "in" : "us"}/${
+              href={`/news-kids/${selectedRegion == "India" ? "in" : "us"}/${
                 article.id
               }`}
               className="text-sm max-md:line-clamp-4 text-justify max-md:leading-5 text-gray-800 mb-2 max-md:mt-4 cursor-pointer max-md:text-xs  max-md:px-2 md:mt-6"

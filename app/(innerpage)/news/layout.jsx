@@ -1,11 +1,14 @@
-import React from 'react'
+'use client';
+import { usePageViewTracker } from "@/app/_components/(analytics)/usePageViewTracker";
 
-const layout = ({children}) => {
+ // Indicating this is a Client Component
+
+export default function HomeLayout({ children }) {
+// usePageViewTracker();
+
   return (
-    <div className='w-full'>
-        {children}
+    <div>
+      {children} {/* This renders all the pages or components inside /home */}
     </div>
-  )
+  );
 }
-
-export default layout

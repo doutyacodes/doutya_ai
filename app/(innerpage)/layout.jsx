@@ -9,7 +9,7 @@ import BottomNavigation from "../_components/BottomNav";
 
 const ProtectLayout = ({ children }) => {
   return (
-    <ProtectedRoute allowedRoutes={["/","/search", "/our-story","/our-features","/about-us", "/contact-us", "/news", "news-map", "/testing3","/viewpoint", "/landing"]}>
+    <ProtectedRoute allowedRoutes={["/","/search", "/our-story","/our-features","/about-us", "/contact-us", "/news-kids", "news-map", "/testing3","/news", "/landing"]}>
       <ChildrenProvider>
         <div className="relative min-h-screen flex bg-white">
           {/* <SideBar /> */}

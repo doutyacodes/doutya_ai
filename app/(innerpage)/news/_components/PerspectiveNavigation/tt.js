@@ -119,7 +119,7 @@
 //             {isLastPerspective ? (
 //               <div className="bg-[rgba(255,255,255,0.95)] flex flex-col rounded-lg shadow-lg border border-orange-300">
 //                 <button 
-//                   onClick={() => router.push('/viewpoint')}
+//                   onClick={() => router.push('/news')}
 //                   className="p-2 md:p-4 hover:bg-orange-50 transition-colors rounded-t-lg border-b border-orange-200"
 //                 >
 //                   <div className="flex items-center justify-between gap-1 md:gap-2">
@@ -133,7 +133,7 @@
                 
 //                 {nextArticle && (
 //                   <button 
-//                     onClick={() => router.push(`/viewpoint/${nextArticle.id}`)}
+//                     onClick={() => router.push(`/news/${nextArticle.id}`)}
 //                     className="p-2 md:p-4 hover:bg-orange-50 transition-colors rounded-b-lg group relative"
 //                   >
 //                     <div className="flex items-center justify-between gap-1 md:gap-2">
@@ -185,7 +185,7 @@
 //             {/* Previous Article Button - Show when on first perspective */}
 //             {isFirstPerspective && previousArticle && (
 //               <button 
-//                 onClick={() => router.push(`/viewpoint/${previousArticle.id}`)}
+//                 onClick={() => router.push(`/news/${previousArticle.id}`)}
 //                 className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105 group relative"
 //               >
 //                 <div className="flex items-center gap-2">
@@ -206,7 +206,7 @@
 
 //             {/* Back to News Button */}
 //             <button 
-//               onClick={() => router.push('/news')}
+//               onClick={() => router.push('/news-kids')}
 //               className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105"
 //             >
 //               <div className="flex items-center gap-2">
@@ -235,7 +235,7 @@
 //               // Next Article Button at last perspective
 //               nextArticle && (
 //                 <button 
-//                   onClick={() => router.push(`/viewpoint/${nextArticle.id}`)}
+//                   onClick={() => router.push(`/news/${nextArticle.id}`)}
 //                   className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105 group relative"
 //                 >
 //                   <div className="flex items-center gap-2">
@@ -369,7 +369,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
               {/* Previous Article Button - Show when on first perspective */}
               {isFirstPerspective && previousArticle && (
                   <button 
-                      onClick={() => router.push(`/viewpoint/${previousArticle.id}`)}
+                      onClick={() => router.push(`/news/${previousArticle.id}`)}
                       className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105 group relative"
                       >
                       <div className="flex items-center gap-2">
@@ -431,7 +431,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                 <div className="flex flex-col gap-3">
                   {nextArticle && (
                     <button 
-                      onClick={() => router.push(`/viewpoint/${nextArticle.id}`)}
+                      onClick={() => router.push(`/news/${nextArticle.id}`)}
                       className="bg-[rgba(255,255,255,0.95)] p-2 md:p-4 hover:bg-orange-50 transition-colors rounded-b-lg group relative rounded-lg shadow-lg border border-orange-300"
                     >
                       <div className="flex items-center justify-between gap-1 md:gap-2">
@@ -452,7 +452,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                   )}
 
                   <button 
-                    onClick={() => router.push('/viewpoint')}
+                    onClick={() => router.push('/news')}
                     className="bg-[rgba(255,255,255,0.95)] p-2 md:p-4 hover:bg-orange-50 transition-colors rounded-t-lg rounded-lg shadow-lg border border-orange-300"
                   >
                     <div className="flex items-center justify-between gap-1 md:gap-2">

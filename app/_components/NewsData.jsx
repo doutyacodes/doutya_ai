@@ -151,7 +151,7 @@ const NewsData = ({
           // }}
           onClick={() => {
             router.push(
-              `/news/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
+              `/news-kids/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
             );
           }}
         />
@@ -182,7 +182,7 @@ const NewsData = ({
             // }}
             onClick={() => {
               router.push(
-                `/news/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
+                `/news-kids/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
               );
             }}
             className={cn(
@@ -250,7 +250,7 @@ const NewsData = ({
         </div>
         {size && (
           <Link
-            href={`/news/${selectedRegion == "India" ? "in" : "us"}/${
+            href={`/news-kids/${selectedRegion == "India" ? "in" : "us"}/${
               article.id
             }`}
             className="text-sm max-md:line-clamp-4 text-justify max-md:leading-5 text-gray-800 mb-2 max-md:mt-4 cursor-pointer max-md:text-xs  max-md:px-2 md:mt-6"

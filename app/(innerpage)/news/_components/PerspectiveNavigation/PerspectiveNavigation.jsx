@@ -90,7 +90,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
               {/* Previous Article Button - Show when on first perspective */}
               {isFirstPerspective && previousArticle ? (
                 <button 
-                onClick={() => router.push(`/viewpoint/${previousArticle.id}`)}
+                onClick={() => router.push(`/news-kids/${previousArticle.id}`)}
                 className="bg-red-600 rounded-lg p-2 md:p-4 shadow-lg hover:bg-red-900 border border-red-900 transition-all hover:scale-105 group relative"
               >
                 <div className="flex items-center gap-2">
@@ -168,7 +168,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                 <div className="flex flex-col gap-3">
                   {nextArticle && (
                     <button 
-                    onClick={() => router.push(`/viewpoint/${nextArticle.id}`)}
+                    onClick={() => router.push(`/news-kids/${nextArticle.id}`)}
                     className="bg-red-600 p-2 md:p-4 hover:bg-red-900 transition-colors rounded-lg shadow-lg border border-red-900 group relative"
                   >
                     <div className="flex items-center justify-between gap-1 md:gap-2">
@@ -188,7 +188,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                   )}
 
                   {/* <button 
-                    onClick={() => router.push('/viewpoint')}
+                    onClick={() => router.push('/news')}
                     className="bg-[rgba(255,255,255,0.95)] p-2 md:p-4 hover:bg-orange-50 transition-colors rounded-t-lg rounded-lg shadow-lg border border-orange-300"
                   >
                     <div className="flex items-center justify-between gap-1 md:gap-2">

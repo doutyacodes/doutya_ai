@@ -155,7 +155,7 @@ export default function NewsDetails({ id, showNames }) {
     meanings,
     created_at,
   } = article;
-  const shareUrl = `https://www.doutya.com/news/${
+  const shareUrl = `https://www.doutya.com/news-kids/${
     selectedRegion == "India" ? "in" : "us"
   }/${id}`;
 

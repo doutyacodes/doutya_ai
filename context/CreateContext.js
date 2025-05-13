@@ -104,14 +104,20 @@ export const ChildrenProvider = ({ children }) => {
     } else {
       // Check localStorage for age data when not authenticated
       const storedAge = localStorage.getItem("selectedAge");
+      console.log("storedage", storedAge)
       
       // Check if current path is excluded from showing the popup
-      const isExcludedPath = pathname.startsWith("/viewpoint") || pathname.startsWith("/news-map");
+      // const isExcludedPath = pathname.startsWith("/news") || pathname.startsWith("/news-map");
       
-      // Only show age popup if pathname includes "news" and is not an excluded path
-      const shouldShowAgePopup = !storedAge && 
-                                pathname.includes("news") && 
-                                !isExcludedPath;
+      // // Only show age popup if pathname includes "news" and is not an excluded path
+      // const shouldShowAgePopup = !storedAge && 
+      //                           pathname.includes("news-kids") && 
+      //                           !isExcludedPath;
+
+      // const isExcludedPath = (pathname.startsWith("/news") && !pathname.startsWith("/news-kids")) || pathname.startsWith("/news-map");
+
+      // Only show age popup if user has no stored age and the path is not excluded
+      const shouldShowAgePopup = !storedAge && pathname.startsWith("/news-kids");
       
       if (storedAge) {
         setSelectedAge(Number(storedAge));
@@ -140,7 +146,7 @@ export const ChildrenProvider = ({ children }) => {
 
   const showPopupForUser = () => {
     // Check if current path is excluded from showing the popup
-    const isExcludedPath = pathname.startsWith("/viewpoint") || pathname.startsWith("/news-maps");
+    const isExcludedPath = pathname.startsWith("/news") || pathname.startsWith("/news-map");
     
     // Don't show age popup on excluded paths
     if (!isExcludedPath) {
@@ -185,7 +191,9 @@ export const ChildrenProvider = ({ children }) => {
       }}
     >
       {loading ? <LoadingSpinner /> : children}
-      {showPopup && selectedName && selectedAge && (
+
+      {/* Not Used For Now  */}
+      {/* {showPopup && selectedName && selectedAge && (
         <WelcomeCard
           data={{
             name: selectedName,
@@ -193,20 +201,22 @@ export const ChildrenProvider = ({ children }) => {
             gender: selectedGender,
           }}
         />
-      )}
+      )} */}
       {showAgePopup && (
         <AgeSelectionPopup
           onSubmit={handleAgeSubmit}
           onClose={() => setShowAgePopup(false)}
         />
       )}
-      {showRegionPopup && (
+      
+      {/* Not Used For Now  */}
+      {/* {showRegionPopup && (
         <RegionSelectionPopup
           selectedRegion={selectedRegion}
           onSubmit={handleRegionChange}
           onClose={() => setShowRegionPopup(false)}
         />
-      )}
+      )} */}
     </ChildrenContext.Provider>
   );
 };

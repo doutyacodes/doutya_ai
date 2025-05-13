@@ -36,14 +36,14 @@ const Navbar = () => {
   const { isAuthenticated } = useAuth();
   const pathname = usePathname();
   const links = [
-    { label: "News", icon: GiPerspectiveDiceFive, links: "/viewpoint" },
+    { label: "News", icon: GiPerspectiveDiceFive, links: "/news" },
 
     // { label: "News", icon: IoGlobeSharp, links: "/news" },
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
     // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
     // { label: "Community", icon: FaPeopleGroup, links: "/communities" },
     { label: "Magic Box", links: "/search", icon: FaGift },
-    { label: "Kids News", icon: FaNewspaper, links: "/news" },
+    { label: "Kids News", icon: FaNewspaper, links: "/news-kids" },
 
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
   ];

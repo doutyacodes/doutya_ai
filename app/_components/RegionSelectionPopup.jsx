@@ -7,15 +7,18 @@ const RegionSelectionPopup = ({ selectedRegion, onSubmit, onClose }) => {
   const [region, setRegion] = useState(selectedRegion);
   const pathname = usePathname();
   const router = useRouter();
+
   const handleSubmit = () => {
     onSubmit(region);
-    if (pathname.includes("viewpoint")) {
-      router.replace("/viewpoint");
+    // Check if we're in the main news section (but not news-kids)
+    if (pathname === "/news" || pathname.startsWith("/news/")) {
+      router.replace("/news");
     } else {
+      // We're either in news-kids or somewhere else
       if (region == "India") {
-        router.replace("/news/in");
+        router.replace("/news-kids/in");
       } else {
-        router.replace("/news/us");
+        router.replace("/news-kids/us");
       }
     }
   };
