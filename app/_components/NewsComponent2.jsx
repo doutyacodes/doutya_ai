@@ -185,7 +185,7 @@ export default function NewsDetails2({ id, showNames }) {
   };
 
   const handleCopyLink = () => {
-    const shareUrl = `https://www.zaeser.com/viewpoint/${id}`;
+    const shareUrl = `https://www.doutya.com/viewpoint/${id}`;
     navigator.clipboard
       .writeText(shareUrl)
       .then(() => {
@@ -234,7 +234,7 @@ export default function NewsDetails2({ id, showNames }) {
 
   const { title, category, image_url, date, description, created_at } = article;
 
-  const shareUrl = `https://www.zaeser.com/viewpoint/${id}`;
+  const shareUrl = `https://www.doutya.com/viewpoint/${id}`;
 
   return (
       <>

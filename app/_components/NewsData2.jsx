@@ -129,7 +129,7 @@ const NewsData2 = ({
   const router = useRouter();
   const { selectedRegion } = useChildren();
   const [currentIndex, setCurrentIndex] = useState(0); // State to track the title index
-  const shareUrl = `https://www.zaeser.com/viewpoint/${article.id}`;
+  const shareUrl = `https://www.doutya.com/viewpoint/${article.id}`;
   const title = article.title;
   const isBelowMd = useMediaQuery({ query: "(max-width: 768px)" });
   const [isPaused, setIsPaused] = useState(false);
@@ -237,7 +237,7 @@ const NewsData2 = ({
         />
         <meta property="og:url" content={shareUrl} />
         <meta property="og:type" content="article" />
-        <meta property="og:site_name" content="Zaeser News" />
+        <meta property="og:site_name" content="Doutya News" />
 
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />

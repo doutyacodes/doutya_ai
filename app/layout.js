@@ -17,35 +17,35 @@ const poppins = Poppins({
 
 export const metadata = {
   title: {
-    default: "Zaeser News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
-    template: '%s | Zaeser News'
+    default: "Doutya News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
+    template: '%s | Doutya News'
   },
-  description: "Experience news from every angle with an in-depth, multi-perspective coverage at its core. Plus, a dedicated Kids section for age-appropriate news and our Magic Box for AI-crafted explanations and stories. Zaeser News—tailored for every reader, every story, every perspective.",
-  metadataBase: new URL('https://www.zaeser.com'),
+  description: "Experience news from every angle with an in-depth, multi-perspective coverage at its core. Plus, a dedicated Kids section for age-appropriate news and our Magic Box for AI-crafted explanations and stories. Doutya News—tailored for every reader, every story, every perspective.",
+  metadataBase: new URL('https://www.doutya.com'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "Zaeser News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
-    description: "Experience news from every angle with an in-depth, multi-perspective coverage at its core. Plus, a dedicated Kids section for age-appropriate news and our Magic Box for AI-crafted explanations and stories. Zaeser News—tailored for every reader, every story, every perspective.",
-    url: 'https://www.zaeser.com',
-    siteName: 'Zaeser News',
+    title: "Doutya News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
+    description: "Experience news from every angle with an in-depth, multi-perspective coverage at its core. Plus, a dedicated Kids section for age-appropriate news and our Magic Box for AI-crafted explanations and stories. Doutya News—tailored for every reader, every story, every perspective.",
+    url: 'https://www.doutya.com',
+    siteName: 'Doutya News',
     locale: 'en_US',
     type: 'website',
     images: [
       {
-        url: 'https://www.zaeser.com/logo2.png',
+        url: 'https://www.doutya.com/logo2.png',
         width: 1200,
         height: 630,
-        alt: 'Zaeser News Logo',
+        alt: 'Doutya News Logo',
       }
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Zaeser News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
+    title: "Doutya News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
     description: "Experience news from every angle with an in-depth, multi-perspective coverage at its core.",
-    images: ['https://www.zaeser.com/logo2.png'],
+    images: ['https://www.doutya.com/logo2.png'],
   },
   robots: {
     index: true,

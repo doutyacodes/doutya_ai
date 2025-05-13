@@ -71,21 +71,21 @@ const Navbar = () => {
 
   // Desktop toggle with text - COMMENTED OUT
   /* 
-  const DesktopZeaserKidsToggle = () => {
+  const DesktopDoutyaKidsToggle = () => {
     // For maps section, we'll keep the viewpoint logo but display a different target page
     if (isMapsSection) {
       return (
         <Link 
           href="/viewpoint"
           className="flex flex-col items-center justify-center p-1 overflow-hidden"
-          aria-label="Go to Zeaser Home"
+          aria-label="Go to Doutya Home"
         >
           <div className="relative h-16 w-60">
             <Image
               src="/images/logo2.png"
               fill
               objectFit="contain"
-              alt="Zeaser Home logo"
+              alt="Doutya Home logo"
             />
           </div>
         </Link>
@@ -96,14 +96,14 @@ const Navbar = () => {
       <Link 
         href={isKidsSection ? "/viewpoint" : "/news"}
         className="flex items-center justify-center p-1 overflow-hidden"
-        aria-label={isKidsSection ? "Go to Zeaser Home" : "Go to Zeaser Kids"}
+        aria-label={isKidsSection ? "Go to Doutya Home" : "Go to Doutya Kids"}
       >
         <div className="relative h-16 w-60">
           <Image
             src={isKidsSection ? "/images/logo2.png" : "/images/logo5.png"}
             fill
             objectFit="contain"
-            alt={isKidsSection ? "Zeaser Home logo" : "Zeaser Kids logo"}
+            alt={isKidsSection ? "Doutya Home logo" : "Doutya Kids logo"}
           />
         </div>
       </Link>
@@ -112,21 +112,21 @@ const Navbar = () => {
   */
 
   /* 
-  const MobileZeaserKidsToggle = () => {
+  const MobileDoutyaKidsToggle = () => {
     // For maps section, we'll keep the viewpoint logo but display a different target page
     if (isMapsSection) {
       return (
         <Link 
           href="/viewpoint"
           className="flex flex-col items-center justify-center overflow-hidden"
-          aria-label="Go to Zeaser Home"
+          aria-label="Go to Doutya Home"
         >
           <div className="relative h-8 w-20">
             <Image
               src="/images/logo2.png"
               fill
               objectFit="contain"
-              alt="Zeaser Home logo"
+              alt="Doutya Home logo"
             />
           </div>
         </Link>
@@ -137,14 +137,14 @@ const Navbar = () => {
       <Link 
         href={isKidsSection ? "/viewpoint" : "/news"}
         className="flex items-center justify-center overflow-hidden"
-        aria-label={isKidsSection ? "Go to Zeaser Home" : "Go to Zeaser Kids"}
+        aria-label={isKidsSection ? "Go to Doutya Home" : "Go to Doutya Kids"}
       >
         <div className="relative h-8 w-20">
           <Image
             src={isKidsSection ? "/images/logo2.png" : "/images/logo5.png"}
             fill
             objectFit="contain"
-            alt={isKidsSection ? "Zeaser Home logo" : "Zeaser Kids logo"}
+            alt={isKidsSection ? "Doutya Home logo" : "Doutya Kids logo"}
           />
         </div>
       </Link>
@@ -211,7 +211,7 @@ const Navbar = () => {
               src="/images/newsmap.png"
               fill
               objectFit="contain"
-              alt="Zeaser logo"
+              alt="Doutya logo"
               className="object-center"
             />
           </div>
@@ -225,7 +225,7 @@ const Navbar = () => {
           src={isKidsSection ? "/images/logo5.png" : "/images/logo2.png"}
           fill
           objectFit="contain"
-          alt={isKidsSection ? "Zeaser Kids logo" : "Zeaser logo"}
+          alt={isKidsSection ? "Doutya Kids logo" : "Doutya logo"}
           className="object-center"
         />
       </div>
@@ -239,7 +239,7 @@ const Navbar = () => {
           <div className="relative grid items-center w-full md:grid-cols-3">
             {/* Left Column - Empty space to maintain layout (previously Kids Toggle) */}
             <div className="hidden md:flex items-center justify-start">
-              {/* DesktopZeaserKidsToggle is commented out but space is maintained */}
+              {/* DesktopDoutyaKidsToggle is commented out but space is maintained */}
               <div className="h-16 w-60"></div>
             </div>
             
@@ -247,7 +247,7 @@ const Navbar = () => {
             <div className="flex items-center justify-center relative">
               {/* Mobile Kids Toggle Space - Left of Logo */}
               <div className="md:hidden absolute left-0">
-                {/* MobileZeaserKidsToggle is commented out but space is maintained */}
+                {/* MobileDoutyaKidsToggle is commented out but space is maintained */}
                 <div className="h-8 w-20"></div>
               </div>
               

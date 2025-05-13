@@ -221,57 +221,153 @@ const groupNewsByLocation = (newsItems) => {
   return groupedNews;
 };
 
-const MapLegend = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
+// const MapLegend = () => {
+//   const [isExpanded, setIsExpanded] = useState(false);
+
+//   return (
+//     <div className="absolute top-4 right-4 z-10">
+//       {/* Mobile and Desktop Toggle Button */}
+//       <button 
+//         onClick={() => setIsExpanded(!isExpanded)}
+//         className="bg-white shadow-md rounded-full p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 block md:hidden"
+//       >
+//         {isExpanded ? 'Hide Legend' : 'Show Legend'}
+//       </button>
+
+//       {/* Legend Container with added bg-opacity */}
+//       <div 
+//         className={`
+//           bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-4 
+//           ${isExpanded ? 'block' : 'hidden md:block'}
+//           max-h-[70vh] overflow-y-auto
+//           w-64 max-w-[calc(100vw-2rem)]
+//         `}
+//       >
+//         <h3 className="text-lg font-semibold mb-3 border-b pb-2">News Categories</h3>
+        
+//         <div className="grid grid-cols-1 gap-2">
+//           {Object.entries(categoryIcons).map(([category, icon]) => (
+//             category !== 'Default' && (
+//               <div 
+//                 key={category} 
+//                 className="flex items-center space-x-3 hover:bg-gray-50/90 p-2 rounded transition-colors"
+//               >
+//                 {/* Render the icon */}
+//                 <div 
+//                   className="w-8 h-8 flex items-center justify-center rounded-full"
+//                   style={{ 
+//                     backgroundColor: categoryColors[category] || categoryColors.Default,
+//                     color: 'white'
+//                   }}
+//                 >
+//                   {React.cloneElement(icon, { 
+//                     size: 20, 
+//                     strokeWidth: 2.5,
+//                     color: 'white'
+//                   })}
+//                 </div>
+//                 <span className="text-sm text-gray-700">{category}</span>
+//               </div>
+//             )
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+const FilterPanel = ({ selectedCategories, setSelectedCategories }) => {
+  const [isExpanded, setIsExpanded] = useState(true); // Default to expanded when page loads
+
+  // Function to toggle category selection
+  const toggleCategory = (category) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(category)) {
+        return prev.filter(cat => cat !== category);
+      } else {
+        return [...prev, category];
+      }
+    });
+  };
+
+  // Select all categories
+  const selectAllCategories = () => {
+    setSelectedCategories(Object.keys(categoryIcons).filter(cat => cat !== 'Default'));
+  };
+
+  // Clear all categories
+  const clearAllCategories = () => {
+    setSelectedCategories([]);
+  };
 
   return (
-    <div className="absolute top-4 right-4 z-10">
-      {/* Mobile and Desktop Toggle Button */}
+    <div className="absolute top-3 right-4 z-10">
+      {/* Fixed position toggle button for both mobile and desktop */}
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
-        className="bg-white shadow-md rounded-full p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 block md:hidden"
+        className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 w-full flex items-center justify-center"
       >
-        {isExpanded ? 'Hide Legend' : 'Show Legend'}
+        <span>{isExpanded ? 'Hide Filters' : 'Show Filters'}</span>
       </button>
 
-      {/* Legend Container with added bg-opacity */}
-      <div 
-        className={`
-          bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-4 
-          ${isExpanded ? 'block' : 'hidden md:block'}
-          max-h-[70vh] overflow-y-auto
-          w-64 max-w-[calc(100vw-2rem)]
-        `}
-      >
-        <h3 className="text-lg font-semibold mb-3 border-b pb-2">News Categories</h3>
-        
-        <div className="grid grid-cols-1 gap-2">
-          {Object.entries(categoryIcons).map(([category, icon]) => (
-            category !== 'Default' && (
-              <div 
-                key={category} 
-                className="flex items-center space-x-3 hover:bg-gray-50/90 p-2 rounded transition-colors"
+      {/* Filter Container with opacity */}
+      {isExpanded && (
+        <div className="bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-4 max-h-[70vh] overflow-y-auto w-64 max-w-[calc(100vw-2rem)]">
+          <div className="flex justify-between items-center mb-3 border-b pb-2">
+            <h3 className="text-lg font-semibold">News Filters</h3>
+            <div className="flex gap-2">
+              <button 
+                onClick={selectAllCategories}
+                className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
               >
-                {/* Render the icon */}
+                All
+              </button>
+              <button 
+                onClick={clearAllCategories}
+                className="text-xs bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-2">
+            {Object.entries(categoryIcons).map(([category, icon]) => (
+              category !== 'Default' && (
                 <div 
-                  className="w-8 h-8 flex items-center justify-center rounded-full"
-                  style={{ 
-                    backgroundColor: categoryColors[category] || categoryColors.Default,
-                    color: 'white'
-                  }}
+                  key={category} 
+                  className="flex items-center space-x-3 hover:bg-gray-50/90 p-2 rounded transition-colors cursor-pointer"
+                  onClick={() => toggleCategory(category)}
                 >
-                  {React.cloneElement(icon, { 
-                    size: 20, 
-                    strokeWidth: 2.5,
-                    color: 'white'
-                  })}
+                  {/* Checkbox */}
+                  <input 
+                    type="checkbox" 
+                    checked={selectedCategories.includes(category)}
+                    onChange={() => {}} // Handled by the div click
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  
+                  {/* Icon */}
+                  <div 
+                    className="w-8 h-8 flex items-center justify-center rounded-full"
+                    style={{ 
+                      backgroundColor: categoryColors[category] || categoryColors.Default,
+                      color: 'white'
+                    }}
+                  >
+                    {React.cloneElement(icon, { 
+                      size: 20, 
+                      strokeWidth: 2.5,
+                      color: 'white'
+                    })}
+                  </div>
+                  <span className="text-sm text-gray-700">{category}</span>
                 </div>
-                <span className="text-sm text-gray-700">{category}</span>
-              </div>
-            )
-          ))}
+              )
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
@@ -286,6 +382,10 @@ export default function NewsMap() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mapRef, setMapRef] = useState(null);
+
+  const [selectedCategories, setSelectedCategories] = useState(
+    Object.keys(categoryIcons).filter(cat => cat !== 'Default')
+  );
 
   // Load Google Maps script
   const { isLoaded } = useLoadScript({
@@ -346,6 +446,7 @@ export default function NewsMap() {
         });
     }
   }, []);
+  
 
   const getCurrentPosition = () => {
     navigator.geolocation.getCurrentPosition(
@@ -440,7 +541,11 @@ export default function NewsMap() {
   return (
     <div className="relative">
 
-      <MapLegend /> {/* the legends */}
+      {/* <MapLegend /> the legends */}
+      <FilterPanel 
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
+      /> {/* the filters */}
 
       <GoogleMap
         mapContainerStyle={containerStyle}
@@ -458,29 +563,35 @@ export default function NewsMap() {
       >
         {/* News Markers */}
         {Object.keys(groupedNews).map((locationKey) => {
-        const [lat, lng] = locationKey.split(',').map(parseFloat);
-        const newsAtLocation = groupedNews[locationKey];
-        const mainNews = newsAtLocation[0]; // Use the first (most recent) news for the marker
-        
-        return (
-          <MarkerF
-            key={locationKey}
-            position={{ lat, lng }}
-            onClick={() => handleMarkerClick(locationKey)}
-            icon={createCategoryMarkerIcon(mainNews.category, newsAtLocation.length)}
-            label={
-              newsAtLocation.length > 1 
-              ? {
-                  text: `${newsAtLocation.length}`,
-                  color: "#333",
-                  fontSize: "12px",
-                  fontWeight: "bold"
+          const [lat, lng] = locationKey.split(',').map(parseFloat);
+          const newsAtLocation = groupedNews[locationKey];
+          const mainNews = newsAtLocation[0]; // Use the first (most recent) news for the marker
+          
+          // Skip this marker if its category is not in the selected categories
+          if (mainNews.category && !selectedCategories.includes(mainNews.category)) {
+            return null;
+          }
+          
+          return (
+            <MarkerF
+              key={locationKey}
+              position={{ lat, lng }}
+              onClick={() => handleMarkerClick(locationKey)}
+              icon={createCategoryMarkerIcon(mainNews.category, newsAtLocation.length)}
+              label={
+                newsAtLocation.length > 1 
+                ? {
+                    text: `${newsAtLocation.length}`,
+                    color: "#333",
+                    fontSize: "12px",
+                    fontWeight: "bold"
+                }
+                : null
               }
-              : null
-            }
-          />
-        );
-      })}
+            />
+          );
+        })}
+
         {/* Info Window */}
         {currentNews && (
           <InfoWindowF

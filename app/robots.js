@@ -11,7 +11,7 @@ export default function robots() {
           '/.next/',
         ],
       },
-      sitemap: 'www.zaeser.com/sitemap.xml',
+      sitemap: 'www.doutya.com/sitemap.xml',
     };
   }
   

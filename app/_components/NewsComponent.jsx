@@ -155,7 +155,7 @@ export default function NewsDetails({ id, showNames }) {
     meanings,
     created_at,
   } = article;
-  const shareUrl = `https://www.zaeser.com/news/${
+  const shareUrl = `https://www.doutya.com/news/${
     selectedRegion == "India" ? "in" : "us"
   }/${id}`;
 

@@ -70,19 +70,19 @@ function NewsSchema({ article }) {
     dateModified: article.updated_at || article.created_at,
     author: {
       '@type': 'Organization',
-      name: 'Zaeser News'
+      name: 'Doutya News'
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Zaeser News',
+      name: 'Doutya News',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://www.zaeser.com/logo2.png' // Update with your actual logo URL
+        url: 'https://www.doutya.com/logo2.png' // Update with your actual logo URL
       }
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://www.zaeser.com/viewpoint/${article.id}`
+      '@id': `https://www.doutya.com/viewpoint/${article.id}`
     }
   };
 }
@@ -106,19 +106,19 @@ export async function generateMetadata({ params }) {
     // Create clean description without HTML and truncate
     const cleanDescription = description 
       ? description.replace(/<[^>]*>/g, '').slice(0, 160) + '...'
-      : 'Explore the latest news from multiple perspectives on Zaeser News.';
+      : 'Explore the latest news from multiple perspectives on Doutya News.';
 
     // Format categories for meta tags
     const categories = categoryNames?.split(',').map(cat => cat.trim()) || [];
 
     return {
-      title: title || 'News Details | Zaeser News',
+      title: title || 'News Details | Doutya News',
       description: cleanDescription,
       keywords: categories.join(', '),
       openGraph: {
-        title: title || 'News Details | Zaeser News',
+        title: title || 'News Details | Doutya News',
         description: cleanDescription,
-        url: `https://www.zaeser.com/viewpoint/${id}`,
+        url: `https://www.doutya.com/viewpoint/${id}`,
         type: 'article',
         article: {
           publishedTime: created_at,
@@ -134,16 +134,16 @@ export async function generateMetadata({ params }) {
             alt: title,
           }
         ] : [],
-        siteName: 'Zaeser News',
+        siteName: 'Doutya News',
       },
       twitter: {
         card: 'summary_large_image',
-        title: title || 'News Details | Zaeser News',
+        title: title || 'News Details | Doutya News',
         description: cleanDescription,
         images: image_url ? [`https://wowfy.in/testusr/images/${image_url}`] : [],
       },
       alternates: {
-        canonical: `https://www.zaeser.com/viewpoint/${id}`,
+        canonical: `https://www.doutya.com/viewpoint/${id}`,
       },
       robots: {
         index: true,

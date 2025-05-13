@@ -16,12 +16,12 @@
   
 //   const tabs = [
 //     {
-//       name: 'Zaeser News',
+//       name: 'Doutya News',
 //       path: '/viewpoint',
 //       icon: <Newspaper size={20} />,
 //     },
 //     {
-//       name: 'Zaeser Kids',
+//       name: 'Doutya Kids',
 //       path: '/news/',
 //       icon: <Users size={20} />,
 //     },
@@ -96,12 +96,12 @@ export default function BottomNavigation() {
   
   const tabs = [
     {
-      name: 'Zaeser News',
+      name: 'Doutya News',
       path: '/viewpoint',
       icon: <Newspaper size={20} />,
     },
     {
-      name: 'Zaeser Kids',
+      name: 'Doutya Kids',
       path: '/news/',
       icon: <Users size={20} />,
     },

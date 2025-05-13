@@ -72,7 +72,7 @@ const ModernLanding = () => {
                     src={"/images/logo4.png"}
                     fill
                     objectFit="contain"
-                    alt="Zaeser Logo"
+                    alt="Doutya Logo"
                     className="object-contain brightness-75"
                   />
                 </div>
@@ -115,10 +115,10 @@ const ModernLanding = () => {
               <div className="absolute -bottom-4 -right-4 w-8 h-8 border-r-2 border-b-2 border-orange-500/30"></div>
               
               <p className="text-gray-700 leading-relaxed mb-6 text-lg">
-                zaeser News is the world&apos;s first AI-powered multi-perspective news portal, designed to provide a comprehensive and unbiased understanding of global events. Our platform offers news from a range of viewpoints, including neutral, aligned, differing, and opposing perspectives, as well as offering insights from all parties impacted by each story. This unique approach allows readers to gain a well-rounded understanding of complex issues, fostering critical thinking, empathy, and a deeper appreciation for the intricacies of the world around us.
+                Doutya News is the world&apos;s first AI-powered multi-perspective news portal, designed to provide a comprehensive and unbiased understanding of global events. Our platform offers news from a range of viewpoints, including neutral, aligned, differing, and opposing perspectives, as well as offering insights from all parties impacted by each story. This unique approach allows readers to gain a well-rounded understanding of complex issues, fostering critical thinking, empathy, and a deeper appreciation for the intricacies of the world around us.
               </p>
               <p className="text-gray-700 leading-relaxed text-lg">
-                zaeser News leverages advanced AI technology to deliver content that is accurate, engaging, and accessible. Our platform provides an opportunity to break free from echo chambers by offering a broader spectrum of viewpoints, helping readers understand all sides of the story. In doing so, we aim to foster informed decision-making and promote a more discerning, interconnected global community. At Zaeser News, we believe that understanding differing perspectives is essential to navigating the complexities of the world today.
+                D News leverages advanced AI technology to deliver content that is accurate, engaging, and accessible. Our platform provides an opportunity to break free from echo chambers by offering a broader spectrum of viewpoints, helping readers understand all sides of the story. In doing so, we aim to foster informed decision-making and promote a more discerning, interconnected global community. At Doutya News, we believe that understanding differing perspectives is essential to navigating the complexities of the world today.
               </p>
             </div>
           </div>
@@ -133,7 +133,7 @@ const ModernLanding = () => {
           <div className="flex flex-col items-center mb-16">
             <span className="text-orange-600 text-sm uppercase tracking-wider mb-4">Features</span>
             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-700 text-center">
-              Why Choose Zaeser
+              Why Choose Doutya
             </h2>
           </div>
 
@@ -249,7 +249,7 @@ const ModernLanding = () => {
                 <div className="bg-orange-50 p-8 rounded-2xl border border-orange-500/10">
                   <h3 className="text-2xl font-semibold mb-6 text-gray-800">Our Office</h3>
                   <div className="space-y-4 text-gray-600">
-                    <p>Zaeser News,</p>
+                    <p>Doutya News,</p>
                     <p>(Doutya Technologies),</p>
                     <p>Whitefield, Bengaluru,</p>
                     <p>Karnataka, India - 560067</p>
@@ -311,7 +311,7 @@ const ModernLanding = () => {
                     src={"/images/logo4.png"}
                     fill
                     objectFit="contain"
-                    alt="Zaeser News Logo"
+                    alt="Doutya News Logo"
                     className="object-contain brightness-75"
                   />
                 </div>
@@ -356,7 +356,7 @@ const ModernLanding = () => {
           <div className="mt-12 pt-8 border-t border-orange-500/10">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-gray-600 text-sm">
-                © {new Date().getFullYear()} Zaeser News. All rights reserved.
+                © {new Date().getFullYear()} Doutya News. All rights reserved.
               </p>
               <div className="flex space-x-6 mt-4 md:mt-0">
                 <a href="#" className="text-gray-400 hover:text-orange-600 transition-colors">

@@ -21,7 +21,7 @@ const OurStory = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeInOut", delay: 0.3 }}
           >
-            Zaeser was born from a father’s journey to make learning
+            Doutya was born from a father’s journey to make learning
             magical for his child. Our founder, like many parents, faced the
             daily challenge of explaining complex ideas in a way his 3-year-old
             could understand. Whether it was about stars, animals, or even
@@ -37,9 +37,9 @@ const OurStory = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeInOut", delay: 0.6 }}
           >
-            With these challenges in mind, Zaeser came to life. We set out
+            With these challenges in mind, Doutya came to life. We set out
             to create a space where parents can effortlessly bring the world’s
-            wonders into a child’s hands. Zaeser is designed for children
+            wonders into a child’s hands. Doutya is designed for children
             aged 2-12, making learning feel like play through age-appropriate
             stories, bedtime tales, and interactive poems on any topic. By
             simply typing in a topic, parents can unlock stories that engage
@@ -53,7 +53,7 @@ const OurStory = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeInOut", delay: 0.9 }}
           >
-            At Zaeser, we believe learning should be as unique as every
+            At Doutya, we believe learning should be as unique as every
             child. Inspired by a father’s wish to explain the world to his
             child, we’ve created a platform that lets every family explore new
             worlds, one story at a time.

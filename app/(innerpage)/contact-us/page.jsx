@@ -16,7 +16,7 @@ const ContactPage = () => {
           <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
             {/* Company Name */}
             <div className="mb-8 text-center">
-              <h2 className="text-3xl font-bold text-orange-900 mb-2">Zaeser News</h2>
+              <h2 className="text-3xl font-bold text-orange-900 mb-2">Doutya News</h2>
               <p className="text-gray-600 text-lg">(Doutya Technologies)</p>
             </div>
 

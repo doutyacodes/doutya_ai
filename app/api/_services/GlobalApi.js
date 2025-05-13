@@ -278,12 +278,12 @@ const fetchNewsHome = async (token,data) => {
 
 const fetchOneNews = async (data) => {
 
-    return axios.post(`https://www.zaeser.com/api/fetchNews/news`, data);
+    return axios.post(`https://www.doutya.com/api/fetchNews/news`, data);
  
 };
 const fetchOneNews2 = async (data) => {
 
-    return axios.post(`https://www.zaeser.com/api/adult/fetchNews/news2`, data);
+    return axios.post(`https://www.doutya.com/api/adult/fetchNews/news2`, data);
  
 };
 
