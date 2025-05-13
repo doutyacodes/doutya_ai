@@ -69,89 +69,6 @@ const Navbar = () => {
     );
   };
 
-  // Desktop toggle with text - COMMENTED OUT
-  /* 
-  const DesktopDoutyaKidsToggle = () => {
-    // For maps section, we'll keep the viewpoint logo but display a different target page
-    if (isMapsSection) {
-      return (
-        <Link 
-          href="/viewpoint"
-          className="flex flex-col items-center justify-center p-1 overflow-hidden"
-          aria-label="Go to Doutya Home"
-        >
-          <div className="relative h-16 w-60">
-            <Image
-              src="/images/logo2.png"
-              fill
-              objectFit="contain"
-              alt="Doutya Home logo"
-            />
-          </div>
-        </Link>
-      );
-    }
-    
-    return (
-      <Link 
-        href={isKidsSection ? "/viewpoint" : "/news"}
-        className="flex items-center justify-center p-1 overflow-hidden"
-        aria-label={isKidsSection ? "Go to Doutya Home" : "Go to Doutya Kids"}
-      >
-        <div className="relative h-16 w-60">
-          <Image
-            src={isKidsSection ? "/images/logo2.png" : "/images/logo5.png"}
-            fill
-            objectFit="contain"
-            alt={isKidsSection ? "Doutya Home logo" : "Doutya Kids logo"}
-          />
-        </div>
-      </Link>
-    );
-  };
-  */
-
-  /* 
-  const MobileDoutyaKidsToggle = () => {
-    // For maps section, we'll keep the viewpoint logo but display a different target page
-    if (isMapsSection) {
-      return (
-        <Link 
-          href="/viewpoint"
-          className="flex flex-col items-center justify-center overflow-hidden"
-          aria-label="Go to Doutya Home"
-        >
-          <div className="relative h-8 w-20">
-            <Image
-              src="/images/logo2.png"
-              fill
-              objectFit="contain"
-              alt="Doutya Home logo"
-            />
-          </div>
-        </Link>
-      );
-    }
-    
-    return (
-      <Link 
-        href={isKidsSection ? "/viewpoint" : "/news"}
-        className="flex items-center justify-center overflow-hidden"
-        aria-label={isKidsSection ? "Go to Doutya Home" : "Go to Doutya Kids"}
-      >
-        <div className="relative h-8 w-20">
-          <Image
-            src={isKidsSection ? "/images/logo2.png" : "/images/logo5.png"}
-            fill
-            objectFit="contain"
-            alt={isKidsSection ? "Doutya Home logo" : "Doutya Kids logo"}
-          />
-        </div>
-      </Link>
-    );
-  };
-  */
-
   const AgeSelector = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     
@@ -234,7 +151,7 @@ const Navbar = () => {
   
   return (
     <>
-      <nav className={cn("w-full bg-transparent md:min-h-16 max-md:py-[0.8vh]  max-md:max-h-[8.5vh] relative")}>
+      <nav className={cn("w-full bg-white md:min-h-16 max-md:py-[0.8vh] max-md:max-h-[8.5vh] relative border-b-4 border-red-800/80 shadow-sm")}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="relative grid items-center w-full md:grid-cols-3">
             {/* Left Column - Empty space to maintain layout (previously Kids Toggle) */}
