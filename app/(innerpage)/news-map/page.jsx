@@ -1,7 +1,6 @@
 "use client"
 import ReactDOMServer from "react-dom/server";
 import React, { useState, useEffect, useCallback } from "react";
-import { useMediaQuery } from 'react-responsive';
 import { GoogleMap, useLoadScript, MarkerF, InfoWindowF } from "@react-google-maps/api";
 import { 
     MapPin, AlertTriangle, Building2, UserRound, Car, Cloud, 
@@ -277,7 +276,7 @@ const groupNewsByLocation = (newsItems) => {
 //   );
 // };
 
-const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle }) => {
+const FilterPanel = ({ selectedCategories, setSelectedCategories }) => {
   const [isExpanded, setIsExpanded] = useState(true); // Default to expanded when page loads
 
   // Function to toggle category selection
@@ -307,7 +306,6 @@ const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle })
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
         className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 w-full flex items-center justify-center"
-        style={buttonStyle}
       >
         <span>{isExpanded ? 'Hide Filters' : 'Show Filters'}</span>
       </button>
@@ -393,28 +391,6 @@ export default function NewsMap() {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
-
-  const mapControlStyles = {
-    // Common styles for both map type and filter buttons
-    button: {
-      minWidth: '100px',
-      height: '38px',
-      '@media (max-width: 640px)': {
-        minWidth: '80px',
-        height: '34px',
-        fontSize: '0.875rem',
-      }
-    }
-  };
-
-  // Then inside your component function
-  const isMobile = useMediaQuery({ maxWidth: 640 });
-
-  // Use this to conditionally apply styles
-  const buttonStyle = {
-    minWidth: isMobile ? '80px' : '100px',
-    height: isMobile ? '34px' : '38px'
-  };
 
   // Fetch news data based on map bounds
   const fetchNewsData = useCallback(async (bounds) => {
@@ -543,50 +519,6 @@ export default function NewsMap() {
     window.open(url, '_blank');
   };
 
-  // Custom Map Type Controls Component
-  const MapTypeControls = ({ mapRef }) => {
-    const [mapType, setMapType] = useState("roadmap");
-    const [isExpanded, setIsExpanded] = useState(false);
-    
-    const changeMapType = (type) => {
-      if (!mapRef) return;
-      mapRef.setMapTypeId(type);
-      setMapType(type);
-      setIsExpanded(false);
-    };
-
-    return (
-      <div className="absolute top-3 left-4 z-10 flex flex-col">
-        {/* Main toggle button */}
-        <button 
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 flex items-center justify-center"
-          style={buttonStyle}
-        >
-          <span>{mapType === "roadmap" ? "Map" : "Satellite"}</span>
-        </button>
-
-        {/* Dropdown options */}
-        {isExpanded && (
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden absolute top-12 left-0">
-            <button 
-              className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "roadmap" ? "bg-gray-200" : ""}`}
-              onClick={() => changeMapType("roadmap")}
-            >
-              Map
-            </button>
-            <button 
-              className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "satellite" ? "bg-gray-200" : ""}`}
-              onClick={() => changeMapType("satellite")}
-            >
-              Satellite
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   // Loading state
   if (!isLoaded) {
     return (
@@ -613,7 +545,6 @@ export default function NewsMap() {
       <FilterPanel 
         selectedCategories={selectedCategories}
         setSelectedCategories={setSelectedCategories}
-        buttonStyle = {buttonStyle}
       /> {/* the filters */}
 
       <GoogleMap
@@ -623,16 +554,13 @@ export default function NewsMap() {
         options={{
           fullscreenControl: false,
           streetViewControl: false,
-          mapTypeControl: false, // Disable default map type control
+          mapTypeControl: true,
           zoomControl: true,
           gestureHandling: "greedy", // This enables one finger pan on mobile
         }}
         onLoad={(map) => setMapRef(map)}
         onIdle={(map) => handleBoundsChanged(map)}
       >
-        {/* Custom Map Type Controls */}
-        <MapTypeControls mapRef={mapRef} />
-
         {/* News Markers */}
         {Object.keys(groupedNews).map((locationKey) => {
           const [lat, lng] = locationKey.split(',').map(parseFloat);

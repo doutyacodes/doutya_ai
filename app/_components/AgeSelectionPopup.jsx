@@ -144,7 +144,7 @@ const AgeSelectionPopup = ({ onSubmit, onClose }) => {
             
             {/* Description */}
             <p className="text-center text-gray-700 text-sm mb-6">
-              Select your child's age to receive customized news content tailored specifically for them.
+              Select your child&apos;s age to receive customized news content tailored specifically for them.
             </p>
             
             {/* Age selection */}
