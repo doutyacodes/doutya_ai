@@ -17,17 +17,17 @@ const poppins = Poppins({
 
 export const metadata = {
   title: {
-    default: "Doutya News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
+    default: "Doutya News – Multiperspective News, Interactive Maps & Kids News Powered by AI",
     template: '%s | Doutya News'
   },
-  description: "Experience news from every angle with an in-depth, multi-perspective coverage at its core. Plus, a dedicated Kids section for age-appropriate news and our Magic Box for AI-crafted explanations and stories. Doutya News—tailored for every reader, every story, every perspective.",
+  description: "Doutya News brings you global and local stories with multiple perspectives, interactive News Maps, and age-appropriate News for kids—powered by AI for clarity and context.",
   metadataBase: new URL('https://www.doutya.com'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "Doutya News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
-    description: "Experience news from every angle with an in-depth, multi-perspective coverage at its core. Plus, a dedicated Kids section for age-appropriate news and our Magic Box for AI-crafted explanations and stories. Doutya News—tailored for every reader, every story, every perspective.",
+    title: "Doutya News – Multiperspective News, Interactive Maps & Kids News Powered by AI",
+    description: "Doutya News brings you global and local stories with multiple perspectives, interactive News Maps, and age-appropriate News for kids—powered by AI for clarity and context.",
     url: 'https://www.doutya.com',
     siteName: 'Doutya News',
     locale: 'en_US',
@@ -43,8 +43,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Doutya News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
-    description: "Experience news from every angle with an in-depth, multi-perspective coverage at its core.",
+    title: "Doutya News – Multiperspective News, Interactive Maps & Kids News Powered by AI",
+    description: "Doutya News brings you global and local stories with multiple perspectives, interactive News Maps, and age-appropriate News for kids—powered by AI for clarity and context.",
     images: ['https://www.doutya.com/images/logo2.png'],
   },
   robots: {
