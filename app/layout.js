@@ -34,7 +34,7 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://www.doutya.com/logo2.png',
+        url: 'https://www.doutya.com/images/logo2.png',
         width: 1200,
         height: 630,
         alt: 'Doutya News Logo',
@@ -45,7 +45,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: "Doutya News : World's First Multi-Perspective News Portal | From All Angles, For All Ages",
     description: "Experience news from every angle with an in-depth, multi-perspective coverage at its core.",
-    images: ['https://www.doutya.com/logo2.png'],
+    images: ['https://www.doutya.com/images/logo2.png'],
   },
   robots: {
     index: true,
@@ -63,9 +63,7 @@ export const metadata = {
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
     ],
-    // apple: [
-    //   { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    // ],
+
   },
   manifest: '/site.webmanifest',
   other: {
