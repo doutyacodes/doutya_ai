@@ -90,13 +90,13 @@ export default function OurStory() {
               About Doutya News Group
             </h2>
             <p className="text-gray-700 leading-relaxed text-justify mb-4">
-              At Doutya News Group, we're reimagining the future of journalism — blending the power of technology, clarity, and integrity to create a truly inclusive news ecosystem.
+              At Doutya News Group, we&apos;re reimagining the future of journalism — blending the power of technology, clarity, and integrity to create a truly inclusive news ecosystem.
             </p>
             <p className="text-gray-700 leading-relaxed text-justify mb-4">
               What began during the 2018 Kerala floods as a grassroots volunteering platform has evolved into a full-fledged AI-powered media company. Officially incorporated in 2020 and proudly 100% remote since the pandemic, Doutya has grown from a tech services firm into a bold force in the world of news and media.
             </p>
             <p className="text-gray-700 leading-relaxed text-justify">
-              In 2024, we pivoted with purpose: to confront growing media bias, lack of news accessibility for younger audiences, and the overwhelming noise in today's news cycle. The result? A comprehensive and thoughtful media ecosystem designed for everyone — from curious kids to discerning adults.
+              In 2024, we pivoted with purpose: to confront growing media bias, lack of news accessibility for younger audiences, and the overwhelming noise in today&apos;s news cycle. The result? A comprehensive and thoughtful media ecosystem designed for everyone — from curious kids to discerning adults.
             </p>
           </motion.div>
 
@@ -120,14 +120,14 @@ export default function OurStory() {
               <div>
                 <h3 className="text-lg font-medium text-red-800 mb-2">Doutya News for Kids</h3>
                 <p className="text-gray-700 leading-relaxed text-justify">
-                  Designed with care and inspired by our founder's 3-year-old child, this platform offers age-appropriate news, word popups for difficult terms, and revision questions to build awareness and comprehension in young minds.
+                  Designed with care and inspired by our founder&apos;s 3-year-old child, this platform offers age-appropriate news, word popups for difficult terms, and revision questions to build awareness and comprehension in young minds.
                 </p>
               </div>
               
               <div>
                 <h3 className="text-lg font-medium text-red-800 mb-2">Doutya NewsMaps</h3>
                 <p className="text-gray-700 leading-relaxed text-justify">
-                  A revolutionary way to explore news on interactive global and local maps — built to engage Gen Z and make discovering what's happening around you effortless and intuitive.
+                  A revolutionary way to explore news on interactive global and local maps — built to engage Gen Z and make discovering what&apos;s happening around you effortless and intuitive.
                 </p>
               </div>
               
@@ -150,7 +150,7 @@ export default function OurStory() {
               Our Vision
             </h2>
             <p className="text-gray-700 leading-relaxed text-justify">
-              To make news accessible, balanced, and intelligent — reshaping how individuals, especially younger generations, interact with the world's stories.
+              To make news accessible, balanced, and intelligent — reshaping how individuals, especially younger generations, interact with the world&apos;s stories.
             </p>
           </motion.div>
 
@@ -164,7 +164,7 @@ export default function OurStory() {
               Backed by Purpose
             </h2>
             <p className="text-gray-700 leading-relaxed text-justify">
-              Doutya is led by Kiran Roice, a serial entrepreneur recognized by global institutions like UNCTAD (awarded the prestigious Empretec certificate), and by organizations like CNBC and The Times of India for innovation and social impact. But it's not a one-person journey — it's built by a passionate team of technologists, journalists, designers, and educators who believe news should inform, not overwhelm.
+              Doutya is led by Kiran Roice, a serial entrepreneur recognized by global institutions like UNCTAD (awarded the prestigious Empretec certificate), and by organizations like CNBC and The Times of India for innovation and social impact. But it&apos;s not a one-person journey — it&apos;s built by a passionate team of technologists, journalists, designers, and educators who believe news should inform, not overwhelm.
             </p>
           </motion.div>
 
