@@ -15,8 +15,8 @@ export default function BottomNavigation() {
       return '/news';
     } else if (path === '/news-kids' || path.startsWith('/news-kids/')) {
       return '/news-kids';
-    } else if (path === '/news-map' || path.startsWith('/news-map/')) {
-      return '/news-map';
+    } else if (path === '/news-maps' || path.startsWith('/news-maps/')) {
+      return '/news-maps';
     }
     return path;
   }
@@ -39,7 +39,7 @@ export default function BottomNavigation() {
     },
     {
       name: 'News Map',
-      path: '/news-map',
+      path: '/news-maps',
       icon: <Map size={20} />,
     },
   ];
@@ -60,8 +60,8 @@ export default function BottomNavigation() {
       return pathname === '/news-kids' || pathname.startsWith('/news-kids/');
     }
     // For news-map tab
-    else if (tabPath === '/news-map') {
-      return pathname === '/news-map' || pathname.startsWith('/news-map/');
+    else if (tabPath === '/news-maps') {
+      return pathname === '/news-maps' || pathname.startsWith('/news-maps/');
     }
     return false;
   };

@@ -25,10 +25,9 @@ export default function NewPage() {
   const [showSearch, setShowSearch] = useState(false);
 
   const pathname = usePathname();
-  const [, , category, id] = pathname.split("/");
-  console.log(category);
+  const [, , id] = pathname.split("/");
   useEffect(() => {
-    handleRegionChange(category == "us" ? "United States" : "India");
+    // handleRegionChange(category == "us" ? "United States" : "India");
     setShowId(id);
     setShowNews(true);
   }, [id]);

@@ -90,7 +90,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
               {/* Previous Article Button - Show when on first perspective */}
               {isFirstPerspective && previousArticle ? (
                 <button 
-                onClick={() => router.push(`/news-kids/${previousArticle.id}`)}
+                onClick={() => router.push(`/news/${previousArticle.id}`)}
                 className="bg-red-600 rounded-lg p-2 md:p-4 shadow-lg hover:bg-red-900 border border-red-900 transition-all hover:scale-105 group relative"
               >
                 <div className="flex items-center gap-2">
@@ -168,7 +168,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
                 <div className="flex flex-col gap-3">
                   {nextArticle && (
                     <button 
-                    onClick={() => router.push(`/news-kids/${nextArticle.id}`)}
+                    onClick={() => router.push(`/news/${nextArticle.id}`)}
                     className="bg-red-600 p-2 md:p-4 hover:bg-red-900 transition-colors rounded-lg shadow-lg border border-red-900 group relative"
                   >
                     <div className="flex items-center justify-between gap-1 md:gap-2">

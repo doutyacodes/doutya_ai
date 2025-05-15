@@ -14,12 +14,7 @@ const RegionSelectionPopup = ({ selectedRegion, onSubmit, onClose }) => {
     if (pathname === "/news" || pathname.startsWith("/news/")) {
       router.replace("/news");
     } else {
-      // We're either in news-kids or somewhere else
-      if (region == "India") {
-        router.replace("/news-kids/in");
-      } else {
-        router.replace("/news-kids/us");
-      }
+      router.replace("/news-kids");
     }
   };
 

@@ -24,7 +24,7 @@
 //   // Check if we're in the kids section
 //   const isKidsSection = pathname.startsWith("/news-kids");
 //   // Check if we're in the maps section
-//   const isMapsSection = pathname.startsWith("/news-map");
+//   const isMapsSection = pathname.startsWith("/news-maps");
 
 //   const NavDropdownAlt = () => {
 //     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -222,7 +222,7 @@ const Navbar = () => {
   // Check if we're in the kids section
   const isKidsSection = pathname.startsWith("/news-kids");
   // Check if we're in the maps section
-  const isMapsSection = pathname.startsWith("/news-map");
+  const isMapsSection = pathname.startsWith("/news-maps");
 
   const NavDropdownAlt = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -355,7 +355,7 @@ const Navbar = () => {
             {/* Left Column - Empty space to maintain layout (previously Kids Toggle) */}
             <div className="hidden md:flex items-center justify-start">
               {/* DesktopDoutyaKidsToggle is commented out but space is maintained */}
-              <div className="h-16 w-60"></div>
+                {isKidsSection && !isMapsSection && <AgeSelector />}
             </div>
             
             {/* Logo Column with Mobile Age Selector on Left */}
@@ -384,7 +384,7 @@ const Navbar = () => {
             {/* Social Media Column - Desktop Only */}
             <div className="hidden md:flex justify-end items-center">
               <div className="flex items-center gap-4">
-                {isKidsSection && !isMapsSection && <AgeSelector />}
+                {/* {isKidsSection && !isMapsSection && <AgeSelector />} */}
                 <SocialMediaNav />
                 <NavDropdownAlt />
               </div>

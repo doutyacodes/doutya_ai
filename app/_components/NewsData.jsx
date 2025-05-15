@@ -62,9 +62,7 @@ const NewsData = ({
   console.log("article", article);
   const { selectedRegion } = useChildren();
 
-  const shareUrl = `https://www.doutya.com/news/${
-    selectedRegion == "India" ? "in" : "us"
-  }/${article.id}`;
+  const shareUrl = `https://www.doutya.com/news-kids/${article.id}`;
   const title = article.title;
   const isBelowMd = useMediaQuery({ query: "(max-width: 768px)" });
 
@@ -151,7 +149,7 @@ const NewsData = ({
           // }}
           onClick={() => {
             router.push(
-              `/news-kids/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
+              `/news-kids/${article.id}`
             );
           }}
         />
@@ -182,7 +180,7 @@ const NewsData = ({
             // }}
             onClick={() => {
               router.push(
-                `/news-kids/${selectedRegion == "India" ? "in" : "us"}/${article.id}`
+                `/news-kids/${article.id}`
               );
             }}
             className={cn(
@@ -250,9 +248,7 @@ const NewsData = ({
         </div>
         {size && (
           <Link
-            href={`/news-kids/${selectedRegion == "India" ? "in" : "us"}/${
-              article.id
-            }`}
+            href={`/news-kids/${article.id}`}
             className="text-sm max-md:line-clamp-4 text-justify max-md:leading-5 text-gray-800 mb-2 max-md:mt-4 cursor-pointer max-md:text-xs  max-md:px-2 md:mt-6"
           >
             {article.description}

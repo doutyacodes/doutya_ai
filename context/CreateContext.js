@@ -107,14 +107,14 @@ export const ChildrenProvider = ({ children }) => {
       console.log("storedage", storedAge)
       
       // Check if current path is excluded from showing the popup
-      // const isExcludedPath = pathname.startsWith("/news") || pathname.startsWith("/news-map");
+      // const isExcludedPath = pathname.startsWith("/news") || pathname.startsWith("/news-maps");
       
       // // Only show age popup if pathname includes "news" and is not an excluded path
       // const shouldShowAgePopup = !storedAge && 
       //                           pathname.includes("news-kids") && 
       //                           !isExcludedPath;
 
-      // const isExcludedPath = (pathname.startsWith("/news") && !pathname.startsWith("/news-kids")) || pathname.startsWith("/news-map");
+      // const isExcludedPath = (pathname.startsWith("/news") && !pathname.startsWith("/news-kids")) || pathname.startsWith("/news-maps");
 
       // Only show age popup if user has no stored age and the path is not excluded
       const shouldShowAgePopup = !storedAge && pathname.startsWith("/news-kids");
@@ -146,7 +146,7 @@ export const ChildrenProvider = ({ children }) => {
 
   const showPopupForUser = () => {
     // Check if current path is excluded from showing the popup
-    const isExcludedPath = pathname.startsWith("/news") || pathname.startsWith("/news-map");
+    const isExcludedPath = pathname.startsWith("/news") || pathname.startsWith("/news-maps");
     
     // Don't show age popup on excluded paths
     if (!isExcludedPath) {
