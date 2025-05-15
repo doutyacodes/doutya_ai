@@ -1,6 +1,7 @@
 "use client"
 import ReactDOMServer from "react-dom/server";
 import React, { useState, useEffect, useCallback } from "react";
+import { useMediaQuery } from 'react-responsive';
 import { GoogleMap, useLoadScript, MarkerF, InfoWindowF } from "@react-google-maps/api";
 import { 
     MapPin, AlertTriangle, Building2, UserRound, Car, Cloud, 
@@ -276,7 +277,7 @@ const groupNewsByLocation = (newsItems) => {
 //   );
 // };
 
-const FilterPanel = ({ selectedCategories, setSelectedCategories }) => {
+const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, isMobile }) => {
   const [isExpanded, setIsExpanded] = useState(true); // Default to expanded when page loads
 
   // Function to toggle category selection
@@ -306,13 +307,16 @@ const FilterPanel = ({ selectedCategories, setSelectedCategories }) => {
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
         className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 w-full flex items-center justify-center"
+        style={buttonStyle}
       >
         <span>{isExpanded ? 'Hide Filters' : 'Show Filters'}</span>
       </button>
 
-      {/* Filter Container with opacity */}
+      {/* Filter Container with opacity - positioned differently based on device */}
       {isExpanded && (
-        <div className="bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-4 max-h-[70vh] overflow-y-auto w-64 max-w-[calc(100vw-2rem)]">
+        <div 
+          className={`bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-4 max-h-[70vh] overflow-y-auto w-64 max-w-[calc(100vw-2rem)] ${isMobile ? 'absolute top-12 right-0' : ''}`}
+        >
           <div className="flex justify-between items-center mb-3 border-b pb-2">
             <h3 className="text-lg font-semibold">News Filters</h3>
             <div className="flex gap-2">
@@ -391,6 +395,28 @@ export default function NewsMap() {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
+
+  const mapControlStyles = {
+    // Common styles for both map type and filter buttons
+    button: {
+      minWidth: '100px',
+      height: '38px',
+      '@media (max-width: 640px)': {
+        minWidth: '80px',
+        height: '34px',
+        fontSize: '0.875rem',
+      }
+    }
+  };
+
+  // Then inside your component function
+  const isMobile = useMediaQuery({ maxWidth: 640 });
+
+  // Use this to conditionally apply styles
+  const buttonStyle = {
+    minWidth: isMobile ? '80px' : '100px',
+    height: isMobile ? '34px' : '38px'
+  };
 
   // Fetch news data based on map bounds
   const fetchNewsData = useCallback(async (bounds) => {
@@ -519,6 +545,100 @@ export default function NewsMap() {
     window.open(url, '_blank');
   };
 
+  // Custom Map Type Controls Component
+const MapTypeControls = ({ mapRef }) => {
+  const [mapType, setMapType] = useState("roadmap");
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // State to track if the screen is in mobile view
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Effect to check screen size and update isMobile state
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768); // 768px is a common breakpoint for mobile
+    };
+    
+    // Initial check
+    checkScreenSize();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', checkScreenSize);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+  
+  const changeMapType = (type) => {
+    if (!mapRef) return;
+    mapRef.setMapTypeId(type);
+    setMapType(type);
+    setIsExpanded(false);
+  };
+
+  // Desktop view: Side-by-side buttons
+   if (!isMobile) {
+    return (
+      <div className="absolute top-3 left-4 z-10 flex flex-row">
+        <button 
+          onClick={() => changeMapType("roadmap")}
+          className={`bg-white shadow-md p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center rounded-l-lg border-r border-gray-200 ${mapType === "roadmap" ? "bg-gray-100" : ""}`}
+          style={{
+            ...buttonStyle,
+            color: mapType === "roadmap" ? "black" : "rgba(0,0,0,0.5)",
+            fontWeight: mapType === "roadmap" ? "500" : "normal"
+          }}
+        >
+          Map
+        </button>
+        <button 
+          onClick={() => changeMapType("satellite")}
+          className={`bg-white shadow-md p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center rounded-r-lg ${mapType === "satellite" ? "bg-gray-100" : ""}`}
+          style={{
+            ...buttonStyle,
+            color: mapType === "satellite" ? "black" : "rgba(0,0,0,0.5)",
+            fontWeight: mapType === "satellite" ? "500" : "normal"
+          }}
+        >
+          Satellite
+        </button>
+      </div>
+    );
+  }
+  
+  // Mobile view: Dropdown menu
+  return (
+    <div className="absolute top-3 left-4 z-10 flex flex-col">
+      {/* Main toggle button */}
+      <button 
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 flex items-center justify-center"
+        style={buttonStyle}
+      >
+        <span>{mapType === "roadmap" ? "Map" : "Satellite"}</span>
+      </button>
+
+      {/* Dropdown options */}
+      {isExpanded && (
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden absolute top-12 left-0">
+          <button 
+            className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "roadmap" ? "bg-gray-200" : ""}`}
+            onClick={() => changeMapType("roadmap")}
+          >
+            Map
+          </button>
+          <button 
+            className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "satellite" ? "bg-gray-200" : ""}`}
+            onClick={() => changeMapType("satellite")}
+          >
+            Satellite
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
   // Loading state
   if (!isLoaded) {
     return (
@@ -545,6 +665,8 @@ export default function NewsMap() {
       <FilterPanel 
         selectedCategories={selectedCategories}
         setSelectedCategories={setSelectedCategories}
+        buttonStyle = {buttonStyle}
+        isMobile = {isMobile}
       /> {/* the filters */}
 
       <GoogleMap
@@ -554,13 +676,16 @@ export default function NewsMap() {
         options={{
           fullscreenControl: false,
           streetViewControl: false,
-          mapTypeControl: true,
+          mapTypeControl: false, // Disable default map type control
           zoomControl: true,
           gestureHandling: "greedy", // This enables one finger pan on mobile
         }}
         onLoad={(map) => setMapRef(map)}
         onIdle={(map) => handleBoundsChanged(map)}
       >
+        {/* Custom Map Type Controls */}
+        <MapTypeControls mapRef={mapRef} />
+
         {/* News Markers */}
         {Object.keys(groupedNews).map((locationKey) => {
           const [lat, lng] = locationKey.split(',').map(parseFloat);
