@@ -48,6 +48,7 @@ export default function NewsSection() {
 
       // Set categories
       const allCategory = { id: "all", name: "All" };
+      console.log(categories)
       setNewsCategories([allCategory, ...categories]);
 
       // Process top news: Include both the first article and the full array

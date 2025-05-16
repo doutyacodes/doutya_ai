@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children, allowedRoutes = [] }) => {
 
   useEffect(() => {
     const isAllowed = 
-      allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/news-kids/")|| pathname.startsWith("/news/") || pathname.startsWith("/news-maps");
+      allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/news-kids/")|| pathname.startsWith("/news/") || pathname.startsWith("/news-maps") || pathname.startsWith("/narrative");
 
       console.log("isAuthenticated", isAuthenticated, "isAllowed", isAllowed)
 
@@ -27,7 +27,7 @@ const ProtectedRoute = ({ children, allowedRoutes = [] }) => {
   }
 
   const isAllowed = 
-    allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/news-kids/")|| pathname.startsWith("/news/") || pathname.startsWith("/news-maps");
+    allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/news-kids/")|| pathname.startsWith("/news/") || pathname.startsWith("/news-maps") || pathname.startsWith("/narrative");
 
   return isAuthenticated || isAllowed ? children : null;
 };

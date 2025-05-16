@@ -7,7 +7,16 @@ import {
     MapPin, AlertTriangle, Building2, UserRound, Car, Cloud, 
     PartyPopper, Swords, Megaphone, AlertCircle, Trophy, 
     Heart, Briefcase, Film, Laptop, FlaskConical, GraduationCap, 
-    Leaf, Users, Train, Globe
+    Leaf, Users, Train, Globe,
+    BadgeDollarSign,
+    Ambulance,
+    Clapperboard,
+    Shield,
+    Rocket,
+    Shirt,
+    BellRing,
+    Flag,
+    PawPrint
   } from "lucide-react";
 
 // Map container styles
@@ -32,12 +41,12 @@ const categoryIcons = {
   "Crime": <AlertCircle size={24} className="text-red-700" />,
   "Politics": <Building2 size={24} className="text-blue-800" />,
   "Protest": <UserRound size={24} className="text-orange-500" />,
-  "Accident": <Car size={24} className="text-amber-600" />,
+  "Accident": <Ambulance size={24} className="text-amber-600" />, // Changed to Ambulance
   "Weather": <Cloud size={24} className="text-blue-400" />,
   "Festival / Event": <PartyPopper size={24} className="text-purple-500" />,
   "Conflict / War": <Swords size={24} className="text-red-800" />,
   "Public Announcement": <Megaphone size={24} className="text-blue-600" />,
-  "Emergency Alert": <AlertCircle size={24} className="text-red-500" />,
+  "Emergency Alert": <BellRing size={24} className="text-red-500" />, // Changed to BellRing
   "Sports": <Trophy size={24} className="text-yellow-600" />,
   "Health": <Heart size={24} className="text-green-600" />,
   "Business": <Briefcase size={24} className="text-gray-700" />,
@@ -48,8 +57,41 @@ const categoryIcons = {
   "Environment": <Leaf size={24} className="text-green-500" />,
   "Social Issues": <Users size={24} className="text-purple-600" />,
   "Transportation": <Train size={24} className="text-cyan-600" />,
+  "Automobiles": <Car size={24} className="text-red-400" />,
+  "Finance": <BadgeDollarSign size={24} className="text-green-700" />,
+  "Movies": <Clapperboard size={24} className="text-purple-700" />,
+  "Cricket": <Flag size={24} className="text-green-400" />,
+  "Military": <Shield size={24} className="text-gray-800" />,
+  "Space": <Rocket size={24} className="text-indigo-600" />,
+  "Lifestyle": <Shirt size={24} className="text-pink-400" />,
+  "Wildlife": <PawPrint size={24} className="text-amber-500" />,
   "Default": <Globe size={24} className="text-gray-500" />
 };
+
+// const categoryColors = {
+//   "Natural Disaster": "#FF8C00",     // Dark Orange
+//   "Crime": "#2E8B57",                // Sea Green
+//   "Politics": "#1E90FF",             // Dodger Blue
+//   "Protest": "#FF4500",              // Orangered
+//   "Accident": "#8A2BE2",             // Blue Violet
+//   "Weather": "#00CED1",              // Dark Turquoise
+//   "Festival / Event": "#FF1493",     // Deep Pink
+//   "Conflict / War": "#B22222",       // Firebrick (your red)
+//   "Public Announcement": "#FFD700",  // Gold
+//   "Emergency Alert": "#FF00FF",      // Fuchsia
+//   "Sports": "#00FF00",               // Bright Lime
+//   "Health": "#DC143C",               // Crimson (reddish but distinct from Firebrick)
+//   "Business": "#4682B4",             // Steel Blue
+//   "Entertainment": "#FF69B4",        // Hot Pink
+//   "Technology": "#7B68EE",           // Medium Slate Blue
+//   "Science": "#A9A9A9",              // Dark Gray (as you requested)
+//   "Education": "#000000",            // Black
+//   "Environment": "#228B22",          // Forest Green
+//   "Social Issues": "#FF6347",        // Tomato (warmer, more orange-red)
+//   "Transportation": "#40E0D0",       // Turquoise
+//   "Default": "#A52A2A"               // Brown
+// };
+
 const categoryColors = {
   "Natural Disaster": "#FF8C00",     // Dark Orange
   "Crime": "#2E8B57",                // Sea Green
@@ -71,6 +113,14 @@ const categoryColors = {
   "Environment": "#228B22",          // Forest Green
   "Social Issues": "#FF6347",        // Tomato (warmer, more orange-red)
   "Transportation": "#40E0D0",       // Turquoise
+  "Automobiles": "#C71585",          // Medium Violet Red
+  "Finance": "#008080",              // Teal
+  "Movies": "#800080",               // Purple
+  "Cricket": "#DAA520",              // Goldenrod
+  "Military": "#556B2F",             // Dark Olive Green
+  "Space": "#483D8B",                // Dark Slate Blue
+  "Lifestyle": "#FF7F50",            // Coral
+  "Wildlife": "#6B8E23",             // Olive Drab
   "Default": "#A52A2A"               // Brown
 };
 
@@ -221,61 +271,6 @@ const groupNewsByLocation = (newsItems) => {
   
   return groupedNews;
 };
-
-// const MapLegend = () => {
-//   const [isExpanded, setIsExpanded] = useState(false);
-
-//   return (
-//     <div className="absolute top-4 right-4 z-10">
-//       {/* Mobile and Desktop Toggle Button */}
-//       <button 
-//         onClick={() => setIsExpanded(!isExpanded)}
-//         className="bg-white shadow-md rounded-full p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 block md:hidden"
-//       >
-//         {isExpanded ? 'Hide Legend' : 'Show Legend'}
-//       </button>
-
-//       {/* Legend Container with added bg-opacity */}
-//       <div 
-//         className={`
-//           bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-4 
-//           ${isExpanded ? 'block' : 'hidden md:block'}
-//           max-h-[70vh] overflow-y-auto
-//           w-64 max-w-[calc(100vw-2rem)]
-//         `}
-//       >
-//         <h3 className="text-lg font-semibold mb-3 border-b pb-2">News Categories</h3>
-        
-//         <div className="grid grid-cols-1 gap-2">
-//           {Object.entries(categoryIcons).map(([category, icon]) => (
-//             category !== 'Default' && (
-//               <div 
-//                 key={category} 
-//                 className="flex items-center space-x-3 hover:bg-gray-50/90 p-2 rounded transition-colors"
-//               >
-//                 {/* Render the icon */}
-//                 <div 
-//                   className="w-8 h-8 flex items-center justify-center rounded-full"
-//                   style={{ 
-//                     backgroundColor: categoryColors[category] || categoryColors.Default,
-//                     color: 'white'
-//                   }}
-//                 >
-//                   {React.cloneElement(icon, { 
-//                     size: 20, 
-//                     strokeWidth: 2.5,
-//                     color: 'white'
-//                   })}
-//                 </div>
-//                 <span className="text-sm text-gray-700">{category}</span>
-//               </div>
-//             )
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
 
 const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, isMobile }) => {
   const [isExpanded, setIsExpanded] = useState(true); // Default to expanded when page loads
