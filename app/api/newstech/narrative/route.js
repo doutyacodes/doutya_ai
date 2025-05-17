@@ -95,6 +95,9 @@ import { NARRATIVES, NARRATIVE_BIASES } from '@/utils/schema'; // adjust paths
 import { desc, eq } from 'drizzle-orm';
 import { db } from '@/utils';
 
+export const maxDuration = 300;
+export const dynamic = 'force-dynamic';
+
 export async function POST(request) {
   try {
     // Authenticate the request
