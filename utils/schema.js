@@ -16,6 +16,17 @@ import {
   varchar,
 } from "drizzle-orm/mysql-core";
 
+export const ADMIN_DETAILS = mysqlTable("admin_details", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  username: varchar("username", { length: 255 }).notNull().unique(),
+  password: varchar("password", { length: 255 }).notNull(),
+  role: mysqlEnum("role", ["superadmin", "admin", "newsmap_admin"]).default("admin").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+  is_active: boolean("is_active").default(true),
+});
+
 // UserDetails Table
 export const USER_DETAILS = mysqlTable("user_details", {
   id: int("id").primaryKey().autoincrement(),
@@ -1551,6 +1562,13 @@ export const ADULT_NEWS_REPORTS = mysqlTable("adult_news_reports", {
   created_at: timestamp("created_at").defaultNow(),
 });
 
+export const CUSTOM_SOURCES = mysqlTable("custom_sources", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 100 }).unique().notNull(),
+  added_by: int("added_by").references(() => ADMIN_DETAILS.id),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
 // map_news table schema
 export const MAP_NEWS = mysqlTable("map_news", {
   id: int("id").primaryKey().autoincrement(),
@@ -1561,10 +1579,31 @@ export const MAP_NEWS = mysqlTable("map_news", {
   latitude: decimal("latitude", { precision: 10, scale: 7 }),
   longitude: decimal("longitude", { precision: 10, scale: 7 }),
   category_id: int("category_id").references(() => MAP_NEWS_CATEGORIES.id),
+  delete_after_hours: int("delete_after_hours").notNull().default(24),
+  created_by: int("created_by").references(() => ADMIN_DETAILS.id),
   created_at: timestamp("created_at").defaultNow(),
 });
 
 export const MAP_NEWS_CATEGORIES = mysqlTable("map_news_categories", {
   id: int("id").primaryKey().autoincrement(),
   name: varchar("name", { length: 100 }).notNull(),
+});
+
+export const NARRATIVES = mysqlTable("narratives", {
+  id: int("id").primaryKey().autoincrement(),
+  originalArticle: text("original_article").notNull(),
+  rewrittenArticle: text("rewritten_article").notNull(),
+  ageRange: varchar("age_range", { length: 50 }),
+  location: varchar("location", { length: 100 }),
+  audienceType: varchar("audience_type", { length: 100 }),
+  createdBy: int("created_by").references(() => ADMIN_DETAILS.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const NARRATIVE_BIASES = mysqlTable("narrative_biases", {
+  id: int("id").primaryKey().autoincrement(),
+  narrativeId: int("narrative_id").notNull().references(() => NARRATIVES.id, { onDelete: "cascade" }),
+  biasType: varchar("bias_type", { length: 100 }),
+  entity: varchar("entity", { length: 255 }),
+  percentage: decimal("percentage", { precision: 5, scale: 2 }),
 });

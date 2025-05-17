@@ -48,11 +48,11 @@ const Navbar = () => {
             
             <div className="relative bg-white rounded-lg">
                 <Link 
-                href="/narrative"
+                href="/newstech"
                 className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
               >
                 <Newspaper className="w-4 h-4" />
-                <span className="font-medium">News Narrative</span>
+                <span className="font-medium">NewsTech</span>
               </Link>
 
               <Link 

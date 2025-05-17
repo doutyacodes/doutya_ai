@@ -13,8 +13,11 @@ const SearchUser = (token, data) => {
   }
 };
 
-const SignUpUser = (data) => axios.post("/api/signup", data);
-const LoginUser = (data) => axios.post("/api/login", data);
+// const SignUpUser = (data) => axios.post("/api/signup", data);
+// const LoginUser = (data) => axios.post("/api/login", data);
+
+const SignUpUser = (data) => axios.post("/api/newstech/signup", data);
+const LoginUser = (data) => axios.post("/api/newstech/login", data);
 
 // New functions to fetch and add children
 const GetUserChildren = async () => {
