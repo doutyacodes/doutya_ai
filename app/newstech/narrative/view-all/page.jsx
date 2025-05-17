@@ -131,7 +131,7 @@ export default function NarrativesPage() {
           <div className="bg-white rounded-lg shadow-md p-6 text-center">
             <DocumentTextIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-1">No narratives found</h3>
-            <p className="text-gray-500 mb-4">You haven't created any narratives yet.</p>
+            <p className="text-gray-500 mb-4">You haven&apos;t created any narratives yet.</p>
             <Link href="/newstech" legacyBehavior>
               <a className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-800 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                 Create Your First Narrative
