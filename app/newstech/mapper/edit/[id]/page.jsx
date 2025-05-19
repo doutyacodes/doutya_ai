@@ -391,7 +391,7 @@ const handleDeleteCustomSource = async () => {
       }
       
       // Redirect to the news listing page on success
-      router.push('/news-map');
+      router.push('/newstech/mapper');
       
     } catch (err) {
       setError(err.message);
@@ -423,7 +423,7 @@ const handleDeleteCustomSource = async () => {
           <p className="mb-6">{error}</p>
           <div className="flex justify-between">
             <Link 
-              href="/news-map" 
+              href="/newstech/mapper" 
               className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition"
             >
               Back to News List
@@ -454,7 +454,7 @@ const handleDeleteCustomSource = async () => {
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <Link 
-            href="/news-map" 
+            href="/newstech/mapper" 
             className="flex items-center text-red-800 hover:text-red-700 transition mb-6"
           >
             <ArrowLeft className="h-5 w-5 mr-2" /> Back to News List

@@ -1,4 +1,6 @@
+import LayoutWrapper from "../_components/LayoutWrapper";
 import LeftSideBar from "./_components/LeftSideBar";
+import Nav from "./_components/Nav";
 
 export const metadata = {
   title: 'NewsTech',
@@ -11,9 +13,12 @@ export default function Layout({ children }) {
       {/* Content */}
       <div className="relative min-h-screen flex ">
         <LeftSideBar />
-        <div className="flex-grow relative z-10 p-3">
-          {children}
-        </div>
+        <LayoutWrapper>
+          <Nav />
+          <div className="flex-grow relative z-10 p-3">
+            {children}
+          </div>
+        </LayoutWrapper>
       </div>
     </div>
   );
