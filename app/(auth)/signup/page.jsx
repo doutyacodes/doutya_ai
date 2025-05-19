@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 
@@ -72,6 +72,10 @@ export function Signup() {
   });
 
   const router = useRouter();
+
+  useEffect(()=>{
+    redirect("/auth/signup")
+  },[])
 
   useEffect(() => {
     const token = localStorage.getItem("token");

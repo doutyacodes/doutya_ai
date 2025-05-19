@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Trash2, Edit, Plus, AlertCircle } from 'lucide-react';
+import useAuthRedirect from './_component/useAuthRedirect';
 
 export default function AdminNewsPage() {
   const [news, setNews] = useState([]);
@@ -13,6 +14,8 @@ export default function AdminNewsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [newsToDelete, setNewsToDelete] = useState(null);
   const router = useRouter();
+  
+  useAuthRedirect();
 
   useEffect(() => {
     fetchNews();
@@ -21,9 +24,9 @@ export default function AdminNewsPage() {
   const fetchNews = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/newstech/news-map', {
+      const res = await fetch('/api/hyperlocal', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('user_token')}`
         },
       });
       if (!res.ok) {
@@ -42,7 +45,7 @@ export default function AdminNewsPage() {
     if (!newsToDelete) return;
     
     try {
-      const res = await fetch(`/api/newstech/news-map/${newsToDelete.id}`, {
+      const res = await fetch(`/api/hyperlocal/${newsToDelete.id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
@@ -72,6 +75,11 @@ export default function AdminNewsPage() {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
+
+  const truncate = (text, length = 100) => {
+    if (!text) return "";
+    return text.length > length ? text.slice(0, length) + "..." : text;
+};
 
   if (loading) {
     return (
@@ -105,30 +113,29 @@ export default function AdminNewsPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center sm:text-left">
-              News Management
+            News Management
             </h1>
             <a 
-              href="/newstech/mapper/create" 
-              className="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition"
+            href="/hyperlocal/create" 
+            className="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition"
             >
-              <Plus className="mr-2 h-5 w-5" /> Create News
+            <Plus className="mr-2 h-5 w-5" /> Create News
             </a>
-          </div>
+        </div>
 
-          {/* Empty state with responsive padding and button */}
-          {news.length === 0 ? (
+        {/* Empty state with responsive padding and button */}
+        {news.length === 0 ? (
             <div className="bg-white p-4 sm:p-8 rounded-lg shadow-md text-center">
-              <p className="text-gray-600 mb-4">No news articles found.</p>
-              <a 
-                href="/newstech/mapper/create" 
+            <p className="text-gray-600 mb-4">No news articles found.</p>
+            <a 
+                href="/hyperlocal/create" 
                 className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition"
-              >
-                <Plus className="mr-2 h-5 w-5" /> Add Your First News Article
-              </a>
-            </div>
-
+        >
+            <Plus className="mr-2 h-5 w-5" /> Add Your First News Article
+        </a>
+        </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {news.map(newsItem => (
@@ -143,13 +150,15 @@ export default function AdminNewsPage() {
                 </div>
                 <div className="p-4 flex-grow">
                   <h2 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-2">{newsItem.title}</h2>
-                  <p className="text-sm text-gray-500">Source: {newsItem.source_name || 'Unknown'}</p>
+                    <p className="text-gray-600 text-sm">
+                        {truncate(newsItem.content, 120)}
+                    </p>
                 </div>
                 <div className="border-t border-gray-100 p-4 flex justify-between items-center">
                   <span className="text-sm text-gray-500">{formatDate(newsItem.created_at)}</span>
                   <div className="flex space-x-2">
                     <button 
-                      onClick={() => router.push(`/newstech/mapper/edit/${newsItem.id}`)}
+                      onClick={() => router.push(`/hyperlocal/edit/${newsItem.id}`)}
                       className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition"
                       aria-label="Edit news"
                     >

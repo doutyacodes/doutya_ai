@@ -8,7 +8,7 @@ import { toast, Toaster } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import GlobalApi from "@/app/api/_services/GlobalApi"; // Ensure this has the login request setup
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Form,
@@ -18,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useEffect } from "react";
 
 const loginSchema = z.object({
   username: z.string().min(2, { message: "Username must be at least 2 characters." }),
@@ -34,6 +35,11 @@ export function Login() {
   });
 
   const router = useRouter();
+
+  useEffect(()=>{
+    redirect("/auth/login")
+    
+  },[])
 
   const onSubmit = async (data) => {
     try {

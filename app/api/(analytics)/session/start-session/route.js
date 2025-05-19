@@ -62,8 +62,6 @@ export async function POST(req) {
         }
 
         const visitorId = visitor[0].id;
-
-        console.log("visitio Id", visitorId);
         
         // Check for an active session for the visitor
         const now = new Date();
@@ -80,7 +78,6 @@ export async function POST(req) {
             .orderBy(desc(SESSIONS.session_start)) // Get the most recent session
             .limit(1)
             .execute();
-            console.log("activeSession", activeSession);
 
         if (activeSession.length > 0) {
             // Check if the session is still valid based on timeout
@@ -90,8 +87,6 @@ export async function POST(req) {
             }
         }
 
-    console.log("klogged 1");
-
         // Create a new session for the visitor
         const newSession = await db
             .insert(SESSIONS)
@@ -100,7 +95,6 @@ export async function POST(req) {
                 session_start: now,
             })
             .execute();
-            console.log("klogged 2");
 
         return NextResponse.json({ sessionId: newSession[0].insertId });
     } catch (error) {

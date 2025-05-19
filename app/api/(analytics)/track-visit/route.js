@@ -11,8 +11,6 @@ export async function POST(req) {
         return NextResponse.json({ message: 'UUID is required' }, { status: 400 });
     }
 
-    console.log("log 1")
-
     try {
         // Check if the visitor exists
         const existingVisitor = await db
@@ -22,10 +20,7 @@ export async function POST(req) {
         .execute();
 
         if (existingVisitor.length > 0) {
-            console.log("log 2")
             const visitor = existingVisitor[0];
-
-            console.log("visitor.last_visit", visitor, "new Date()", new Date())
 
             // Determine if the visitor is returning
             const isReturningVisitor = visitor.returning_visitor || visitor.last_visit < new Date();

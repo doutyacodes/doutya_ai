@@ -2,7 +2,7 @@
 import ReactDOMServer from "react-dom/server";
 import React, { useState, useEffect, useCallback } from "react";
 import { useMediaQuery } from 'react-responsive';
-import { GoogleMap, useLoadScript, MarkerF, InfoWindowF } from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, MarkerF, InfoWindowF, Circle  } from "@react-google-maps/api";
 import { 
     MapPin, AlertTriangle, Building2, UserRound, Car, Cloud, 
     PartyPopper, Swords, Megaphone, AlertCircle, Trophy, 
@@ -16,8 +16,13 @@ import {
     Shirt,
     BellRing,
     Flag,
-    PawPrint
+    PawPrint,
+    X,
+    Loader2,
+    Newspaper,
+    Tag
   } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 // Map container styles
 const containerStyle = {
@@ -31,75 +36,21 @@ const center = {
   lng: 0,
 };
 
-// Map zoom levels
-const DEFAULT_ZOOM = 2;
-const USER_LOCATION_ZOOM = 7;
 
 // Category icons mapping using Lucide React components
 const categoryIcons = {
-  "Natural Disaster": <AlertTriangle size={24} className="text-red-600" />,
-  "Crime": <AlertCircle size={24} className="text-red-700" />,
-  "Politics": <Building2 size={24} className="text-blue-800" />,
-  "Protest": <UserRound size={24} className="text-orange-500" />,
-  "Accident": <Ambulance size={24} className="text-amber-600" />, // Changed to Ambulance
-  "Weather": <Cloud size={24} className="text-blue-400" />,
-  "Festival / Event": <PartyPopper size={24} className="text-purple-500" />,
-  "Conflict / War": <Swords size={24} className="text-red-800" />,
-  "Public Announcement": <Megaphone size={24} className="text-blue-600" />,
-  "Emergency Alert": <BellRing size={24} className="text-red-500" />, // Changed to BellRing
-  "Sports": <Trophy size={24} className="text-yellow-600" />,
-  "Health": <Heart size={24} className="text-green-600" />,
-  "Business": <Briefcase size={24} className="text-gray-700" />,
-  "Entertainment": <Film size={24} className="text-pink-500" />,
-  "Technology": <Laptop size={24} className="text-indigo-500" />,
-  "Science": <FlaskConical size={24} className="text-teal-600" />,
-  "Education": <GraduationCap size={24} className="text-blue-700" />,
-  "Environment": <Leaf size={24} className="text-green-500" />,
-  "Social Issues": <Users size={24} className="text-purple-600" />,
-  "Transportation": <Train size={24} className="text-cyan-600" />,
-  "Automobiles": <Car size={24} className="text-red-400" />,
-  "Finance": <BadgeDollarSign size={24} className="text-green-700" />,
-  "Movies": <Clapperboard size={24} className="text-purple-700" />,
-  "Cricket": <Flag size={24} className="text-green-400" />,
-  "Military": <Shield size={24} className="text-gray-800" />,
-  "Space": <Rocket size={24} className="text-indigo-600" />,
-  "Lifestyle": <Shirt size={24} className="text-pink-400" />,
-  "Wildlife": <PawPrint size={24} className="text-amber-500" />,
+  "News": <Newspaper size={24} className="text-blue-600" />,
+  "Ads": <Tag size={24} className="text-green-600" />,
   "Default": <Globe size={24} className="text-gray-500" />
 };
 
-
+// Category colors for map markers or other UI elements
 const categoryColors = {
-  "Natural Disaster": "#FF8C00",     // Dark Orange
-  "Crime": "#2E8B57",                // Sea Green
-  "Politics": "#1E90FF",             // Dodger Blue
-  "Protest": "#FF4500",              // Orangered
-  "Accident": "#8A2BE2",             // Blue Violet
-  "Weather": "#00CED1",              // Dark Turquoise
-  "Festival / Event": "#FF1493",     // Deep Pink
-  "Conflict / War": "#B22222",       // Firebrick (your red)
-  "Public Announcement": "#FFD700",  // Gold
-  "Emergency Alert": "#FF00FF",      // Fuchsia
-  "Sports": "#00FF00",               // Bright Lime
-  "Health": "#DC143C",               // Crimson (reddish but distinct from Firebrick)
-  "Business": "#4682B4",             // Steel Blue
-  "Entertainment": "#FF69B4",        // Hot Pink
-  "Technology": "#7B68EE",           // Medium Slate Blue
-  "Science": "#A9A9A9",              // Dark Gray (as you requested)
-  "Education": "#000000",            // Black
-  "Environment": "#228B22",          // Forest Green
-  "Social Issues": "#FF6347",        // Tomato (warmer, more orange-red)
-  "Transportation": "#40E0D0",       // Turquoise
-  "Automobiles": "#C71585",          // Medium Violet Red
-  "Finance": "#008080",              // Teal
-  "Movies": "#800080",               // Purple
-  "Cricket": "#DAA520",              // Goldenrod
-  "Military": "#556B2F",             // Dark Olive Green
-  "Space": "#483D8B",                // Dark Slate Blue
-  "Lifestyle": "#FF7F50",            // Coral
-  "Wildlife": "#6B8E23",             // Olive Drab
-  "Default": "#A52A2A"               // Brown
+  "News": "#1E90FF",    // Dodger Blue
+  "Ads": "#2E8B57",     // Sea Green
+  "Default": "#A52A2A"  // Brown
 };
+
 
 // Get website favicon
 const getFavicon = (articleUrl) => {
@@ -119,70 +70,16 @@ const createCategoryMarkerIcon = (category, newsCount = 0) => {
     // Get the corresponding icon for the category
     let IconComponent;
   
-    switch(category) {
-      case "Natural Disaster":
-        IconComponent = AlertTriangle;
-        break;
-      case "Crime":
-        IconComponent = AlertCircle;
-        break;
-      case "Politics":
-        IconComponent = Building2;
-        break;
-      case "Protest":
-        IconComponent = UserRound;
-        break;
-      case "Accident":
-        IconComponent = Car;
-        break;
-      case "Weather":
-        IconComponent = Cloud;
-        break;
-      case "Festival / Event":
-        IconComponent = PartyPopper;
-        break;
-      case "Conflict / War":
-        IconComponent = Swords;
-        break;
-      case "Public Announcement":
-        IconComponent = Megaphone;
-        break;
-      case "Emergency Alert":
-        IconComponent = AlertCircle;
-        break;
-      case "Sports":
-        IconComponent = Trophy;
-        break;
-      case "Health":
-        IconComponent = Heart;
-        break;
-      case "Business":
-        IconComponent = Briefcase;
-        break;
-      case "Entertainment":
-        IconComponent = Film;
-        break;
-      case "Technology":
-        IconComponent = Laptop;
-        break;
-      case "Science":
-        IconComponent = FlaskConical;
-        break;
-      case "Education":
-        IconComponent = GraduationCap;
-        break;
-      case "Environment":
-        IconComponent = Leaf;
-        break;
-      case "Social Issues":
-        IconComponent = Users;
-        break;
-      case "Transportation":
-        IconComponent = Train;
-        break;
-      default:
-        IconComponent = Globe;
-    }
+     switch(category) {
+    case "News":
+      IconComponent = Newspaper;
+      break;
+    case "Ads":
+      IconComponent = Tag;
+      break;
+    default:
+      IconComponent = Globe;
+  }
   
   // Create SVG string from the icon component with improved styling
   const iconSvg = ReactDOMServer.renderToString(
@@ -363,6 +260,18 @@ export default function NewsMap() {
     Object.keys(categoryIcons).filter(cat => cat !== 'Default')
   );
 
+  const router = useRouter()
+
+  const [showLocationPrompt, setShowLocationPrompt] = useState(false);
+
+    const MAX_RADIUS_KM = 10; // 10km radius limit
+    const EARTH_RADIUS_KM = 6371; // Earth's radius in kilometers
+    const USER_LOCATION_ZOOM = 14; // Zoom level when user location is available
+    const DEFAULT_ZOOM = 10; // Default zoom level
+    // Add buffer factor to create extended restriction bounds
+    const BUFFER_FACTOR = 1.5; // Allow 50% more area beyond the data radius
+
+
   // Load Google Maps script
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -390,108 +299,208 @@ export default function NewsMap() {
     height: isMobile ? '34px' : '38px'
   };
 
-  // Fetch news data based on map bounds
-  const fetchNewsData = useCallback(async (bounds) => {
-    try {
-      setIsLoading(true);
-      
-      // Create bounds parameters if available
-      let url = '/api/news/map';
-      if (bounds) {
-        const { north, south, east, west } = bounds;
-        url += `?north=${north}&south=${south}&east=${east}&west=${west}`;
-      }
-      
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch news data');
-      }
-      
-      const data = await response.json();
-      setNewsItems(data);
-      
-      // Group news by location
-      const grouped = groupNewsByLocation(data);
-      setGroupedNews(grouped);
-    } catch (err) {
-      console.error("Error fetching news:", err);
-      setError("Failed to load news data");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  // Add this utility function to calculate distance between coordinates
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const distance = EARTH_RADIUS_KM * c; // Distance in km
+  
+  return distance;
+};
 
-  // Get user's location
-  const getUserLocation = useCallback(() => {
+// Add this function to restrict map boundaries
+const restrictMapBounds = useCallback(() => {
+  if (!mapRef || !userLocation) return;
+  
+  const currentCenter = mapRef.getCenter();
+  const currentLat = currentCenter.lat();
+  const currentLng = currentCenter.lng();
+  
+  const distance = calculateDistance(
+    userLocation.lat, 
+    userLocation.lng, 
+    currentLat, 
+    currentLng
+  );
+  
+  // If user tries to move beyond 10km, move them back
+  if (distance > MAX_RADIUS_KM) {
+    // Calculate direction from user location to current position
+    const angle = Math.atan2(
+      currentLat - userLocation.lat,
+      currentLng - userLocation.lng
+    );
+    
+    // Set new position at the edge of the allowed circle
+    const newLat = userLocation.lat + (Math.sin(angle) * MAX_RADIUS_KM / 111); // 1 degree lat ≈ 111km
+    const newLng = userLocation.lng + (Math.cos(angle) * MAX_RADIUS_KM / 
+      (111 * Math.cos(userLocation.lat * Math.PI / 180))); // Adjust for longitude at that latitude
+    
+    mapRef.panTo({ lat: newLat, lng: newLng });
+  }
+}, [mapRef, userLocation]);
+
+  // Fetch news data based on map bounds
+    const fetchNewsData = useCallback(async (bounds) => {
+    // Don't attempt to fetch data if we don't have user location
+    if (!userLocation) {
+        console.log("No user location available, skipping fetch");
+        return;
+    }
+
+    try {
+        setIsLoading(true);
+        
+        // Create bounds parameters if available
+        let url = '/api/hyperlocal/map';
+        
+        if (bounds) {
+        const { north, south, east, west } = bounds;
+        url += `?north=${north}&south=${south}&east=${east}&west=${west}&userLat=${userLocation.lat}&userLng=${userLocation.lng}&radius=${MAX_RADIUS_KM}`;
+        } else {
+        // Always include user location
+        url += `?userLat=${userLocation.lat}&userLng=${userLocation.lng}&radius=${MAX_RADIUS_KM}`;
+        }
+        
+        console.log("Fetching news data from:", url);
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+        throw new Error('Failed to fetch news data');
+        }
+        
+        const data = await response.json();
+        setNewsItems(data);
+        
+        // Group news by location
+        const grouped = groupNewsByLocation(data);
+        setGroupedNews(grouped);
+    } catch (err) {
+        console.error("Error fetching news:", err);
+        setError("Failed to load news data");
+    } finally {
+        setIsLoading(false);
+    }
+    }, [userLocation]); // We do need userLocation in the dependency array
+
+    const getUserLocation = useCallback(() => {
+        console.log(" inn get locaiton")
+    // Check if we already have location permission in localStorage
+    const locationPermission = localStorage.getItem('newsMapLocationPermission');
+    
+    if (locationPermission === 'granted') {
+        // Permission was previously granted, get location directly
+        getCurrentPosition();
+        return;
+    }
+    
     if (navigator.geolocation) {
-      navigator.permissions
+        navigator.permissions
         .query({ name: "geolocation" })
         .then((permissionStatus) => {
-          if (permissionStatus.state === "granted") {
+            if (permissionStatus.state === "granted") {
             // Permission already granted, get location
             getCurrentPosition();
-          } else if (permissionStatus.state === "prompt") {
-            // Show a custom prompt explaining why we need location
-            const confirmGeolocation = window.confirm(
-              "Would you like to see news from your local area? Please allow location access."
-            );
-            if (confirmGeolocation) {
-              getCurrentPosition();
+            // Store permission state
+            localStorage.setItem('newsMapLocationPermission', 'granted');
+            } else {
+            // We need to show our custom prompt
+            setShowLocationPrompt(true);
             }
-          }
-          // If denied, we'll use the default world view
         });
+    } else {
+        setError("Geolocation is not supported by your browser");
     }
-  }, []);
-  
+    }, []);
 
   const getCurrentPosition = () => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setUserLocation({ lat: latitude, lng: longitude });
-        
-        // If map is available, pan and zoom to user location
-        if (mapRef) {
-          mapRef.panTo({ lat: latitude, lng: longitude });
-          mapRef.setZoom(USER_LOCATION_ZOOM);
-        }
-      },
-      (error) => {
-        console.error("Error getting user location:", error);
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords;
+      setUserLocation({ lat: latitude, lng: longitude });
+      
+      // Store in localStorage that permission was granted
+      localStorage.setItem('newsMapLocationPermission', 'granted');
+      
+      // If map is available, pan and zoom to user location
+      if (mapRef) {
+        mapRef.panTo({ lat: latitude, lng: longitude });
+        mapRef.setZoom(USER_LOCATION_ZOOM);
       }
-    );
-  };
+      
+      // Don't manually fetch news here - the useEffect will handle it
+    },
+    (error) => {
+      console.error("Error getting user location:", error);
+      
+      let errorMessage = "Unable to access your location. Please enable location services and try again.";
+      if (error.code === 1) {
+        errorMessage = "Location access denied. You need to allow location access to use this map.";
+      } else if (error.code === 2) {
+        errorMessage = "Your location is not available. Please try again later.";
+      } else if (error.code === 3) {
+        errorMessage = "Location request timed out. Please try again.";
+      }
+      
+      setError(errorMessage);
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+};
 
-  // Initial data fetch and location request
-  useEffect(() => {
-    fetchNewsData();
+    // Initialize only once
+    useEffect(() => {
+    // Only check location initially
     getUserLocation();
-  }, [fetchNewsData, getUserLocation]);
+    }, []);
+
+    // Add this new useEffect for fetching data only when userLocation changes
+    useEffect(() => {
+    if (userLocation) {
+        fetchNewsData();
+    }
+    }, [userLocation]); // Remove fetchNewsData from here
+
+  
+  // Add checking for location prompt 
+    useEffect(() => {
+        if (!userLocation && !isLoading && !showLocationPrompt) {
+            setShowLocationPrompt(true);
+        }
+    }, [userLocation, isLoading, showLocationPrompt]);
 
   // Handle map bounds change
-  const handleBoundsChanged = (map) => {
+    const handleBoundsChanged = (map) => {
+    // Only process if we have user location
+    if (!userLocation) return;
+
     const bounds = map.getBounds();
     if (bounds) {
-      const newBounds = {
+        const newBounds = {
         north: bounds.getNorthEast().lat(),
         south: bounds.getSouthWest().lat(),
         east: bounds.getNorthEast().lng(),
         west: bounds.getSouthWest().lng()
-      };
-      
-      // Only fetch if bounds have changed significantly
-      if (!mapBounds || 
-          Math.abs(newBounds.north - mapBounds.north) > 0.5 ||
-          Math.abs(newBounds.south - mapBounds.south) > 0.5 ||
-          Math.abs(newBounds.east - mapBounds.east) > 0.5 ||
-          Math.abs(newBounds.west - mapBounds.west) > 0.5) {
+        };
+        
+        // Only fetch if bounds have changed significantly
+        if (!mapBounds || 
+            Math.abs(newBounds.north - mapBounds.north) > 0.5 ||
+            Math.abs(newBounds.south - mapBounds.south) > 0.5 ||
+            Math.abs(newBounds.east - mapBounds.east) > 0.5 ||
+            Math.abs(newBounds.west - mapBounds.west) > 0.5) {
         setMapBounds(newBounds);
         fetchNewsData(newBounds);
-      }
+        }
     }
-  };
+    };
 
   // Handle marker click
   const handleMarkerClick = (locationKey, index = 0) => {
@@ -513,103 +522,206 @@ export default function NewsMap() {
   };
 
   // Open article in new tab
-  const openArticle = (url) => {
-    window.open(url, '_blank');
-  };
-
-  // Custom Map Type Controls Component
-const MapTypeControls = ({ mapRef }) => {
-  const [mapType, setMapType] = useState("roadmap");
-  const [isExpanded, setIsExpanded] = useState(false);
-  
-  // State to track if the screen is in mobile view
-  const [isMobile, setIsMobile] = useState(false);
-  
-  // Effect to check screen size and update isMobile state
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768); // 768px is a common breakpoint for mobile
-    };
-    
-    // Initial check
-    checkScreenSize();
-    
-    // Add event listener for window resize
-    window.addEventListener('resize', checkScreenSize);
-    
-    // Clean up
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
-  
-  const changeMapType = (type) => {
-    if (!mapRef) return;
-    mapRef.setMapTypeId(type);
-    setMapType(type);
-    setIsExpanded(false);
-  };
-
-  // Desktop view: Side-by-side buttons
-   if (!isMobile) {
-    return (
-      <div className="absolute top-3 left-4 z-10 flex flex-row">
-        <button 
-          onClick={() => changeMapType("roadmap")}
-          className={`bg-white shadow-md p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center rounded-l-lg border-r border-gray-200 ${mapType === "roadmap" ? "bg-gray-100" : ""}`}
-          style={{
-            ...buttonStyle,
-            color: mapType === "roadmap" ? "black" : "rgba(0,0,0,0.5)",
-            fontWeight: mapType === "roadmap" ? "500" : "normal"
-          }}
-        >
-          Map
-        </button>
-        <button 
-          onClick={() => changeMapType("satellite")}
-          className={`bg-white shadow-md p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center rounded-r-lg ${mapType === "satellite" ? "bg-gray-100" : ""}`}
-          style={{
-            ...buttonStyle,
-            color: mapType === "satellite" ? "black" : "rgba(0,0,0,0.5)",
-            fontWeight: mapType === "satellite" ? "500" : "normal"
-          }}
-        >
-          Satellite
-        </button>
-      </div>
-    );
-  }
-  
-  // Mobile view: Dropdown menu
-  return (
-    <div className="absolute top-3 left-4 z-10 flex flex-col">
-      {/* Main toggle button */}
-      <button 
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 flex items-center justify-center"
-        style={buttonStyle}
-      >
-        <span>{mapType === "roadmap" ? "Map" : "Satellite"}</span>
-      </button>
-
-      {/* Dropdown options */}
-      {isExpanded && (
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden absolute top-12 left-0">
-          <button 
-            className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "roadmap" ? "bg-gray-200" : ""}`}
-            onClick={() => changeMapType("roadmap")}
-          >
-            Map
-          </button>
-          <button 
-            className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "satellite" ? "bg-gray-200" : ""}`}
-            onClick={() => changeMapType("satellite")}
-          >
-            Satellite
-          </button>
-        </div>
-      )}
-    </div>
-  );
+  const openArticle = (id) => {
+    window.open(`/hyperlocal/article/${id}`, '_blank');
 };
+
+    // Add this component inside your NewsMap function 
+    const LocationPrompt = () => {
+        const router = useRouter();
+        const [locationLoading, setLocationLoading] = useState(false);
+        const [locationError, setLocationError] = useState(null);
+
+        // Fix the requestLocationAccess function in LocationPrompt
+        const requestLocationAccess = () => {
+        setLocationLoading(true);
+        setLocationError(null);
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+            setLocationLoading(false);
+            setShowLocationPrompt(false); // Hide prompt after successful location
+            
+            const { latitude, longitude } = position.coords;
+            setUserLocation({ lat: latitude, lng: longitude });
+            
+            // Store in localStorage that permission was granted
+            localStorage.setItem('newsMapLocationPermission', 'granted');
+            
+            // If map is available, pan and zoom to user location
+            if (mapRef) {
+                mapRef.panTo({ lat: latitude, lng: longitude });
+                mapRef.setZoom(USER_LOCATION_ZOOM);
+            }
+            
+            // The data will be fetched in the useEffect that watches for userLocation changes
+            },
+            (error) => {
+            setLocationLoading(false);
+            console.error("Error getting user location:", error);
+            
+            let errorMessage = "Unable to access your location. Please enable location services and try again.";
+            if (error.code === 1) {
+                errorMessage = "Location access denied. You need to allow location access to use this map.";
+            } else if (error.code === 2) {
+                errorMessage = "Your location is not available. Please try again later.";
+            } else if (error.code === 3) {
+                errorMessage = "Location request timed out. Please try again.";
+            }
+            
+            setLocationError(errorMessage);
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+        };
+
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-fadeIn">
+                <div className="flex justify-between items-start mb-4">
+                <h3 className="text-xl font-bold text-gray-800">Location Permission Required</h3>
+                <button 
+                    onClick={() => router.back()}
+                    className="text-gray-500 hover:text-gray-700"
+                >
+                    <X className="h-5 w-5" />
+                </button>
+                </div>
+                
+                <div className="mb-6">
+                <div className="flex justify-center mb-4">
+                    <MapPin className="h-12 w-12 text-red-600" />
+                </div>
+                <p className="text-gray-700 mb-2">
+                    To view local news, we need your current location. You can only see news within 10km of your location.
+                </p>
+                {locationError && (
+                    <div className="mt-2 p-3 bg-red-50 border border-red-100 rounded text-red-700 text-sm">
+                    {locationError}
+                    </div>
+                )}
+                </div>
+                
+                <div className="flex flex-col gap-3">
+                <button
+                    onClick={requestLocationAccess}
+                    disabled={locationLoading}
+                    className="w-full px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                    {locationLoading ? (
+                    <span className="flex items-center justify-center">
+                        <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                        Getting Location...
+                    </span>
+                    ) : (
+                    'Allow Location Access'
+                    )}
+                </button>
+                <button
+                    onClick={() => router.back()}
+                    className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+                >
+                    Cancel
+                </button>
+                </div>
+            </div>
+            </div>
+        );
+    };
+
+    // Custom Map Type Controls Component
+    const MapTypeControls = ({ mapRef }) => {
+    const [mapType, setMapType] = useState("roadmap");
+    const [isExpanded, setIsExpanded] = useState(false);
+    
+    // State to track if the screen is in mobile view
+    const [isMobile, setIsMobile] = useState(false);
+    
+    // Effect to check screen size and update isMobile state
+    useEffect(() => {
+        const checkScreenSize = () => {
+        setIsMobile(window.innerWidth < 768); // 768px is a common breakpoint for mobile
+        };
+        
+        // Initial check
+        checkScreenSize();
+        
+        // Add event listener for window resize
+        window.addEventListener('resize', checkScreenSize);
+        
+        // Clean up
+        return () => window.removeEventListener('resize', checkScreenSize);
+    }, []);
+    
+    const changeMapType = (type) => {
+        if (!mapRef) return;
+        mapRef.setMapTypeId(type);
+        setMapType(type);
+        setIsExpanded(false);
+    };
+
+    // Desktop view: Side-by-side buttons
+    if (!isMobile) {
+        return (
+        <div className="absolute top-3 left-4 z-10 flex flex-row">
+            <button 
+            onClick={() => changeMapType("roadmap")}
+            className={`bg-white shadow-md p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center rounded-l-lg border-r border-gray-200 ${mapType === "roadmap" ? "bg-gray-100" : ""}`}
+            style={{
+                ...buttonStyle,
+                color: mapType === "roadmap" ? "black" : "rgba(0,0,0,0.5)",
+                fontWeight: mapType === "roadmap" ? "500" : "normal"
+            }}
+            >
+            Map
+            </button>
+            <button 
+            onClick={() => changeMapType("satellite")}
+            className={`bg-white shadow-md p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center rounded-r-lg ${mapType === "satellite" ? "bg-gray-100" : ""}`}
+            style={{
+                ...buttonStyle,
+                color: mapType === "satellite" ? "black" : "rgba(0,0,0,0.5)",
+                fontWeight: mapType === "satellite" ? "500" : "normal"
+            }}
+            >
+            Satellite
+            </button>
+        </div>
+        );
+    }
+    
+    // Mobile view: Dropdown menu
+    return (
+        <div className="absolute top-3 left-4 z-10 flex flex-col">
+        {/* Main toggle button */}
+        <button 
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 flex items-center justify-center"
+            style={buttonStyle}
+        >
+            <span>{mapType === "roadmap" ? "Map" : "Satellite"}</span>
+        </button>
+
+        {/* Dropdown options */}
+        {isExpanded && (
+            <div className="bg-white shadow-lg rounded-lg overflow-hidden absolute top-12 left-0">
+            <button 
+                className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "roadmap" ? "bg-gray-200" : ""}`}
+                onClick={() => changeMapType("roadmap")}
+            >
+                Map
+            </button>
+            <button 
+                className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "satellite" ? "bg-gray-200" : ""}`}
+                onClick={() => changeMapType("satellite")}
+            >
+                Satellite
+            </button>
+            </div>
+        )}
+        </div>
+    );
+    };
 
   // Loading state
   if (!isLoaded) {
@@ -630,8 +742,12 @@ const MapTypeControls = ({ mapRef }) => {
   const selectedNewsGroup = selectedLocation ? groupedNews[selectedLocation.key] : [];
   const hasMultipleNews = selectedNewsGroup && selectedNewsGroup.length > 1;
 
+  
   return (
     <div className="relative">
+
+    {/* Show location prompt if needed */}
+    {showLocationPrompt && <LocationPrompt />}
 
       {/* <MapLegend /> the legends */}
       <FilterPanel 
@@ -640,21 +756,53 @@ const MapTypeControls = ({ mapRef }) => {
         buttonStyle = {buttonStyle}
         isMobile = {isMobile}
       /> {/* the filters */}
-
-      <GoogleMap
+    <GoogleMap
         mapContainerStyle={containerStyle}
         center={userLocation || center}
         zoom={userLocation ? USER_LOCATION_ZOOM : DEFAULT_ZOOM}
         options={{
-          fullscreenControl: false,
-          streetViewControl: false,
-          mapTypeControl: false, // Disable default map type control
-          zoomControl: true,
-          gestureHandling: "greedy", // This enables one finger pan on mobile
+            fullscreenControl: false,
+            streetViewControl: false,
+            mapTypeControl: false,
+            zoomControl: true,
+            gestureHandling: "greedy",
+            // Add restriction with buffer if user location exists
+            restriction: userLocation ? {
+              latLngBounds: {
+                north: userLocation.lat + ((MAX_RADIUS_KM * BUFFER_FACTOR) / 111),
+                south: userLocation.lat - ((MAX_RADIUS_KM * BUFFER_FACTOR) / 111),
+                east: userLocation.lng + ((MAX_RADIUS_KM * BUFFER_FACTOR) / (111 * Math.cos(userLocation.lat * Math.PI / 180))),
+                west: userLocation.lng - ((MAX_RADIUS_KM * BUFFER_FACTOR) / (111 * Math.cos(userLocation.lat * Math.PI / 180)))
+              },
+              strictBounds: false // Allow some elasticity
+            } : undefined,
         }}
         onLoad={(map) => setMapRef(map)}
-        onIdle={(map) => handleBoundsChanged(map)}
-      >
+        onIdle={(map) => {
+            handleBoundsChanged(map);
+            // Keep bounds checks but with the buffered area
+            if (userLocation) restrictMapBounds();
+        }}
+        onDragEnd={() => {
+            // Apply restriction with buffer zone
+            if (userLocation) restrictMapBounds();
+        }}
+        >
+ 
+        {/* Add radius circle when user location exists */}
+        {userLocation && (
+            <Circle
+                center={userLocation}
+                radius={MAX_RADIUS_KM * 1000} // Convert km to meters
+                options={{
+                    fillColor: "#3B82F6", // Light blue fill
+                    fillOpacity: 0.15,    // Very subtle fill
+                    strokeColor: "#3B82F6", // Light blue stroke
+                    strokeOpacity: 0.6,   // Moderate stroke opacity
+                    strokeWeight: 2,      // Thin border
+                }}
+            />
+        )}
         {/* Custom Map Type Controls */}
         <MapTypeControls mapRef={mapRef} />
 
@@ -778,7 +926,7 @@ const MapTypeControls = ({ mapRef }) => {
               
               {/* Action Button */}
               <button
-                onClick={() => openArticle(currentNews.article_url)}
+                onClick={() => openArticle(currentNews.id)}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
               >
                 Read Full Article

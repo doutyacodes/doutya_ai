@@ -1607,3 +1607,21 @@ export const NARRATIVE_BIASES = mysqlTable("narrative_biases", {
   entity: varchar("entity", { length: 255 }),
   percentage: decimal("percentage", { precision: 5, scale: 2 }),
 });
+
+export const HYPERLOCAL_NEWS = mysqlTable("hyperlocal_news", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),  // Full news content
+  image_url: text("image_url").notNull(),  // Uploaded image path
+  latitude: decimal("latitude", { precision: 10, scale: 7 }).notNull(),
+  longitude: decimal("longitude", { precision: 10, scale: 7 }).notNull(),
+  category_id: int("category_id").references(() => HYPERLOCAL_CATEGORIES.id),
+  delete_after_hours: int("delete_after_hours").notNull().default(24),
+  created_by: int("created_by").references(() => USER_DETAILS.id).notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const HYPERLOCAL_CATEGORIES = mysqlTable("hyperlocal_categories", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 100 }).notNull(),  // Example: 'local_news', 'ads', 'events'
+});

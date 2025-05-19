@@ -5,9 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
     try {
-        const { sessionId } = await req.json();
-        console.log(" sessionID", sessionId);
-        
+        const { sessionId } = await req.json();        
         if (!sessionId) {
             return NextResponse.json({ message: 'Session ID is required' }, { status: 400 });
         }
