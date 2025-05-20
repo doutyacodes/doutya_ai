@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import SocialMediaNav from "./SocialMediaNav";
 import FloatingBubbleNav from "./FloatingBubbleNav";
-import { ChevronDown, Info, Mail, MoreVertical, Menu, Home, Users, Newspaper, } from 'lucide-react';
+import { ChevronDown, Info, Mail, MoreVertical, Menu, Home, Users, Newspaper, PenLine, } from 'lucide-react';
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -26,56 +26,64 @@ const Navbar = () => {
   // Check if we're in the maps section
   const isMapsSection = pathname.startsWith("/news-maps");
 
-  const NavDropdownAlt = () => {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+const NavDropdownAlt = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    return (
-      <div className="relative">
-        <button
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 hover:border-red-400 text-gray-700 hover:text-red-800 transition-all duration-200"
-        >
-          <Menu 
-            className={`w-4 h-4 transition-transform duration-200 ${
-              isDropdownOpen ? 'rotate-180' : ''
-            }`}
-          />
-        </button>
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+        className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 hover:border-red-400 text-gray-700 hover:text-red-800 transition-all duration-200"
+      >
+        <Menu 
+          className={`w-4 h-4 transition-transform duration-200 ${
+            isDropdownOpen ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
 
-        {isDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 transform opacity-100 scale-100 transition-all duration-200 origin-top-right ring-1 ring-black ring-opacity-5">
-            <div className="absolute right-3 -top-2 w-4 h-4 bg-white transform rotate-45 border-l border-t border-black/5" />
+      {isDropdownOpen && (
+        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 transform opacity-100 scale-100 transition-all duration-200 origin-top-right ring-1 ring-black ring-opacity-5">
+          <div className="absolute right-3 -top-2 w-4 h-4 bg-white transform rotate-45 border-l border-t border-black/5" />
+          
+          <div className="relative bg-white rounded-lg">
+            <Link 
+              href="/newstech"
+              className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
+            >
+              <Newspaper className="w-4 h-4" />
+              <span className="font-medium">NewsTech</span>
+            </Link>
+
+            <Link 
+              href="/hyperlocal"
+              className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
+            >
+              <PenLine className="w-4 h-4" />
+              <span className="font-medium">Be A Creator</span>
+            </Link>
+
+            <Link 
+              href="/about-us"
+              className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
+            >
+              <Info className="w-4 h-4" />
+              <span className="font-medium">About Us</span>
+            </Link>
             
-            <div className="relative bg-white rounded-lg">
-                <Link 
-                href="/newstech"
-                className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
-              >
-                <Newspaper className="w-4 h-4" />
-                <span className="font-medium">NewsTech</span>
-              </Link>
-
-              <Link 
-                href="/about-us"
-                className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
-              >
-                <Info className="w-4 h-4" />
-                <span className="font-medium">About Us</span>
-              </Link>
-              
-              <Link 
-                href="/contact-us"
-                className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
-              >
-                <Mail className="w-4 h-4" />
-                <span className="font-medium">Contact Us</span>
-              </Link>
-            </div>
+            <Link 
+              href="/contact-us"
+              className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
+            >
+              <Mail className="w-4 h-4" />
+              <span className="font-medium">Contact Us</span>
+            </Link>
           </div>
-        )}
-      </div>
-    );
-  };
+        </div>
+      )}
+    </div>
+  );
+};
 
   const AgeSelector = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);

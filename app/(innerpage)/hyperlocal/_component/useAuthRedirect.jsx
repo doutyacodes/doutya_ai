@@ -8,6 +8,7 @@ const useAuthRedirect = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('user_token');
+    console.log("user token", token)
     if (!token) {
       router.replace('/auth/login');
     }

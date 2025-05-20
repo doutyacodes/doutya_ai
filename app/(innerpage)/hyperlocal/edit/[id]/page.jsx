@@ -1,44 +1,97 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, Upload, Loader2, AlertCircle, MapPin, X } from 'lucide-react';
+import { useRouter, useParams } from 'next/navigation';
+import { ArrowLeft, Upload, Loader2, AlertCircle, MapPin, X, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import useAuthRedirect from '../_component/useAuthRedirect';
+import useAuthRedirect from '../../_component/useAuthRedirect';
 
-export default function CreateNewsPage() {
+export default function EditNewsPage() {
   const router = useRouter();
+  const params = useParams();
+  const newsId = params?.id;
+  
   const [formData, setFormData] = useState({
     title: '',
     image_url: '',
-    content: '', // Changed from article_url to content
+    content: '',
     latitude: '',
     longitude: '',
     category_id: '',
-    delete_after_hours: 24, 
+    delete_after_hours: 24,
   });
   
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
+  const [originalImageUrl, setOriginalImageUrl] = useState('');
+  const [imageChanged, setImageChanged] = useState(false);
   
   // Location related states
-  const [showLocationPrompt, setShowLocationPrompt] = useState(true);
+  const [showLocationPrompt, setShowLocationPrompt] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
 
   useAuthRedirect();
 
+  // Fetch news details and categories on load
   useEffect(() => {
-    fetchCategories();
-    // We won't automatically request location - we'll show our custom prompt first
-  }, []);
+    if (newsId) {
+      fetchNewsDetails();
+      fetchCategories();
+      requestLocationAccess(); // Get user's current location for validation
+    }
+  }, [newsId]);
 
+  const fetchNewsDetails = async () => {
+    try {
+      const res = await fetch(`/api/hyperlocal/${newsId}`,{
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('user_token')}`,
+        },
+      });
+      if (!res.ok) {
+        throw new Error('Failed to fetch news details');
+      }
+      
+      const data = await res.json();
+      const newsItem = data.news;
+      
+      if (!newsItem) {
+        throw new Error('News item not found');
+      }
+      
+      // Set the form data with the fetched news details
+      setFormData({
+        title: newsItem.title || '',
+        image_url: newsItem.image_url || '',
+        content: newsItem.content || '',
+        latitude: newsItem.latitude ? newsItem.latitude.toString() : '',
+        longitude: newsItem.longitude ? newsItem.longitude.toString() : '',
+        category_id: newsItem.category_id ? newsItem.category_id.toString() : '',
+        delete_after_hours: newsItem.delete_after_hours || 24,
+      });
+      
+      // Store the original image URL for later comparison
+      setOriginalImageUrl(newsItem.image_url || '');
+      
+      // Set file preview if there's an image
+      if (newsItem.image_url) {
+        setFilePreview(newsItem.image_url);
+      }
+      
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+  
   const fetchCategories = async () => {
     try {
       const res = await fetch('/api/hyperlocal/categories');
@@ -67,12 +120,6 @@ export default function CreateNewsPage() {
       (position) => {
         const { latitude, longitude } = position.coords;
         setUserLocation({ latitude, longitude });
-        setFormData(prev => ({
-          ...prev,
-          latitude: latitude.toString(),
-          longitude: longitude.toString()
-        }));
-        setShowLocationPrompt(false);
         setLocationLoading(false);
       },
       (error) => {
@@ -86,6 +133,10 @@ export default function CreateNewsPage() {
         }
         setLocationError(errorMessage);
         setLocationLoading(false);
+        // Show location prompt if permission was denied
+        if (error.code === 1) {
+          setShowLocationPrompt(true);
+        }
       },
       { enableHighAccuracy: true }
     );
@@ -130,6 +181,7 @@ export default function CreateNewsPage() {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
+      setImageChanged(true);
       const previewUrl = URL.createObjectURL(selectedFile);
       setFilePreview(previewUrl);
     }
@@ -163,6 +215,13 @@ export default function CreateNewsPage() {
     }
   };
 
+  const removeImage = () => {
+    setFile(null);
+    setFilePreview(null);
+    setFormData(prev => ({ ...prev, image_url: '' }));
+    setImageChanged(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormSubmitting(true);
@@ -170,7 +229,7 @@ export default function CreateNewsPage() {
     
     // Validate that user has allowed location access
     if (!userLocation) {
-      setError("Location permission is required to post news");
+      setError("Location permission is required to update news");
       setFormSubmitting(false);
       setShowLocationPrompt(true);
       return;
@@ -207,20 +266,23 @@ export default function CreateNewsPage() {
         latitude: formData.latitude ? parseFloat(formData.latitude) : userLocation.latitude,
         longitude: formData.longitude ? parseFloat(formData.longitude) : userLocation.longitude,
         category_id: formData.category_id ? parseInt(formData.category_id) : null,
+        original_image_url: imageChanged ? originalImageUrl : null, // Only send if image was changed
       };
       
-      const res = await fetch('/api/hyperlocal', {
-        method: 'POST',
+      const res = await fetch(`/api/hyperlocal/${newsId}`, {
+        method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('user_token')}`,
           'Content-Type': 'application/json',
+          'User-Latitude': userLocation.latitude.toString(),
+          'User-Longitude': userLocation.longitude.toString(),
         },
         body: JSON.stringify(dataToSubmit),
       });
       
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.message || 'Failed to create news');
+        throw new Error(errorData.message || 'Failed to update news');
       }
       
       // Redirect to the news listing page on success
@@ -251,7 +313,7 @@ export default function CreateNewsPage() {
             <MapPin className="h-12 w-12 text-red-600" />
           </div>
           <p className="text-gray-700 mb-2">
-            To post hyperlocal news, we need your current location. You can only post news within 10km of your location.
+            To edit hyperlocal news, we need your current location. You can only edit news within 10km of your location.
           </p>
           {locationError && (
             <div className="mt-2 p-3 bg-red-50 border border-red-100 rounded text-red-700 text-sm">
@@ -286,6 +348,18 @@ export default function CreateNewsPage() {
     </div>
   );
 
+  // Show loading state while fetching news details
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <Loader2 className="h-12 w-12 text-red-800 animate-spin" />
+          <p className="mt-4 text-lg text-gray-700">Loading news details...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-6 pb-20">
       {showLocationPrompt && <LocationPrompt />}
@@ -298,7 +372,7 @@ export default function CreateNewsPage() {
           >
             <ArrowLeft className="h-5 w-5 mr-2" /> Back to News List
           </Link>
-          <h1 className="text-3xl font-bold text-gray-800">Create Hyperlocal News</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Edit Hyperlocal News</h1>
         </div>
         
         <div className="bg-white rounded-lg shadow-md p-6">
@@ -345,6 +419,15 @@ export default function CreateNewsPage() {
                           alt="Preview" 
                           className="h-full mx-auto object-contain"
                         />
+                        {filePreview && (
+                          <button 
+                            type="button" 
+                            onClick={removeImage}
+                            className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
+                          >
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        )}
                       </div>
                     ) : (
                       <>
@@ -358,7 +441,6 @@ export default function CreateNewsPage() {
                       className="hidden" 
                       accept="image/*"
                       onChange={handleFileChange}
-                      required
                     />
                   </label>
                 </div>
@@ -369,7 +451,7 @@ export default function CreateNewsPage() {
                 )}
               </div>
               
-              {/* Article Content - replaced URL input with textarea */}
+              {/* Article Content */}
               <div>
                 <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
                   Article Content <span className="text-red-500">*</span>
@@ -436,29 +518,28 @@ export default function CreateNewsPage() {
               </div>
               
               {/* Category */}
-                <div>
+              <div>
                 <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-1">
-                    Category
+                  Category
                 </label>
                 <select
-                    id="category_id"
-                    name="category_id"
-                    value={formData.category_id}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                  id="category_id"
+                  name="category_id"
+                  value={formData.category_id}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
                 >
-                    <option value="">Select a category</option>
-                    {categories.map(category => (
+                  <option value="">Select a category</option>
+                  {categories.map(category => (
                     <option key={category.id} value={category.id}>
-                        {category.name
+                      {category.name
                         .split(" ")
                         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                         .join(" ")}
                     </option>
-                    ))}
+                  ))}
                 </select>
-                </div>
-
+              </div>
 
               {/* Delete After Hours */}
               <div className="mt-4">
@@ -521,10 +602,10 @@ export default function CreateNewsPage() {
                   {(formSubmitting || uploading) ? (
                     <span className="flex items-center">
                       <Loader2 className="animate-spin mr-2 h-5 w-5" />
-                      {uploading ? 'Uploading...' : 'Creating...'}
+                      {uploading ? 'Uploading...' : 'Updating...'}
                     </span>
                   ) : (
-                    'Create News'
+                    'Update News'
                   )}
                 </button>
               </div>

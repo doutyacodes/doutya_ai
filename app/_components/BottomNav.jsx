@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Map, Newspaper, Users } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 
 export default function BottomNavigation() {
@@ -17,6 +16,8 @@ export default function BottomNavigation() {
       return '/news-kids';
     } else if (path === '/news-maps' || path.startsWith('/news-maps/')) {
       return '/news-maps';
+    } else if (path === '/hyperlocal/map' || path.startsWith('/hyperlocal/map/')) {
+      return '/hyperlocal/map';
     }
     return path;
   }
@@ -30,17 +31,22 @@ export default function BottomNavigation() {
     {
       name: 'News',
       path: '/news',
-      icon: <Newspaper size={20} />,
+      displayName: ['News', '']
     },
     {
-      name: 'News For Kids',
+      name: 'Kids News',
       path: '/news-kids',
-      icon: <Users size={20} />,
+      displayName: ['Kids', 'News']
     },
     {
       name: 'News Map',
       path: '/news-maps',
-      icon: <Map size={20} />,
+      displayName: ['News', 'Map']
+    },
+    {
+      name: 'Local News',
+      path: '/hyperlocal/map',
+      displayName: ['Local', 'News']
     },
   ];
 
@@ -63,43 +69,50 @@ export default function BottomNavigation() {
     else if (tabPath === '/news-maps') {
       return pathname === '/news-maps' || pathname.startsWith('/news-maps/');
     }
+    // For hyperlocal map tab
+    else if (tabPath === '/hyperlocal/map') {
+      return pathname === '/hyperlocal/map' || pathname.startsWith('/hyperlocal/map/');
+    }
     return false;
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 flex justify-center pb-4 z-10">
+    <div className="fixed bottom-0 left-0 right-0 flex justify-center pb-2 md:pb-4 z-10">
       {/* Desktop view - wider nav */}
-      <div className="hidden md:flex bg-red-800/85 shadow-lg rounded-full items-center justify-around px-6 h-16 w-full max-w-3xl mx-8">
+      <div className="hidden md:flex bg-red-800/85 shadow-lg rounded-full items-center justify-around px-6 h-16 w-full max-w-4xl mx-8">
         {tabs.map((tab) => (
           <button
             key={tab.path}
-            className={`flex items-center justify-center px-6 py-2 rounded-full transition-colors duration-200 ${
+            className={`flex items-center justify-center px-5 py-2 rounded-full transition-colors duration-200 ${
               isTabActive(tab.path)
                 ? 'bg-white text-red-800 font-semibold'
                 : 'text-white hover:bg-white/20'
             }`}
             onClick={() => handleTabClick(tab.path)}
           >
-            {/* <span className="mr-2">{tab.icon}</span> */}
             <span className="text-sm font-medium">{tab.name}</span>
           </button>
         ))}
       </div>
       
-      {/* Mobile view - better spacing */}
-      <div className="flex md:hidden bg-red-800/85 shadow-lg rounded-full items-center justify-around px-3 h-16 w-full max-w-xl mx-4">
+      {/* Mobile view - updated to match desktop style without icons */}
+      <div className="flex md:hidden bg-red-800/85 shadow-lg rounded-full items-center justify-around h-14 w-full max-w-xl mx-2">
         {tabs.map((tab) => (
           <button
             key={tab.path}
-            className={`flex flex-col items-center justify-center rounded-full px-3 py-1 ${
+            className={`flex flex-col items-center justify-center px-3 ${
               isTabActive(tab.path)
-                ? 'bg-white text-red-800 font-semibold'
-                : 'text-white hover:bg-white/20'
+                ? 'bg-white/20 rounded-full text-white font-medium'
+                : 'text-white/80 hover:text-white'
             }`}
             onClick={() => handleTabClick(tab.path)}
           >
-            {/* <span className="mb-1">{tab.icon}</span> */}
-            <span className="text-xs font-medium">{tab.name}</span>
+            <div className="flex flex-col items-center justify-center py-1">
+              <span className="text-xs leading-tight">{tab.displayName[0]}</span>
+              {tab.displayName[1] && (
+                <span className="text-xs leading-tight">{tab.displayName[1]}</span>
+              )}
+            </div>
           </button>
         ))}
       </div>

@@ -63,7 +63,7 @@ export default function ArticlePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 max-w-4xl pb-20">
       {/* Article Title */}
       <h1 className="text-4xl md:text-5xl font-bold mb-6 text-red-800">
         {article.title}
