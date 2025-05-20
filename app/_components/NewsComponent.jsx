@@ -20,6 +20,7 @@ import {
 import toast from "react-hot-toast";
 import GlobalApi from "../api/_services/GlobalApi";
 import { FiCopy } from "react-icons/fi";
+import { ArrowLeft } from "lucide-react";
 
 export default function NewsDetails({ id, showNames }) {
   const [article, setArticle] = useState(null);
@@ -183,8 +184,30 @@ export default function NewsDetails({ id, showNames }) {
       });
   };
   return (
-    <div className="text-gray-800 p-2 pb-8 grid grid-cols-2 gap-2 md:gap-5 max-md:grid-cols-1">
-      <div className="w-full ">
+<div className="text-gray-800 relative p-2 pb-8 grid grid-cols-2 gap-2 md:gap-5 max-md:grid-cols-1">
+      <div className="w-full relative">
+        {/* Mobile Back Button - Positioned at the top with proper spacing */}
+        <div className="mb-4 md:hidden">
+          <button
+            onClick={() => router.push('/news-kids')}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200 text-slate-700"
+          >
+            <ArrowLeft size={16} strokeWidth={2.5} />
+            <span className="text-sm font-medium">Back to Home</span>
+          </button>
+        </div>
+        
+        {/* Desktop Back Button - No longer absolutely positioned */}
+        <div className="hidden md:block mb-6">
+          <button
+            onClick={() => router.push('/news-kids')}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200 text-slate-700"
+          >
+            <ArrowLeft size={18} strokeWidth={2} />
+            <span className="font-medium text-sm">Back to Home</span>
+          </button>
+        </div>
+
         <div className="mb-6">
           <h1 className="text-4xl max-md:text-3xl font-bold text-gray-800">{title}</h1>
           <p className="text-sm text-gray-500 mt-2">{date}</p>
@@ -199,7 +222,7 @@ export default function NewsDetails({ id, showNames }) {
         />
 
         <div className="text-xs text-slate-500">{formatDate(created_at)}</div>
-        <div className="flex items-center space-x-8 w-fit  my-6">
+        <div className="flex items-center space-x-8 w-fit my-6">
           {/* Share Icon */}
           <div className="text-gray-500 cursor-pointer relative group">
             <FaShareAlt size={16} />

@@ -141,8 +141,10 @@ function OrganizationSchema() {
 }
 
 export async function generateMetadata({ params }) {
-  // Destructure the 'id' from params
-  const { id } = params;
+
+   // Await params before destructuring
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
 
   // Check if ID exists and is valid
   if (!id || isNaN(id)) {
@@ -261,7 +263,9 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function NewsSection({ params }) {
-  const { id } = params;
+  // Await params before destructuring
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
   
   try {
     // Fetch news data with ID

@@ -6,7 +6,7 @@ import Image from "next/image";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import { IoIosCloseCircle } from "react-icons/io";
 import { FaEllipsisH, FaShareAlt } from "react-icons/fa";
-import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -250,23 +250,26 @@ export default function NewsDetails2({ id, showNames }) {
         <div className="max-w-6xl mx-auto">
           <div className="bg-white shadow-md rounded-md border border-slate-200">
             <div className="grid grid-cols-1 gap-2 md:gap-5 relative">
-              {/* <PerspectiveNavigation /> */}
-              <div className="md:hidden">
+              {/* Improved Back Button for Mobile */}
+              <div className="pt-4 px-4 md:hidden">
                 <button
                   onClick={() => router.push('/')}
-                  className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg hover:shadow-lg transition-all duration-200 border border-slate-200"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200 text-slate-700"
                 >
-                  <Home size={18} />
-                  <span className="text-sm">Back to home</span>
+                  <ArrowLeft size={16} strokeWidth={2.5} />
+                  <span className="text-sm font-medium">Back to Home</span>
                 </button>
               </div>
+              
+              {/* Improved Back Button for Desktop */}
               <button
                 onClick={() => router.push('/')}
-                className="absolute top-4 left-4 hidden md:block md:left-8 flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-slate-200 z-10"
+                className="absolute top-6 left-6 hidden md:flex items-center gap-2 px-4 py-2.5 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200 text-slate-700 z-10"
               >
-                <Home size={18} />
-                <span className="hidden md:inline text-sm">Back to home</span>
+                <ArrowLeft size={18} strokeWidth={2} />
+                <span className="font-medium text-sm">Back to Home</span>
               </button>
+
               <PerspectiveNavigation
                 currentArticleIndex={currentArticleIndex}
                 allArticles={allArticles}
