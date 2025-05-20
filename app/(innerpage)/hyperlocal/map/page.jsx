@@ -52,17 +52,6 @@ const categoryColors = {
 };
 
 
-// Get website favicon
-const getFavicon = (articleUrl) => {
-  try {
-    const domain = new URL(articleUrl).hostname.replace("www.", "");
-    return `https://www.google.com/s2/favicons?sz=32&domain=${domain}`;
-  } catch (error) {
-    console.error("Error getting favicon:", error);
-    return null;
-  }
-};
-
 const createCategoryMarkerIcon = (category, newsCount = 0) => {
   const color = category ? categoryColors[category] || categoryColors.Default : categoryColors.Default;
   
@@ -502,6 +491,12 @@ const restrictMapBounds = useCallback(() => {
     }
     };
 
+  const truncate = (text, length = 100) => {
+    if (!text) return "";
+      return text.length > length ? text.slice(0, length) + "..." : text;
+  };
+
+
   // Handle marker click
   const handleMarkerClick = (locationKey, index = 0) => {
     const [lat, lng] = locationKey.split(',').map(parseFloat);
@@ -902,28 +897,16 @@ const restrictMapBounds = useCallback(() => {
               {/* News Content */}
               <h3 className="font-semibold text-lg mb-2 line-clamp-2">{currentNews.title}</h3>
               
-              {/* Source with Favicon */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  {currentNews.article_url && (
-                    <img
-                      src={getFavicon(currentNews.article_url)}
-                      alt=""
-                      className="w-4 h-4"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  )}
-                  <p className="text-sm text-gray-600">
-                    Source: {currentNews.source_name}
-                  </p>
-                </div>
-                <p className="text-xs text-gray-500">
+              {/* Content */}
+              <div className="mb-4">
+                <p className="text-gray-600 text-sm">
+                  {truncate(currentNews.content, 120)}
+                </p>
+                <p className="text-xs text-gray-500 italic font-light text-right mt-1">
                   {new Date(currentNews.created_at).toLocaleDateString()}
                 </p>
               </div>
-              
+
               {/* Action Button */}
               <button
                 onClick={() => openArticle(currentNews.id)}

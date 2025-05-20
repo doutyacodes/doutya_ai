@@ -34,7 +34,7 @@ export async function GET(req) {
         title: HYPERLOCAL_NEWS.title,
         image_url: HYPERLOCAL_NEWS.image_url,
         // article_url: HYPERLOCAL_NEWS.article_url,
-        // source_name: HYPERLOCAL_NEWS.source_name,
+        content: HYPERLOCAL_NEWS.content,
         latitude: HYPERLOCAL_NEWS.latitude,
         longitude: HYPERLOCAL_NEWS.longitude,
         category: HYPERLOCAL_CATEGORIES.name,
