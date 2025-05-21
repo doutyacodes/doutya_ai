@@ -629,7 +629,7 @@ const LocationPrompt = () => {
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Redirecting</h3>
             <p className="text-gray-700 mb-4 text-center">
-              This feature requires location access to work properly. You're being redirected to News Maps page.
+              This feature requires location access to work properly. You&apos;re being redirected to News Maps page.
             </p>
             <div className="p-3 bg-red-50 border border-red-100 rounded text-red-700 text-center font-medium">
               Redirecting in {countdown} seconds...
