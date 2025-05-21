@@ -39,9 +39,9 @@ export default function BottomNavigation() {
       displayName: ['Kids', 'News']
     },
     {
-      name: 'News Map',
+      name: 'News on Map',
       path: '/news-maps',
-      displayName: ['News', 'Map']
+      displayName: ['News on', 'Map']
     },
     {
       name: 'Nearby News',

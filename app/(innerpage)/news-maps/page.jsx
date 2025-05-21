@@ -16,7 +16,8 @@ import {
     Shirt,
     BellRing,
     Flag,
-    PawPrint
+    PawPrint,
+    Loader2
   } from "lucide-react";
 
 // Map container styles
@@ -348,6 +349,55 @@ const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, i
   );
 };
 
+function LocationModal({ onAllow, onCancel, isLoading, error }) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-fadeIn">
+        <div className="flex justify-between items-start mb-4">
+          <h3 className="text-xl font-bold text-gray-800">Location Permission Required</h3>
+        </div>
+        
+        <div className="mb-6">
+          <div className="flex justify-center mb-4">
+            <MapPin className="h-12 w-12 text-red-800" />
+          </div>
+          <p className="text-gray-700 mb-3">
+            Please allow location access to continue.
+          </p>
+          {error && (
+            <div className="mt-2 p-3 bg-red-50 border border-red-100 rounded text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+        </div>
+        
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={onAllow}
+            disabled={isLoading}
+            className="w-full px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-800 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <span className="flex items-center justify-center">
+                <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                Getting Location...
+              </span>
+            ) : (
+              'Allow Location Access'
+            )}
+          </button>
+          <button
+            onClick={onCancel}
+            className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function NewsMap() {
   const [newsItems, setNewsItems] = useState([]);
   const [groupedNews, setGroupedNews] = useState({});
@@ -358,6 +408,10 @@ export default function NewsMap() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mapRef, setMapRef] = useState(null);
+
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState(null);
 
   const [selectedCategories, setSelectedCategories] = useState(
     Object.keys(categoryIcons).filter(cat => cat !== 'Default')
@@ -424,28 +478,41 @@ export default function NewsMap() {
 
   // Get user's location
   const getUserLocation = useCallback(() => {
-    if (navigator.geolocation) {
-      navigator.permissions
-        .query({ name: "geolocation" })
-        .then((permissionStatus) => {
-          if (permissionStatus.state === "granted") {
-            // Permission already granted, get location
-            getCurrentPosition();
-          } else if (permissionStatus.state === "prompt") {
-            // Show a custom prompt explaining why we need location
-            const confirmGeolocation = window.confirm(
-              "Would you like to see news from your local area? Please allow location access."
-            );
-            if (confirmGeolocation) {
+      if (navigator.geolocation) {
+        navigator.permissions
+          .query({ name: "geolocation" })
+          .then((permissionStatus) => {
+            if (permissionStatus.state === "granted") {
+              // Permission already granted, get location
               getCurrentPosition();
+            } else if (permissionStatus.state === "prompt") {
+              // Show our custom modal instead of the browser prompt
+              setShowLocationModal(true);
+            } else if (permissionStatus.state === "denied") {
+              // If permission is already denied, just use default view
+              console.log("Location permission was previously denied");
             }
-          }
-          // If denied, we'll use the default world view
-        });
-    }
-  }, []);
-  
+          })
+          .catch(err => {
+            console.error("Error checking location permission:", err);
+          });
+      }
+    }, []);
 
+    // Handle allow button click in modal
+  const handleAllowLocation = () => {
+    setLocationLoading(true);
+    setLocationError(null);
+    getCurrentPosition();
+  };
+  
+  // Handle cancel button click in modal
+  const handleCancelLocation = () => {
+    setShowLocationModal(false);
+    console.log("User declined location access, using default world view");
+  };
+
+  // Updated to handle modal states
   const getCurrentPosition = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -457,18 +524,26 @@ export default function NewsMap() {
           mapRef.panTo({ lat: latitude, lng: longitude });
           mapRef.setZoom(USER_LOCATION_ZOOM);
         }
+        
+        // Hide modal and reset loading state
+        setShowLocationModal(false);
+        setLocationLoading(false);
       },
       (error) => {
         console.error("Error getting user location:", error);
+        setLocationError("Failed to get your location. Please try again or use the default view.");
+        setLocationLoading(false);
       }
     );
   };
 
+  
   // Initial data fetch and location request
   useEffect(() => {
     fetchNewsData();
     getUserLocation();
   }, [fetchNewsData, getUserLocation]);
+
 
   // Handle map bounds change
   const handleBoundsChanged = (map) => {
@@ -632,6 +707,16 @@ const MapTypeControls = ({ mapRef }) => {
 
   return (
     <div className="relative">
+
+       {/* Location permission modal */}
+      {showLocationModal && (
+        <LocationModal 
+          onAllow={handleAllowLocation}
+          onCancel={handleCancelLocation}
+          isLoading={locationLoading}
+          error={locationError}
+        />
+      )}
 
       {/* <MapLegend /> the legends */}
       <FilterPanel 

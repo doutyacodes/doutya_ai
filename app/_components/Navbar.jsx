@@ -26,6 +26,9 @@ const Navbar = () => {
   // Check if we're in the maps section
   const isMapsSection = pathname.startsWith("/news-maps");
 
+  const isHyperlocalSection = pathname.startsWith("/hyperlocal");
+
+
 const NavDropdownAlt = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -134,36 +137,53 @@ const NavDropdownAlt = () => {
     );
   };
   
-  // Function to determine which logo to show in the center
-  const getMainLogo = () => {
-    if (isMapsSection) {
-      return (
-        <div className="flex flex-col items-center">
-          <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
-            <Image
-              src="/images/newsmap.png"
-              fill
-              objectFit="contain"
-              alt="Doutya logo"
-              className="object-center"
-            />
-          </div>
-        </div>
-      );
-    }
-    
+// Function to determine which logo to show in the center
+const getMainLogo = () => {
+  // Check if we're in the hyperlocal section  
+  if (isHyperlocalSection) {
     return (
-      <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
-        <Image
-          src={isKidsSection ? "/images/logo5.png" : "/images/logo2.png"}
-          fill
-          objectFit="contain"
-          alt={isKidsSection ? "Doutya Kids logo" : "Doutya logo"}
-          className="object-center"
-        />
+      <div className="flex flex-col items-center">
+        <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
+          <Image
+            src="/images/hyperlocal.png"
+            fill
+            objectFit="contain"
+            alt="Hyperlocal logo"
+            className="object-center"
+          />
+        </div>
       </div>
     );
-  };
+  }
+  
+  if (isMapsSection) {
+    return (
+      <div className="flex flex-col items-center">
+        <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
+          <Image
+            src="/images/newsmap.png"
+            fill
+            objectFit="contain"
+            alt="Doutya logo"
+            className="object-center"
+          />
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
+      <Image
+        src={isKidsSection ? "/images/logo5.png" : "/images/logo2.png"}
+        fill
+        objectFit="contain"
+        alt={isKidsSection ? "Doutya Kids logo" : "Doutya logo"}
+        className="object-center"
+      />
+    </div>
+  );
+};
   
   return (
     <>

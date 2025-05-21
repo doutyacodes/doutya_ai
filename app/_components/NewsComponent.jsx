@@ -21,6 +21,7 @@ import toast from "react-hot-toast";
 import GlobalApi from "../api/_services/GlobalApi";
 import { FiCopy } from "react-icons/fi";
 import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function NewsDetails({ id, showNames }) {
   const [article, setArticle] = useState(null);
@@ -31,6 +32,8 @@ export default function NewsDetails({ id, showNames }) {
   const [popupContent, setPopupContent] = useState({ word: "", meaning: "" });
   const [report_text, setReport_text] = useState("");
   const [showReportPopup, setShowReportPopup] = useState(false);
+
+  const router = useRouter();
 
   const handleReport = async () => {
     try {

@@ -251,6 +251,8 @@ export default function NewsMap() {
 
   const router = useRouter()
 
+  const [initialCheckDone, setInitialCheckDone] = useState(false);
+
   const [showLocationPrompt, setShowLocationPrompt] = useState(false);
 
     const MAX_RADIUS_KM = 10; // 10km radius limit
@@ -379,37 +381,59 @@ const restrictMapBounds = useCallback(() => {
     }
     }, [userLocation]); // We do need userLocation in the dependency array
 
-    const getUserLocation = useCallback(() => {
-        console.log(" inn get locaiton")
-    // Check if we already have location permission in localStorage
-    const locationPermission = localStorage.getItem('newsMapLocationPermission');
-    
-    if (locationPermission === 'granted') {
-        // Permission was previously granted, get location directly
+const getUserLocation = useCallback(() => {
+  console.log("in get location");
+  
+  // First check if location has been permanently blocked by checking permission state
+  const checkLocationPermission = async () => {
+    try {
+      // Check if we already have permission in localStorage
+      const locationPermission = localStorage.getItem('newsMapLocationPermission');
+      
+      if (locationPermission === 'granted') {
+        // We have previous permission, try to get location
         getCurrentPosition();
         return;
+      }
+      
+      // Check browser permission status
+      if (navigator.permissions) {
+        const status = await navigator.permissions.query({ name: 'geolocation' });
+        
+        if (status.state === 'granted') {
+          // Permission already granted in browser, get location
+          getCurrentPosition();
+        } 
+        else if (status.state === 'denied') {
+          // User has previously denied permission in browser settings
+          setShowLocationPrompt(true);
+          setIsLoading(false);
+        }
+        else {
+          // First time prompt or permission state is 'prompt'
+          // Show our custom prompt first
+          setShowLocationPrompt(true);
+          setIsLoading(false);
+        }
+      } else {
+        // Browser doesn't support permissions API, just show our prompt
+        setShowLocationPrompt(true);
+        setIsLoading(false);
+      }
+    } catch (err) {
+      console.error("Error checking location permission:", err);
+      setShowLocationPrompt(true);
+      setIsLoading(false);
     }
-    
-    if (navigator.geolocation) {
-        navigator.permissions
-        .query({ name: "geolocation" })
-        .then((permissionStatus) => {
-            if (permissionStatus.state === "granted") {
-            // Permission already granted, get location
-            getCurrentPosition();
-            // Store permission state
-            localStorage.setItem('newsMapLocationPermission', 'granted');
-            } else {
-            // We need to show our custom prompt
-            setShowLocationPrompt(true);
-            }
-        });
-    } else {
-        setError("Geolocation is not supported by your browser");
-    }
-    }, []);
+  };
+  
+  // Execute the permission check
+  checkLocationPermission();
+}, []);
 
-  const getCurrentPosition = () => {
+
+
+const getCurrentPosition = () => {
   navigator.geolocation.getCurrentPosition(
     (position) => {
       const { latitude, longitude } = position.coords;
@@ -424,21 +448,27 @@ const restrictMapBounds = useCallback(() => {
         mapRef.setZoom(USER_LOCATION_ZOOM);
       }
       
-      // Don't manually fetch news here - the useEffect will handle it
+      // Hide the prompt if it was showing
+      setShowLocationPrompt(false);
+      
+      // Complete loading state
+      setIsLoading(false);
+      
+      // Now fetch news data
+      fetchNewsData();
     },
     (error) => {
       console.error("Error getting user location:", error);
       
-      let errorMessage = "Unable to access your location. Please enable location services and try again.";
+      // If error.code is 1, it means permission was denied
       if (error.code === 1) {
-        errorMessage = "Location access denied. You need to allow location access to use this map.";
-      } else if (error.code === 2) {
-        errorMessage = "Your location is not available. Please try again later.";
-      } else if (error.code === 3) {
-        errorMessage = "Location request timed out. Please try again.";
+        // Clear any previous permission from localStorage
+        localStorage.removeItem('newsMapLocationPermission');
       }
       
-      setError(errorMessage);
+      // Show our location prompt
+      setShowLocationPrompt(true);
+      setIsLoading(false);
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
   );
@@ -446,16 +476,16 @@ const restrictMapBounds = useCallback(() => {
 
     // Initialize only once
     useEffect(() => {
-    // Only check location initially
-    getUserLocation();
-    }, []);
+      // Check location permission state first
+      getUserLocation();
+    }, [getUserLocation]);
 
-    // Add this new useEffect for fetching data only when userLocation changes
-    useEffect(() => {
-    if (userLocation) {
-        fetchNewsData();
+  // Only fetch data when user location is available and not when prompt is showing
+  useEffect(() => {
+    if (userLocation && !showLocationPrompt) {
+      fetchNewsData();
     }
-    }, [userLocation]); // Remove fetchNewsData from here
+  }, [userLocation, showLocationPrompt]);
 
   
   // Add checking for location prompt 
@@ -519,204 +549,258 @@ const restrictMapBounds = useCallback(() => {
   // Open article in new tab
   const openArticle = (id) => {
     window.open(`/hyperlocal/article/${id}`, '_blank');
+  };
+
+  // Add this component inside your NewsMap function 
+const LocationPrompt = () => {
+  const router = useRouter();
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState(null);
+  const [countdown, setCountdown] = useState(null);
+  const [showRedirectMessage, setShowRedirectMessage] = useState(false);
+  
+  // Start countdown when redirecting
+  useEffect(() => {
+    if (showRedirectMessage) {
+      let timeLeft = 5;
+      setCountdown(timeLeft);
+      
+      const timer = setInterval(() => {
+        timeLeft -= 1;
+        setCountdown(timeLeft);
+        
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          router.push('/news-maps');
+        }
+      }, 1000);
+      
+      return () => clearInterval(timer);
+    }
+  }, [showRedirectMessage, router]);
+
+  const requestLocationAccess = () => {
+    setLocationLoading(true);
+    setLocationError(null);
+
+    // Use the browser's geolocation API
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocationLoading(false);
+        setShowLocationPrompt(false);
+        
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ lat: latitude, lng: longitude });
+        
+        localStorage.setItem('newsMapLocationPermission', 'granted');
+        
+        if (mapRef) {
+          mapRef.panTo({ lat: latitude, lng: longitude });
+          mapRef.setZoom(USER_LOCATION_ZOOM);
+        }
+        
+        // Now fetch the data after location is available
+        fetchNewsData();
+      },
+      (error) => {
+        setLocationLoading(false);
+        console.error("Error getting user location:", error);
+        
+        // Don't show error message, show redirect message instead
+        setShowRedirectMessage(true);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
+  const handleCancel = () => {
+    // User clicked "Cancel" - show redirect message
+    setShowRedirectMessage(true);
+  };
+
+  // If we're showing the redirect message
+  if (showRedirectMessage) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-fadeIn">
+          <div className="mb-6">
+            <div className="flex justify-center mb-4">
+              <MapPin className="h-12 w-12 text-red-800" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Redirecting</h3>
+            <p className="text-gray-700 mb-4 text-center">
+              This feature requires location access to work properly. You're being redirected to News Maps page.
+            </p>
+            <div className="p-3 bg-red-50 border border-red-100 rounded text-red-700 text-center font-medium">
+              Redirecting in {countdown} seconds...
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Default location prompt
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-fadeIn">
+        <div className="flex justify-between items-start mb-4">
+          <h3 className="text-xl font-bold text-gray-800">Location Permission Required</h3>
+        </div>
+        
+        <div className="mb-6">
+          <div className="flex justify-center mb-4">
+            <MapPin className="h-12 w-12 text-red-800" />
+          </div>
+          <p className="text-gray-700 mb-3">
+            This feature requires your location. You can only see news within 10km of where you are.
+          </p>
+          <p className="text-gray-600 text-sm italic mb-2">
+            Not allowing location access will redirect you to the News Maps page.
+          </p>
+          {locationError && (
+            <div className="mt-2 p-3 bg-red-50 border border-red-100 rounded text-red-700 text-sm">
+              {locationError}
+            </div>
+          )}
+        </div>
+        
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={requestLocationAccess}
+            disabled={locationLoading}
+            className="w-full px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {locationLoading ? (
+              <span className="flex items-center justify-center">
+                <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                Getting Location...
+              </span>
+            ) : (
+              'Allow Location Access'
+            )}
+          </button>
+          <button
+            onClick={handleCancel}
+            className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-    // Add this component inside your NewsMap function 
-    const LocationPrompt = () => {
-        const router = useRouter();
-        const [locationLoading, setLocationLoading] = useState(false);
-        const [locationError, setLocationError] = useState(null);
+  // Custom Map Type Controls Component
+  const MapTypeControls = ({ mapRef }) => {
+  const [mapType, setMapType] = useState("roadmap");
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // State to track if the screen is in mobile view
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Effect to check screen size and update isMobile state
+  useEffect(() => {
+      const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768); // 768px is a common breakpoint for mobile
+      };
+      
+      // Initial check
+      checkScreenSize();
+      
+      // Add event listener for window resize
+      window.addEventListener('resize', checkScreenSize);
+      
+      // Clean up
+      return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
-        // Fix the requestLocationAccess function in LocationPrompt
-        const requestLocationAccess = () => {
-        setLocationLoading(true);
-        setLocationError(null);
-
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-            setLocationLoading(false);
-            setShowLocationPrompt(false); // Hide prompt after successful location
-            
-            const { latitude, longitude } = position.coords;
-            setUserLocation({ lat: latitude, lng: longitude });
-            
-            // Store in localStorage that permission was granted
-            localStorage.setItem('newsMapLocationPermission', 'granted');
-            
-            // If map is available, pan and zoom to user location
-            if (mapRef) {
-                mapRef.panTo({ lat: latitude, lng: longitude });
-                mapRef.setZoom(USER_LOCATION_ZOOM);
-            }
-            
-            // The data will be fetched in the useEffect that watches for userLocation changes
-            },
-            (error) => {
-            setLocationLoading(false);
-            console.error("Error getting user location:", error);
-            
-            let errorMessage = "Unable to access your location. Please enable location services and try again.";
-            if (error.code === 1) {
-                errorMessage = "Location access denied. You need to allow location access to use this map.";
-            } else if (error.code === 2) {
-                errorMessage = "Your location is not available. Please try again later.";
-            } else if (error.code === 3) {
-                errorMessage = "Location request timed out. Please try again.";
-            }
-            
-            setLocationError(errorMessage);
-            },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-        );
-        };
-
-        return (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-fadeIn">
-                <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-gray-800">Location Permission Required</h3>
-                <button 
-                    onClick={() => router.back()}
-                    className="text-gray-500 hover:text-gray-700"
-                >
-                    <X className="h-5 w-5" />
-                </button>
-                </div>
-                
-                <div className="mb-6">
-                <div className="flex justify-center mb-4">
-                    <MapPin className="h-12 w-12 text-red-600" />
-                </div>
-                <p className="text-gray-700 mb-2">
-                    To view local news, we need your current location. You can only see news within 10km of your location.
-                </p>
-                {locationError && (
-                    <div className="mt-2 p-3 bg-red-50 border border-red-100 rounded text-red-700 text-sm">
-                    {locationError}
-                    </div>
-                )}
-                </div>
-                
-                <div className="flex flex-col gap-3">
-                <button
-                    onClick={requestLocationAccess}
-                    disabled={locationLoading}
-                    className="w-full px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                    {locationLoading ? (
-                    <span className="flex items-center justify-center">
-                        <Loader2 className="animate-spin mr-2 h-5 w-5" />
-                        Getting Location...
-                    </span>
-                    ) : (
-                    'Allow Location Access'
-                    )}
-                </button>
-                <button
-                    onClick={() => router.back()}
-                    className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-                >
-                    Cancel
-                </button>
-                </div>
-            </div>
-            </div>
-        );
-    };
-
-    // Custom Map Type Controls Component
-    const MapTypeControls = ({ mapRef }) => {
-    const [mapType, setMapType] = useState("roadmap");
-    const [isExpanded, setIsExpanded] = useState(false);
-    
-    // State to track if the screen is in mobile view
-    const [isMobile, setIsMobile] = useState(false);
-    
-    // Effect to check screen size and update isMobile state
     useEffect(() => {
-        const checkScreenSize = () => {
-        setIsMobile(window.innerWidth < 768); // 768px is a common breakpoint for mobile
-        };
-        
-        // Initial check
-        checkScreenSize();
-        
-        // Add event listener for window resize
-        window.addEventListener('resize', checkScreenSize);
-        
-        // Clean up
-        return () => window.removeEventListener('resize', checkScreenSize);
-    }, []);
+    // Set a timeout to complete the initial check if not completed already
+    const timer = setTimeout(() => {
+      if (!initialCheckDone) {
+        setInitialCheckDone(true);
+        setIsLoading(false);
+        // If we reach here without location, show prompt
+        if (!userLocation) {
+          setShowLocationPrompt(true);
+        }
+      }
+    }, 1000);
     
-    const changeMapType = (type) => {
-        if (!mapRef) return;
-        mapRef.setMapTypeId(type);
-        setMapType(type);
-        setIsExpanded(false);
-    };
+    return () => clearTimeout(timer);
+  }, [initialCheckDone, userLocation]);
+  
+  const changeMapType = (type) => {
+      if (!mapRef) return;
+      mapRef.setMapTypeId(type);
+      setMapType(type);
+      setIsExpanded(false);
+  };
 
-    // Desktop view: Side-by-side buttons
-    if (!isMobile) {
-        return (
-        <div className="absolute top-3 left-4 z-10 flex flex-row">
-            <button 
-            onClick={() => changeMapType("roadmap")}
-            className={`bg-white shadow-md p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center rounded-l-lg border-r border-gray-200 ${mapType === "roadmap" ? "bg-gray-100" : ""}`}
-            style={{
-                ...buttonStyle,
-                color: mapType === "roadmap" ? "black" : "rgba(0,0,0,0.5)",
-                fontWeight: mapType === "roadmap" ? "500" : "normal"
-            }}
-            >
-            Map
-            </button>
-            <button 
-            onClick={() => changeMapType("satellite")}
-            className={`bg-white shadow-md p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center rounded-r-lg ${mapType === "satellite" ? "bg-gray-100" : ""}`}
-            style={{
-                ...buttonStyle,
-                color: mapType === "satellite" ? "black" : "rgba(0,0,0,0.5)",
-                fontWeight: mapType === "satellite" ? "500" : "normal"
-            }}
-            >
-            Satellite
-            </button>
-        </div>
-        );
-    }
-    
-    // Mobile view: Dropdown menu
-    return (
-        <div className="absolute top-3 left-4 z-10 flex flex-col">
-        {/* Main toggle button */}
-        <button 
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 flex items-center justify-center"
-            style={buttonStyle}
-        >
-            <span>{mapType === "roadmap" ? "Map" : "Satellite"}</span>
-        </button>
+  // Desktop view: Side-by-side buttons
+  if (!isMobile) {
+      return (
+      <div className="absolute top-3 left-4 z-10 flex flex-row">
+          <button 
+          onClick={() => changeMapType("roadmap")}
+          className={`bg-white shadow-md p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center rounded-l-lg border-r border-gray-200 ${mapType === "roadmap" ? "bg-gray-100" : ""}`}
+          style={{
+              ...buttonStyle,
+              color: mapType === "roadmap" ? "black" : "rgba(0,0,0,0.5)",
+              fontWeight: mapType === "roadmap" ? "500" : "normal"
+          }}
+          >
+          Map
+          </button>
+          <button 
+          onClick={() => changeMapType("satellite")}
+          className={`bg-white shadow-md p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center rounded-r-lg ${mapType === "satellite" ? "bg-gray-100" : ""}`}
+          style={{
+              ...buttonStyle,
+              color: mapType === "satellite" ? "black" : "rgba(0,0,0,0.5)",
+              fontWeight: mapType === "satellite" ? "500" : "normal"
+          }}
+          >
+          Satellite
+          </button>
+      </div>
+      );
+  }
+  
+  // Mobile view: Dropdown menu
+  return (
+      <div className="absolute top-3 left-4 z-10 flex flex-col">
+      {/* Main toggle button */}
+      <button 
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 flex items-center justify-center"
+          style={buttonStyle}
+      >
+          <span>{mapType === "roadmap" ? "Map" : "Satellite"}</span>
+      </button>
 
-        {/* Dropdown options */}
-        {isExpanded && (
-            <div className="bg-white shadow-lg rounded-lg overflow-hidden absolute top-12 left-0">
-            <button 
-                className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "roadmap" ? "bg-gray-200" : ""}`}
-                onClick={() => changeMapType("roadmap")}
-            >
-                Map
-            </button>
-            <button 
-                className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "satellite" ? "bg-gray-200" : ""}`}
-                onClick={() => changeMapType("satellite")}
-            >
-                Satellite
-            </button>
-            </div>
-        )}
-        </div>
-    );
-    };
+      {/* Dropdown options */}
+      {isExpanded && (
+          <div className="bg-white shadow-lg rounded-lg overflow-hidden absolute top-12 left-0">
+          <button 
+              className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "roadmap" ? "bg-gray-200" : ""}`}
+              onClick={() => changeMapType("roadmap")}
+          >
+              Map
+          </button>
+          <button 
+              className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "satellite" ? "bg-gray-200" : ""}`}
+              onClick={() => changeMapType("satellite")}
+          >
+              Satellite
+          </button>
+          </div>
+      )}
+      </div>
+  );
+  };
 
   // Loading state
   if (!isLoaded) {
