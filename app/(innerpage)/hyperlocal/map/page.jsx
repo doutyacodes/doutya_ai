@@ -40,14 +40,14 @@ const center = {
 // Category icons mapping using Lucide React components
 const categoryIcons = {
   "News": <Newspaper size={24} className="text-blue-600" />,
-  "Ads": <Tag size={24} className="text-green-600" />,
+  // "Ads": <Tag size={24} className="text-green-600" />,
   "Default": <Globe size={24} className="text-gray-500" />
 };
 
 // Category colors for map markers or other UI elements
 const categoryColors = {
   "News": "#1E90FF",    // Dodger Blue
-  "Ads": "#2E8B57",     // Sea Green
+  // "Ads": "#2E8B57",     // Sea Green
   "Default": "#A52A2A"  // Brown
 };
 
@@ -63,9 +63,9 @@ const createCategoryMarkerIcon = (category, newsCount = 0) => {
     case "News":
       IconComponent = Newspaper;
       break;
-    case "Ads":
-      IconComponent = Tag;
-      break;
+    // case "Ads":
+    //   IconComponent = Tag;
+    //   break;
     default:
       IconComponent = Globe;
   }

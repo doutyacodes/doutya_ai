@@ -26,8 +26,9 @@ export default function NewPage() {
 
   const pathname = usePathname();
   const [, , id] = pathname.split("/");
+  console.log("showNews", showNews, "showId", showId )
+  
   useEffect(() => {
-    // handleRegionChange(category == "us" ? "United States" : "India");
     setShowId(id);
     setShowNews(true);
   }, [id]);
@@ -138,43 +139,7 @@ export default function NewPage() {
       </div>
 
       <div className="p-4 text-gray-800 w-full">
-        {/* Category Tabs */}
-
-        {/* <div className="w-full max-w-[90vw] mb-3">
-          <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
-            <button
-              onClick={() => {
-                setShowSearch((prev) => !prev);
-              }}
-              className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-sm font-medium rounded-full  ${
-                showSearch
-                  ? "bg-orange-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-              }`}
-            >
-              Search <HiMagnifyingGlass size={18} />
-            </button>
-            {newsCategories.map((category) => (
-              <button
-                key={category.name}
-                onClick={() => {
-                  setSelectedCategory(category.name);
-                  setShowId(null);
-                  setShowNews(false);
-                  setSearchQuery("");
-                }}
-                className={`whitespace-nowrap px-3 py-2 text-sm font-medium rounded-full ${
-                  selectedCategory === category.name && !showId
-                    ? "bg-orange-500 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-orange-200"
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
-        </div> */}
-        {showSearch && (
+          {showSearch && (
           <>
             {/* Search Bar */}
             <motion.div

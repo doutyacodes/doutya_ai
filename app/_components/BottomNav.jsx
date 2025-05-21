@@ -44,7 +44,7 @@ export default function BottomNavigation() {
       displayName: ['News', 'Map']
     },
     {
-      name: 'Local News',
+      name: 'Nearby News',
       path: '/hyperlocal/map',
       displayName: ['Local', 'News']
     },
