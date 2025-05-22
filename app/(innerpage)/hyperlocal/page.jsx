@@ -220,9 +220,9 @@ export default function AdminNewsPage() {
                   <h3 className="text-xl font-semibold text-gray-800">Discover Nearby News</h3>
                 </div>
                 <p className="text-gray-600 leading-relaxed">
-                  Our "Nearby News" feature shows you local stories within a 10km radius of your location. 
+                  Our &quot;Nearby News&quot; feature shows you local stories within a 10km radius of your location. 
                   All news articles are displayed as interactive markers on a map, helping you stay connected 
-                  with what's happening in your immediate community.
+                  with what&apos;s happening in your immediate community.
                 </p>
               </div>
 
