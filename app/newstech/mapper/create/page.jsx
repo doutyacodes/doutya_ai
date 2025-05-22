@@ -15,6 +15,7 @@ export default function CreateNewsPage() {
     latitude: '',
     longitude: '',
     category_id: '',
+    language_id: '',
     delete_after_hours: 24, 
   });
   
@@ -26,6 +27,7 @@ export default function CreateNewsPage() {
   const [filePreview, setFilePreview] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
+  const [languages, setLanguages] = useState([]);
 
   // New state variables for admin role and source names
   const [adminRole, setAdminRole] = useState('');
@@ -42,6 +44,7 @@ export default function CreateNewsPage() {
 
   useEffect(() => {
     fetchCategories();
+    fetchLanguages();
     fetchAdminInfo();
   }, []);
 
@@ -58,6 +61,18 @@ export default function CreateNewsPage() {
     }
   };
 
+  const fetchLanguages = async () => {
+  try {
+    const res = await fetch('/api/newstech/news-map/languages');
+    if (!res.ok) {
+      throw new Error('Failed to fetch languages');
+    }
+    const data = await res.json();
+    setLanguages(data.languages);
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
 // Function to fetch admin info and source names
   const fetchAdminInfo = async () => {
@@ -308,6 +323,7 @@ const handleSubmit = async (e) => {
         latitude: formData.latitude ? parseFloat(formData.latitude) : null,
         longitude: formData.longitude ? parseFloat(formData.longitude) : null,
         category_id: formData.category_id ? parseInt(formData.category_id) : null,
+        language_id: formData.language_id ? parseInt(formData.language_id) : null,
       };
       
       const res = await fetch('/api/newstech/news-map', {
@@ -691,6 +707,27 @@ const handleSubmit = async (e) => {
                   {categories.map(category => (
                     <option key={category.id} value={category.id}>
                       {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Language */}
+              <div>
+                <label htmlFor="language_id" className="block text-sm font-medium text-gray-700 mb-1">
+                  Language
+                </label>
+                <select
+                  id="language_id"
+                  name="language_id"
+                  value={formData.language_id}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                >
+                  <option value="">Select a language</option>
+                  {languages.map(language => (
+                    <option key={language.id} value={language.id}>
+                      {language.name} ({language.code})
                     </option>
                   ))}
                 </select>

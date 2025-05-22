@@ -250,6 +250,260 @@ const groupNewsByLocation = (newsItems) => {
   return groupedNews;
 };
 
+const LanguageFilter = ({ 
+  availableLanguages, 
+  selectedLanguages, 
+  setSelectedLanguages, 
+  buttonStyle, 
+  isMobile 
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleLanguage = (languageCode) => {
+    setSelectedLanguages(prev => {
+      if (prev.includes(languageCode)) {
+        return prev.filter(code => code !== languageCode);
+      } else {
+        return [...prev, languageCode];
+      }
+    });
+  };
+
+  const selectAllLanguages = () => {
+    setSelectedLanguages(availableLanguages.map(lang => lang.code));
+  };
+
+  const clearAllLanguages = () => {
+    setSelectedLanguages([]);
+  };
+
+  return (
+    <div className="relative">
+      <button 
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+        style={buttonStyle}
+      >
+        <Globe size={16} className="mr-1" />
+        <span className="text-sm">Languages</span>
+      </button>
+
+      {isExpanded && (
+        <div 
+          className={`absolute top-12 bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-4 max-h-[70vh] overflow-y-auto w-64 max-w-[calc(100vw-2rem)] z-20 ${
+            isMobile ? 'right-0' : 'left-0'
+          }`}
+        >
+          <div className="flex justify-between items-center mb-3 border-b pb-2">
+            <h3 className="text-lg font-semibold">Languages</h3>
+            <div className="flex gap-2">
+              <button 
+                onClick={selectAllLanguages}
+                className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+              >
+                All
+              </button>
+              <button 
+                onClick={clearAllLanguages}
+                className="text-xs bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-2">
+            {availableLanguages.map((language) => (
+              <div 
+                key={language.code} 
+                className="flex items-center space-x-3 hover:bg-gray-50/90 p-2 rounded transition-colors cursor-pointer"
+                onClick={() => toggleLanguage(language.code)}
+              >
+                <input 
+                  type="checkbox" 
+                  checked={selectedLanguages.includes(language.code)}
+                  onChange={() => {}}
+                  className="w-4 h-4 text-blue-600"
+                />
+                <div 
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-green-500"
+                >
+                  <Globe size={16} color="white" />
+                </div>
+                <span className="text-sm text-gray-700">{language.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MobileFilterDropdown = ({ 
+  availableLanguages,
+  selectedLanguages,
+  setSelectedLanguages,
+  selectedCategories,
+  setSelectedCategories,
+  showFiltersDropdown,
+  setShowFiltersDropdown,
+  buttonStyle
+}) => {
+  const [activeFilter, setActiveFilter] = useState(null);
+
+  const FilterOption = ({ title, icon, onClick, isActive }) => (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors ${
+        isActive ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+      }`}
+    >
+      <div className="flex items-center space-x-3">
+        {icon}
+        <span className="text-sm font-medium">{title}</span>
+      </div>
+      <div className="text-xs text-gray-500">
+        {title === 'Categories' ? `${selectedCategories.length}/${Object.keys(categoryIcons).length - 1}` : `${selectedLanguages.length}/${availableLanguages.length}`}
+      </div>
+    </button>
+  );
+
+  return (
+    <div className="relative">
+      <button 
+        onClick={() => setShowFiltersDropdown(!showFiltersDropdown)}
+        className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+        style={buttonStyle}
+      >
+        <span>Filters</span>
+      </button>
+
+      {showFiltersDropdown && (
+        <div className="absolute top-12 right-0 bg-white shadow-lg rounded-lg w-64 max-w-[calc(100vw-2rem)] z-20">
+          {/* Filter Options */}
+          <div className="border-b">
+            <FilterOption
+              title="Languages"
+              icon={<Globe size={16} />}
+              onClick={() => setActiveFilter(activeFilter === 'languages' ? null : 'languages')}
+              isActive={activeFilter === 'languages'}
+            />
+            <FilterOption
+              title="Categories"
+              icon={<MapPin size={16} />}
+              onClick={() => setActiveFilter(activeFilter === 'categories' ? null : 'categories')}
+              isActive={activeFilter === 'categories'}
+            />
+          </div>
+
+          {/* Language Filter Content */}
+          {activeFilter === 'languages' && (
+            <div className="p-4 max-h-60 overflow-y-auto">
+              <div className="flex justify-between items-center mb-3">
+                <h4 className="font-semibold">Languages</h4>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => setSelectedLanguages(availableLanguages.map(lang => lang.code))}
+                    className="text-xs bg-blue-500 text-white px-2 py-1 rounded"
+                  >
+                    All
+                  </button>
+                  <button 
+                    onClick={() => setSelectedLanguages([])}
+                    className="text-xs bg-gray-500 text-white px-2 py-1 rounded"
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+              
+              {availableLanguages.map((language) => (
+                <div 
+                  key={language.code}
+                  className="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded cursor-pointer"
+                  onClick={() => {
+                    setSelectedLanguages(prev => 
+                      prev.includes(language.code) 
+                        ? prev.filter(code => code !== language.code)
+                        : [...prev, language.code]
+                    );
+                  }}
+                >
+                  <input 
+                    type="checkbox" 
+                    checked={selectedLanguages.includes(language.code)}
+                    onChange={() => {}}
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  <Globe size={16} className="text-green-500" />
+                  <span className="text-sm">{language.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Category Filter Content */}
+          {activeFilter === 'categories' && (
+            <div className="p-4 max-h-60 overflow-y-auto">
+              <div className="flex justify-between items-center mb-3">
+                <h4 className="font-semibold">Categories</h4>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => setSelectedCategories(Object.keys(categoryIcons).filter(cat => cat !== 'Default'))}
+                    className="text-xs bg-blue-500 text-white px-2 py-1 rounded"
+                  >
+                    All
+                  </button>
+                  <button 
+                    onClick={() => setSelectedCategories([])}
+                    className="text-xs bg-gray-500 text-white px-2 py-1 rounded"
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+              
+              {Object.entries(categoryIcons).map(([category, icon]) => (
+                category !== 'Default' && (
+                  <div 
+                    key={category}
+                    className="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded cursor-pointer"
+                    onClick={() => {
+                      setSelectedCategories(prev => 
+                        prev.includes(category) 
+                          ? prev.filter(cat => cat !== category)
+                          : [...prev, category]
+                      );
+                    }}
+                  >
+                    <input 
+                      type="checkbox" 
+                      checked={selectedCategories.includes(category)}
+                      onChange={() => {}}
+                      className="w-4 h-4 text-blue-600"
+                    />
+                    <div 
+                      className="w-6 h-6 flex items-center justify-center rounded-full"
+                      style={{ 
+                        backgroundColor: categoryColors[category] || categoryColors.Default,
+                        color: 'white'
+                      }}
+                    >
+                      {React.cloneElement(icon, { size: 14, color: 'white' })}
+                    </div>
+                    <span className="text-sm">{category}</span>
+                  </div>
+                )
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, isMobile }) => {
   const [isExpanded, setIsExpanded] = useState(true); // Default to expanded when page loads
 
@@ -275,7 +529,7 @@ const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, i
   };
 
   return (
-    <div className="absolute top-3 right-4 z-10">
+    <div className="">
       {/* Fixed position toggle button for both mobile and desktop */}
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
@@ -413,6 +667,10 @@ export default function NewsMap() {
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState(null);
 
+  const [availableLanguages, setAvailableLanguages] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [showFiltersDropdown, setShowFiltersDropdown] = useState(false);
+
   const [selectedCategories, setSelectedCategories] = useState(
     Object.keys(categoryIcons).filter(cat => cat !== 'Default')
   );
@@ -444,37 +702,74 @@ export default function NewsMap() {
     height: isMobile ? '34px' : '38px'
   };
 
-  // Fetch news data based on map bounds
-  const fetchNewsData = useCallback(async (bounds) => {
-    try {
-      setIsLoading(true);
-      
-      // Create bounds parameters if available
-      let url = '/api/news/map';
-      if (bounds) {
-        const { north, south, east, west } = bounds;
-        url += `?north=${north}&south=${south}&east=${east}&west=${west}`;
-      }
-      
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch news data');
-      }
-      
-      const data = await response.json();
-      setNewsItems(data);
-      
-      // Group news by location
-      const grouped = groupNewsByLocation(data);
-      setGroupedNews(grouped);
-    } catch (err) {
-      console.error("Error fetching news:", err);
-      setError("Failed to load news data");
-    } finally {
-      setIsLoading(false);
+// Replace your existing fetchNewsData and fetchLanguages functions with these:
+
+// Fetch news data based on map bounds
+const fetchNewsData = useCallback(async (bounds, languages = []) => {
+  try {
+    setIsLoading(true);
+    
+    // Create bounds parameters if available
+    let url = '/api/news/map';
+    const params = new URLSearchParams();
+    
+    if (bounds) {
+      const { north, south, east, west } = bounds;
+      params.append('north', north);
+      params.append('south', south);
+      params.append('east', east);
+      params.append('west', west);
     }
-  }, []);
+    
+    // Add language filtering
+    if (languages.length > 0) {
+      params.append('languages', languages.join(','));
+    }
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch news data');
+    }
+    
+    const data = await response.json();
+    setNewsItems(data);
+    
+    // Group news by location
+    const grouped = groupNewsByLocation(data);
+    setGroupedNews(grouped);
+  } catch (err) {
+    console.error("Error fetching news:", err);
+    setError("Failed to load news data");
+  } finally {
+    setIsLoading(false);
+  }
+}, []); // Remove selectedLanguages dependency
+
+// Fetch available languages
+const fetchLanguages = useCallback(async () => {
+  try {
+    const response = await fetch('/api/newstech/news-map/languages');
+    if (!response.ok) {
+      throw new Error('Failed to fetch languages');
+    }
+    const result = await response.json();
+    setAvailableLanguages(result.languages);
+    // Select all languages by default
+    const allLanguageCodes = result.languages.map(lang => lang.code);
+    setSelectedLanguages(allLanguageCodes);
+    
+    // Fetch news data after languages are loaded with the new languages
+    fetchNewsData(mapBounds, allLanguageCodes);
+  } catch (err) {
+    console.error("Error fetching languages:", err);
+  }
+}, [fetchNewsData, mapBounds]); // Keep only necessary dependencies
+
 
   // Get user's location
   const getUserLocation = useCallback(() => {
@@ -538,12 +833,19 @@ export default function NewsMap() {
   };
 
   
-  // Initial data fetch and location request
-  useEffect(() => {
-    fetchNewsData();
-    getUserLocation();
-  }, [fetchNewsData, getUserLocation]);
+// Initial data fetch and location request
+useEffect(() => {
+  fetchLanguages();
+  getUserLocation();
+}, []);
 
+// Handle selected languages change (separate effect)
+useEffect(() => {
+  // Only refetch if languages are already loaded and changed
+  if (availableLanguages.length > 0 && selectedLanguages.length >= 0) {
+    fetchNewsData(mapBounds, selectedLanguages);
+  }
+}, [selectedLanguages, mapBounds, fetchNewsData, availableLanguages.length]);
 
   // Handle map bounds change
   const handleBoundsChanged = (map) => {
@@ -719,12 +1021,44 @@ const MapTypeControls = ({ mapRef }) => {
       )}
 
       {/* <MapLegend /> the legends */}
-      <FilterPanel 
+      {/* <FilterPanel 
         selectedCategories={selectedCategories}
         setSelectedCategories={setSelectedCategories}
         buttonStyle = {buttonStyle}
         isMobile = {isMobile}
-      /> {/* the filters */}
+      /> */}
+
+      {/* Filter Controls - Desktop and Mobile */}
+      <div className="absolute top-3 right-4 z-10">
+        {isMobile ? (
+          <MobileFilterDropdown
+            availableLanguages={availableLanguages}
+            selectedLanguages={selectedLanguages}
+            setSelectedLanguages={setSelectedLanguages}
+            selectedCategories={selectedCategories}
+            setSelectedCategories={setSelectedCategories}
+            showFiltersDropdown={showFiltersDropdown}
+            setShowFiltersDropdown={setShowFiltersDropdown}
+            buttonStyle={buttonStyle}
+          />
+        ) : (
+          <div className="flex gap-2">
+            <LanguageFilter
+              availableLanguages={availableLanguages}
+              selectedLanguages={selectedLanguages}
+              setSelectedLanguages={setSelectedLanguages}
+              buttonStyle={buttonStyle}
+              isMobile={isMobile}
+            />
+            <FilterPanel 
+              selectedCategories={selectedCategories}
+              setSelectedCategories={setSelectedCategories}
+              buttonStyle={buttonStyle}
+              isMobile={isMobile}
+            />
+          </div>
+        )}
+      </div>
 
       <GoogleMap
         mapContainerStyle={containerStyle}

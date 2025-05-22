@@ -1569,6 +1569,12 @@ export const CUSTOM_SOURCES = mysqlTable("custom_sources", {
   created_at: timestamp("created_at").defaultNow(),
 });
 
+export const LANGUAGES = mysqlTable("languages", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 100 }).notNull(),  // e.g., "English", "Hindi"
+  code: varchar("code", { length: 10 }).notNull(),   // e.g., "en", "hi"
+});
+
 // map_news table schema
 export const MAP_NEWS = mysqlTable("map_news", {
   id: int("id").primaryKey().autoincrement(),
@@ -1579,6 +1585,7 @@ export const MAP_NEWS = mysqlTable("map_news", {
   latitude: decimal("latitude", { precision: 10, scale: 7 }),
   longitude: decimal("longitude", { precision: 10, scale: 7 }),
   category_id: int("category_id").references(() => MAP_NEWS_CATEGORIES.id),
+  language_id: int("language_id").notNull().references(() => LANGUAGES.id),
   delete_after_hours: int("delete_after_hours").notNull().default(24),
   created_by: int("created_by").references(() => ADMIN_DETAILS.id),
   created_at: timestamp("created_at").defaultNow(),
