@@ -44,7 +44,7 @@ export default function EditNewsPage() {
     if (newsId) {
       fetchNewsDetails();
       fetchCategories();
-      requestLocationAccess(); // Get user's current location for validation
+      checkLocationPermission();
     }
   }, [newsId]);
 
@@ -105,6 +105,47 @@ export default function EditNewsPage() {
     }
   };
 
+  const checkLocationPermission = async () => {
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser");
+      return;
+    }
+
+    try {
+      // Check if permission is already granted
+      if (navigator.permissions) {
+        const permission = await navigator.permissions.query({name: 'geolocation'});
+        
+        if (permission.state === 'granted') {
+          // Permission is granted, get current position
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              setUserLocation({ latitude, longitude });
+              setFormData(prev => ({
+                ...prev,
+                latitude: latitude.toString(),
+                longitude: longitude.toString()
+              }));
+              setShowLocationPrompt(false);
+            },
+            (error) => {
+              setLocationError("Unable to get your current location");
+              setShowLocationPrompt(true);
+            }
+          );
+        } else {
+          setShowLocationPrompt(true);
+        }
+      } else {
+        // Fallback for browsers that don't support permissions API
+        setShowLocationPrompt(true);
+      }
+    } catch (error) {
+      setShowLocationPrompt(true);
+    }
+  };
+
   // Function to request location access
   const requestLocationAccess = () => {
     setLocationLoading(true);
@@ -120,6 +161,7 @@ export default function EditNewsPage() {
       (position) => {
         const { latitude, longitude } = position.coords;
         setUserLocation({ latitude, longitude });
+        setShowLocationPrompt(false)
         setLocationLoading(false);
       },
       (error) => {

@@ -34,10 +34,10 @@ export default function CreateNewsPage() {
 
   useAuthRedirect();
 
-  useEffect(() => {
-    fetchCategories();
-    // We won't automatically request location - we'll show our custom prompt first
-  }, []);
+useEffect(() => {
+  fetchCategories();
+  checkLocationPermission();
+}, []);
 
   const fetchCategories = async () => {
     try {
@@ -49,6 +49,47 @@ export default function CreateNewsPage() {
       setCategories(data.categories);
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const checkLocationPermission = async () => {
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser");
+      return;
+    }
+
+    try {
+      // Check if permission is already granted
+      if (navigator.permissions) {
+        const permission = await navigator.permissions.query({name: 'geolocation'});
+        
+        if (permission.state === 'granted') {
+          // Permission is granted, get current position
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              setUserLocation({ latitude, longitude });
+              setFormData(prev => ({
+                ...prev,
+                latitude: latitude.toString(),
+                longitude: longitude.toString()
+              }));
+              setShowLocationPrompt(false);
+            },
+            (error) => {
+              setLocationError("Unable to get your current location");
+              setShowLocationPrompt(true);
+            }
+          );
+        } else {
+          setShowLocationPrompt(true);
+        }
+      } else {
+        // Fallback for browsers that don't support permissions API
+        setShowLocationPrompt(true);
+      }
+    } catch (error) {
+      setShowLocationPrompt(true);
     }
   };
 
@@ -279,7 +320,7 @@ export default function CreateNewsPage() {
             onClick={() => router.push('/hyperlocal')}
             className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
           >
-            Cancel
+            Go Back
           </button>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Trash2, Edit, Plus, AlertCircle } from 'lucide-react';
+import { Trash2, Edit, Plus, AlertCircle, MapPin, Users, X } from 'lucide-react';
 import useAuthRedirect from './_component/useAuthRedirect';
 
 export default function AdminNewsPage() {
@@ -12,6 +12,7 @@ export default function AdminNewsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showIntroModal, setShowIntroModal] = useState(true);
   const [newsToDelete, setNewsToDelete] = useState(null);
   const router = useRouter();
   
@@ -19,6 +20,11 @@ export default function AdminNewsPage() {
 
   useEffect(() => {
     fetchNews();
+    // Check if user has seen the intro before
+    const hasSeenIntro = localStorage.getItem('hasSeenCreatorIntro');
+    if (hasSeenIntro) {
+      setShowIntroModal(false);
+    }
   }, []);
 
   const fetchNews = async () => {
@@ -39,6 +45,11 @@ export default function AdminNewsPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleIntroClose = () => {
+    setShowIntroModal(false);
+    localStorage.setItem('hasSeenCreatorIntro', 'true');
   };
 
   const handleDelete = async () => {
@@ -178,6 +189,89 @@ export default function AdminNewsPage() {
           </div>
         )}
       </div>
+
+      {/* Introduction Modal */}
+      {showIntroModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-red-800 to-red-700 p-6 rounded-t-2xl relative">
+              <button 
+                onClick={handleIntroClose}
+                className="absolute top-4 right-4 text-white hover:text-red-200 transition-colors"
+              >
+                <X size={24} />
+              </button>
+              <div className="text-center">
+                <div className="bg-white bg-opacity-20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <Users className="text-white" size={32} />
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">Welcome to Creator Hub!</h2>
+                <p className="text-red-100">Share local news with your community</p>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-6">
+              {/* About Nearby News */}
+              <div className="bg-gray-50 rounded-xl p-5">
+                <div className="flex items-center mb-3">
+                  <MapPin className="text-red-800 mr-3" size={24} />
+                  <h3 className="text-xl font-semibold text-gray-800">Discover Nearby News</h3>
+                </div>
+                <p className="text-gray-600 leading-relaxed">
+                  Our "Nearby News" feature shows you local stories within a 10km radius of your location. 
+                  All news articles are displayed as interactive markers on a map, helping you stay connected 
+                  with what's happening in your immediate community.
+                </p>
+              </div>
+
+              {/* About Being a Creator */}
+              <div className="bg-red-50 rounded-xl p-5 border-l-4 border-red-800">
+                <div className="flex items-center mb-3">
+                  <Plus className="text-red-800 mr-3" size={24} />
+                  <h3 className="text-xl font-semibold text-gray-800">Become a Local Creator</h3>
+                </div>
+                <p className="text-gray-600 leading-relaxed mb-4">
+                  As a creator, you can contribute to your local community by sharing news and events 
+                  happening around you. Your stories will appear on the map for others in your area to discover.
+                </p>
+                
+                <div className="bg-white rounded-lg p-4 space-y-3">
+                  <h4 className="font-semibold text-gray-800 mb-2">Key Features:</h4>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li className="flex items-center">
+                      <div className="w-2 h-2 bg-red-800 rounded-full mr-3"></div>
+                      Share news within 10km of your current location
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-2 h-2 bg-red-800 rounded-full mr-3"></div>
+                      Location access required for accurate positioning
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-2 h-2 bg-red-800 rounded-full mr-3"></div>
+                      Help build a connected local community
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Call to Action */}
+              <div className="text-center pt-4">
+                <button 
+                  onClick={handleIntroClose}
+                  className="bg-red-800 text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  Start Creating News
+                </button>
+                <p className="text-sm text-gray-500 mt-3">
+                  You can always view this information again from the help section
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
