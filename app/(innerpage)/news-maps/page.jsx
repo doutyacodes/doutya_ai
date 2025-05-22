@@ -113,105 +113,119 @@ const getFavicon = (articleUrl) => {
   }
 };
 
-const createCategoryMarkerIcon = (category, newsCount = 0) => {
+const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = false) => {
   const color = category ? categoryColors[category] || categoryColors.Default : categoryColors.Default;
   
+  // Make high priority markers slightly larger
+  const markerSize = hasHighPriority ? { width: 52, height: 62 } : { width: 48, height: 58 };
+  const iconSize = hasHighPriority ? 24 : 22;
+  const strokeWidth = hasHighPriority ? 3 : 2.5;
+  
   // Get the corresponding icon for the category
-    // Get the corresponding icon for the category
-    let IconComponent;
+  let IconComponent;
+  // ... (keep all your existing switch cases)
   
-    switch(category) {
-      case "Natural Disaster":
-        IconComponent = AlertTriangle;
-        break;
-      case "Crime":
-        IconComponent = AlertCircle;
-        break;
-      case "Politics":
-        IconComponent = Building2;
-        break;
-      case "Protest":
-        IconComponent = UserRound;
-        break;
-      case "Accident":
-        IconComponent = Car;
-        break;
-      case "Weather":
-        IconComponent = Cloud;
-        break;
-      case "Festival / Event":
-        IconComponent = PartyPopper;
-        break;
-      case "Conflict / War":
-        IconComponent = Swords;
-        break;
-      case "Public Announcement":
-        IconComponent = Megaphone;
-        break;
-      case "Emergency Alert":
-        IconComponent = AlertCircle;
-        break;
-      case "Sports":
-        IconComponent = Trophy;
-        break;
-      case "Health":
-        IconComponent = Heart;
-        break;
-      case "Business":
-        IconComponent = Briefcase;
-        break;
-      case "Entertainment":
-        IconComponent = Film;
-        break;
-      case "Technology":
-        IconComponent = Laptop;
-        break;
-      case "Science":
-        IconComponent = FlaskConical;
-        break;
-      case "Education":
-        IconComponent = GraduationCap;
-        break;
-      case "Environment":
-        IconComponent = Leaf;
-        break;
-      case "Social Issues":
-        IconComponent = Users;
-        break;
-      case "Transportation":
-        IconComponent = Train;
-        break;
-      default:
-        IconComponent = Globe;
-    }
-  
-  // Create SVG string from the icon component with improved styling
+  switch(category) {
+    case "Natural Disaster":
+      IconComponent = AlertTriangle;
+      break;
+    case "Crime":
+      IconComponent = AlertCircle;
+      break;
+    case "Politics":
+      IconComponent = Building2;
+      break;
+    case "Protest":
+      IconComponent = UserRound;
+      break;
+    case "Accident":
+      IconComponent = Car;
+      break;
+    case "Weather":
+      IconComponent = Cloud;
+      break;
+    case "Festival / Event":
+      IconComponent = PartyPopper;
+      break;
+    case "Conflict / War":
+      IconComponent = Swords;
+      break;
+    case "Public Announcement":
+      IconComponent = Megaphone;
+      break;
+    case "Emergency Alert":
+      IconComponent = AlertCircle;
+      break;
+    case "Sports":
+      IconComponent = Trophy;
+      break;
+    case "Health":
+      IconComponent = Heart;
+      break;
+    case "Business":
+      IconComponent = Briefcase;
+      break;
+    case "Entertainment":
+      IconComponent = Film;
+      break;
+    case "Technology":
+      IconComponent = Laptop;
+      break;
+    case "Science":
+      IconComponent = FlaskConical;
+      break;
+    case "Education":
+      IconComponent = GraduationCap;
+      break;
+    case "Environment":
+      IconComponent = Leaf;
+      break;
+    case "Social Issues":
+      IconComponent = Users;
+      break;
+    case "Transportation":
+      IconComponent = Train;
+      break;
+    default:
+      IconComponent = Globe;
+  }
+
+  // Create SVG string from the icon component
   const iconSvg = ReactDOMServer.renderToString(
-    <IconComponent color="white" size={22} strokeWidth={2.5} />
+    <IconComponent color="white" size={iconSize} strokeWidth={strokeWidth} />
   );
-  
-  // Create the SVG marker with improved visibility
+
+  // High priority indicator
+  const priorityIndicator = hasHighPriority ? `
+    <!-- High Priority Indicator - Red dot -->
+    <circle cx="38" cy="8" r="6" fill="#FF0000" stroke="white" stroke-width="2" />
+    <circle cx="38" cy="8" r="3" fill="white" />
+  ` : '';
+
+  // Create the SVG marker with dynamic sizing
   return {
     url: `data:image/svg+xml,${encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 58" width="48" height="58">
-        <!-- Enhanced drop shadow filter -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${markerSize.width} ${markerSize.height}" width="${markerSize.width}" height="${markerSize.height}">
         <defs>
           <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
             <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.4" />
           </filter>
         </defs>
         
-        <!-- Marker background with stronger white border -->
+        <!-- Marker background with stronger border for high priority -->
         <path 
           d="M24 2C14.06 2 6 10.06 6 20c0 9.5 18 32 18 32s18-22.5 18-32c0-9.94-8.06-18-18-18z" 
           fill="${color}"
           stroke="white"
-          stroke-width="3"
+          stroke-width="${hasHighPriority ? 4 : 3}"
           filter="url(#shadow)"
         />
         
         <!-- Icon positioned in center of marker -->
-        <g transform="translate(13, 11) scale(1)">${iconSvg}</g>
+        <g transform="translate(${hasHighPriority ? 12 : 13}, 11) scale(1)">${iconSvg}</g>
+        
+        <!-- High Priority Indicator -->
+        ${priorityIndicator}
         
         <!-- Counter background circle for multiple items -->
         ${newsCount > 1 ? `
@@ -220,8 +234,8 @@ const createCategoryMarkerIcon = (category, newsCount = 0) => {
         ` : ''}
       </svg>
     `)}`,
-    scaledSize: { width: 48, height: 58 },
-    anchor: { x: 24, y: 52 },
+    scaledSize: markerSize,
+    anchor: { x: 24, y: hasHighPriority ? 56 : 52 },
     labelOrigin: { x: 24, y: 20 }
   };
 };
@@ -240,11 +254,17 @@ const groupNewsByLocation = (newsItems) => {
     groupedNews[locationKey].push(news);
   });
   
-  // Sort each group by created_at (newest first)
+  // REPLACE THE EXISTING SORTING LOGIC WITH THIS:
+  // Sort each group by priority first, then by created_at (newest first)
   Object.keys(groupedNews).forEach(key => {
-    groupedNews[key].sort((a, b) => 
-      new Date(b.created_at) - new Date(a.created_at)
-    );
+    groupedNews[key].sort((a, b) => {
+      // First sort by priority (high priority first)
+      if (a.is_high_priority !== b.is_high_priority) {
+        return b.is_high_priority - a.is_high_priority;
+      }
+      // If priority is same, sort by created_at (newest first)
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
   });
   
   return groupedNews;
@@ -1020,14 +1040,6 @@ const MapTypeControls = ({ mapRef }) => {
         />
       )}
 
-      {/* <MapLegend /> the legends */}
-      {/* <FilterPanel 
-        selectedCategories={selectedCategories}
-        setSelectedCategories={setSelectedCategories}
-        buttonStyle = {buttonStyle}
-        isMobile = {isMobile}
-      /> */}
-
       {/* Filter Controls - Desktop and Mobile */}
       <div className="absolute top-3 right-4 z-10">
         {isMobile ? (
@@ -1077,23 +1089,45 @@ const MapTypeControls = ({ mapRef }) => {
         {/* Custom Map Type Controls */}
         <MapTypeControls mapRef={mapRef} />
 
-        {/* News Markers */}
-        {Object.keys(groupedNews).map((locationKey) => {
+       {/* News Markers - Sorted by priority for rendering order */}
+      {Object.keys(groupedNews)
+        .sort((locationKeyA, locationKeyB) => {
+          // Sort location keys so high priority locations render last (appear on top)
+          const newsAtLocationA = groupedNews[locationKeyA];
+          const newsAtLocationB = groupedNews[locationKeyB];
+          
+          const hasHighPriorityA = newsAtLocationA.some(news => news.is_high_priority);
+          const hasHighPriorityB = newsAtLocationB.some(news => news.is_high_priority);
+          
+          // High priority locations should render last (return 1 to move to end)
+          if (hasHighPriorityA && !hasHighPriorityB) return 1;
+          if (!hasHighPriorityA && hasHighPriorityB) return -1;
+          return 0;
+        })
+        .map((locationKey) => {
           const [lat, lng] = locationKey.split(',').map(parseFloat);
           const newsAtLocation = groupedNews[locationKey];
-          const mainNews = newsAtLocation[0]; // Use the first (most recent) news for the marker
+          const mainNews = newsAtLocation[0];
           
           // Skip this marker if its category is not in the selected categories
           if (mainNews.category && !selectedCategories.includes(mainNews.category)) {
             return null;
           }
           
+          const hasHighPriorityNews = newsAtLocation.some(news => news.is_high_priority);
+          
           return (
             <MarkerF
               key={locationKey}
               position={{ lat, lng }}
               onClick={() => handleMarkerClick(locationKey)}
-              icon={createCategoryMarkerIcon(mainNews.category, newsAtLocation.length)}
+              icon={createCategoryMarkerIcon(
+                mainNews.category, 
+                newsAtLocation.length, 
+                hasHighPriorityNews
+              )}
+              // High priority markers get higher z-index
+              zIndex={hasHighPriorityNews ? 9999 : 1}
               label={
                 newsAtLocation.length > 1 
                 ? {
@@ -1107,6 +1141,7 @@ const MapTypeControls = ({ mapRef }) => {
             />
           );
         })}
+
 
         {/* Info Window */}
         {currentNews && (

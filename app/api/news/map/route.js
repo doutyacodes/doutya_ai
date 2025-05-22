@@ -28,6 +28,7 @@ export async function GET(req) {
         language: LANGUAGES.name,
         language_code: LANGUAGES.code,
         created_at: MAP_NEWS.created_at,
+        is_high_priority: MAP_NEWS.is_high_priority, 
       })
       .from(MAP_NEWS)
       .leftJoin(MAP_NEWS_CATEGORIES, eq(MAP_NEWS.category_id, MAP_NEWS_CATEGORIES.id))
@@ -77,7 +78,10 @@ export async function GET(req) {
       query = query.where(and(...whereConditions));
     }
     // Execute the query
-    const news = await query.orderBy(sql`${MAP_NEWS.created_at} DESC`);
+    // const news = await query.orderBy(sql`${MAP_NEWS.created_at} DESC`);
+     const news = await query.orderBy(
+      sql`${MAP_NEWS.is_high_priority} DESC, ${MAP_NEWS.created_at} DESC`
+    );
 
     // Return the news data
     return NextResponse.json(news);

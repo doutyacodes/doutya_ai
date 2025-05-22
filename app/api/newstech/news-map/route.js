@@ -71,6 +71,7 @@ export async function POST(req) {
       category_id,
       language_id,
       delete_after_hours,
+      is_high_priority,
     } = await req.json();
 
     // Validate required fields
@@ -93,6 +94,7 @@ export async function POST(req) {
       category_id: category_id || null,
       language_id: language_id || null,
       delete_after_hours: delete_after_hours || 24, // with fallback to default
+      is_high_priority: is_high_priority || false,
     });
 
     return NextResponse.json(

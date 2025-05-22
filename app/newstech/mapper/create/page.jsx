@@ -16,7 +16,8 @@ export default function CreateNewsPage() {
     longitude: '',
     category_id: '',
     language_id: '',
-    delete_after_hours: 24, 
+    delete_after_hours: 24,
+    is_high_priority: false,
   });
   
   const [categories, setCategories] = useState([]);
@@ -432,6 +433,7 @@ const handleSubmit = async (e) => {
                     value={formData.image_url}
                     onChange={handleInputChange}
                     required={uploadType === 'url'}
+                    autoComplete="off"
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
                     placeholder="Enter image URL"
                   />
@@ -483,6 +485,7 @@ const handleSubmit = async (e) => {
                   name="article_url"
                   value={formData.article_url}
                   onChange={handleInputChange}
+                  autoComplete="off"
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
                   placeholder="Enter article URL"
@@ -503,7 +506,7 @@ const handleSubmit = async (e) => {
                       onClick={toggleCustomSource}
                       className="text-xs text-red-600 hover:text-red-800 underline"
                     >
-                      {customSource ? "Select from list" : "Enter custom source"}
+                      {customSource ? "Select from list" : "Enter new source"}
                     </button>
                   )}
                 </div>
@@ -523,7 +526,7 @@ const handleSubmit = async (e) => {
                       <option value="" disabled>Select a source</option>
                       {sourceNames.map((source, index) => (
                         <option key={index} value={source.name}>
-                          {source.name} {source.isCustom ? "(Custom)" : ""}
+                          {source.name} {source.isCustom ? "(Others)" : ""}
                         </option>
                       ))}
                     </select>
@@ -531,12 +534,12 @@ const handleSubmit = async (e) => {
                     {/* Source management for admins - only shown when not in custom source entry mode */}
                     {(adminRole === "superadmin" || adminRole === "admin") && (
                       <div className="border rounded-md p-3 bg-gray-50">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">Manage Custom Sources</h4>
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Manage Other Sources</h4>
                         
                         {/* List of custom sources with edit/delete options */}
                         <div className="space-y-2 mb-3 max-h-40 overflow-y-auto">
                           {sourceNames.filter(source => source.isCustom).length === 0 ? (
-                            <p className="text-sm text-gray-500">No custom sources yet</p>
+                            <p className="text-sm text-gray-500">No other sources yet</p>
                           ) : (
                             sourceNames.filter(source => source.isCustom).map((source) => (
                               <div key={source.id} className="flex items-center justify-between p-2 bg-white border rounded-md">
@@ -639,9 +642,10 @@ const handleSubmit = async (e) => {
                     name="source_name"
                     value={formData.source_name}
                     onChange={handleInputChange}
+                    autoComplete="off"
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
-                    placeholder="Enter custom source name"
+                    placeholder="Enter new source name"
                   />
                 )}
                 
@@ -669,6 +673,7 @@ const handleSubmit = async (e) => {
                       name="latitude"
                       value={formData.latitude}
                       onChange={handleInputChange}
+                      autoComplete="off"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
                       placeholder="E.g., 28.6139"
                     />
@@ -684,6 +689,7 @@ const handleSubmit = async (e) => {
                       name="longitude"
                       value={formData.longitude}
                       onChange={handleInputChange}
+                      autoComplete="off"
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
                       placeholder="E.g., 77.2090"
                     />
@@ -732,6 +738,31 @@ const handleSubmit = async (e) => {
                   ))}
                 </select>
               </div>
+
+            {/* High Priority Toggle */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                High Priority
+              </label>
+              <div className="flex items-center">
+                <input
+                  id="high-priority-toggle"
+                  name="is_high_priority"
+                  type="checkbox"
+                  checked={formData.is_high_priority}
+                  onChange={(e) =>
+                    setFormData({ ...formData, is_high_priority: e.target.checked })
+                  }
+                  className="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                />
+                <label
+                  htmlFor="high-priority-toggle"
+                  className="ml-2 block text-sm text-gray-700"
+                >
+                  Mark as high priority
+                </label>
+              </div>
+            </div>
 
               {/* Delete After Hours */}
               <div className="mt-4">
