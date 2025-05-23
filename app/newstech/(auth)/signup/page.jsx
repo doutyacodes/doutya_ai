@@ -71,7 +71,7 @@ export function Signup() {
       const { confirmPassword, ...signupData } = data;
       
       // Send signup request
-      const response = await GlobalApi.SignupAdmin(signupData);
+      const response = await GlobalApi.SignUpUser(signupData);
       
       if(response.data.token) {
         localStorage.setItem('token', response.data.token);

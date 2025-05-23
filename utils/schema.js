@@ -1633,3 +1633,50 @@ export const HYPERLOCAL_CATEGORIES = mysqlTable("hyperlocal_categories", {
   id: int("id").primaryKey().autoincrement(),
   name: varchar("name", { length: 100 }).notNull(),  // Example: 'local_news', 'ads', 'events'
 });
+
+export const ARTICLE_ANALYSIS = mysqlTable("article_analysis", {
+  id: int("id").primaryKey().autoincrement(),
+  originalArticle: text("original_article").notNull(),
+
+  // Section 1: Bias & Perspective
+  politicalLeaning: text("political_leaning"),
+  framingBias: text("framing_bias"),
+  omissionBias: text("omission_bias"),
+  toneAnalysis: text("tone_analysis"),
+  quoteBalance: text("quote_balance"),
+
+  // Section 2: Sentiment & Emotion
+  overallSentiment: text("overall_sentiment"),
+  emotionalTone: text("emotional_tone"),
+  headlineVsBodyConsistency: text("headline_vs_body_consistency"),
+
+  // Section 3: Language Complexity
+  readabilityScore: float("readability_score"),
+  jargonDetected: text("jargon_detected"),
+  writingStyle: text("writing_style"),
+  passiveVoiceUsage: text("passive_voice_usage"),
+
+  // Section 4: Fact Density & Source Reliability
+  numCitedSources: int("num_cited_sources"),
+  sourceReputation: text("source_reputation"),
+  factCheckItems: text("fact_check_items"),
+
+  // Section 5: Clarity & Comprehension
+  timeToClarity: text("time_to_clarity"),
+  insightRatio: text("insight_ratio"),
+  ambiguityScore: text("ambiguity_score"),
+
+  // Section 6: Engagement Prediction
+  predictedDwellTime: text("predicted_dwell_time"),
+  scrollDepthPrediction: text("scroll_depth_prediction"),
+  expectedBounceRetention: text("expected_bounce_retention"),
+
+  // Section 7: Virality & Shareability
+  headlineViralityScore: float("headline_virality_score"),
+  socialBiasRisk: text("social_bias_risk"),
+  clickbaitRisk: text("clickbait_risk"),
+
+  // Metadata
+  createdBy: int("created_by").references(() => ADMIN_DETAILS.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow(),
+});

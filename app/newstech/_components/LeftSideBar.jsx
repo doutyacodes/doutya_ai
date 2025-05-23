@@ -9,6 +9,7 @@ import {
   Menu, 
   Map, 
   BookOpen, 
+  BarChart3,
   X 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -48,6 +49,11 @@ const LeftSideBar = () => {
       label: "Doutya Narrative",
       links: "/newstech/narrative",
       icon: BookOpen,
+    },
+    {
+      label: "Doutya Analyse",
+      links: "/newstech/analyse",
+      icon: BarChart3,
     },
   ];
 
