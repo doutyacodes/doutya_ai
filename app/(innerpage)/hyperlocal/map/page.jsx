@@ -260,6 +260,7 @@ export default function NewsMap() {
 
 
   const [permissionCheckComplete, setPermissionCheckComplete] = useState(false);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
 
   const timeoutRef = useRef(null);
 
@@ -359,7 +360,7 @@ const restrictMapBounds = useCallback(() => {
         setIsLoading(true);
         
         // Create bounds parameters if available
-        let url = '/api/hyperlocal/map';
+        let url = '/api/nearby-news/map';
         
         if (bounds) {
         const { north, south, east, west } = bounds;
@@ -390,21 +391,26 @@ const restrictMapBounds = useCallback(() => {
 
   // Updated to handle modal states
   const getCurrentPosition = () => {
+    console.log("Getting User Location")
+    setIsGettingLocation(true); 
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
         setUserLocation({ lat: latitude, lng: longitude });
-        
+        console.log("latitude, longitude", latitude, longitude)
+        console.log("Setting User Location")
         // If map is available, pan and zoom to user location
         if (mapRef) {
           mapRef.panTo({ lat: latitude, lng: longitude });
           mapRef.setZoom(USER_LOCATION_ZOOM);
         }
+        console.log("Initiate Fetch news")
         fetchNewsData();
 
         // Hide modal and reset loading state
         setShowLocationPrompt(false);
         setIsLoading(false);
+        setIsGettingLocation(false);
       },
       (error) => {
         console.error("Error getting user location:", error);
@@ -416,11 +422,14 @@ const restrictMapBounds = useCallback(() => {
 
   // Get user's location
   const getUserLocation = useCallback(() => {
+    console.log("Initiate User Location fuction")
+
       if (navigator.geolocation) {
         navigator.permissions
           .query({ name: "geolocation" })
           .then((permissionStatus) => {
             if (permissionStatus.state === "granted") {
+              console.log("Granted User Location fuction")
               // Permission already granted, get location
               getCurrentPosition();
             } else if (permissionStatus.state === "prompt") {
@@ -539,49 +548,6 @@ const restrictMapBounds = useCallback(() => {
         return () => clearInterval(timer);
       }
     }, [showRedirectMessage, router]);
-
-    // const requestLocationAccess = () => {
-    //   setLocationLoading(true);
-    //   setLocationError(null);
-
-    //   // This will trigger the browser's built-in permission popup
-    //   navigator.geolocation.getCurrentPosition(
-    //     (position) => {
-    //       // This success callback might not be called immediately due to our polling
-    //       // But the polling will catch the permission change
-
-    //               const { latitude, longitude } = position.coords;
-    //     setUserLocation({ lat: latitude, lng: longitude });
-        
-    //     // If map is available, pan and zoom to user location
-    //     if (mapRef) {
-    //       mapRef.panTo({ lat: latitude, lng: longitude });
-    //       mapRef.setZoom(USER_LOCATION_ZOOM);
-    //     }
-        
-    //       // Hide modal and reset loading state
-    //       setShowLocationModal(false);
-    //       setLocationLoading(false);
-    //     },
-    //     (error) => {
-    //       setLocationLoading(false);
-    //       console.error("Error getting user location:", error);
-          
-    //       if (error.code === 1) {
-    //         // Permission denied - show redirect message
-    //         setShowRedirectMessage(true);
-    //       } else {
-    //         // Other error
-    //         setLocationError("Unable to get location. Please try again.");
-    //       }
-    //     },
-    //     { 
-    //       enableHighAccuracy: true, 
-    //       timeout: 15000, 
-    //       maximumAge: 0 
-    //     }
-    //   );
-    // };
 
     const handleCancel = () => {
       // User clicked "Cancel" - show redirect message
@@ -801,8 +767,8 @@ const restrictMapBounds = useCallback(() => {
             fullscreenControl: false,
             streetViewControl: false,
             mapTypeControl: false,
-            zoomControl: true,
-            gestureHandling: "greedy",
+            zoomControl: !isGettingLocation, // Disable zoom control during location fetch
+            gestureHandling: isGettingLocation ? "none" : "greedy", // CHANGE THIS LINE
             // Add restriction with buffer if user location exists
             restriction: userLocation ? {
               latLngBounds: {

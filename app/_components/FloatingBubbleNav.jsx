@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from "next/link";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaThreads, FaXTwitter, FaYoutube } from "react-icons/fa6";
-import { Menu, X, BookOpen, PhoneCall } from 'lucide-react';
+import { Menu, X, BookOpen, PhoneCall, PenLine, Newspaper } from 'lucide-react';
 
 function FloatingBubbleNav({ showMenu, setShowMenu }) {
     // Keep local state for backward compatibility
@@ -48,6 +48,16 @@ function FloatingBubbleNav({ showMenu, setShowMenu }) {
           name: 'Contact', 
           href: '/contact-us',
           icon: PhoneCall,
+        },
+        { 
+          name: 'NewsTech', 
+          href: '/newstech',
+          icon: Newspaper,
+        },
+        { 
+          name: 'Be A Creator', 
+          href: '/nearby-news',
+          icon: PenLine,
         }
     ];
 
