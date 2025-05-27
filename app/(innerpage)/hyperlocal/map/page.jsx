@@ -360,7 +360,7 @@ const restrictMapBounds = useCallback(() => {
         setIsLoading(true);
         
         // Create bounds parameters if available
-        let url = '/api/nearby-news/map';
+        let url = '/api/hyperlocal/map';
         
         if (bounds) {
         const { north, south, east, west } = bounds;
