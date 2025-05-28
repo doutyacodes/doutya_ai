@@ -20,9 +20,12 @@ export default function NewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showNews, setShowNews] = useState(false);
   const [showId, setShowId] = useState(null);
-  const { selectedAge, selectedRegion, handleRegionChange } = useChildren();
+  // const { selectedAge, selectedRegion, handleRegionChange } = useChildren();
+  const { selectedRegion, getCurrentAge, isAgeLoaded } = useChildren();
   const [showNames, setShowNames] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
+
+  const selectedAge = getCurrentAge();
 
   const pathname = usePathname();
   const [, , id] = pathname.split("/");
@@ -34,6 +37,7 @@ export default function NewPage() {
   }, [id]);
 
   const fetchNews = async () => {
+    if (!selectedAge || !isAgeLoaded) return;
     try {
       setIsLoading(true);
       const response = await GlobalApi.FetchNews({

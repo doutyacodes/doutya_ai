@@ -513,7 +513,7 @@ const restrictMapBounds = useCallback(() => {
 
   // Open article in new tab
   const openArticle = (id) => {
-    window.open(`/nearby-news/article/${id}`, '_blank');
+    window.open(`/hyperlocal/article/${id}`, '_blank');
   };
 
       // Handle allow button click in modal

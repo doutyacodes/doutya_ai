@@ -7,19 +7,24 @@ import { usePathname } from "next/navigation";
 import SocialMediaNav from "./SocialMediaNav";
 import FloatingBubbleNav from "./FloatingBubbleNav";
 import { ChevronDown, Info, Mail, MoreVertical, Menu, Home, Users, Newspaper, PenLine, } from 'lucide-react';
+import { useChildren } from "@/context/CreateContext";
 
 const Navbar = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const [selectedAge, setSelectedAge] = useState(() => {
-    // Check if running in browser environment
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('selectedAge') || '6';
-    }
-    return '6'; // Default age if not in browser or no stored age
-  });
+  // const [selectedAge, setSelectedAge] = useState(() => {
+  //   // Check if running in browser environment
+  //   if (typeof window !== 'undefined') {
+  //     return localStorage.getItem('selectedAge') || '6';
+  //   }
+  //   return '6'; // Default age if not in browser or no stored age
+  // });
+
+  const { getCurrentAge, updateSelectedAge, clearSelectedAge, showPopupForUser } = useChildren();
+
+  const selectedAge = getCurrentAge();
   
   // Check if we're in the kids section
   const isKidsSection = pathname.startsWith("/news-kids");
@@ -93,7 +98,7 @@ const NavDropdownAlt = () => {
     
     const handleAgeChange = (age) => {
       localStorage.setItem('selectedAge', age);
-      setSelectedAge(age);
+      updateSelectedAge(age);
       setIsDropdownOpen(false);
       // Reload the page to fetch new data
       window.location.reload();

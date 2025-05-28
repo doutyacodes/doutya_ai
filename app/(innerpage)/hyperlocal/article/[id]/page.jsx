@@ -4,15 +4,12 @@ import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import useAuthRedirect from '../../_component/useAuthRedirect';
 
 export default function ArticlePage() {
   const { id } = useParams();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  useAuthRedirect();
 
   useEffect(() => {
     async function fetchArticle() {

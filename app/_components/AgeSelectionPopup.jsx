@@ -157,8 +157,8 @@ const AgeSelectionPopup = ({ onSubmit, onClose }) => {
                   onChange={(e) => setAge(e.target.value)}
                   className="block w-full rounded-lg border-2 border-red-200 bg-white py-2 pl-4 pr-10 text-gray-700 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 appearance-none"
                 >
-                  <option value="" disabled>Select age (4-12)</option>
-                  {Array.from({ length: 9 }, (_, i) => (
+                  <option value="" disabled>Select age (4-13)</option>
+                  {Array.from({ length: 10 }, (_, i) => (
                     <option key={i} value={i + 4}>
                       {i + 4} years
                     </option>

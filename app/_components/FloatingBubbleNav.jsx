@@ -56,7 +56,7 @@ function FloatingBubbleNav({ showMenu, setShowMenu }) {
         },
         { 
           name: 'Be A Creator', 
-          href: '/nearby-news',
+          href: '/hyperlocal',
           icon: PenLine,
         }
     ];
