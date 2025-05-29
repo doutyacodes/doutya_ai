@@ -239,7 +239,6 @@ import useAuth from "@/app/hooks/useAuth";
 const ChildrenContext = createContext();
 
 export const ChildrenProvider = ({ children }) => {
-  const [childrenData, setChildrenData] = useState([]);
   const [selectedChildId, setSelectedChildId] = useState(null);
   const [selectedAge, setSelectedAge] = useState(null);
   const [selectedGender, setSelectedGender] = useState(null);
@@ -320,23 +319,6 @@ export const ChildrenProvider = ({ children }) => {
     }
   }, [showPopup, router]);
 
-  const fetchChildren = async () => {
-    try {
-      setLoading(true);
-      const token =
-        typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      if (token) {
-        const response = await GlobalApi.GetUserChildren(token);
-        const children = response.data.data;
-        setChildrenData(children);
-      }
-    } catch (error) {
-      console.error("Error fetching children:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const fetchRegion = async () => {
     try {
       const storedRegion = localStorage.getItem("userRegion");
@@ -364,12 +346,7 @@ export const ChildrenProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("token") : null;
-    
-    if (token) {
-      fetchChildren();
-    } else if (isAgeLoaded) {
+     if (isAgeLoaded) {
       // Only check for age popup after age has been loaded from localStorage
       const shouldShowAgePopup = !selectedAge && pathname.startsWith("/news-kids");
       
@@ -377,10 +354,9 @@ export const ChildrenProvider = ({ children }) => {
         setShowAgePopup(true); // Show popup for age selection
       }
     }
-
     // Fetch region
     fetchRegion();
-  }, [isAuthenticated, pathname, isAgeLoaded, selectedAge]);
+  }, [ pathname, isAgeLoaded, selectedAge]);
 
   const handleAgeSubmit = (age) => {
     if (age >= 4 && age <= 13) {
@@ -388,12 +364,6 @@ export const ChildrenProvider = ({ children }) => {
       setShowAgePopup(false); // Close the popup
       // Note: Removed window.location.reload() as context will handle the updates
     }
-  };
-
-  const handleRegionChange = (region) => {
-    setSelectedRegion(region);
-    localStorage.setItem("userRegion", region); // Allow user to change and store new region
-    setShowRegionPopup(false); // Close region popup
   };
 
   const showPopupForUser = () => {
@@ -406,24 +376,9 @@ export const ChildrenProvider = ({ children }) => {
     }
   };
 
-  const showPopupRegion = () => {
-    setShowRegionPopup(true);
-  };
-
-  // Auto-select first child when children data is available
-  useEffect(() => {
-    const handleSingleData = () => {
-      if (!selectedChildId && childrenData.length > 0) {
-        selectChild(childrenData[0].id);
-      }
-    };
-    handleSingleData();
-  }, [childrenData, selectedChildId]);
-
   return (
     <ChildrenContext.Provider
       value={{
-        childrenData,
         updateChildrenData,
         selectedChildId,
         selectChild,
@@ -437,9 +392,7 @@ export const ChildrenProvider = ({ children }) => {
         selectedChild,
         selectedGrade,
         selectedRegion,
-        handleRegionChange,
         showPopupForUser,
-        showPopupRegion,
         // New functions for better age management
         updateSelectedAge,
         clearSelectedAge,
