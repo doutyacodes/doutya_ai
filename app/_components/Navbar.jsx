@@ -31,7 +31,7 @@ const Navbar = () => {
   // Check if we're in the maps section
   const isMapsSection = pathname.startsWith("/newsonmap");
 
-  const isHyperlocalSection = pathname.startsWith("/hyperlocal");
+  const isHyperlocalSection = pathname.startsWith("/nearby");
 
   const isNewsSection = pathname === "/news";
 

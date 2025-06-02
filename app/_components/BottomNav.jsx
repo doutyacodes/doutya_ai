@@ -16,8 +16,8 @@ export default function BottomNavigation() {
       return '/kids';
     } else if (path === '/newsonmap' || path.startsWith('/newsonmap/')) {
       return '/newsonmap';
-    } else if (path === '/hyperlocal/map' || path.startsWith('/hyperlocal/map/')) {
-      return '/hyperlocal/map';
+    } else if (path === '/nearby' || path.startsWith('/nearby/')) {
+      return '/nearby';
     }
     return path;
   }
@@ -45,7 +45,7 @@ export default function BottomNavigation() {
     },
     {
       name: 'Nearby News',
-      path: '/hyperlocal/map',
+      path: '/nearby',
       displayName: ['Local', 'News']
     },
   ];
@@ -70,8 +70,8 @@ export default function BottomNavigation() {
       return pathname === '/newsonmap' || pathname.startsWith('/newsonmap/');
     }
     // For hyperlocal map tab
-    else if (tabPath === '/hyperlocal/map') {
-      return pathname === '/hyperlocal/map' || pathname.startsWith('/hyperlocal/map/');
+    else if (tabPath === '/nearby') {
+      return pathname === '/nearby' || pathname.startsWith('/nearby/');
     }
     return false;
   };

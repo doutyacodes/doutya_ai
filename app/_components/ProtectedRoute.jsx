@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children, allowedRoutes = [] }) => {
 
   useEffect(() => {
     const isAllowed = 
-      allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/kids/")|| pathname.startsWith("/news/") || pathname.startsWith("/newsonmap") || pathname.startsWith("/newstech") || pathname.startsWith("/hyperlocal");
+      allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/kids/")|| pathname.startsWith("/news/") || pathname.startsWith("/newsonmap") || pathname.startsWith("/newstech") || pathname.startsWith("/nearby");
 
       console.log("isAuthenticated", isAuthenticated, "isAllowed", isAllowed)
 
@@ -27,7 +27,7 @@ const ProtectedRoute = ({ children, allowedRoutes = [] }) => {
   }
 
   const isAllowed = 
-    allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/kids/")|| pathname.startsWith("/news/") || pathname.startsWith("/newsonmap") || pathname.startsWith("/newstech") || pathname.startsWith("/hyperlocal");
+    allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/kids/")|| pathname.startsWith("/news/") || pathname.startsWith("/newsonmap") || pathname.startsWith("/newstech") || pathname.startsWith("/nearby");
 
   return isAuthenticated || isAllowed ? children : null;
 };

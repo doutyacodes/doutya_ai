@@ -1,6 +1,6 @@
 "use client"
 import ReactDOMServer from "react-dom/server";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useMediaQuery } from 'react-responsive';
 import { GoogleMap, useLoadScript, MarkerF, InfoWindowF, Circle  } from "@react-google-maps/api";
 import { 
@@ -20,9 +20,17 @@ import {
     X,
     Loader2,
     Newspaper,
-    Tag
+    Tag,
+    HardHat,
+    Vote,
+    Calendar,
+    Flame,
+    ShieldCheck,
+    Bus,
+    Siren
   } from "lucide-react";
 import { useRouter } from "next/navigation";
+import CreatorPopupModal from "@/app/_components/CreatorPopupModal";
 
 // Map container styles
 const containerStyle = {
@@ -37,20 +45,59 @@ const center = {
 };
 
 
+// // Category icons mapping using Lucide React components
+// const categoryIcons = {
+//   "News": <Newspaper size={24} className="text-blue-600" />,
+//   // "Ads": <Tag size={24} className="text-green-600" />,
+//   "Default": <Globe size={24} className="text-gray-500" />
+// };
+
+// // Category colors for map markers or other UI elements
+// const categoryColors = {
+//   "News": "#1E90FF",    // Dodger Blue
+//   // "Ads": "#2E8B57",     // Sea Green
+//   "Default": "#A52A2A"  // Brown
+// };
+
 // Category icons mapping using Lucide React components
 const categoryIcons = {
   "News": <Newspaper size={24} className="text-blue-600" />,
-  // "Ads": <Tag size={24} className="text-green-600" />,
+  "Alert": <AlertTriangle size={24} className="text-red-600" />,
+  "Emergency": <Siren size={24} className="text-red-700" />,
+  "Weather": <Cloud size={24} className="text-sky-500" />,
+  "Construction": <HardHat size={24} className="text-yellow-600" />,
+  "Crime": <Shield size={24} className="text-red-500" />,
+  "Politics": <Vote size={24} className="text-purple-600" />,
+  "Events": <Calendar size={24} className="text-indigo-600" />,
+  "Health": <Heart size={24} className="text-pink-600" />,
+  "Sports": <Trophy size={24} className="text-amber-600" />,
+  "Environment": <Leaf size={24} className="text-green-500" />,
+  "Fire": <Flame size={24} className="text-red-600" />,
+  "Police": <ShieldCheck size={24} className="text-blue-700" />,
+  "Public Transport": <Bus size={24} className="text-blue-400" />,
+  "Festival": <PartyPopper size={24} className="text-pink-500" />,
   "Default": <Globe size={24} className="text-gray-500" />
 };
 
 // Category colors for map markers or other UI elements
 const categoryColors = {
-  "News": "#1E90FF",    // Dodger Blue
-  // "Ads": "#2E8B57",     // Sea Green
-  "Default": "#A52A2A"  // Brown
+  "News": "#2563EB",        // Blue-600
+  "Alert": "#DC2626",       // Red-600
+  "Emergency": "#B91C1C",   // Red-700
+  "Weather": "#0EA5E9",     // Sky-500
+  "Construction": "#CA8A04", // Yellow-600
+  "Crime": "#EF4444",       // Red-500
+  "Politics": "#9333EA",    // Purple-600
+  "Events": "#4F46E5",      // Indigo-600
+  "Health": "#EC4899",      // Pink-600
+  "Sports": "#F59E0B",      // Amber-600
+  "Environment": "#22C55E", // Green-500
+  "Fire": "#DC2626",        // Red-600
+  "Police": "#1D4ED8",      // Blue-700
+  "Public Transport": "#60A5FA", // Blue-400
+  "Festival": "#EC4899",    // Pink-500
+  "Default": "#6B7280"      // Gray-500
 };
-
 
 const createCategoryMarkerIcon = (category, newsCount = 0) => {
   const color = category ? categoryColors[category] || categoryColors.Default : categoryColors.Default;
@@ -135,8 +182,10 @@ const groupNewsByLocation = (newsItems) => {
   return groupedNews;
 };
 
+// Replace your existing FilterPanel component with this updated version:
+
 const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, isMobile }) => {
-  const [isExpanded, setIsExpanded] = useState(true); // Default to expanded when page loads
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Function to toggle category selection
   const toggleCategory = (category) => {
@@ -245,6 +294,9 @@ export default function NewsMap() {
   const [error, setError] = useState(null);
   const [mapRef, setMapRef] = useState(null);
 
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState(null);
+
   const [selectedCategories, setSelectedCategories] = useState(
     Object.keys(categoryIcons).filter(cat => cat !== 'Default')
   );
@@ -255,12 +307,19 @@ export default function NewsMap() {
 
   const [showLocationPrompt, setShowLocationPrompt] = useState(false);
 
-    const MAX_RADIUS_KM = 10; // 10km radius limit
-    const EARTH_RADIUS_KM = 6371; // Earth's radius in kilometers
-    const USER_LOCATION_ZOOM = 14; // Zoom level when user location is available
-    const DEFAULT_ZOOM = 10; // Default zoom level
-    // Add buffer factor to create extended restriction bounds
-    const BUFFER_FACTOR = 1.5; // Allow 50% more area beyond the data radius
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+
+  const [showCreatorModal, setShowCreatorModal] = useState(true);
+  const [isFilterExpanded, setIsFilterExpanded] = useState(false);
+
+  const timeoutRef = useRef(null);
+
+  const MAX_RADIUS_KM = 10; // 10km radius limit
+  const EARTH_RADIUS_KM = 6371; // Earth's radius in kilometers
+  const USER_LOCATION_ZOOM = 14; // Zoom level when user location is available
+  const DEFAULT_ZOOM = 10; // Default zoom level
+  // Add buffer factor to create extended restriction bounds
+  const BUFFER_FACTOR = 1.5; // Allow 50% more area beyond the data radius
 
 
   // Load Google Maps script
@@ -359,9 +418,7 @@ const restrictMapBounds = useCallback(() => {
         // Always include user location
         url += `?userLat=${userLocation.lat}&userLng=${userLocation.lng}&radius=${MAX_RADIUS_KM}`;
         }
-        
-        console.log("Fetching news data from:", url);
-        const response = await fetch(url);
+                const response = await fetch(url);
         
         if (!response.ok) {
         throw new Error('Failed to fetch news data');
@@ -381,119 +438,76 @@ const restrictMapBounds = useCallback(() => {
     }
     }, [userLocation]); // We do need userLocation in the dependency array
 
-const getUserLocation = useCallback(() => {
-  console.log("in get location");
-  
-  // First check if location has been permanently blocked by checking permission state
-  const checkLocationPermission = async () => {
-    try {
-      // Check if we already have permission in localStorage
-      const locationPermission = localStorage.getItem('newsMapLocationPermission');
-      
-      if (locationPermission === 'granted') {
-        // We have previous permission, try to get location
-        getCurrentPosition();
-        return;
-      }
-      
-      // Check browser permission status
-      if (navigator.permissions) {
-        const status = await navigator.permissions.query({ name: 'geolocation' });
-        
-        if (status.state === 'granted') {
-          // Permission already granted in browser, get location
-          getCurrentPosition();
-        } 
-        else if (status.state === 'denied') {
-          // User has previously denied permission in browser settings
-          setShowLocationPrompt(true);
-          setIsLoading(false);
+  // Updated to handle modal states
+  const getCurrentPosition = () => {
+    console.log("Getting User Location")
+    setIsGettingLocation(true); 
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ lat: latitude, lng: longitude });
+        console.log("latitude, longitude", latitude, longitude)
+        console.log("Setting User Location")
+        // If map is available, pan and zoom to user location
+        if (mapRef) {
+          mapRef.panTo({ lat: latitude, lng: longitude });
+          mapRef.setZoom(USER_LOCATION_ZOOM);
         }
-        else {
-          // First time prompt or permission state is 'prompt'
-          // Show our custom prompt first
-          setShowLocationPrompt(true);
-          setIsLoading(false);
-        }
-      } else {
-        // Browser doesn't support permissions API, just show our prompt
-        setShowLocationPrompt(true);
+        console.log("Initiate Fetch news")
+        fetchNewsData();
+
+        // Hide modal and reset loading state
+        setShowLocationPrompt(false);
         setIsLoading(false);
+        setIsGettingLocation(false);
+      },
+      (error) => {
+        console.error("Error getting user location:", error);
+        setLocationError("Failed to get your location. Please try again or use the default view.");
+        setLocationLoading(false);
       }
-    } catch (err) {
-      console.error("Error checking location permission:", err);
-      setShowLocationPrompt(true);
-      setIsLoading(false);
-    }
+    );
   };
-  
-  // Execute the permission check
-  checkLocationPermission();
-}, []);
 
+  // Get user's location
+  const getUserLocation = useCallback(() => {
+    console.log("Initiate User Location fuction")
 
-
-const getCurrentPosition = () => {
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const { latitude, longitude } = position.coords;
-      setUserLocation({ lat: latitude, lng: longitude });
-      
-      // Store in localStorage that permission was granted
-      localStorage.setItem('newsMapLocationPermission', 'granted');
-      
-      // If map is available, pan and zoom to user location
-      if (mapRef) {
-        mapRef.panTo({ lat: latitude, lng: longitude });
-        mapRef.setZoom(USER_LOCATION_ZOOM);
+      if (navigator.geolocation) {
+        navigator.permissions
+          .query({ name: "geolocation" })
+          .then((permissionStatus) => {
+            if (permissionStatus.state === "granted") {
+              console.log("Granted User Location fuction")
+              // Permission already granted, get location
+              getCurrentPosition();
+            } else if (permissionStatus.state === "prompt") {
+              // Show our custom modal instead of the browser prompt
+              setIsLoading(false);
+              setShowLocationPrompt(true);
+            } else if (permissionStatus.state === "denied") {
+              // If permission is already denied, just use default view
+              console.log("Location permission was previously denied");
+            }
+          })
+          .catch(err => {
+            console.error("Error checking location permission:", err);
+          });
       }
-      
-      // Hide the prompt if it was showing
-      setShowLocationPrompt(false);
-      
-      // Complete loading state
-      setIsLoading(false);
-      
-      // Now fetch news data
-      fetchNewsData();
-    },
-    (error) => {
-      console.error("Error getting user location:", error);
-      
-      // If error.code is 1, it means permission was denied
-      if (error.code === 1) {
-        // Clear any previous permission from localStorage
-        localStorage.removeItem('newsMapLocationPermission');
-      }
-      
-      // Show our location prompt
-      setShowLocationPrompt(true);
-      setIsLoading(false);
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-  );
-};
+    }, []);
 
-    // Initialize only once
+    // Initial data fetch and location request
     useEffect(() => {
-      // Check location permission state first
       getUserLocation();
-    }, [getUserLocation]);
+    }, []);
 
-  // Only fetch data when user location is available and not when prompt is showing
-  useEffect(() => {
-    if (userLocation && !showLocationPrompt) {
-      fetchNewsData();
-    }
-  }, [userLocation, showLocationPrompt]);
-
-  
-  // Add checking for location prompt 
+    // Only fetch data when user location is available and not when prompt is showing
     useEffect(() => {
-        if (!userLocation && !isLoading && !showLocationPrompt) {
-            setShowLocationPrompt(true);
-        }
-    }, [userLocation, isLoading, showLocationPrompt]);
+      if (userLocation && !showLocationPrompt) {
+        fetchNewsData();
+      }
+    }, [userLocation]);
+  
 
   // Handle map bounds change
     const handleBoundsChanged = (map) => {
@@ -549,148 +563,127 @@ const getCurrentPosition = () => {
   // Open article in new tab
   const openArticle = (id) => {
     window.open(`/nearby/article/${id}`, '_blank');
+    // router.push(`/nearby/article/${id}`);
   };
 
-  // Add this component inside your NewsMap function 
-const LocationPrompt = () => {
-  const router = useRouter();
-  const [locationLoading, setLocationLoading] = useState(false);
-  const [locationError, setLocationError] = useState(null);
-  const [countdown, setCountdown] = useState(null);
-  const [showRedirectMessage, setShowRedirectMessage] = useState(false);
-  
-  // Start countdown when redirecting
-  useEffect(() => {
-    if (showRedirectMessage) {
-      let timeLeft = 5;
-      setCountdown(timeLeft);
-      
-      const timer = setInterval(() => {
-        timeLeft -= 1;
-        setCountdown(timeLeft);
-        
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          router.push('/newsonmap');
-        }
-      }, 1000);
-      
-      return () => clearInterval(timer);
-    }
-  }, [showRedirectMessage, router]);
-
-  const requestLocationAccess = () => {
+      // Handle allow button click in modal
+  const handleAllowLocation = () => {
     setLocationLoading(true);
     setLocationError(null);
-
-    // Use the browser's geolocation API
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocationLoading(false);
-        setShowLocationPrompt(false);
-        
-        const { latitude, longitude } = position.coords;
-        setUserLocation({ lat: latitude, lng: longitude });
-        
-        localStorage.setItem('newsMapLocationPermission', 'granted');
-        
-        if (mapRef) {
-          mapRef.panTo({ lat: latitude, lng: longitude });
-          mapRef.setZoom(USER_LOCATION_ZOOM);
-        }
-        
-        // Now fetch the data after location is available
-        fetchNewsData();
-      },
-      (error) => {
-        setLocationLoading(false);
-        console.error("Error getting user location:", error);
-        
-        // Don't show error message, show redirect message instead
-        setShowRedirectMessage(true);
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
+    getCurrentPosition();
   };
 
-  const handleCancel = () => {
-    // User clicked "Cancel" - show redirect message
-    setShowRedirectMessage(true);
-  };
+  // In your existing map page component:
+const handleNavigateToCreator = () => {
+  // Navigate to your creator page
+  router.push('/nearby/home');
+};
 
-  // If we're showing the redirect message
-  if (showRedirectMessage) {
+  // Add this component inside your NewsMap function 
+  const LocationPrompt = () => {
+    const router = useRouter();
+    const [countdown, setCountdown] = useState(null);
+    const [showRedirectMessage, setShowRedirectMessage] = useState(false);
+    
+    // Start countdown when redirecting
+    useEffect(() => {
+      if (showRedirectMessage) {
+        let timeLeft = 5;
+        setCountdown(timeLeft);
+        
+        const timer = setInterval(() => {
+          timeLeft -= 1;
+          setCountdown(timeLeft);
+          
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            router.push('/newsonmap');
+          }
+        }, 1000);
+        
+        return () => clearInterval(timer);
+      }
+    }, [showRedirectMessage, router]);
+
+    const handleCancel = () => {
+      // User clicked "Cancel" - show redirect message
+      setShowRedirectMessage(true);
+    };
+
+    // If we're showing the redirect message
+    if (showRedirectMessage) {
+      return (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-fadeIn">
+            <div className="mb-6">
+              <div className="flex justify-center mb-4">
+                <MapPin className="h-12 w-12 text-red-800" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Redirecting</h3>
+              <p className="text-gray-700 mb-4 text-center">
+                This feature requires location access to work properly. You&apos;re being redirected to News Maps page.
+              </p>
+              <div className="p-3 bg-red-50 border border-red-100 rounded text-red-700 text-center font-medium">
+                Redirecting in {countdown} seconds...
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Default location prompt
     return (
       <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-fadeIn">
+          <div className="flex justify-between items-start mb-4">
+            <h3 className="text-xl font-bold text-gray-800">Location Permission Required</h3>
+          </div>
+          
           <div className="mb-6">
             <div className="flex justify-center mb-4">
               <MapPin className="h-12 w-12 text-red-800" />
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Redirecting</h3>
-            <p className="text-gray-700 mb-4 text-center">
-              This feature requires location access to work properly. You&apos;re being redirected to News Maps page.
+            <p className="text-gray-700 mb-3">
+              This feature requires your location. You can only see news within 10km of where you are.
             </p>
-            <div className="p-3 bg-red-50 border border-red-100 rounded text-red-700 text-center font-medium">
-              Redirecting in {countdown} seconds...
-            </div>
+            <p className="text-gray-600 text-sm italic mb-2">
+              Not allowing location access will redirect you to the News Maps page.
+            </p>
+            {locationError && (
+              <div className="mt-2 p-3 bg-red-50 border border-red-100 rounded text-red-700 text-sm">
+                {locationError}
+              </div>
+            )}
+          </div>
+          
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={handleAllowLocation}
+              disabled={locationLoading}
+              className="w-full px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {locationLoading ? (
+                <span className="flex items-center justify-center">
+                  <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                  Getting Location...
+                </span>
+              ) : (
+                'Allow Location Access'
+              )}
+            </button>
+            <button
+              onClick={handleCancel}
+              className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </div>
     );
-  }
+  };
 
-  // Default location prompt
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-fadeIn">
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-xl font-bold text-gray-800">Location Permission Required</h3>
-        </div>
-        
-        <div className="mb-6">
-          <div className="flex justify-center mb-4">
-            <MapPin className="h-12 w-12 text-red-800" />
-          </div>
-          <p className="text-gray-700 mb-3">
-            This feature requires your location. You can only see news within 10km of where you are.
-          </p>
-          <p className="text-gray-600 text-sm italic mb-2">
-            Not allowing location access will redirect you to the News Maps page.
-          </p>
-          {locationError && (
-            <div className="mt-2 p-3 bg-red-50 border border-red-100 rounded text-red-700 text-sm">
-              {locationError}
-            </div>
-          )}
-        </div>
-        
-        <div className="flex flex-col gap-3">
-          <button
-            onClick={requestLocationAccess}
-            disabled={locationLoading}
-            className="w-full px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            {locationLoading ? (
-              <span className="flex items-center justify-center">
-                <Loader2 className="animate-spin mr-2 h-5 w-5" />
-                Getting Location...
-              </span>
-            ) : (
-              'Allow Location Access'
-            )}
-          </button>
-          <button
-            onClick={handleCancel}
-            className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
   // Custom Map Type Controls Component
   const MapTypeControls = ({ mapRef }) => {
@@ -716,22 +709,6 @@ const LocationPrompt = () => {
       return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-    useEffect(() => {
-    // Set a timeout to complete the initial check if not completed already
-    const timer = setTimeout(() => {
-      if (!initialCheckDone) {
-        setInitialCheckDone(true);
-        setIsLoading(false);
-        // If we reach here without location, show prompt
-        if (!userLocation) {
-          setShowLocationPrompt(true);
-        }
-      }
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, [initialCheckDone, userLocation]);
-  
   const changeMapType = (type) => {
       if (!mapRef) return;
       mapRef.setMapTypeId(type);
@@ -824,17 +801,168 @@ const LocationPrompt = () => {
   
   return (
     <div className="relative">
+    {showCreatorModal && userLocation && !showLocationPrompt && (
+      <CreatorPopupModal onNavigateToCreator={handleNavigateToCreator} />
+    )}
 
     {/* Show location prompt if needed */}
-    {showLocationPrompt && <LocationPrompt />}
+    {/* {showLocationPrompt && <LocationPrompt />} */}
+    {showLocationPrompt && !isLoading && <LocationPrompt />}
+
 
       {/* <MapLegend /> the legends */}
-      <FilterPanel 
+      {/* <FilterPanel 
         selectedCategories={selectedCategories}
         setSelectedCategories={setSelectedCategories}
         buttonStyle = {buttonStyle}
+        isMobile = {isMobile} */}
+       {/* the filters */}
+ 
+      {/* Be a creator button */}
+      {/* <CreatorButton isMobile={isMobile} buttonStyle={buttonStyle} /> */}
+{/* 
+      <FilterPanel 
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
+        buttonStyle={buttonStyle}
         isMobile = {isMobile}
-      /> {/* the filters */}
+      />
+
+      <CreatorButton 
+        buttonStyle={buttonStyle} 
+      /> */}
+
+      {/* Button Container - replaces both FilterPanel and CreatorButton calls */}
+<div className="absolute top-3 right-4 z-10 flex flex-col items-end gap-2">
+  {/* Buttons Row */}
+  <div className="flex gap-2 items-center">
+    {/* Creator Button - Desktop only, hidden on mobile when filter expanded */}
+    {!isMobile && (
+      <button 
+        onClick={() => router.push('/nearby/home')}
+        className="bg-red-800 hover:bg-red-900 text-white shadow-md rounded-lg p-2 transition-colors duration-200 flex items-center justify-center"
+        style={buttonStyle}
+      >
+        <svg 
+          width="16" 
+          height="16" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+          className="mr-2"
+        >
+          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+          <path d="m15 5 4 4"/>
+        </svg>
+        <span>Be a Creator</span>
+      </button>
+    )}
+
+    {/* Filter Toggle Button - Expands on desktop when clicked */}
+    <button 
+      onClick={() => setIsFilterExpanded(!isFilterExpanded)}
+      className={`bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-all duration-200 flex items-center justify-center ${
+        isFilterExpanded && !isMobile ? 'w-64' : ''
+      }`}
+      style={buttonStyle}
+    >
+      <span>{isFilterExpanded ? 'Hide Filters' : 'Show Filters'}</span>
+    </button>
+  </div>
+
+  {/* Mobile Creator Button - Below filter button, hidden when filter expanded */}
+  {isMobile && !isFilterExpanded && (
+    <button 
+      onClick={() => router.push('/nearby/home')}
+      className="bg-red-800 hover:bg-red-900 text-white shadow-md rounded-lg p-2 transition-colors duration-200 flex items-center justify-center w-full"
+      style={buttonStyle}
+    >
+      <svg 
+        width="16" 
+        height="16" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+        className="mr-2"
+      >
+        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+        <path d="m15 5 4 4"/>
+      </svg>
+      <span>Be a Creator</span>
+    </button>
+  )}
+
+  {/* Filter Panel */}
+  {isFilterExpanded && (
+    <div className="bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-4 max-h-[70vh] overflow-y-auto w-64 max-w-[calc(100vw-2rem)]">
+      <div className="flex justify-between items-center mb-3 border-b pb-2">
+        <h3 className="text-lg font-semibold">News Filters</h3>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => setSelectedCategories(Object.keys(categoryIcons).filter(cat => cat !== 'Default'))}
+            className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+          >
+            All
+          </button>
+          <button 
+            onClick={() => setSelectedCategories([])}
+            className="text-xs bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 gap-2">
+        {Object.entries(categoryIcons).map(([category, icon]) => (
+          category !== 'Default' && (
+            <div 
+              key={category} 
+              className="flex items-center space-x-3 hover:bg-gray-50/90 p-2 rounded transition-colors cursor-pointer"
+              onClick={() => {
+                setSelectedCategories(prev => {
+                  if (prev.includes(category)) {
+                    return prev.filter(cat => cat !== category);
+                  } else {
+                    return [...prev, category];
+                  }
+                });
+              }}
+            >
+              <input 
+                type="checkbox" 
+                checked={selectedCategories.includes(category)}
+                onChange={() => {}}
+                className="w-4 h-4 text-blue-600"
+              />
+              <div 
+                className="w-8 h-8 flex items-center justify-center rounded-full"
+                style={{ 
+                  backgroundColor: categoryColors[category] || categoryColors.Default,
+                  color: 'white'
+                }}
+              >
+                {React.cloneElement(icon, { 
+                  size: 20, 
+                  strokeWidth: 2.5,
+                  color: 'white'
+                })}
+              </div>
+              <span className="text-sm text-gray-700">{category}</span>
+            </div>
+          )
+        ))}
+      </div>
+    </div>
+  )}
+</div>
+
     <GoogleMap
         mapContainerStyle={containerStyle}
         center={userLocation || center}
@@ -843,8 +971,8 @@ const LocationPrompt = () => {
             fullscreenControl: false,
             streetViewControl: false,
             mapTypeControl: false,
-            zoomControl: true,
-            gestureHandling: "greedy",
+            zoomControl: !isGettingLocation, // Disable zoom control during location fetch
+            gestureHandling: isGettingLocation ? "none" : "greedy", // CHANGE THIS LINE
             // Add restriction with buffer if user location exists
             restriction: userLocation ? {
               latLngBounds: {

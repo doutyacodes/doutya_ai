@@ -290,7 +290,7 @@ const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, i
 //   const router = useRouter();
 
 //   const handleCreatorClick = () => {
-//     router.push('/hyperlocal');
+//     router.push('/nearby/home');
 //   };
 
 //   if (isMobile) {
@@ -348,39 +348,6 @@ const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, i
 //   );
 // };
 
-const CreatorButton = ({ buttonStyle }) => {
-  const router = useRouter();
-
-  const handleCreatorClick = () => {
-    router.push('/hyperlocal');
-  };
-
-  return (
-    <div className="absolute top-3 right-36 z-10">
-      <button 
-        onClick={handleCreatorClick}
-        className="bg-red-800 hover:bg-red-900 text-white shadow-md rounded-lg p-2 transition-colors duration-200 flex items-center justify-center"
-        style={buttonStyle}
-      >
-        <svg 
-          width="16" 
-          height="16" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-          className="mr-2"
-        >
-          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-          <path d="m15 5 4 4"/>
-        </svg>
-        <span>Be a Creator</span>
-      </button>
-    </div>
-  );
-};
 
 export default function NewsMap() {
   const [newsItems, setNewsItems] = useState([]);
@@ -663,8 +630,8 @@ const restrictMapBounds = useCallback(() => {
 
   // Open article in new tab
   const openArticle = (id) => {
-    window.open(`/hyperlocal/article/${id}`, '_blank');
-    // router.push(`/hyperlocal/article/${id}`);
+    window.open(`/nearby/article/${id}`, '_blank');
+    // router.push(`/nearby/article/${id}`);
   };
 
       // Handle allow button click in modal
@@ -677,7 +644,7 @@ const restrictMapBounds = useCallback(() => {
   // In your existing map page component:
 const handleNavigateToCreator = () => {
   // Navigate to your creator page
-  router.push('/hyperlocal');
+  router.push('/nearby/home');
 };
 
   // Add this component inside your NewsMap function 
@@ -940,7 +907,7 @@ const handleNavigateToCreator = () => {
     {/* Creator Button - Desktop only, hidden on mobile when filter expanded */}
     {!isMobile && (
       <button 
-        onClick={() => router.push('/hyperlocal')}
+        onClick={() => router.push('/nearby/home')}
         className="bg-red-800 hover:bg-red-900 text-white shadow-md rounded-lg p-2 transition-colors duration-200 flex items-center justify-center"
         style={buttonStyle}
       >
@@ -977,7 +944,7 @@ const handleNavigateToCreator = () => {
   {/* Mobile Creator Button - Below filter button, hidden when filter expanded */}
   {isMobile && !isFilterExpanded && (
     <button 
-      onClick={() => router.push('/hyperlocal')}
+      onClick={() => router.push('/nearby/home')}
       className="bg-red-800 hover:bg-red-900 text-white shadow-md rounded-lg p-2 transition-colors duration-200 flex items-center justify-center w-full"
       style={buttonStyle}
     >

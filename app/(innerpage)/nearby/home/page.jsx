@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Trash2, Edit, Plus, AlertCircle, MapPin, Users, X } from 'lucide-react';
-import useAuthRedirect from './_component/useAuthRedirect';
+import useAuthRedirect from '../_component/useAuthRedirect';
 
 export default function AdminNewsPage() {
   const [news, setNews] = useState([]);
