@@ -49,6 +49,7 @@
     "jsonwebtoken": "^9.0.2",
     "jspdf": "^2.5.2",
     "leaflet": "^1.9.4",
+    "lodash.isequal": "^4.5.0",
     "lucide-react": "^0.453.0",
     "luxon": "^3.5.0",
     "moment": "^2.30.1",

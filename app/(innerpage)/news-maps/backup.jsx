@@ -20,9 +20,6 @@ import {
     Loader2
   } from "lucide-react";
 
-import isEqual from 'lodash.isequal';
-
-
 // Map container styles
 const containerStyle = {
   width: "100%",
@@ -706,7 +703,7 @@ export default function NewsMap() {
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [showFiltersDropdown, setShowFiltersDropdown] = useState(false);
   const [hasAskedForLocation, setHasAskedForLocation] = useState(false);
-  const prevDataRef = useRef([]);
+
 
   const [selectedCategories, setSelectedCategories] = useState(
     Object.keys(categoryIcons).filter(cat => cat !== 'Default')
@@ -753,55 +750,13 @@ export default function NewsMap() {
   };
 
   // Fetch news data based on map bounds
-  // const fetchNewsData = useCallback(async (bounds, languages = []) => {
-  //   try {
-  //     setIsLoading(true);
-      
-  //     let url = '/api/news/map';
-  //     const params = new URLSearchParams();
-      
-  //     if (bounds) {
-  //       const { north, south, east, west } = bounds;
-  //       params.append('north', north);
-  //       params.append('south', south);
-  //       params.append('east', east);
-  //       params.append('west', west);
-  //     }
-      
-  //     if (languages.length > 0) {
-  //       params.append('languages', languages.join(','));
-  //     }
-      
-  //     if (params.toString()) {
-  //       url += `?${params.toString()}`;
-  //     }
-      
-  //     const response = await fetch(url);
-      
-  //     if (!response.ok) {
-  //       throw new Error('Failed to fetch news data');
-  //     }
-      
-  //     const data = await response.json();
-  //     setNewsItems(data);
-      
-  //     const grouped = groupNewsByLocation(data);
-  //     setGroupedNews(grouped);
-  //   } catch (err) {
-  //     console.error("Error fetching news:", err);
-  //     setError("Failed to load news data");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }, []);
-
   const fetchNewsData = useCallback(async (bounds, languages = []) => {
     try {
       setIsLoading(true);
-
+      
       let url = '/api/news/map';
       const params = new URLSearchParams();
-
+      
       if (bounds) {
         const { north, south, east, west } = bounds;
         params.append('north', north);
@@ -809,33 +764,26 @@ export default function NewsMap() {
         params.append('east', east);
         params.append('west', west);
       }
-
+      
       if (languages.length > 0) {
         params.append('languages', languages.join(','));
       }
-
+      
       if (params.toString()) {
         url += `?${params.toString()}`;
       }
-
+      
       const response = await fetch(url);
-
+      
       if (!response.ok) {
         throw new Error('Failed to fetch news data');
       }
-
+      
       const data = await response.json();
-
-      // 🧠 Only update if data has changed
-      if (!isEqual(prevDataRef.current, data)) {
-        prevDataRef.current = data;
-        setNewsItems(data);
-
-        const grouped = groupNewsByLocation(data);
-        setGroupedNews(grouped);
-      } else {
-        console.log('🟡 Data unchanged — skipping update');
-      }
+      setNewsItems(data);
+      
+      const grouped = groupNewsByLocation(data);
+      setGroupedNews(grouped);
     } catch (err) {
       console.error("Error fetching news:", err);
       setError("Failed to load news data");
@@ -877,6 +825,29 @@ export default function NewsMap() {
       return 'unavailable';
     }
   }, []);
+
+  // Get user's location
+  // const getUserLocation = useCallback(async () => {
+  //   // First check if we have stored location
+  //   const storedLocation = getStoredUserLocation();
+  //   if (storedLocation) {
+  //     setUserLocation(storedLocation);
+  //     userLocationRef.current = storedLocation;
+  //     return;
+  //   }
+
+  //   // Check permission status
+  //   const permissionState = await checkLocationPermission();
+    
+  //   if (permissionState === 'granted') {
+  //     // Permission already granted, get location silently
+  //     getCurrentPosition();
+  //   } else if (permissionState === 'prompt') {
+  //     // Show our custom modal
+  //     setShowLocationModal(true);
+  //   }
+  //   // If denied or unavailable, just use default view without showing modal
+  // }, [checkLocationPermission]);
 
   // Get user's location
 const getUserLocation = useCallback(async () => {
