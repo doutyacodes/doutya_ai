@@ -20,6 +20,9 @@ import {
     Loader2
   } from "lucide-react";
 
+import isEqual from 'lodash.isequal';
+
+
 // Map container styles
 const containerStyle = {
   width: "100%",
@@ -531,7 +534,7 @@ const MobileFilterDropdown = ({
 };
 
 const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, isMobile }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const toggleCategory = (category) => {
     setSelectedCategories(prev => {
@@ -703,7 +706,7 @@ export default function NewsMap() {
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [showFiltersDropdown, setShowFiltersDropdown] = useState(false);
   const [hasAskedForLocation, setHasAskedForLocation] = useState(false);
-
+  const prevDataRef = useRef([]);
 
   const [selectedCategories, setSelectedCategories] = useState(
     Object.keys(categoryIcons).filter(cat => cat !== 'Default')
@@ -750,41 +753,89 @@ export default function NewsMap() {
   };
 
   // Fetch news data based on map bounds
+  // const fetchNewsData = useCallback(async (bounds, languages = []) => {
+  //   try {
+  //     setIsLoading(true);
+      
+  //     let url = '/api/news/map';
+  //     const params = new URLSearchParams();
+      
+  //     if (bounds) {
+  //       const { north, south, east, west } = bounds;
+  //       params.append('north', north);
+  //       params.append('south', south);
+  //       params.append('east', east);
+  //       params.append('west', west);
+  //     }
+      
+  //     if (languages.length > 0) {
+  //       params.append('languages', languages.join(','));
+  //     }
+      
+  //     if (params.toString()) {
+  //       url += `?${params.toString()}`;
+  //     }
+      
+  //     const response = await fetch(url);
+      
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch news data');
+  //     }
+      
+  //     const data = await response.json();
+  //     setNewsItems(data);
+      
+  //     const grouped = groupNewsByLocation(data);
+  //     setGroupedNews(grouped);
+  //   } catch (err) {
+  //     console.error("Error fetching news:", err);
+  //     setError("Failed to load news data");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, []);
+
   const fetchNewsData = useCallback(async (bounds, languages = []) => {
     try {
       setIsLoading(true);
-      
+
       let url = '/api/news/map';
       const params = new URLSearchParams();
-      
-      // Comment out bounds filtering - fetch all data
-      // if (bounds) {
-      //   const { north, south, east, west } = bounds;
-      //   params.append('north', north);
-      //   params.append('south', south);
-      //   params.append('east', east);
-      //   params.append('west', west);
-      // }
-      
+
+      if (bounds) {
+        const { north, south, east, west } = bounds;
+        params.append('north', north);
+        params.append('south', south);
+        params.append('east', east);
+        params.append('west', west);
+      }
+
       if (languages.length > 0) {
         params.append('languages', languages.join(','));
       }
-      
+
       if (params.toString()) {
         url += `?${params.toString()}`;
       }
-      
+
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch news data');
       }
-      
+
       const data = await response.json();
-      setNewsItems(data);
-      
-      const grouped = groupNewsByLocation(data);
-      setGroupedNews(grouped);
+
+      // 🧠 Only update if data has changed
+      if (!isEqual(prevDataRef.current, data)) {
+        prevDataRef.current = data;
+        setNewsItems(data);
+
+        const grouped = groupNewsByLocation(data);
+        setGroupedNews(grouped);
+      } else {
+        console.log('🟡 Data unchanged — skipping update');
+      }
     } catch (err) {
       console.error("Error fetching news:", err);
       setError("Failed to load news data");
@@ -800,13 +851,12 @@ export default function NewsMap() {
       if (!response.ok) {
         throw new Error('Failed to fetch languages');
       }
-      const result = await response.json(); 
+      const result = await response.json();
       setAvailableLanguages(result.languages);
       const allLanguageCodes = result.languages.map(lang => lang.code);
       setSelectedLanguages(allLanguageCodes);
       
-      // fetchNewsData(mapBounds, allLanguageCodes);
-      fetchNewsData(null, allLanguageCodes); // Pass null instead of mapBounds
+      fetchNewsData(mapBounds, allLanguageCodes);
     } catch (err) {
       console.error("Error fetching languages:", err);
     }
@@ -827,29 +877,6 @@ export default function NewsMap() {
       return 'unavailable';
     }
   }, []);
-
-  // Get user's location
-  // const getUserLocation = useCallback(async () => {
-  //   // First check if we have stored location
-  //   const storedLocation = getStoredUserLocation();
-  //   if (storedLocation) {
-  //     setUserLocation(storedLocation);
-  //     userLocationRef.current = storedLocation;
-  //     return;
-  //   }
-
-  //   // Check permission status
-  //   const permissionState = await checkLocationPermission();
-    
-  //   if (permissionState === 'granted') {
-  //     // Permission already granted, get location silently
-  //     getCurrentPosition();
-  //   } else if (permissionState === 'prompt') {
-  //     // Show our custom modal
-  //     setShowLocationModal(true);
-  //   }
-  //   // If denied or unavailable, just use default view without showing modal
-  // }, [checkLocationPermission]);
 
   // Get user's location
 const getUserLocation = useCallback(async () => {
@@ -935,16 +962,15 @@ const getUserLocation = useCallback(async () => {
   // Initial data fetch and location request
   useEffect(() => {
     fetchLanguages();
-    // getUserLocation(); // Commented out - fetch full data instead of user location
-  }, [fetchLanguages]); // Removed getUserLocation and hasAskedForLocation dependencies
+    getUserLocation();
+  }, [fetchLanguages, getUserLocation, hasAskedForLocation]);
 
-    // Handle selected languages change
-    useEffect(() => {
-      if (availableLanguages.length > 0 && selectedLanguages.length >= 0) {
-        // fetchNewsData(mapBounds, selectedLanguages);
-        fetchNewsData(null, selectedLanguages); // Pass null instead of mapBounds
-      }
-    }, [selectedLanguages, fetchNewsData, availableLanguages.length]); // Removed mapBounds dependency
+  // Handle selected languages change
+  useEffect(() => {
+    if (availableLanguages.length > 0 && selectedLanguages.length >= 0) {
+      fetchNewsData(mapBounds, selectedLanguages);
+    }
+  }, [selectedLanguages, mapBounds, fetchNewsData, availableLanguages.length]);
 
   // Handle page visibility change to restore map state on mobile ONLY
   useEffect(() => {
@@ -1180,12 +1206,9 @@ setTimeout(() => {
   const selectedNewsGroup = selectedLocation ? groupedNews[selectedLocation.key] : [];
   const hasMultipleNews = selectedNewsGroup && selectedNewsGroup.length > 1;
 
-
-  // Determine map center and zoom - always use default for full world view
-  const mapCenter = center; // Always use default center
-  const mapZoom = DEFAULT_ZOOM; // Always use default zoom
-  // const mapCenter = userLocation || center; // Commented out
-  // const mapZoom = userLocation ? USER_LOCATION_ZOOM : DEFAULT_ZOOM; // Commented ou
+  // Determine map center and zoom
+  const mapCenter = userLocation || center;
+  const mapZoom = userLocation ? USER_LOCATION_ZOOM : DEFAULT_ZOOM;
 
   return (
     <div className="relative">
@@ -1244,7 +1267,7 @@ setTimeout(() => {
           clickableIcons: false,
         }}
         onLoad={handleMapLoad}
-        // onIdle={handleBoundsChanged} // Commented out - not fetching based on bounds anymore
+        onIdle={handleBoundsChanged}
       >
         {/* Custom Map Type Controls */}
         <MapTypeControls mapRef={mapRef} />
