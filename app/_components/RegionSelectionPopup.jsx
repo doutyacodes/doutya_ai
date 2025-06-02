@@ -10,11 +10,11 @@ const RegionSelectionPopup = ({ selectedRegion, onSubmit, onClose }) => {
 
   const handleSubmit = () => {
     onSubmit(region);
-    // Check if we're in the main news section (but not news-kids)
+    // Check if we're in the main news section (but not kids)
     if (pathname === "/news" || pathname.startsWith("/news/")) {
       router.replace("/news");
     } else {
-      router.replace("/news-kids");
+      router.replace("/kids");
     }
   };
 

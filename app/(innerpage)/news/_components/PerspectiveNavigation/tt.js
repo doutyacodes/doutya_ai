@@ -206,7 +206,7 @@
 
 //             {/* Back to News Button */}
 //             <button 
-//               onClick={() => router.push('/news-kids')}
+//               onClick={() => router.push('/kids')}
 //               className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 md:p-4 shadow-lg hover:bg-orange-50 border border-orange-300 transition-all hover:scale-105"
 //             >
 //               <div className="flex items-center gap-2">

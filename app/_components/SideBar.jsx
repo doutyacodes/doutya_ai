@@ -48,7 +48,7 @@ const SideBar = () => {
   // const navLinks = [
   //   { label: "Home", links: "/", icon: FaHome },
   //   // { label: "Search", links: "/search", icon: FaSearch },
-  //   { label: "News", links: "/news-kids", icon: FaNewspaper },
+  //   { label: "News", links: "/kids", icon: FaNewspaper },
   //   // { label: "Learn", links: "/learn", icon: FaBook },
   //   // { label: "Tests", links: "/tests", icon: FaTasks },
   //   // { label: "Activities", links: "/activities", icon: FaTasks },
@@ -60,10 +60,10 @@ const SideBar = () => {
   // ];
   const navLinks = [
     { label: "News", icon: GiPerspectiveDiceFive, links: "/news" },
-    // { label: "News", icon: IoGlobeSharp, links: "/news-kids" },
+    // { label: "News", icon: IoGlobeSharp, links: "/kids" },
     // { label: "Careers", icon: GiBriefcase, links: "/tests" },
     { label: "Magic Box", links: "/search", icon: FaGift  },
-    { label: "Kids News", icon: FaNewspaper, links: "/news-kids" },
+    { label: "Kids News", icon: FaNewspaper, links: "/kids" },
 
     // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
     // { label: "Community", icon: FaPeopleGroup, links: "/communities" },

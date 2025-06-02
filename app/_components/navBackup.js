@@ -43,7 +43,7 @@ const Navbar = () => {
     // { label: "Challenges", icon: IoIosTrophy, links: "/challenges" },
     // { label: "Community", icon: FaPeopleGroup, links: "/communities" },
     { label: "Magic Box", links: "/search", icon: FaGift },
-    { label: "Kids News", icon: FaNewspaper, links: "/news-kids" },
+    { label: "Kids News", icon: FaNewspaper, links: "/kids" },
 
     { label: "Our Story", links: "/our-story", icon: FaInfoCircle },
   ];

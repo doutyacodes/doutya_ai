@@ -27,7 +27,7 @@ const Navbar = () => {
   const selectedAge = getCurrentAge();
   
   // Check if we're in the kids section
-  const isKidsSection = pathname.startsWith("/news-kids");
+  const isKidsSection = pathname.startsWith("/kids");
   // Check if we're in the maps section
   const isMapsSection = pathname.startsWith("/news-maps");
 

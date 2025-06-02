@@ -90,7 +90,7 @@ function NewsArticleSchema({ article }) {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://www.doutya.com/news-kids/${article.id}`
+      '@id': `https://www.doutya.com/kids/${article.id}`
     },
     articleSection: article.categoryNames?.split(',').map(cat => cat.trim())[0] || 'News',
     keywords: article.categoryNames?.split(',').map(cat => cat.trim()).join(', ')
@@ -112,13 +112,13 @@ function BreadcrumbSchema({ article }) {
         '@type': 'ListItem',
         position: 2,
         name: 'News',
-        item: 'https://www.doutya.com/news-kids'
+        item: 'https://www.doutya.com/kids'
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: article.title,
-        item: `https://www.doutya.com/news-kids/${article.id}`
+        item: `https://www.doutya.com/kids/${article.id}`
       }
     ]
   };
@@ -199,7 +199,7 @@ export async function generateMetadata({ params }) {
       openGraph: {
         title: title || 'News Article | Doutya News',
         description: cleanDescription,
-        url: `https://www.doutya.com/news-kids/${id}`,
+        url: `https://www.doutya.com/kids/${id}`,
         type: 'article',
         publishedTime: formattedDate,
         modifiedTime: modifiedDate,
@@ -229,9 +229,9 @@ export async function generateMetadata({ params }) {
         appId: '123456789012345', // Replace with your Facebook App ID
       },
       alternates: {
-        canonical: `https://www.doutya.com/news-kids/${id}`,
+        canonical: `https://www.doutya.com/kids/${id}`,
         languages: {
-          'en-US': `https://www.doutya.com/news-kids/${id}`,
+          'en-US': `https://www.doutya.com/kids/${id}`,
         },
       },
       robots: {

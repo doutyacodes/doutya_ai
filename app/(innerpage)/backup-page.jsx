@@ -1002,7 +1002,7 @@ const Home = () => {
                             className="bg-white rounded-md p-[0.5vh] cursor-pointer flex items-center gap-3 max-md:gap-[1.1vh] w-full shadow-md"
                             onClick={() =>
                               router.push(
-                                `/news-kids/${item.id}`
+                                `/kids/${item.id}`
                               )
                             }
                           >

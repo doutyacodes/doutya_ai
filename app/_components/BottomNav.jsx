@@ -12,8 +12,8 @@ export default function BottomNavigation() {
   function getActiveTabFromPath(path) {
     if (path === '/news' || path.startsWith('/news/')) {
       return '/news';
-    } else if (path === '/news-kids' || path.startsWith('/news-kids/')) {
-      return '/news-kids';
+    } else if (path === '/kids' || path.startsWith('/kids/')) {
+      return '/kids';
     } else if (path === '/news-maps' || path.startsWith('/news-maps/')) {
       return '/news-maps';
     } else if (path === '/hyperlocal/map' || path.startsWith('/hyperlocal/map/')) {
@@ -35,7 +35,7 @@ export default function BottomNavigation() {
     },
     {
       name: 'News for Kids',
-      path: '/news-kids',
+      path: '/kids',
       displayName: ['News for', 'Kids']
     },
     {
@@ -61,9 +61,9 @@ export default function BottomNavigation() {
     if (tabPath === '/news') {
       return pathname === '/news' || pathname.startsWith('/news/');
     }
-    // For news-kids tab
-    else if (tabPath === '/news-kids') {
-      return pathname === '/news-kids' || pathname.startsWith('/news-kids/');
+    // For kids tab
+    else if (tabPath === '/kids') {
+      return pathname === '/kids' || pathname.startsWith('/kids/');
     }
     // For news-map tab
     else if (tabPath === '/news-maps') {

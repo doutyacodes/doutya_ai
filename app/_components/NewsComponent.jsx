@@ -159,7 +159,7 @@ export default function NewsDetails({ id, showNames }) {
     meanings,
     created_at,
   } = article;
-  const shareUrl = `https://www.doutya.com/news-kids/${id}`;
+  const shareUrl = `https://www.doutya.com/kids/${id}`;
 
   const formatDate = (date) => {
     const options = {
@@ -192,7 +192,7 @@ export default function NewsDetails({ id, showNames }) {
         {/* Mobile Back Button - Positioned at the top with proper spacing */}
         {/* <div className="mb-4 md:hidden">
           <button
-            onClick={() => router.push('/news-kids')}
+            onClick={() => router.push('/kids')}
             className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200 text-slate-700"
           >
             <ArrowLeft size={16} strokeWidth={2.5} />
@@ -203,7 +203,7 @@ export default function NewsDetails({ id, showNames }) {
         {/* Desktop Back Button - No longer absolutely positioned */}
         <div className="hidden md:block mb-6">
           <button
-            onClick={() => router.push('/news-kids')}
+            onClick={() => router.push('/kids')}
             className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200 text-slate-700"
           >
             <ArrowLeft size={18} strokeWidth={2} />

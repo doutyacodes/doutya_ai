@@ -111,13 +111,13 @@
       
 //       // // Only show age popup if pathname includes "news" and is not an excluded path
 //       // const shouldShowAgePopup = !storedAge && 
-//       //                           pathname.includes("news-kids") && 
+//       //                           pathname.includes("kids") && 
 //       //                           !isExcludedPath;
 
-//       // const isExcludedPath = (pathname.startsWith("/news") && !pathname.startsWith("/news-kids")) || pathname.startsWith("/news-maps");
+//       // const isExcludedPath = (pathname.startsWith("/news") && !pathname.startsWith("/kids")) || pathname.startsWith("/news-maps");
 
 //       // Only show age popup if user has no stored age and the path is not excluded
-//       const shouldShowAgePopup = !storedAge && pathname.startsWith("/news-kids");
+//       const shouldShowAgePopup = !storedAge && pathname.startsWith("/kids");
       
 //       if (storedAge) {
 //         setSelectedAge(Number(storedAge));
@@ -348,7 +348,7 @@ export const ChildrenProvider = ({ children }) => {
   useEffect(() => {
      if (isAgeLoaded) {
       // Only check for age popup after age has been loaded from localStorage
-      const shouldShowAgePopup = !selectedAge && pathname.startsWith("/news-kids");
+      const shouldShowAgePopup = !selectedAge && pathname.startsWith("/kids");
       
       if (shouldShowAgePopup) {
         setShowAgePopup(true); // Show popup for age selection
