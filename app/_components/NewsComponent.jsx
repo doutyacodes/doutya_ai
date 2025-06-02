@@ -190,7 +190,7 @@ export default function NewsDetails({ id, showNames }) {
 <div className="text-gray-800 relative p-2 pb-8 grid grid-cols-2 gap-2 md:gap-5 max-md:grid-cols-1">
       <div className="w-full relative">
         {/* Mobile Back Button - Positioned at the top with proper spacing */}
-        <div className="mb-4 md:hidden">
+        {/* <div className="mb-4 md:hidden">
           <button
             onClick={() => router.push('/news-kids')}
             className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200 text-slate-700"
@@ -198,7 +198,7 @@ export default function NewsDetails({ id, showNames }) {
             <ArrowLeft size={16} strokeWidth={2.5} />
             <span className="text-sm font-medium">Back to Home</span>
           </button>
-        </div>
+        </div> */}
         
         {/* Desktop Back Button - No longer absolutely positioned */}
         <div className="hidden md:block mb-6">

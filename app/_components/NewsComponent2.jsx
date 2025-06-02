@@ -251,7 +251,7 @@ export default function NewsDetails2({ id, showNames }) {
           <div className="bg-white shadow-md rounded-md border border-slate-200">
             <div className="grid grid-cols-1 gap-2 md:gap-5 relative">
               {/* Improved Back Button for Mobile */}
-              <div className="pt-4 px-4 md:hidden">
+              {/* <div className="pt-4 px-4 md:hidden">
                 <button
                   onClick={() => router.push('/')}
                   className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200 text-slate-700"
@@ -259,7 +259,7 @@ export default function NewsDetails2({ id, showNames }) {
                   <ArrowLeft size={16} strokeWidth={2.5} />
                   <span className="text-sm font-medium">Back to Home</span>
                 </button>
-              </div>
+              </div> */}
               
               {/* Improved Back Button for Desktop */}
               <button

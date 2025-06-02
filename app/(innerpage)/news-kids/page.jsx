@@ -163,9 +163,8 @@ export default function NewsSection() {
   }
 
   return (
-    <div className="p-4 text-gray-800 w-full">
-
-      <div className="w-full bg-gradient-to-r from-blue-400 via-blue-300 to-red-500 mb-4 rounded-lg shadow-md">
+    <>
+      <div className="w-full bg-gradient-to-r from-blue-400 via-blue-300 to-red-500 mb-4 shadow-md">
         <div className="w-full mx-auto px-3 py-3 md:px-4 md:py-4">
           <div className="flex flex-col items-center justify-between">
             {/* Text Section */}
@@ -178,178 +177,170 @@ export default function NewsSection() {
                 Big stories explained simply, just for you!
               </p>
             </div>
-            
-            {/* Small decorative elements visible on larger screens */}
-            <div className="hidden md:flex justify-center mt-1">
-              <div className="flex space-x-3">
-                <div className="w-2 h-2 rounded-full bg-white/80"></div>
-                <div className="w-2 h-2 rounded-full bg-white/80"></div>
-                <div className="w-2 h-2 rounded-full bg-white/80"></div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
-
-      {/* Category Tabs */}
-      <div className="w-full max-w-[90vw] md:max-w-[95vw] mb-3">
-        {showNews && showId ? (
-          <button 
-            onClick={() => {
-              setShowNews(true);
-              setShowId(null);
-              setSearchQuery("");
-            }}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-800 rounded-full hover:bg-red-400"
-          >
-            <HiArrowLeft size={18} />
-            Back to Home
-          </button>
-        ) : (
-          <div className="relative group">
-            {/* Left Arrow */}
-            {showLeftArrow && (
-              <button
-                onClick={() => scroll('left')}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-1 transition-opacity duration-200 focus:outline-none"
-              >
-                <ChevronLeft className="w-4 h-4 text-red-800" />
-              </button>
-            )}
-
-            {/* Right Arrow */}
-            {showRightArrow && (
-              <button
-                onClick={() => scroll('right')}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-1 transition-opacity duration-200 focus:outline-none"
-              >
-                <ChevronRight className="w-4 h-4 text-red-800" />
-              </button>
-            )}
-
-            {/* Main scroll container */}
-            <div 
-              ref={scrollRef}
-              className="flex space-x-1 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
-              onMouseDown={handleMouseDown}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              onMouseMove={handleMouseMove}
-              onScroll={checkScrollButtons}
-              style={{
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                WebkitOverflowScrolling: 'touch'
+      <div className="p-4 text-gray-800 w-full">
+        {/* Category Tabs */}
+        <div className="w-full max-w-[90vw] md:max-w-[95vw] mb-3">
+          {/* {showNews && showId ? (
+            <button 
+              onClick={() => {
+                setShowNews(true);
+                setShowId(null);
+                setSearchQuery("");
               }}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-800 rounded-full hover:bg-red-400"
             >
-              <button
-                onClick={() => setShowSearch((prev) => !prev)}
-                className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-[9px] md:text-sm font-medium rounded-full select-none ${
-                  showSearch
-                    ? "bg-red-800 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-red-400"
-                }`}
-              >
-                Search <HiMagnifyingGlass size={18} />
-              </button>
-              {newsCategories.map((category) => (
+              <HiArrowLeft size={18} />
+              Back to Home
+            </button>
+          ) : ( */}
+            <div className="relative group">
+              {/* Left Arrow */}
+              {showLeftArrow && (
                 <button
-                  key={category.name}
-                  onClick={() => {
-                    setSelectedCategory(category.name);
-                    setShowId(null);
-                    setShowNews(false);
-                    setSearchQuery("");
-                  }}
-                  className={`whitespace-nowrap px-3 py-2 text-[9px] md:text-sm font-medium rounded-full select-none ${
-                    selectedCategory === category.name
+                  onClick={() => scroll('left')}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-1 transition-opacity duration-200 focus:outline-none"
+                >
+                  <ChevronLeft className="w-4 h-4 text-red-800" />
+                </button>
+              )}
+
+              {/* Right Arrow */}
+              {showRightArrow && (
+                <button
+                  onClick={() => scroll('right')}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-md rounded-full p-1 transition-opacity duration-200 focus:outline-none"
+                >
+                  <ChevronRight className="w-4 h-4 text-red-800" />
+                </button>
+              )}
+
+              {/* Main scroll container */}
+              <div 
+                ref={scrollRef}
+                className="flex space-x-1 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing"
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onMouseMove={handleMouseMove}
+                onScroll={checkScrollButtons}
+                style={{
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch'
+                }}
+              >
+                <button
+                  onClick={() => setShowSearch((prev) => !prev)}
+                  className={`whitespace-nowrap flex gap-2 items-center px-3 py-2 text-[9px] md:text-sm font-medium rounded-full select-none ${
+                    showSearch
                       ? "bg-red-800 text-white"
                       : "bg-gray-100 text-gray-700 hover:bg-red-400"
                   }`}
                 >
-                  {category.name}
+                  Search <HiMagnifyingGlass size={18} />
                 </button>
-              ))}
+                {newsCategories.map((category) => (
+                  <button
+                    key={category.name}
+                    onClick={() => {
+                      setSelectedCategory(category.name);
+                      setShowId(null);
+                      setShowNews(false);
+                      setSearchQuery("");
+                    }}
+                    className={`whitespace-nowrap px-3 py-2 text-[9px] md:text-sm font-medium rounded-full select-none ${
+                      selectedCategory === category.name
+                        ? "bg-red-800 text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-red-400"
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-       )}
-      </div>
+        {/* // )} */}
+        </div>
 
-      {showSearch && (
-        <>
-          {/* Search Bar */}
+        {showSearch && (
+          <>
+            {/* Search Bar */}
+            <motion.div
+              className="w-full mb-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <input
+                type="text"
+                placeholder="Search news..."
+                className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-800"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </motion.div>
+          </>
+        )}
+        {/* Top News Section */}
+        {!showNews && !showId && selectedRegion&& currentTopNews.length > 0 && (
           <motion.div
-            className="w-full mb-6"
+            className={cn(
+              "grid grid-cols-1 py-4 gap-4",
+              currentTopNews.length >= 2 && "md:grid-cols-2"
+            )}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.8 }}
           >
-            <input
-              type="text"
-              placeholder="Search news..."
-              className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-800"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </motion.div>
-        </>
-      )}
-      {/* Top News Section */}
-      {!showNews && !showId && selectedRegion&& currentTopNews.length > 0 && (
-        <motion.div
-          className={cn(
-            "grid grid-cols-1 py-4 gap-4",
-            currentTopNews.length >= 2 && "md:grid-cols-2"
-          )}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-        >
-          {currentTopNews.map((article) => (
-            <NewsData
-              article={article}
-              setShowId={setShowId}
-              setShowNames={setShowNames}
-              setShowNews={setShowNews}
-              key={article.id}
-              size={true}
-              regionId={selectedRegion}
-              getCategoryNamesByIds={getCategoryNamesByIds}
-            />
-          ))}
-        </motion.div>
-      )}
-
-      {/* News Cards */}
-      {showNews && showId ? (
-        <NewsDetails showNames={showNames} id={showId} />
-      ) : (
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  mx-auto gap-6  md:mt-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          key={selectedCategory}
-          transition={{ duration: 0.8 }}
-        >
-          {filteredNews.length > 0 && selectedRegion ? (
-            filteredNews.map((article) => (
+            {currentTopNews.map((article) => (
               <NewsData
                 article={article}
                 setShowId={setShowId}
                 setShowNames={setShowNames}
                 setShowNews={setShowNews}
                 key={article.id}
+                size={true}
                 regionId={selectedRegion}
+                getCategoryNamesByIds={getCategoryNamesByIds}
               />
-            ))
-          ) : (
-            <p className="text-center col-span-full text-gray-600">
-              No news found.
-            </p>
-          )}
-        </motion.div>
-      )}
-    </div>
+            ))}
+          </motion.div>
+        )}
+
+        {/* News Cards */}
+        {showNews && showId ? (
+          <NewsDetails showNames={showNames} id={showId} />
+        ) : (
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  mx-auto gap-6  md:mt-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            key={selectedCategory}
+            transition={{ duration: 0.8 }}
+          >
+            {filteredNews.length > 0 && selectedRegion ? (
+              filteredNews.map((article) => (
+                <NewsData
+                  article={article}
+                  setShowId={setShowId}
+                  setShowNames={setShowNames}
+                  setShowNews={setShowNews}
+                  key={article.id}
+                  regionId={selectedRegion}
+                />
+              ))
+            ) : (
+              <p className="text-center col-span-full text-gray-600">
+                No news found.
+              </p>
+            )}
+          </motion.div>
+        )}
+      </div>
+    </>
   );
 }
 

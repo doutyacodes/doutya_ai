@@ -173,42 +173,29 @@ export default function NewsSection() {
   }
 
   return (
-    <div className="p-4 text-gray-800 w-full">
-      <div className="w-full bg-gradient-to-r from-red-800 via-red-700 to-red-800 mb-4">
-        <div className="w-full mx-auto px-3 py-3 md:px-4 md:py-3">
-          <div className="flex flex-col  items-center justify-between">
-            {/* Text Section */}
-            <div className="text-white space-y-1 md:space-y-3 ">
-              <h1 className="text-base md:text-3xl font-bold text-center">
-                One News, Different Perspectives
-              </h1>
-              <p className="text-[9px] md:text-lg text-center text-white/90">
-              View all sides of the story to get the full picture.
-              </p>
-            </div>
-
-            {/* Right section - only visible on desktop */}
-            {/* <div className="hidden md:block md:w-1/2">
-          </div> */}
+  <> 
+    <div className="w-full bg-gradient-to-r from-red-800 via-red-700 to-red-800 mb-4">
+      <div className="w-full mx-auto px-3 py-3 md:px-4 md:py-3">
+        <div className="flex flex-col  items-center justify-between">
+          {/* Text Section */}
+          <div className="text-white space-y-1 md:space-y-3 ">
+            <h1 className="text-base md:text-3xl font-bold text-center">
+              One News, Different Perspectives
+            </h1>
+            <p className="text-[9px] md:text-lg text-center text-white/90">
+            View all sides of the story to get the full picture.
+            </p>
           </div>
+
+          {/* Right section - only visible on desktop */}
+          {/* <div className="hidden md:block md:w-1/2">
+        </div> */}
         </div>
       </div>
-
+    </div>
+    <div className="p-4 text-gray-800 w-full">
       {/* Category Tabs */}
       <div className="w-full max-w-[90vw] md:max-w-[95vw] mb-3">
-        {showNews && showId ? (
-          <button 
-            onClick={() => {
-              setShowNews(true);
-              setShowId(null);
-              setSearchQuery("");
-            }}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-red-400"
-          >
-            <HiArrowLeft size={18} />
-            Back to Home
-          </button>
-        ) : (
           <div className="relative group">
             {/* Left Arrow */}
             {showLeftArrow && (
@@ -275,7 +262,6 @@ export default function NewsSection() {
               ))}
             </div>
           </div>
-        )}
       </div>
 
       {showSearch && (
@@ -350,5 +336,6 @@ export default function NewsSection() {
         </motion.div>
       )}
     </div>
+  </>
   );
 }

@@ -11,26 +11,26 @@ const SocialMediaNav = () => {
           //     // color: 'bg-orange-600 hover:bg-orange-700'
           //     color: 'hover:bg-blue-600'
           // },
-          {
-              name: 'Threads',
-              icon: FaThreads,
-              href: 'https://www.threads.net/@axaranews',
-              color: 'hover:bg-black'
-          },
-          {
-              name: 'Instagram',
-              icon: FaInstagram,
-              href: 'https://www.instagram.com/axaranews/',
-              // color: 'bg-orange-600 hover:bg-orange-700'
-              color: 'hover:bg-pink-600'
-          },
-          {
-              name: 'X',
-              icon: FaXTwitter,
-              href: 'https://x.com/AxaraNews',
-              // color: 'bg-orange-600 hover:bg-orange-700'
-              color: 'hover:bg-black'
-          },
+          // {
+          //     name: 'Threads',
+          //     icon: FaThreads,
+          //     href: 'https://www.threads.net/@axaranews',
+          //     color: 'hover:bg-black'
+          // },
+          // {
+          //     name: 'Instagram',
+          //     icon: FaInstagram,
+          //     href: 'https://www.instagram.com/axaranews/',
+          //     // color: 'bg-orange-600 hover:bg-orange-700'
+          //     color: 'hover:bg-pink-600'
+          // },
+          // {
+          //     name: 'X',
+          //     icon: FaXTwitter,
+          //     href: 'https://x.com/AxaraNews',
+          //     // color: 'bg-orange-600 hover:bg-orange-700'
+          //     color: 'hover:bg-black'
+          // },
           {
               name: 'LinkedIn',
               icon: FaLinkedinIn,

@@ -66,21 +66,13 @@ const Navbar = () => {
             <div className="absolute right-3 -top-2 w-4 h-4 bg-white transform rotate-45 border-l border-t border-black/5" />
             
             <div className="relative bg-white rounded-lg">
-              <Link 
+              {/* <Link 
                 href="/newstech"
                 className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
               >
                 <Newspaper className="w-4 h-4" />
                 <span className="font-medium">NewsTech</span>
-              </Link>
-
-              <Link 
-                href="/hyperlocal"
-                className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
-              >
-                <PenLine className="w-4 h-4" />
-                <span className="font-medium">Be A Creator</span>
-              </Link>
+              </Link> */}
 
               <Link 
                 href="/about-us"
@@ -120,27 +112,27 @@ const Navbar = () => {
       <div className="relative">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-400 text-red-800 hover:border-red-500 hover:text-red-900 transition-all duration-200"
+          className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-full  text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-all duration-300 hover:border-transparent group"
         >
-          <span className="text-sm font-medium">Age: {selectedAge}</span>
+          <span className="text-xs md:text-sm font-medium group-hover:text-gray-800">Age: {selectedAge}</span>
           <ChevronDown 
-            className={`w-4 h-4 transition-transform duration-200 ${
+            className={`w-3 h-3 md:w-4 md:h-4 text-gray-600 group-hover:text-gray-800 transition-all duration-300 ${
               isDropdownOpen ? 'rotate-180' : ''
             }`}
           />
         </button>
-  
+
         {isDropdownOpen && (
-          <div className="absolute left-0 mt-2 w-32 bg-white rounded-lg shadow-lg py-2 z-50 transform opacity-100 scale-100 transition-all duration-200 origin-top-left ring-1 ring-black ring-opacity-5">
-            <div className="absolute left-3 -top-2 w-4 h-4 bg-white transform rotate-45 border-l border-t border-black/5" />
+          <div className="absolute left-0 mt-1 md:mt-2 w-24 md:w-32 bg-white rounded-lg shadow-lg py-1 md:py-2 z-50 transform opacity-100 scale-100 transition-all duration-200 origin-top-left ring-1 ring-black ring-opacity-5">
+            <div className="absolute left-2 md:left-3 -top-2 w-4 h-4 bg-white transform rotate-45 border-l border-t border-black/5" />
             
-            <div className="relative bg-white rounded-lg max-h-48 overflow-y-auto">
+            <div className="relative bg-white rounded-lg max-h-32 md:max-h-48 overflow-y-auto">
               {ages.map((age) => (
                 <button
                   key={age}
                   onClick={() => handleAgeChange(age.toString())}
-                  className={`w-full text-left flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200 ${
-                    selectedAge === age.toString() ? 'bg-red-200 text-red-800 font-semibold' : 'hover:bg-red-100 hover:text-red-700'
+                  className={`w-full text-left flex items-center gap-2 px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition-colors duration-200 ${
+                    selectedAge === age.toString() ? 'bg-gray-200 text-gray-800 font-semibold' : 'hover:bg-gray-100 hover:text-gray-700'
                   }`}
                 >
                   <span>{age}</span>
@@ -153,53 +145,53 @@ const Navbar = () => {
     );
   };
   
-// Function to determine which logo to show in the center
-const getMainLogo = () => {
-  // Check if we're in the hyperlocal section  
-  if (isHyperlocalSection) {
-    return (
-      <div className="flex flex-col items-center">
-        <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
-          <Image
-            src="/images/hyperlocal.png"
-            fill
-            objectFit="contain"
-            alt="Hyperlocal logo"
-            className="object-center"
-          />
+  // Function to determine which logo to show in the center
+  const getMainLogo = () => {
+    // Check if we're in the hyperlocal section  
+    if (isHyperlocalSection) {
+      return (
+        <div className="flex flex-col items-center">
+          <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
+            <Image
+              src="/images/hyperlocal.png"
+              fill
+              objectFit="contain"
+              alt="Hyperlocal logo"
+              className="object-center"
+            />
+          </div>
         </div>
+      );
+    }
+    
+    if (isMapsSection) {
+      return (
+        <div className="flex flex-col items-center">
+          <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
+            <Image
+              src="/images/newsmap.png"
+              fill
+              objectFit="contain"
+              alt="Doutya logo"
+              className="object-center"
+            />
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
+        <Image
+          src={isKidsSection ? "/images/logo5.png" : "/images/logo2.png"}
+          fill
+          objectFit="contain"
+          alt={isKidsSection ? "Doutya Kids logo" : "Doutya logo"}
+          className="object-center"
+        />
       </div>
     );
-  }
-  
-  if (isMapsSection) {
-    return (
-      <div className="flex flex-col items-center">
-        <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
-          <Image
-            src="/images/newsmap.png"
-            fill
-            objectFit="contain"
-            alt="Doutya logo"
-            className="object-center"
-          />
-        </div>
-      </div>
-    );
-  }
-  
-  return (
-    <div className="relative h-[7.6vh] w-[35vw] md:h-[9vh] md:w-[20vw]">
-      <Image
-        src={isKidsSection ? "/images/logo5.png" : "/images/logo2.png"}
-        fill
-        objectFit="contain"
-        alt={isKidsSection ? "Doutya Kids logo" : "Doutya logo"}
-        className="object-center"
-      />
-    </div>
-  );
-};
+  };
   
   return (
     <>
@@ -222,7 +214,7 @@ const getMainLogo = () => {
               {/* Mobile Age Selector - Left of Logo */}
               <div className="md:hidden absolute left-0">
                 {!isKidsSection && (
-                  <div className="text-gray-700 font-medium text-xs">
+                  <div className="text-gray-700 font-medium text-[10px]">
                     {getCurrentDate()}
                   </div>
                 )}
@@ -237,9 +229,9 @@ const getMainLogo = () => {
               <div className="md:hidden absolute right-0">
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="bg-red-900 text-white p-1.5 rounded-full shadow-md hover:bg-red-800 transition-colors duration-200 w-8 h-8 flex items-center justify-center"
+                  className="text-white p-1.5 transition-colors duration-200 w-8 h-8 flex items-center justify-center"
                 >
-                  <Menu size={18} />
+                  <Menu size={18} className="text-red-900 hover:text-red-800" />
                 </button>
                 <FloatingBubbleNav showMenu={isMobileMenuOpen} setShowMenu={setIsMobileMenuOpen} />
               </div>

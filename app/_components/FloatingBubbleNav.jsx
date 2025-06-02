@@ -12,24 +12,24 @@ function FloatingBubbleNav({ showMenu, setShowMenu }) {
     const setIsMobileMenuOpen = setShowMenu || setIsLocalMenuOpen;
 
     const socialLinks = [
-        {
-            name: 'Threads',
-            icon: FaThreads,
-            href: 'https://www.threads.net/@axaranews',
-            color: 'hover:bg-black'
-        },
-        {
-            name: 'Instagram',
-            icon: FaInstagram,
-            href: 'https://www.instagram.com/axaranews/',
-            color: 'hover:bg-pink-600'
-        },
-        {
-            name: 'X',
-            icon: FaXTwitter,
-            href: 'https://x.com/AxaraNews',
-            color: 'hover:bg-black'
-        },
+        // {
+        //     name: 'Threads',
+        //     icon: FaThreads,
+        //     href: 'https://www.threads.net/@axaranews',
+        //     color: 'hover:bg-black'
+        // },
+        // {
+        //     name: 'Instagram',
+        //     icon: FaInstagram,
+        //     href: 'https://www.instagram.com/axaranews/',
+        //     color: 'hover:bg-pink-600'
+        // },
+        // {
+        //     name: 'X',
+        //     icon: FaXTwitter,
+        //     href: 'https://x.com/AxaraNews',
+        //     color: 'hover:bg-black'
+        // },
         {
             name: 'LinkedIn',
             icon: FaLinkedinIn,
@@ -49,16 +49,16 @@ function FloatingBubbleNav({ showMenu, setShowMenu }) {
           href: '/contact-us',
           icon: PhoneCall,
         },
-        { 
-          name: 'NewsTech', 
-          href: '/newstech',
-          icon: Newspaper,
-        },
-        { 
-          name: 'Be A Creator', 
-          href: '/hyperlocal',
-          icon: PenLine,
-        }
+        // { 
+        //   name: 'NewsTech', 
+        //   href: '/newstech',
+        //   icon: Newspaper,
+        // },
+        // { 
+        //   name: 'Be A Creator', 
+        //   href: '/hyperlocal',
+        //   icon: PenLine,
+        // }
     ];
 
     // Only show the floating button if not controlled by parent
@@ -68,7 +68,7 @@ function FloatingBubbleNav({ showMenu, setShowMenu }) {
         <>
             {/* Overlay */}
             <div 
-                className={`md:hidden fixed inset-0 bg-black/50 transition-opacity duration-300 z-40 ${
+                className={`md:hidden absolute inset-0 bg-black/50 transition-opacity duration-300 z-40 ${
                     isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
