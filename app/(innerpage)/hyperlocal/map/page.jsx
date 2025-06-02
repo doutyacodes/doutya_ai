@@ -290,7 +290,7 @@ const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, i
 //   const router = useRouter();
 
 //   const handleCreatorClick = () => {
-//     router.push('/nearby-news');
+//     router.push('/hyperlocal');
 //   };
 
 //   if (isMobile) {
@@ -352,7 +352,7 @@ const CreatorButton = ({ buttonStyle }) => {
   const router = useRouter();
 
   const handleCreatorClick = () => {
-    router.push('/nearby-news');
+    router.push('/hyperlocal');
   };
 
   return (
@@ -663,8 +663,8 @@ const restrictMapBounds = useCallback(() => {
 
   // Open article in new tab
   const openArticle = (id) => {
-    window.open(`/nearby-news/article/${id}`, '_blank');
-    // router.push(`/nearby-news/article/${id}`);
+    window.open(`/hyperlocal/article/${id}`, '_blank');
+    // router.push(`/hyperlocal/article/${id}`);
   };
 
       // Handle allow button click in modal
@@ -677,7 +677,7 @@ const restrictMapBounds = useCallback(() => {
   // In your existing map page component:
 const handleNavigateToCreator = () => {
   // Navigate to your creator page
-  router.push('/nearby-news');
+  router.push('/hyperlocal');
 };
 
   // Add this component inside your NewsMap function 
@@ -940,7 +940,7 @@ const handleNavigateToCreator = () => {
     {/* Creator Button - Desktop only, hidden on mobile when filter expanded */}
     {!isMobile && (
       <button 
-        onClick={() => router.push('/nearby-news')}
+        onClick={() => router.push('/hyperlocal')}
         className="bg-red-800 hover:bg-red-900 text-white shadow-md rounded-lg p-2 transition-colors duration-200 flex items-center justify-center"
         style={buttonStyle}
       >
@@ -977,7 +977,7 @@ const handleNavigateToCreator = () => {
   {/* Mobile Creator Button - Below filter button, hidden when filter expanded */}
   {isMobile && !isFilterExpanded && (
     <button 
-      onClick={() => router.push('/nearby-news')}
+      onClick={() => router.push('/hyperlocal')}
       className="bg-red-800 hover:bg-red-900 text-white shadow-md rounded-lg p-2 transition-colors duration-200 flex items-center justify-center w-full"
       style={buttonStyle}
     >

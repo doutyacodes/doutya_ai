@@ -183,7 +183,7 @@ export default function EditNewsPage({ params }) {
       }
       
       // Redirect to the news listing page on success
-      router.push('/news-map');
+      router.push('/newsonmap');
       
     } catch (err) {
       setError(err.message);

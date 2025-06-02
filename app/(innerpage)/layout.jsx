@@ -23,7 +23,7 @@ const ProtectLayout = ({ children }) => {
   }, [pathname]);
 
   return (
-    <ProtectedRoute allowedRoutes={["/","/search", "/our-story","/our-features","/about-us", "/contact-us", "/kids", "news-map", "/testing3","/news", "/newstech", "/landing"]}>
+    <ProtectedRoute allowedRoutes={["/","/search", "/our-story","/our-features","/about-us", "/contact-us", "/kids", "newsonmap", "/testing3","/news", "/newstech", "/landing"]}>
       <ChildrenProvider>
         <div className="relative min-h-screen flex bg-white">
           {/* <SideBar /> */}
