@@ -24,7 +24,7 @@ const Nav = () => {
   // Check if we're in the kids section
   const isKidsSection = pathname.startsWith("/kids");
   // Check if we're in the maps section
-  const isMapsSection = pathname.startsWith("/news-maps");
+  const isMapsSection = pathname.startsWith("/newsonmap");
 
 const NavDropdownAlt = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);

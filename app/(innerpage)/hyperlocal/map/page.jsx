@@ -698,7 +698,7 @@ const handleNavigateToCreator = () => {
           
           if (timeLeft <= 0) {
             clearInterval(timer);
-            router.push('/news-maps');
+            router.push('/newsonmap');
           }
         }, 1000);
         

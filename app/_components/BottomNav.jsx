@@ -14,8 +14,8 @@ export default function BottomNavigation() {
       return '/news';
     } else if (path === '/kids' || path.startsWith('/kids/')) {
       return '/kids';
-    } else if (path === '/news-maps' || path.startsWith('/news-maps/')) {
-      return '/news-maps';
+    } else if (path === '/newsonmap' || path.startsWith('/newsonmap/')) {
+      return '/newsonmap';
     } else if (path === '/hyperlocal/map' || path.startsWith('/hyperlocal/map/')) {
       return '/hyperlocal/map';
     }
@@ -40,7 +40,7 @@ export default function BottomNavigation() {
     },
     {
       name: 'News on Map',
-      path: '/news-maps',
+      path: '/newsonmap',
       displayName: ['News on', 'Map']
     },
     {
@@ -66,8 +66,8 @@ export default function BottomNavigation() {
       return pathname === '/kids' || pathname.startsWith('/kids/');
     }
     // For news-map tab
-    else if (tabPath === '/news-maps') {
-      return pathname === '/news-maps' || pathname.startsWith('/news-maps/');
+    else if (tabPath === '/newsonmap') {
+      return pathname === '/newsonmap' || pathname.startsWith('/newsonmap/');
     }
     // For hyperlocal map tab
     else if (tabPath === '/hyperlocal/map') {
