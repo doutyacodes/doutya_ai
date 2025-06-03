@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Upload, Loader2, AlertCircle, MapPin, X } from 'lucide-react';
 import Link from 'next/link';
 import useAuthRedirect from '../_component/useAuthRedirect';
+import RestrictedMapLocationPicker from '../_component/RestrictedMapLocationPicker';
 
 export default function CreateNewsPage() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function CreateNewsPage() {
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
+  const [isLocationValid, setIsLocationValid] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
 
   useAuthRedirect();
@@ -150,6 +152,17 @@ useEffect(() => {
     return deg * (Math.PI/180);
   };
 
+  const handleLocationChange = (lat, lng) => {
+      setFormData(prev => ({
+          ...prev,
+          latitude: lat,
+          longitude: lng
+      }));
+      
+      // Update validation state
+      setIsLocationValid(lat !== '' && lng !== '');
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -215,6 +228,12 @@ useEffect(() => {
       setFormSubmitting(false);
       setShowLocationPrompt(true);
       return;
+    }
+
+    if (!isLocationValid || !formData.latitude || !formData.longitude) {
+        setError('Please select a valid location within the allowed radius before submitting.');
+        setFormSubmitting(false);
+        return;
     }
     
     // Check if news location is within 10km of user's location
@@ -428,7 +447,7 @@ useEffect(() => {
               </div>
               
               {/* Location */}
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Location <MapPin className="h-4 w-4 inline text-red-800 ml-1" />
                 </label>
@@ -474,7 +493,14 @@ useEffect(() => {
                     />
                   </div>
                 </div>
-              </div>
+              </div> */}
+
+              <RestrictedMapLocationPicker
+                  latitude={formData.latitude}
+                  longitude={formData.longitude}
+                  onLocationChange={handleLocationChange}
+                  radiusKm={10} // 10km radius - you can adjust this
+              />
               
               {/* Category */}
                 <div>

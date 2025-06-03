@@ -4,6 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Upload, Loader2, AlertCircle, MapPin } from 'lucide-react';
 import Link from 'next/link';
+import MapLocationPicker from '@/app/newstech/_components/MapLocationPicker';
 
 export default function EditNewsPage({ params }) {
   const unwrappedParams = use(params);  // Unwrap the params Promise
@@ -289,20 +290,28 @@ const handleDeleteCustomSource = async () => {
     setSourceActionLoading(false);
   }
 };
-  
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      const previewUrl = URL.createObjectURL(selectedFile);
-      setFilePreview(previewUrl);
-    }
-  };
+const handleLocationChange = (lat, lng) => {
+  setFormData(prev => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng
+  }));
+};
+
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+  setFormData(prev => ({ ...prev, [name]: value }));
+};
+
+const handleFileChange = (e) => {
+  const selectedFile = e.target.files[0];
+  if (selectedFile) {
+    setFile(selectedFile);
+    const previewUrl = URL.createObjectURL(selectedFile);
+    setFilePreview(previewUrl);
+  }
+};
 
   console.log("formData", formData)
 
@@ -779,7 +788,7 @@ const handleDeleteCustomSource = async () => {
               </div>
                             
               {/* Location */}
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Location <MapPin className="h-4 w-4 inline text-red-800 ml-1" />
                 </label>
@@ -817,7 +826,13 @@ const handleDeleteCustomSource = async () => {
                     />
                   </div>
                 </div>
-              </div>
+              </div> */}
+
+              <MapLocationPicker
+                  latitude={formData.latitude}
+                  longitude={formData.longitude}
+                  onLocationChange={handleLocationChange}
+              />
               
               {/* Category */}
               <div>

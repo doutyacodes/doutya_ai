@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Upload, Loader2, AlertCircle, MapPin } from 'lucide-react';
 import Link from 'next/link';
+import MapLocationPicker from '../../_components/MapLocationPicker';
 
 export default function CreateNewsPage() {
   const router = useRouter();
@@ -280,6 +281,13 @@ export default function CreateNewsPage() {
     }
   };
 
+  const handleLocationChange = (lat, lng) => {
+    setFormData(prev => ({
+        ...prev,
+        latitude: lat,
+        longitude: lng
+    }));
+  };
 
 const handleSubmit = async (e) => {
     e.preventDefault();
@@ -657,7 +665,7 @@ const handleSubmit = async (e) => {
               </div>
 
               {/* Location */}
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Location <MapPin className="h-4 w-4 inline text-red-800 ml-1" />
                 </label>
@@ -695,7 +703,13 @@ const handleSubmit = async (e) => {
                     />
                   </div>
                 </div>
-              </div>
+              </div> */}
+
+              <MapLocationPicker
+                  latitude={formData.latitude}
+                  longitude={formData.longitude}
+                  onLocationChange={handleLocationChange}
+              />
               
               {/* Category */}
               <div>
