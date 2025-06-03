@@ -357,7 +357,7 @@ const MapLocationPicker = ({
           <li>Type in the search box to see location suggestions</li>
           <li>Click anywhere on the map to place a marker</li>
           <li>Drag the marker to fine-tune the location</li>
-          <li>Use "Current Location" to auto-detect your position</li>
+          <li>Use &quot;Current Location&quot; to auto-detect your position</li>
         </ul>
       </div>
     </div>
