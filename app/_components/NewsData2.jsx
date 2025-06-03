@@ -286,24 +286,6 @@ const NewsData2 = ({
             !size ? "h-48" : "h-48 md:h-80  md:w-2/4"
           )}
         >
-          {/* <Image
-            src={`https://wowfy.in/testusr/images/${article.image_url}`}
-            alt={article.title}
-            width={size ? 1000 : 400}
-            height={size ? 500 : 300}
-            className={cn(
-              "w-full h-full object-cover  max-md:rounded-md",
-              size && "md:rounded-lg"
-            )}
-            // onClick={() => {
-            //   setShowId(article.id);
-            //   setShowNames(article.categoryNames);
-            //   setShowNews(true);
-            // }}
-            onClick={() => {
-              router.push(`/news/${article.id}`);
-            }}
-          /> */}
 
           {article.media_type === 'video' ? (
             <video 
@@ -376,14 +358,6 @@ const NewsData2 = ({
             )}
           >
             {/* Title */}
-            {/* <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.5 }}
-              className="scrollable-container"
-            > */}
             <motion.div
               key={currentIndex}
               initial={{ opacity: 0, x: 100 }}
@@ -397,11 +371,6 @@ const NewsData2 = ({
               }}
               className="scrollable-container"
             >
-              {/* <span className=" text-xs flex items-center font-semibold text-orange-500 ">
-                <GrFormView size={18} />
-                {allArticles[currentIndex]?.viewpoint || article.viewpoint}{" "}
-                Viewpoint
-              </span> */}
               <span className={cn(
                 "text-xs flex items-center font-semibold",
                 getViewpointColor(currentIndex, 'text')
@@ -411,11 +380,6 @@ const NewsData2 = ({
               </span>
               
               <h3
-                // onClick={() => {
-                //   setShowId(article.id);
-                //   setShowNames(article.categoryNames);
-                //   setShowNews(true);
-                // }}
                 onClick={() => {
                   router.push(`/news/${article.id}`);
                 }}
