@@ -58,7 +58,7 @@ export default function AdminNewsPage() {
     try {
       const res = await fetch(`/api/hyperlocal/${newsToDelete.id}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('user_token')}`
         },
         method: 'DELETE',
       });
