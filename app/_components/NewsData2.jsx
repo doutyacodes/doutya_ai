@@ -276,10 +276,9 @@ const NewsData2 = ({
         <p className="text-[10px] md:text-xs text-black text-nowrap font-medium bg-opacity-80 py-2 rounded-md">
           <span className="flex gap-[3px] items-center overflow-x-auto w-full">
             <span className="font-bold"> Perspectives of </span>:{" "}
-            {article.viewpoints.replace(/,/g, ", ")}
+            {article.viewpoints.split(',').reverse().join(', ')}
           </span>
         </p>
-
         <div
           className={cn(
             "relative  w-full",
