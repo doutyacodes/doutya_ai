@@ -500,6 +500,7 @@ useEffect(() => {
                   longitude={formData.longitude}
                   onLocationChange={handleLocationChange}
                   radiusKm={10} // 10km radius - you can adjust this
+                  isReadOnly={false}
               />
               
               {/* Category */}

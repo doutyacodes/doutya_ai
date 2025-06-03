@@ -7,7 +7,8 @@ const RestrictedMapLocationPicker = ({
   longitude, 
   onLocationChange, 
   className = "",
-  radiusKm = 10 // Default 10km radius
+  radiusKm = 10, // Default 10km radius
+  isReadOnly = false // Add this new prop
 }) => {
   const [userCurrentLocation, setUserCurrentLocation] = useState(null);
   const [isGettingLocation, setIsGettingLocation] = useState(true);
@@ -46,15 +47,17 @@ const RestrictedMapLocationPicker = ({
   };
   
   const mapOptions = {
-    disableDefaultUI: false,
+    disableDefaultUI: isReadOnly,
+    gestureHandling: isReadOnly ? 'none' : 'greedy',
+    clickableIcons: !isReadOnly,
     zoomControl: true,
     streetViewControl: false,
     mapTypeControl: true,
     fullscreenControl: false,
-    gestureHandling: 'greedy',
-    clickableIcons: true,
+    gestureHandling: '',
     draggableCursor: 'default',
     draggingCursor: 'default',
+    disableDoubleClickZoom: isReadOnly,
     restriction: null, // Will be set dynamically
     styles: [
       {
@@ -453,55 +456,70 @@ const RestrictedMapLocationPicker = ({
       )}
       
       {/* Search Controls */}
-    <div className="flex flex-col sm:flex-row gap-2">
-    <div className="flex-1 relative">
-        {isGoogleMapsLoaded ? (
-        <Autocomplete
-            onLoad={onAutocompleteLoad}
-            onPlaceChanged={onPlaceChanged}
-            options={{
-            bounds: userCurrentLocation ? {
-                north: userCurrentLocation.lat + 0.1,
-                south: userCurrentLocation.lat - 0.1,
-                east: userCurrentLocation.lng + 0.1,
-                west: userCurrentLocation.lng - 0.1
-            } : undefined,
-            strictBounds: false
-            }}
-        >
-            <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={`Search within ${radiusKm}km of your location...`}
-            className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
-            />
-        </Autocomplete>
-        ) : (
-        <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Loading map services..."
-            className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
-            disabled
-        />
-        )}
-        
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
-        {searchQuery && (
-            <button
-            type="button"
-            onClick={clearSearch}
-            className="text-gray-400 hover:text-gray-600 p-1"
-            title="Clear search"
+      <div className="flex flex-col sm:flex-row gap-2">
+        <div className="flex-1 relative">
+            {isGoogleMapsLoaded ? (
+            <Autocomplete
+                onLoad={onAutocompleteLoad}
+                onPlaceChanged={onPlaceChanged}
+                options={{
+                bounds: userCurrentLocation ? {
+                    north: userCurrentLocation.lat + 0.1,
+                    south: userCurrentLocation.lat - 0.1,
+                    east: userCurrentLocation.lng + 0.1,
+                    west: userCurrentLocation.lng - 0.1
+                } : undefined,
+                strictBounds: false
+                }}
             >
-            <X className="h-3 w-3" />
-            </button>
-        )}
+                <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={isReadOnly ? "Location editing disabled" : `Search within ${radiusKm}km of your location...`}
+                className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                disabled={!isGoogleMapsLoaded || isReadOnly} // Add isReadOnly condition
+                />
+            </Autocomplete>
+            ) : (
+            <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Loading map services..."
+                className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                disabled
+            />
+            )}
+            
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+            {searchQuery && (
+                <button
+                type="button"
+                onClick={clearSearch}
+                className="text-gray-400 hover:text-gray-600 p-1"
+                title="Clear search"
+                >
+                <X className="h-3 w-3" />
+                </button>
+            )}
+            </div>
         </div>
-    </div>
-    </div>
+      </div>
+
+        {/* Read-only notice for edit mode */}
+        {isReadOnly && (
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-md text-sm mb-4">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4" />
+              <span>
+                Location cannot be changed in edit mode. If you need to change the location, 
+                please delete this article and create a new one.
+              </span>
+            </div>
+          </div>
+        )}
+
       {/* Map Container */}
       <div className="border border-gray-300 rounded-lg overflow-hidden shadow-sm">
         <LoadScriptNext
@@ -514,9 +532,9 @@ const RestrictedMapLocationPicker = ({
             ref={mapRef}
             mapContainerStyle={mapContainerStyle}
             center={mapCenter}
-            zoom={15}
+            zoom={11}
             options={mapOptions}
-            onClick={handleMapClick}
+            onClick={isReadOnly ? undefined : handleMapClick}
             onLoad={() => setIsMapLoaded(true)}
           >
             {/* User's current location marker */}
