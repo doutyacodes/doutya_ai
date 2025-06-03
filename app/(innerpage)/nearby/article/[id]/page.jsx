@@ -100,12 +100,13 @@ export default function ArticlePage() {
       </div>
       
       {/* Article Content */}
+      {/* Article Content */}
       <div className="prose prose-lg max-w-none">
-        <div
-          className="text-justify"
-          dangerouslySetInnerHTML={{ __html: article.content }}
-        />
+        {article.content.split('\n').map((paragraph, index) => (
+          <p key={index}>{paragraph}</p>
+        ))}
       </div>
+
       
       {/* Article Category */}
       {article.category_name && (

@@ -130,7 +130,7 @@ const RestrictedMapLocationPicker = ({
             setLocationError(null);
             
             // If there's already a marker position, validate it
-            if (markerPosition) {
+            if (markerPosition && userCurrentLocation) {
               const isValid = validatePosition(markerPosition.lat, markerPosition.lng);
               setIsWithinRadius(isValid);
               if (!isValid) {
