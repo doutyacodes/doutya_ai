@@ -116,7 +116,7 @@ export default function NewPage() {
 
   return (
     <>
-      <div className="w-full bg-gradient-to-r from-blue-400 via-blue-300 to-red-500 mb-4 shadow-md">
+      <div className="w-full bg-gradient-to-r from-blue-400 via-blue-300 to-red-500 shadow-md">
         <div className="w-full mx-auto px-3 py-3 md:px-4 md:py-4">
           <div className="flex flex-col items-center justify-between">
             {/* Text Section */}

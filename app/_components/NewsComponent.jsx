@@ -189,7 +189,7 @@ export default function NewsDetails({ id, showNames }) {
   return (
     <div className="text-gray-800 relative mb-14">
       {/* Main container with max width and centering */}
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="max-w-6xl mx-auto px-4">
         {/* Desktop: Single column, Mobile: Full width */}
         <div className="w-full">
           {/* Header Section */}
