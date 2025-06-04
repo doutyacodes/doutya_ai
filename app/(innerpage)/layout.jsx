@@ -14,13 +14,13 @@ const ProtectLayout = ({ children }) => {
   const pathname = usePathname();
   const [showBottomNav, setShowBottomNav] = useState(true);
   
-  useEffect(() => {
-    // Hide bottom nav for /news/[id] and /kids/[id] routes
-    const isNewsDetailPage = /^\/news\/[^\/]+$/.test(pathname);
-    const isKidsNewsDetailPage = /^\/kids\/[^\/]+$/.test(pathname);
+  // useEffect(() => {
+  //   // Hide bottom nav for /news/[id] and /kids/[id] routes
+  //   const isNewsDetailPage = /^\/news\/[^\/]+$/.test(pathname);
+  //   const isKidsNewsDetailPage = /^\/kids\/[^\/]+$/.test(pathname);
     
-    setShowBottomNav(!(isNewsDetailPage || isKidsNewsDetailPage));
-  }, [pathname]);
+  //   setShowBottomNav(!(isNewsDetailPage || isKidsNewsDetailPage));
+  // }, [pathname]);
 
   return (
     <ProtectedRoute allowedRoutes={["/","/search", "/our-story","/our-features","/about-us", "/contact-us", "/kids", "newsonmap", "/testing3","/news", "/newstech", "/landing"]}>

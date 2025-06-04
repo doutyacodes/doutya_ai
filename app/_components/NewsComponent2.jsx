@@ -690,17 +690,6 @@ export default function NewsDetails2({ id, showNames }) {
             {/* Main Content */}
             <div className="bg-white shadow-md rounded-md border border-slate-200">
               <div className="grid grid-cols-1 gap-2 md:gap-5 relative">        
-                {/* Improved Back Button for Desktop */}
-                <button
-                  onClick={() => router.push('/')}
-                  className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2.5 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200 text-slate-700 z-10"
-                >
-                  <ArrowLeft size={18} strokeWidth={2} />
-                  <span className="font-medium text-sm">Back to Home</span>
-                </button>
-                              
-                {/* Your existing content goes here */}
-                {/* lots of codes here .. */}
                 {newsContent()}
               </div>
             </div>
@@ -733,9 +722,6 @@ export default function NewsDetails2({ id, showNames }) {
                   previousArticle={previousArticle}
                   position="overlay"
                 />
-                              
-                {/* Your existing content goes here */}
-                {/* lots of codes here .. */}
                 {newsContent()}
               </div>
             </div>
@@ -801,8 +787,8 @@ export default function NewsDetails2({ id, showNames }) {
           </div>
         )}
       </div>
-      
-       <div className="fixed bottom-4 w-full flex justify-center z-30">
+
+       {/* <div className="fixed bottom-4 w-full flex justify-center z-30">
          <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -813,7 +799,7 @@ export default function NewsDetails2({ id, showNames }) {
             <div className="font-medium">{article.viewpoint}</div>
           </div>
         </motion.div>
-      </div>
+      </div> */}
     </>
   );
 }

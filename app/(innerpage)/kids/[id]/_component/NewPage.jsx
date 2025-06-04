@@ -116,7 +116,7 @@ export default function NewPage() {
 
   return (
     <>
-      <div className="w-full bg-gradient-to-r from-blue-400 via-blue-300 to-red-500 mb-4 rounded-lg shadow-md">
+      <div className="w-full bg-gradient-to-r from-blue-400 via-blue-300 to-red-500 mb-4 shadow-md">
         <div className="w-full mx-auto px-3 py-3 md:px-4 md:py-4">
           <div className="flex flex-col items-center justify-between">
             {/* Text Section */}
@@ -128,16 +128,7 @@ export default function NewPage() {
               <p className="text-[9px] md:text-lg text-center text-white/90">
                 Big stories explained simply, just for you!
               </p>
-            </div>
-            
-            {/* Small decorative elements visible on larger screens */}
-            <div className="hidden md:flex justify-center mt-1">
-              <div className="flex space-x-3">
-                <div className="w-2 h-2 rounded-full bg-white/80"></div>
-                <div className="w-2 h-2 rounded-full bg-white/80"></div>
-                <div className="w-2 h-2 rounded-full bg-white/80"></div>
-              </div>
-            </div>
+            </div>    
           </div>
         </div>
       </div>

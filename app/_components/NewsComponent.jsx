@@ -187,118 +187,112 @@ export default function NewsDetails({ id, showNames }) {
       });
   };
   return (
-<div className="text-gray-800 relative p-2 pb-8 grid grid-cols-2 gap-2 md:gap-5 max-md:grid-cols-1">
-      <div className="w-full relative">
-        {/* Mobile Back Button - Positioned at the top with proper spacing */}
-        {/* <div className="mb-4 md:hidden">
-          <button
-            onClick={() => router.push('/kids')}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200 text-slate-700"
-          >
-            <ArrowLeft size={16} strokeWidth={2.5} />
-            <span className="text-sm font-medium">Back to Home</span>
-          </button>
-        </div> */}
-        
-        {/* Desktop Back Button - No longer absolutely positioned */}
-        <div className="hidden md:block mb-6">
-          <button
-            onClick={() => router.push('/kids')}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200 text-slate-700"
-          >
-            <ArrowLeft size={18} strokeWidth={2} />
-            <span className="font-medium text-sm">Back to Home</span>
-          </button>
-        </div>
+    <div className="text-gray-800 relative mb-14">
+      {/* Main container with max width and centering */}
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        {/* Desktop: Single column, Mobile: Full width */}
+        <div className="w-full">
+          {/* Header Section */}
+          <div className="mb-6">
+            <h1 className="text-4xl max-md:text-3xl font-bold text-gray-800">{title}</h1>
+            <p className="text-sm text-gray-500 mt-2">{date}</p>
+          </div>
 
-        <div className="mb-6">
-          <h1 className="text-4xl max-md:text-3xl font-bold text-gray-800">{title}</h1>
-          <p className="text-sm text-gray-500 mt-2">{date}</p>
-        </div>
-        <div className="mb-3 flex gap-2">{categoriesList()}</div>
-        <Image
-          src={`https://wowfy.in/testusr/images/${image_url}`}
-          alt={title}
-          width={800}
-          height={300}
-          className="rounded-md mb-6"
-        />
+          {/* Categories */}
+          <div className="mb-3 flex gap-2">{categoriesList()}</div>
 
-        <div className="text-xs text-slate-500">{formatDate(created_at)}</div>
-        <div className="flex items-center space-x-8 w-fit my-6">
-          {/* Share Icon */}
-          <div className="text-gray-500 cursor-pointer relative group">
-            <FaShareAlt size={16} />
-            {/* Share Options */}
-            <div className="hidden group-hover:flex gap-2 absolute -top-10 left-0 bg-white border shadow-lg rounded-md p-2 z-50">
-              <FacebookShareButton url={shareUrl} quote={title}>
-                <FacebookIcon size={32} round />
-              </FacebookShareButton>
-              <TwitterShareButton url={shareUrl} title={title}>
-                <TwitterIcon size={32} round />
-              </TwitterShareButton>
-              <WhatsappShareButton url={shareUrl} title={title}>
-                <WhatsappIcon size={32} round />
-              </WhatsappShareButton>
-              <TelegramShareButton url={shareUrl} title={title}>
-                <TelegramIcon size={32} round />
-              </TelegramShareButton>
-              <button
-                onClick={handleCopyLink}
-                className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition"
-                aria-label="Copy Link"
-                title="Copy Link"
-              >
-                <FiCopy size={20} />
-              </button>
+          {/* Image */}
+          <Image
+            src={`https://wowfy.in/testusr/images/${image_url}`}
+            alt={title}
+            width={800}
+            height={300}
+            className="rounded-md mb-6 w-full"
+          />
+
+          {/* Created date */}
+          <div className="text-xs text-slate-500 mb-4">{formatDate(created_at)}</div>
+
+          {/* Share and Report Icons */}
+          <div className="flex items-center space-x-8 w-fit mb-6">
+            {/* Share Icon */}
+            <div className="text-gray-500 cursor-pointer relative group">
+              <FaShareAlt size={16} />
+              {/* Share Options */}
+              <div className="hidden group-hover:flex gap-2 absolute -top-10 left-0 bg-white border shadow-lg rounded-md p-2 z-50">
+                <FacebookShareButton url={shareUrl} quote={title}>
+                  <FacebookIcon size={32} round />
+                </FacebookShareButton>
+                <TwitterShareButton url={shareUrl} title={title}>
+                  <TwitterIcon size={32} round />
+                </TwitterShareButton>
+                <WhatsappShareButton url={shareUrl} title={title}>
+                  <WhatsappIcon size={32} round />
+                </WhatsappShareButton>
+                <TelegramShareButton url={shareUrl} title={title}>
+                  <TelegramIcon size={32} round />
+                </TelegramShareButton>
+                <button
+                  onClick={handleCopyLink}
+                  className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                  aria-label="Copy Link"
+                  title="Copy Link"
+                >
+                  <FiCopy size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Report Icon */}
+            <div
+              onClick={() => {
+                setShowReportPopup(true);
+                console.log("Report popup triggered");
+              }}
+              className="text-gray-500 cursor-pointer rotate-90"
+            >
+              <FaEllipsisH size={16} />
             </div>
           </div>
 
-          {/* Report Icon */}
-          <div
-            onClick={() => {
-              setShowReportPopup(true);
-              console.log("Report popup triggered");
-            }}
-            className="text-gray-500 cursor-pointer rotate-90"
-          >
-            <FaEllipsisH size={16} />
-          </div>
-        </div>
-        <motion.div
-          className="text-lg text-gray-700 space-y-6 leading-relaxed"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-        >
-          {description.split("\n\n").map((para, index) => (
-            <p key={index} className="text-justify">
-              {replaceWordsWithSpans(para)}
-            </p>
-          ))}
-        </motion.div>
-      </div>
-      <div className=" w-full md:mt-[6.5rem]">
-        {questions && questions.length > 0 && (
+          {/* Main Content */}
           <motion.div
-            className="mt-8 bg-gray-100 p-6 rounded-md shadow-sm"
+            className="text-lg text-gray-700 space-y-6 leading-relaxed mb-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              Questions for revision
-            </h2>
-            <ol className="list-decimal pl-6 space-y-4">
-              {questions.map((question, index) => (
-                <li key={index} className="text-lg text-gray-700">
-                  {question}
-                </li>
-              ))}
-            </ol>
+            {description.split("\n\n").map((para, index) => (
+              <p key={index} className="text-justify">
+                {replaceWordsWithSpans(para)}
+              </p>
+            ))}
           </motion.div>
-        )}
+
+          {/* Questions Section - Now at bottom with improved mobile styling */}
+          {questions && questions.length > 0 && (
+            <motion.div
+              className="bg-gray-100 p-4 md:p-6 rounded-md shadow-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-3 md:mb-4">
+                Questions for revision
+              </h2>
+              <ol className="list-decimal pl-4 md:pl-6 space-y-2 md:space-y-4">
+                {questions.map((question, index) => (
+                  <li key={index} className="text-base md:text-lg text-gray-700">
+                    {question}
+                  </li>
+                ))}
+              </ol>
+            </motion.div>
+          )}
+        </div>
       </div>
+
+      {/* Popups remain the same */}
       <AnimatePresence>
         {showPopup && (
           <motion.div
@@ -315,7 +309,7 @@ export default function NewsDetails({ id, showNames }) {
             >
               <button
                 onClick={() => setShowPopup(false)}
-                className="absolute top-2 right-2  text-white"
+                className="absolute top-2 right-2 text-white"
               >
                 <IoIosCloseCircle size={24} color="#dc2626" />
               </button>
@@ -323,14 +317,14 @@ export default function NewsDetails({ id, showNames }) {
                 {popupContent.word.charAt(0).toUpperCase() +
                   popupContent.word.slice(1)}
               </h2>
-
               <p className="text-sm text-gray-600 mt-2">
-                <span className="font-bold"> Meaning</span>:{" "}
+                <span className="font-bold">Meaning</span>:{" "}
                 {popupContent.meaning}
               </p>
             </motion.div>
           </motion.div>
         )}
+
         {showReportPopup && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[99999999999999999]">
             <motion.div
