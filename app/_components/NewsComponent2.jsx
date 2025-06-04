@@ -741,6 +741,78 @@ export default function NewsDetails2({ id, showNames }) {
             </div>
           </div>
         </div>
+
+        {/* Report Popup */}
+         {showReportPopup && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[99999999999999999]">
+            <motion.div
+              className="bg-white max-w-sm w-full p-6 rounded-lg shadow-xl space-y-6 relative"
+              initial={{ y: -50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+            >
+              <div className="flex justify-center">
+                <div className="p-4 bg-red-100 rounded-full flex justify-center items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-8 w-8 text-red-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13 10V3m0 16v-7m0 0H5m8 0h8"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <h1 className="text-xl text-center font-bold">Report Article</h1>
+
+              <div className="space-y-4">
+                <textarea
+                  value={report_text}
+                  onChange={(e) => setReport_text(e.target.value)}
+                  className="w-full h-20 p-4 border rounded-md"
+                  placeholder="Please describe your issue with the article"
+                ></textarea>
+                <div className="flex justify-center gap-4">
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded-md"
+                    onClick={() => setShowReportPopup(false)}
+                  >
+                    Close
+                  </button>
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                    onClick={() => {
+                      // Handle report submission logic
+                      toast.success("Reported successfully!");
+                      setShowReportPopup(false);
+                    }}
+                  >
+                    Submit Report
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </div>
+      
+       <div className="fixed bottom-4 w-full flex justify-center z-30">
+         <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mx-auto bg-white/90 shadow-xl rounded-full px-4 py-2 border-2 border-red-500 w-fit"
+        >
+          <div className="text-center w-full">
+            <div className="text-xs text-red-900">You are now reading the perspective of</div>
+            <div className="font-medium">{article.viewpoint}</div>
+          </div>
+        </motion.div>
       </div>
     </>
   );
