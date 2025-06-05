@@ -33,7 +33,7 @@ function FloatingBubbleNav({ showMenu, setShowMenu }) {
         {
             name: 'LinkedIn',
             icon: FaLinkedinIn,
-            href: 'https://www.linkedin.com/company/axaranews',
+            href: 'https://www.linkedin.com/company/doutya',
             color: 'hover:bg-blue-700'
         }
     ];

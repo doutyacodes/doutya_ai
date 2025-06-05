@@ -36,7 +36,7 @@ function Floating() {
         {
             name: 'LinkedIn',
             icon: FaLinkedinIn,
-            href: 'https://www.linkedin.com/company/axaranews',
+            href: 'https://www.linkedin.com/company/doutya',
             // color: 'bg-orange-600 hover:bg-orange-700'
             color: 'hover:bg-blue-700'
         }

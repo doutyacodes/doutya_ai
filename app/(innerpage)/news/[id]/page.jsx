@@ -212,7 +212,7 @@ function OrganizationSchema() {
       'https://www.facebook.com/doutyaNews',
       'https://twitter.com/doutyaNews',
       'https://www.instagram.com/doutyaNews',
-      'https://www.linkedin.com/company/doutya-news'
+      'https://www.linkedin.com/company/doutya'
     ]
   };
 }
