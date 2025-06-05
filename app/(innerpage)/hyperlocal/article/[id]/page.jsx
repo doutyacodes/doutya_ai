@@ -82,31 +82,23 @@ export default function ArticlePage() {
       </div>
       
       {/* Article Image */}
-      <div className="w-full h-96 relative mb-8 rounded-lg overflow-hidden">
-        {article.image_url ? (
-          <Image
-            src={article.image_url}
-            alt={article.title}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1200px) 100vw, 1200px"
-            priority
-          />
-        ) : (
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-            <span className="text-gray-500">No image available</span>
-          </div>
-        )}
-      </div>
+      <div 
+        className="article-content"
+        dangerouslySetInnerHTML={{ __html: article.content }}
+      />
       
       {/* Article Content */}
-      <div className="prose prose-lg max-w-none">
-        <div
-          className="text-justify"
-          dangerouslySetInnerHTML={{ __html: article.content }}
-        />
-      </div>
-      
+      <div 
+        className="text-lg leading-relaxed"
+        style={{
+          textAlign: 'justify',
+          textJustify: 'inter-word',
+          lineHeight: '1.8',
+          fontSize: '18px'
+        }}
+        dangerouslySetInnerHTML={{ __html: article.content }}
+      />
+          
       {/* Article Category */}
       {article.category_name && (
         <div className="mt-8 p-4 bg-gray-50 rounded-lg">

@@ -16,6 +16,15 @@ body {
   font-style: normal;
 }
 
+.article-content,
+.article-content *,
+.article-content p,
+.article-content div,
+.article-content span {
+  text-align: justify !important;
+  text-justify: inter-word !important;
+}
+
 @layer utilities {
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
@@ -70,6 +79,18 @@ input[type=number] {
   max-width: 100% !important;
 }
 
+.custom-justify {
+  text-align: justify !important;
+  text-justify: inter-word;
+}
+
+.custom-justify p {
+  text-align: justify !important;
+}
+
+.custom-justify div {
+  text-align: justify !important;
+}
 
 @layer base {
   :root {

@@ -100,10 +100,11 @@ export default function ArticlePage() {
       </div>
       
       {/* Article Content */}
-      {/* Article Content */}
       <div className="prose prose-lg max-w-none">
         {article.content.split('\n').map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
+          <p key={index} className="text-justify">
+            {paragraph}
+          </p>
         ))}
       </div>
 
