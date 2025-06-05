@@ -7,6 +7,7 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
   const [isVisible, setIsVisible] = useState(false);
   const [showNavigationTrigger, setShowNavigationTrigger] = useState(false);
   const [screenWidth, setScreenWidth] = useState(0);
+  const [isTouching, setIsTouching] = useState(false);
   const isFirstPerspective = currentArticleIndex === 0;
   const hasNext = currentArticleIndex < allArticles.length - 1;
   const isLastPerspective = currentArticleIndex === allArticles.length - 1;
@@ -33,35 +34,39 @@ const PerspectiveNavigation = ({ currentArticleIndex, allArticles, nextArticle, 
 useEffect(() => {
   if (!isMobile) return;
 
-  const handleInteraction = (e) => {
+  const handleTouchStart = (e) => {
+    setIsTouching(true);
     // Only hide if the interaction is NOT on the navigation buttons
     if (navRef.current && !navRef.current.contains(e.target)) {
       setIsVisible(false);
-      // Show again after 1.5 seconds of no interaction
       clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => {
-        setIsVisible(true);
-      }, 1500);
     }
   };
 
-  const handleScroll = () => {
-    setIsVisible(false);
-    // Show again after 1.5 seconds of no scrolling
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      setIsVisible(true);
-    }, 1500);
+  const handleTouchEnd = () => {
+    setIsTouching(false);
+    // Show instantly when finger is lifted (no delay)
+    setIsVisible(true);
   };
 
-  document.addEventListener('touchstart', handleInteraction, { passive: true });
+  const handleScroll = () => {
+    // Only hide if user is touching the screen
+    if (isTouching) {
+      setIsVisible(false);
+      clearTimeout(timeoutRef.current);
+    }
+  };
+
+  document.addEventListener('touchstart', handleTouchStart, { passive: true });
+  document.addEventListener('touchend', handleTouchEnd, { passive: true });
   document.addEventListener('scroll', handleScroll, { passive: true });
 
   return () => {
-    document.removeEventListener('touchstart', handleInteraction);
+    document.removeEventListener('touchstart', handleTouchStart);
+    document.removeEventListener('touchend', handleTouchEnd);
     document.removeEventListener('scroll', handleScroll);
   };
-}, [isMobile]);
+}, [isMobile, isTouching]);
 
   // Show navigation when hovering near edges (mobile only)
   const handleMouseMove = (e) => {
@@ -257,13 +262,13 @@ useEffect(() => {
                   {isFirstPerspective && previousArticle ? (
                     <button 
                       onClick={() => router.push(`/news/${previousArticle.id}`)}
-                      className="bg-red-600 rounded-lg p-1.5 shadow-lg hover:bg-red-900 border border-red-900 transition-all hover:scale-105 group relative"
+                      className="bg-red-600 rounded-lg p-2 shadow-lg hover:bg-red-900 border border-red-900 transition-all hover:scale-105 group relative scale-110"
                     >
                       <div className="flex items-center gap-1">
-                        <ArrowLeft className="w-4 h-4 text-white flex-shrink-0" />
+                        <ArrowLeft className="w-5 h-5 text-white flex-shrink-0" />
                         <div>
-                          <div className="text-[8px] text-red-100">Previous Article</div>
-                          <div className="text-[8px] font-medium max-w-[80px] truncate text-white">
+                          <div className="text-[9px] text-red-100">Previous Article</div>
+                          <div className="text-[9px] font-medium max-w-[90px] truncate text-white">
                             {previousArticle.title.substring(0, 25)}...
                           </div>
                         </div>
@@ -272,15 +277,15 @@ useEffect(() => {
                   ) : (
                     <button 
                       onClick={handlePreviousClick}
-                      className="bg-[rgba(255,255,255,0.95)] rounded-lg p-1.5 shadow-lg hover:bg-red-100 border border-red-500 transition-all hover:scale-105"
+                      className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 shadow-lg hover:bg-red-100 border border-red-500 transition-all hover:scale-105 scale-110"
                     >
                       <div className="flex items-center gap-1">
-                        <ChevronLeft className="w-4 h-4 text-red-800" />
+                        <ChevronLeft className="w-5 h-5 text-red-800" />
                         <div className="pr-0.5">
-                          <div className="text-[8px] text-red-900">
+                          <div className="text-[9px] text-red-900">
                             Previous Perspective
                           </div>
-                          <div className="text-[8px] font-medium max-w-[60px] truncate">
+                          <div className="text-[9px] font-medium max-w-[70px] truncate">
                             {currentArticleIndex > 0 && allArticles[currentArticleIndex - 1]?.viewpoint}
                           </div>
                         </div>
@@ -307,16 +312,16 @@ useEffect(() => {
                     {nextArticle && (
                       <button 
                         onClick={() => router.push(`/news/${nextArticle.id}`)}
-                        className="bg-red-600 p-1.5 hover:bg-red-900 transition-colors rounded-lg shadow-lg border border-red-900 group relative"
+                        className="bg-red-600 p-2 hover:bg-red-900 transition-colors rounded-lg shadow-lg border border-red-900 group relative scale-110"
                       >
                         <div className="flex items-center justify-between gap-1">
                           <div className="pl-0.5">
-                            <div className="text-[8px] text-red-100">Next Article</div>
-                            <div className="text-[8px] font-medium max-w-[60px] truncate text-white">
+                            <div className="text-[9px] text-red-100">Next Article</div>
+                            <div className="text-[9px] font-medium max-w-[70px] truncate text-white">
                               {nextArticle.title.substring(0, 25)}...
                             </div>
                           </div>
-                          <ArrowRight className="w-4 h-4 text-white" />
+                          <ArrowRight className="w-5 h-5 text-white" />
                         </div>
                       </button>
                     )}
@@ -324,16 +329,16 @@ useEffect(() => {
                 ) : (
                   <button 
                     onClick={handleNextClick}
-                    className="bg-[rgba(255,255,255,0.95)] rounded-lg p-1.5 shadow-lg hover:bg-red-100 border border-red-500 transition-all hover:scale-105"
+                    className="bg-[rgba(255,255,255,0.95)] rounded-lg p-2 shadow-lg hover:bg-red-100 border border-red-500 transition-all hover:scale-105 scale-110"
                   >
                     <div className="flex items-center gap-1">
                       <div className="pl-0.5">
-                        <div className="text-[8px] text-red-900">Next Perspective</div>
-                        <div className="text-[8px] font-medium max-w-[50px] truncate">
+                        <div className="text-[9px] text-red-900">Next Perspective</div>
+                        <div className="text-[9px] font-medium max-w-[60px] truncate">
                           {hasNext && allArticles[currentArticleIndex + 1]?.viewpoint}
                         </div>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-red-800" />
+                      <ChevronRight className="w-5 h-5 text-red-800" />
                     </div>
                   </button>
                 )}
