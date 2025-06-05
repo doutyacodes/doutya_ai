@@ -14,7 +14,7 @@ const CreatorPopupModal = ({ onNavigateToCreator }) => {
       const timer = setTimeout(() => {
         setShouldShow(true);
         setShowModal(true);
-      }, 8000);
+      }, 800);
 
       return () => clearTimeout(timer);
     }
