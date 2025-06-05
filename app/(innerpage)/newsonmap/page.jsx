@@ -3,6 +3,7 @@ import ReactDOMServer from "react-dom/server";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useMediaQuery } from 'react-responsive';
 import { GoogleMap, useLoadScript, MarkerF, InfoWindowF } from "@react-google-maps/api";
+import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { 
     MapPin, AlertTriangle, Building2, UserRound, Car, Cloud, 
     PartyPopper, Swords, Megaphone, AlertCircle, Trophy, 
@@ -17,8 +18,18 @@ import {
     BellRing,
     Flag,
     PawPrint,
-    Loader2
+    Loader2,
+    Newspaper,
+    Vote,
+    MegaphoneIcon,
+    TrendingUp,
+    Music,
+    HandHeart,
+    Sparkles,
+    Info
   } from "lucide-react";
+import { FaHandcuffs } from "react-icons/fa6";
+import { GiCrossedSwords } from "react-icons/gi";
 
 // Map container styles
 const containerStyle = {
@@ -39,66 +50,66 @@ const USER_LOCATION_ZOOM = 7;
 // Category icons mapping using Lucide React components
 const categoryIcons = {
   "Natural Disaster": <AlertTriangle size={24} className="text-red-600" />,
-  "Crime": <AlertCircle size={24} className="text-red-700" />,
-  "Politics": <Building2 size={24} className="text-blue-800" />,
-  "Protest": <UserRound size={24} className="text-orange-500" />,
-  "Accident": <Ambulance size={24} className="text-amber-600" />,
-  "Weather": <Cloud size={24} className="text-blue-400" />,
-  "Festival / Event": <PartyPopper size={24} className="text-purple-500" />,
-  "Conflict / War": <Swords size={24} className="text-red-800" />,
-  "Public Announcement": <Megaphone size={24} className="text-blue-600" />,
+  "Crime": <FaHandcuffs size={24} className="text-amber-700" />,
+  "Politics": <Vote size={24} className="text-indigo-600" />,
+  "Protest": <Megaphone size={24} className="text-orange-600" />,
+  "Accident": <Ambulance size={24} className="text-purple-600" />,
+  "Weather": <Cloud size={24} className="text-cyan-500" />,
+  "Festival / Event": <PartyPopper size={24} className="text-pink-500" />,
+  "Conflict / War": <GiCrossedSwords size={24} className="text-red-800" />,
+  "Public Announcement": <MegaphoneIcon size={24} className="text-blue-600" />,
   "Emergency Alert": <BellRing size={24} className="text-red-500" />,
   "Sports": <Trophy size={24} className="text-yellow-600" />,
-  "Health": <Heart size={24} className="text-green-600" />,
-  "Business": <Briefcase size={24} className="text-gray-700" />,
-  "Entertainment": <Film size={24} className="text-pink-500" />,
-  "Technology": <Laptop size={24} className="text-indigo-500" />,
+  "Health": <Heart size={24} className="text-rose-600" />,
+  "Business": <TrendingUp size={24} className="text-slate-700" />,
+  "Entertainment": <Music size={24} className="text-violet-500" />,
+  "Technology": <Laptop size={24} className="text-blue-700" />,
   "Science": <FlaskConical size={24} className="text-teal-600" />,
-  "Education": <GraduationCap size={24} className="text-blue-700" />,
-  "Environment": <Leaf size={24} className="text-green-500" />,
-  "Social Issues": <Users size={24} className="text-purple-600" />,
-  "Transportation": <Train size={24} className="text-cyan-600" />,
-  "Automobiles": <Car size={24} className="text-red-400" />,
-  "Finance": <BadgeDollarSign size={24} className="text-green-700" />,
-  "Movies": <Clapperboard size={24} className="text-purple-700" />,
-  "Cricket": <Flag size={24} className="text-green-400" />,
-  "Military": <Shield size={24} className="text-gray-800" />,
-  "Space": <Rocket size={24} className="text-indigo-600" />,
-  "Lifestyle": <Shirt size={24} className="text-pink-400" />,
-  "Wildlife": <PawPrint size={24} className="text-amber-500" />,
-  "Default": <Globe size={24} className="text-gray-500" />
+  "Education": <GraduationCap size={24} className="text-emerald-700" />,
+  "Environment": <Leaf size={24} className="text-lime-600" />,
+  "Social Issues": <HandHeart size={24} className="text-coral-600" />,
+  "Transportation": <Train size={24} className="text-gray-600" />,
+  "Automobiles": <Car size={24} className="text-maroon-600" />,
+  "Finance": <BadgeDollarSign size={24} className="text-gold-700" />,
+  "Movies": <Clapperboard size={24} className="text-plum-700" />,
+  "Cricket": <Flag size={24} className="text-olive-600" />,
+  "Military": <Shield size={24} className="text-khaki-700" />,
+  "Space": <Rocket size={24} className="text-navy-600" />,
+  "Lifestyle": <Sparkles size={24} className="text-peach-500" />,
+  "Wildlife": <PawPrint size={24} className="text-brown-600" />,
+  "Default": <Info size={24} className="text-gray-500" />
 };
 
 const categoryColors = {
-  "Natural Disaster": "#FF8C00",
-  "Crime": "#2E8B57",
-  "Politics": "#1E90FF",
-  "Protest": "#FF4500",
-  "Accident": "#8A2BE2",
-  "Weather": "#00CED1",
-  "Festival / Event": "#FF1493",
-  "Conflict / War": "#B22222",
-  "Public Announcement": "#FFD700",
-  "Emergency Alert": "#FF00FF",
-  "Sports": "#00FF00",
-  "Health": "#DC143C",
-  "Business": "#4682B4",
-  "Entertainment": "#FF69B4",
-  "Technology": "#7B68EE",
-  "Science": "#A9A9A9",
-  "Education": "#000000",
-  "Environment": "#228B22",
-  "Social Issues": "#FF6347",
-  "Transportation": "#40E0D0",
-  "Automobiles": "#C71585",
-  "Finance": "#008080",
-  "Movies": "#800080",
-  "Cricket": "#DAA520",
-  "Military": "#556B2F",
-  "Space": "#483D8B",
-  "Lifestyle": "#FF7F50",
-  "Wildlife": "#6B8E23",
-  "Default": "#A52A2A"
+  "Natural Disaster": "#DC2626", // red-600
+  "Crime": "#B45309", // amber-700
+  "Politics": "#4338CA", // indigo-600
+  "Protest": "#EA580C", // orange-600
+  "Accident": "#9333EA", // purple-600
+  "Weather": "#06B6D4", // cyan-500
+  "Festival / Event": "#EC4899", // pink-500
+  "Conflict / War": "#991B1B", // red-800
+  "Public Announcement": "#2563EB", // blue-600
+  "Emergency Alert": "#EF4444", // red-500
+  "Sports": "#CA8A04", // yellow-600
+  "Health": "#E11D48", // rose-600
+  "Business": "#475569", // slate-700
+  "Entertainment": "#8B5CF6", // violet-500
+  "Technology": "#1D4ED8", // blue-700
+  "Science": "#0D9488", // teal-600
+  "Education": "#047857", // emerald-700
+  "Environment": "#65A30D", // lime-600
+  "Social Issues": "#FF7F7F", // coral equivalent
+  "Transportation": "#4B5563", // gray-600
+  "Automobiles": "#800020", // maroon equivalent
+  "Finance": "#FFD700", // gold equivalent
+  "Movies": "#DDA0DD", // plum equivalent
+  "Cricket": "#808000", // olive equivalent
+  "Military": "#F0E68C", // khaki equivalent
+  "Space": "#000080", // navy equivalent
+  "Lifestyle": "#FFCBA4", // peach equivalent
+  "Wildlife": "#A0522D", // brown equivalent
+  "Default": "#6B7280" // gray-500
 };
 
 // Get website favicon
@@ -121,21 +132,21 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
   
   let IconComponent;
   
-  switch(category) {
+  switch (category) {
     case "Natural Disaster":
       IconComponent = AlertTriangle;
       break;
     case "Crime":
-      IconComponent = AlertCircle;
+      IconComponent = FaHandcuffs;
       break;
     case "Politics":
-      IconComponent = Building2;
+      IconComponent = Vote;
       break;
     case "Protest":
-      IconComponent = UserRound;
+      IconComponent = Megaphone;
       break;
     case "Accident":
-      IconComponent = Car;
+      IconComponent = Ambulance;
       break;
     case "Weather":
       IconComponent = Cloud;
@@ -144,13 +155,13 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
       IconComponent = PartyPopper;
       break;
     case "Conflict / War":
-      IconComponent = Swords;
+      IconComponent = GiCrossedSwords;
       break;
     case "Public Announcement":
-      IconComponent = Megaphone;
+      IconComponent = MegaphoneIcon;
       break;
     case "Emergency Alert":
-      IconComponent = AlertCircle;
+      IconComponent = BellRing;
       break;
     case "Sports":
       IconComponent = Trophy;
@@ -159,10 +170,10 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
       IconComponent = Heart;
       break;
     case "Business":
-      IconComponent = Briefcase;
+      IconComponent = TrendingUp;
       break;
     case "Entertainment":
-      IconComponent = Film;
+      IconComponent = Music;
       break;
     case "Technology":
       IconComponent = Laptop;
@@ -177,14 +188,39 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
       IconComponent = Leaf;
       break;
     case "Social Issues":
-      IconComponent = Users;
+      IconComponent = HandHeart;
       break;
     case "Transportation":
       IconComponent = Train;
       break;
+    case "Automobiles":
+      IconComponent = Car;
+      break;
+    case "Finance":
+      IconComponent = BadgeDollarSign;
+      break;
+    case "Movies":
+      IconComponent = Clapperboard;
+      break;
+    case "Cricket":
+      IconComponent = Flag;
+      break;
+    case "Military":
+      IconComponent = Shield;
+      break;
+    case "Space":
+      IconComponent = Rocket;
+      break;
+    case "Lifestyle":
+      IconComponent = Sparkles;
+      break;
+    case "Wildlife":
+      IconComponent = PawPrint;
+      break;
     default:
-      IconComponent = Globe;
+      IconComponent = Info;
   }
+
 
   const iconSvg = ReactDOMServer.renderToString(
     <IconComponent color="white" size={iconSize} strokeWidth={strokeWidth} />
@@ -716,6 +752,9 @@ export default function NewsMap() {
   const isInitialLoadRef = useRef(true);
   const userHasInteractedRef = useRef(false); // Track if user has manually moved the map
 
+  const markersRef = useRef([]);
+  const clusterRef = useRef(null);
+
   // Load Google Maps script
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -829,29 +868,6 @@ export default function NewsMap() {
   }, []);
 
   // Get user's location
-  // const getUserLocation = useCallback(async () => {
-  //   // First check if we have stored location
-  //   const storedLocation = getStoredUserLocation();
-  //   if (storedLocation) {
-  //     setUserLocation(storedLocation);
-  //     userLocationRef.current = storedLocation;
-  //     return;
-  //   }
-
-  //   // Check permission status
-  //   const permissionState = await checkLocationPermission();
-    
-  //   if (permissionState === 'granted') {
-  //     // Permission already granted, get location silently
-  //     getCurrentPosition();
-  //   } else if (permissionState === 'prompt') {
-  //     // Show our custom modal
-  //     setShowLocationModal(true);
-  //   }
-  //   // If denied or unavailable, just use default view without showing modal
-  // }, [checkLocationPermission]);
-
-  // Get user's location
 const getUserLocation = useCallback(async () => {
   // If we already asked for permission, don't ask again
   if (hasAskedForLocation) return;
@@ -932,19 +948,128 @@ const getUserLocation = useCallback(async () => {
     );
   };
 
+  // Handle marker click
+  const handleMarkerClick = useCallback((locationKey, index = 0) => {
+    const [lat, lng] = locationKey.split(',').map(parseFloat);
+    setSelectedLocation({ key: locationKey, lat, lng });
+    setCurrentNewsIndex(index);
+  }, []);
+
+  const createClusterRenderer = () => {
+    return {
+      render: ({ count, position }) => {
+        // Get current zoom level to adjust marker size
+        const currentZoom = mapRef ? mapRef.getZoom() : 5;
+        
+        // Calculate marker size based on zoom level
+        let baseSize, iconSize, fontSize, badgeRadius, strokeWidth;
+        
+        if (currentZoom <= 3) {
+          // Very zoomed out (world view)
+          baseSize = { width: 36, height: 42 };
+          iconSize = 16;
+          fontSize = "8";
+          badgeRadius = 8;
+          strokeWidth = 2;
+        } else if (currentZoom <= 6) {
+          // Country/continent level
+          baseSize = { width: 44, height: 52 };
+          iconSize = 20;
+          fontSize = "9";
+          badgeRadius = 10;
+          strokeWidth = 2.5;
+        } else {
+          // Regional/city level
+          baseSize = { width: 56, height: 66 };
+          iconSize = 26;
+          fontSize = "11";
+          badgeRadius = 12;
+          strokeWidth = 3;
+        }
+        
+        // Create a distinctive cluster marker
+        const clusterColor = '#9333EA'; // Purple color to distinguish from news markers
+        
+        const iconSvg = ReactDOMServer.renderToString(
+          <Newspaper color="white" size={iconSize} strokeWidth={strokeWidth} />
+        );
+
+        console.log('Current zoom:', currentZoom, 'Base size:', baseSize);
+
+        // Create SVG with proper scaling path
+        const svg = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${baseSize.width} ${baseSize.height}" width="${baseSize.width}" height="${baseSize.height}">
+            <defs>
+              <filter id="cluster-shadow-${Date.now()}" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.4" />
+              </filter>
+            </defs>
+            
+            <!-- Main cluster marker shape - classic map pin -->
+            <path 
+              d="
+                M ${baseSize.width / 2},4
+                C ${baseSize.width * 0.9},4 ${baseSize.width * 0.95},${baseSize.height * 0.5} ${baseSize.width / 2},${baseSize.height - 2}
+                C ${baseSize.width * 0.05},${baseSize.height * 0.5} ${baseSize.width * 0.1},4 ${baseSize.width / 2},4
+                Z
+              "
+              fill="${clusterColor}"
+              stroke="white"
+              stroke-width="${strokeWidth}"
+              filter="url(#cluster-shadow-${Date.now()})"
+            />
+
+            
+            <!-- Icon inside marker -->
+            <g transform="translate(${baseSize.width/2 - iconSize/2}, ${baseSize.height * 0.2})">${iconSvg}</g>
+            
+            <!-- Count badge at top-right corner -->
+            <circle 
+              cx="${baseSize.width - (badgeRadius + 2)}" 
+              cy="${badgeRadius + 2}" 
+              r="${badgeRadius}" 
+              fill="#EF4444" 
+              stroke="white" 
+              stroke-width="2" 
+            />
+            <text 
+              x="${baseSize.width - (badgeRadius + 2)}" 
+              y="${badgeRadius + 2 + parseInt(fontSize)/3}" 
+              font-family="Arial, sans-serif" 
+              font-size="${fontSize}" 
+              font-weight="bold" 
+              text-anchor="middle" 
+              fill="white"
+            >${count}</text>
+          </svg>
+        `;
+        
+        return new google.maps.Marker({
+          position,
+          icon: {
+            url: `data:image/svg+xml,${encodeURIComponent(svg)}`,
+            scaledSize: new google.maps.Size(baseSize.width, baseSize.height), // Use dynamic scaling
+            anchor: new google.maps.Point(baseSize.width/2, baseSize.height - 4),
+          },
+          zIndex: 10000, // Higher than regular markers
+        });
+      },
+    };
+  };
+
   // Initial data fetch and location request
   useEffect(() => {
     fetchLanguages();
     // getUserLocation(); // Commented out - fetch full data instead of user location
   }, [fetchLanguages]); // Removed getUserLocation and hasAskedForLocation dependencies
 
-    // Handle selected languages change
-    useEffect(() => {
-      if (availableLanguages.length > 0 && selectedLanguages.length >= 0) {
-        // fetchNewsData(mapBounds, selectedLanguages);
-        fetchNewsData(null, selectedLanguages); // Pass null instead of mapBounds
-      }
-    }, [selectedLanguages, fetchNewsData, availableLanguages.length]); // Removed mapBounds dependency
+  // Handle selected languages change
+  useEffect(() => {
+    if (availableLanguages.length > 0 && selectedLanguages.length >= 0) {
+      // fetchNewsData(mapBounds, selectedLanguages);
+      fetchNewsData(null, selectedLanguages); // Pass null instead of mapBounds
+    }
+  }, [selectedLanguages, fetchNewsData, availableLanguages.length]); // Removed mapBounds dependency
 
   // Handle page visibility change to restore map state on mobile ONLY
   useEffect(() => {
@@ -974,6 +1099,129 @@ const getUserLocation = useCallback(async () => {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [mapRef, isMobile, locationPermissionState]);
+
+  // Handle marker clustering
+  useEffect(() => {
+    if (!mapRef || !isLoaded || Object.keys(groupedNews).length === 0) return;
+
+    // Clear existing cluster
+    if (clusterRef.current) {
+      clusterRef.current.clearMarkers();
+      clusterRef.current.setMap(null);
+    }
+
+    // Clear existing markers from ref
+    markersRef.current.forEach(marker => {
+      marker.setMap(null);
+    });
+    markersRef.current = [];
+
+    // Create new markers
+    const newMarkers = Object.keys(groupedNews).map((locationKey) => {
+      const [lat, lng] = locationKey.split(',').map(parseFloat);
+      const newsAtLocation = groupedNews[locationKey];
+      const mainNews = newsAtLocation[0];
+      
+      if (mainNews.category && !selectedCategories.includes(mainNews.category)) {
+        return null;
+      }
+      
+      const hasHighPriorityNews = newsAtLocation.some(news => news.is_high_priority);
+      
+      const marker = new google.maps.Marker({
+        position: { lat, lng },
+        map: null,
+        icon: createCategoryMarkerIcon(
+          mainNews.category, 
+          newsAtLocation.length, 
+          hasHighPriorityNews
+        ),
+        zIndex: hasHighPriorityNews ? 9999 : 1,
+      });
+
+      // Add click listener to marker
+      marker.addListener('click', () => {
+        handleMarkerClick(locationKey);
+      });
+
+      return marker;
+    }).filter(Boolean);
+
+    markersRef.current = newMarkers;
+
+    // Create cluster
+    if (newMarkers.length > 0) {
+      const cluster = new MarkerClusterer({
+        map: mapRef,
+        markers: newMarkers,
+        renderer: createClusterRenderer(),
+        algorithmOptions: {
+          maxZoom: 12,
+          radius: 80,
+        },
+      });
+
+      cluster.addListener('click', (event, cluster, map) => {
+        handleClusterClick(event, cluster, map);
+      });
+      clusterRef.current = cluster;
+    }
+
+    // Cleanup function
+    return () => {
+      if (clusterRef.current) {
+        clusterRef.current.clearMarkers();
+        clusterRef.current.setMap(null);
+      }
+      markersRef.current.forEach(marker => {
+        marker.setMap(null);
+      });
+      markersRef.current = [];
+    };
+  }, [mapRef, isLoaded, groupedNews, selectedCategories]);
+
+  // Handle zoom changes to update cluster marker sizes
+  useEffect(() => {
+    if (!mapRef || !clusterRef.current) return;
+    
+    const handleZoomChange = () => {
+      // Small delay to ensure zoom has completed
+      setTimeout(() => {
+        // Get current markers
+        const currentMarkers = markersRef.current;
+        if (currentMarkers.length > 0) {
+          // Clear the existing cluster
+          clusterRef.current.clearMarkers();
+          clusterRef.current.setMap(null);
+          
+          // Create new cluster with updated renderer
+          const newCluster = new MarkerClusterer({
+            map: mapRef,
+            markers: currentMarkers,
+            renderer: createClusterRenderer(),
+            algorithmOptions: {
+              maxZoom: 12,
+              radius: 80,
+            },
+          });
+
+          newCluster.addListener('click', (event, cluster, map) => {
+            handleClusterClick(event, cluster, map);
+          });
+          
+          clusterRef.current = newCluster;
+        }
+      }, 100);
+    };
+    
+    const zoomListener = mapRef.addListener('zoom_changed', handleZoomChange);
+    
+    return () => {
+      if (zoomListener) {
+        google.maps.event.removeListener(zoomListener);
+      }
+    };
+  }, [mapRef]);
 
   // Handle map bounds change
   const handleBoundsChanged = useCallback(() => {
@@ -1039,22 +1287,15 @@ const getUserLocation = useCallback(async () => {
       });
     };
 
-// Add listeners immediately but mark initial load as complete after delay
-addInteractionListeners();
-setTimeout(() => {
-  isInitialLoadRef.current = false;
-}, 2000);
-    
-    // Add listeners after a short delay to avoid initial load events
-    setTimeout(addInteractionListeners, 1000);
-  };
-
-  // Handle marker click
-  const handleMarkerClick = (locationKey, index = 0) => {
-    const [lat, lng] = locationKey.split(',').map(parseFloat);
-    setSelectedLocation({ key: locationKey, lat, lng });
-    setCurrentNewsIndex(index);
-  };
+  // Add listeners immediately but mark initial load as complete after delay
+  addInteractionListeners();
+  setTimeout(() => {
+    isInitialLoadRef.current = false;
+  }, 2000);
+  
+  // Add listeners after a short delay to avoid initial load events
+  setTimeout(addInteractionListeners, 1000);
+};
 
   // Navigate through news at the same location
   const handleNextNews = () => {
@@ -1158,6 +1399,50 @@ setTimeout(() => {
     );
   };
 
+  const handleClusterClick = (event, cluster, map) => {
+    if (!mapRef) return;
+    
+    // In newer versions, we need to access the cluster differently
+    // The event might contain the cluster information
+    let markers = [];
+    
+    if (cluster && cluster.markers) {
+      markers = cluster.markers;
+    } else if (cluster && cluster.getMarkers) {
+      markers = cluster.getMarkers();
+    } else if (event && event.cluster) {
+      markers = event.cluster.markers || [];
+    } else {
+      console.log('Cluster structure:', cluster, 'Event:', event);
+      return;
+    }
+    
+    if (markers.length === 0) return;
+    
+    // Calculate bounds that include all markers in the cluster
+    const bounds = new google.maps.LatLngBounds();
+    markers.forEach(marker => {
+      bounds.extend(marker.getPosition());
+    });
+    
+    // Smoothly fit the map to show all markers in the cluster
+    mapRef.fitBounds(bounds, {
+      duration: 800, // 800ms animation
+    });
+
+    // Ensure minimum zoom level for better visibility with smooth transition
+    const listener = google.maps.event.addListener(mapRef, 'idle', () => {
+      if (mapRef.getZoom() > 12) {
+        mapRef.setZoom(12);
+        // Add smooth transition for zoom adjustment too
+        setTimeout(() => {
+          mapRef.panTo(mapRef.getCenter());
+        }, 100);
+      }
+      google.maps.event.removeListener(listener);
+    });
+  };
+
   // Loading state
   if (!isLoaded) {
     return (
@@ -1248,55 +1533,6 @@ setTimeout(() => {
       >
         {/* Custom Map Type Controls */}
         <MapTypeControls mapRef={mapRef} />
-
-        {/* News Markers */}
-        {Object.keys(groupedNews)
-          .sort((locationKeyA, locationKeyB) => {
-            const newsAtLocationA = groupedNews[locationKeyA];
-            const newsAtLocationB = groupedNews[locationKeyB];
-            
-            const hasHighPriorityA = newsAtLocationA.some(news => news.is_high_priority);
-            const hasHighPriorityB = newsAtLocationB.some(news => news.is_high_priority);
-            
-            if (hasHighPriorityA && !hasHighPriorityB) return 1;
-            if (!hasHighPriorityA && hasHighPriorityB) return -1;
-            return 0;
-          })
-          .map((locationKey) => {
-            const [lat, lng] = locationKey.split(',').map(parseFloat);
-            const newsAtLocation = groupedNews[locationKey];
-            const mainNews = newsAtLocation[0];
-            
-            if (mainNews.category && !selectedCategories.includes(mainNews.category)) {
-              return null;
-            }
-            
-            const hasHighPriorityNews = newsAtLocation.some(news => news.is_high_priority);
-            
-            return (
-              <MarkerF
-                key={locationKey}
-                position={{ lat, lng }}
-                onClick={() => handleMarkerClick(locationKey)}
-                icon={createCategoryMarkerIcon(
-                  mainNews.category, 
-                  newsAtLocation.length, 
-                  hasHighPriorityNews
-                )}
-                zIndex={hasHighPriorityNews ? 9999 : 1}
-                label={
-                  newsAtLocation.length > 1 
-                  ? {
-                      text: `${newsAtLocation.length}`,
-                      color: "#333",
-                      fontSize: "12px",
-                      fontWeight: "bold"
-                  }
-                  : null
-                }
-              />
-            );
-          })}
 
         {/* Info Window */}
         {currentNews && (
