@@ -27,7 +27,9 @@ import {
     Flame,
     ShieldCheck,
     Bus,
-    Siren
+    Siren,
+    CloudRain,
+    Search
   } from "lucide-react";
 import { useRouter } from "next/navigation";
 import CreatorPopupModal from "@/app/_components/CreatorPopupModal";
@@ -60,43 +62,88 @@ const center = {
 // };
 
 // Category icons mapping using Lucide React components
+// const categoryIcons = {
+//   "News": <Newspaper size={24} className="text-blue-600" />,
+//   "Alert": <AlertTriangle size={24} className="text-red-600" />,
+//   "Emergency": <Siren size={24} className="text-red-700" />,
+//   "Weather": <Cloud size={24} className="text-sky-500" />,
+//   "Construction": <HardHat size={24} className="text-yellow-600" />,
+//   "Crime": <Shield size={24} className="text-red-500" />,
+//   "Politics": <Vote size={24} className="text-purple-600" />,
+//   "Events": <Calendar size={24} className="text-indigo-600" />,
+//   "Health": <Heart size={24} className="text-pink-600" />,
+//   "Sports": <Trophy size={24} className="text-amber-600" />,
+//   "Environment": <Leaf size={24} className="text-green-500" />,
+//   "Fire": <Flame size={24} className="text-red-600" />,
+//   "Police": <ShieldCheck size={24} className="text-blue-700" />,
+//   "Public Transport": <Bus size={24} className="text-blue-400" />,
+//   "Festival": <PartyPopper size={24} className="text-pink-500" />,
+//   "Default": <Globe size={24} className="text-gray-500" />
+// };
+
+// // Category colors for map markers or other UI elements
+// const categoryColors = {
+//   "News": "#2563EB",        // Blue-600
+//   "Alert": "#DC2626",       // Red-600
+//   "Emergency": "#B91C1C",   // Red-700
+//   "Weather": "#0EA5E9",     // Sky-500
+//   "Construction": "#CA8A04", // Yellow-600
+//   "Crime": "#EF4444",       // Red-500
+//   "Politics": "#9333EA",    // Purple-600
+//   "Events": "#4F46E5",      // Indigo-600
+//   "Health": "#EC4899",      // Pink-600
+//   "Sports": "#F59E0B",      // Amber-600
+//   "Environment": "#22C55E", // Green-500
+//   "Fire": "#DC2626",        // Red-600
+//   "Police": "#1D4ED8",      // Blue-700
+//   "Public Transport": "#60A5FA", // Blue-400
+//   "Festival": "#EC4899",    // Pink-500
+//   "Default": "#6B7280"      // Gray-500
+// };
+
+// Category icons mapping using Lucide React components for local community news
 const categoryIcons = {
   "News": <Newspaper size={24} className="text-blue-600" />,
   "Alert": <AlertTriangle size={24} className="text-red-600" />,
   "Emergency": <Siren size={24} className="text-red-700" />,
-  "Weather": <Cloud size={24} className="text-sky-500" />,
-  "Construction": <HardHat size={24} className="text-yellow-600" />,
-  "Crime": <Shield size={24} className="text-red-500" />,
-  "Politics": <Vote size={24} className="text-purple-600" />,
-  "Events": <Calendar size={24} className="text-indigo-600" />,
-  "Health": <Heart size={24} className="text-pink-600" />,
-  "Sports": <Trophy size={24} className="text-amber-600" />,
-  "Environment": <Leaf size={24} className="text-green-500" />,
-  "Fire": <Flame size={24} className="text-red-600" />,
-  "Police": <ShieldCheck size={24} className="text-blue-700" />,
-  "Public Transport": <Bus size={24} className="text-blue-400" />,
+  "Weather": <CloudRain size={24} className="text-sky-500" />,
+  "Events": <Calendar size={24} className="text-purple-600" />,
   "Festival": <PartyPopper size={24} className="text-pink-500" />,
+  "Obituary": <Heart size={24} className="text-gray-700" />,
+  "Public Notice": <Megaphone size={24} className="text-orange-600" />,
+  "Lost & Found": <Search size={24} className="text-teal-600" />,
+  "Ads": <Tag size={24} className="text-green-600" />,
   "Default": <Globe size={24} className="text-gray-500" />
 };
 
 // Category colors for map markers or other UI elements
 const categoryColors = {
-  "News": "#2563EB",        // Blue-600
-  "Alert": "#DC2626",       // Red-600
-  "Emergency": "#B91C1C",   // Red-700
-  "Weather": "#0EA5E9",     // Sky-500
-  "Construction": "#CA8A04", // Yellow-600
-  "Crime": "#EF4444",       // Red-500
-  "Politics": "#9333EA",    // Purple-600
-  "Events": "#4F46E5",      // Indigo-600
-  "Health": "#EC4899",      // Pink-600
-  "Sports": "#F59E0B",      // Amber-600
-  "Environment": "#22C55E", // Green-500
-  "Fire": "#DC2626",        // Red-600
-  "Police": "#1D4ED8",      // Blue-700
-  "Public Transport": "#60A5FA", // Blue-400
-  "Festival": "#EC4899",    // Pink-500
-  "Default": "#6B7280"      // Gray-500
+  "News": "#2563EB",         // Blue-600
+  "Alert": "#DC2626",        // Red-600
+  "Emergency": "#B91C1C",    // Red-700
+  "Weather": "#0EA5E9",      // Sky-500
+  "Events": "#9333EA",       // Purple-600
+  "Festival": "#EC4899",     // Pink-500
+  "Obituary": "#374151",     // Gray-700
+  "Public Notice": "#EA580C", // Orange-600
+  "Lost & Found": "#0D9488", // Teal-600
+  "Ads": "#16A34A",          // Green-600
+  "Default": "#6B7280"       // Gray-500
+};
+
+// Category descriptions for reference
+const categoryDescriptions = {
+  "News": "General local news and updates",
+  "Alert": "Important community alerts and warnings",
+  "Emergency": "Emergency situations and urgent notices",
+  "Weather": "Local weather updates and warnings",
+  "Events": "Community events and gatherings",
+  "Festival": "Local festivals and celebrations",
+  "Obituary": "Community obituaries and memorials",
+  "Public Notice": "Official announcements and public notices",
+  "Lost & Found": "Lost items, missing persons, found items",
+  "Ads": "Local advertisements and promotions",
+  "Default": "Uncategorized content"
 };
 
 const createCategoryMarkerIcon = (category, newsCount = 0) => {
