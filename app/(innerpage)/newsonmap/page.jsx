@@ -400,7 +400,8 @@ const MobileFilterDropdown = ({
   setSelectedCategories,
   showFiltersDropdown,
   setShowFiltersDropdown,
-  buttonStyle
+  buttonStyle,
+  mapRef 
 }) => {
   const [activeFilter, setActiveFilter] = useState(null);
 
@@ -416,6 +417,7 @@ const MobileFilterDropdown = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showFiltersDropdown, setShowFiltersDropdown]);
+
 
   const FilterOption = ({ title, icon, onClick, isActive }) => (
     <button
@@ -560,6 +562,24 @@ const MobileFilterDropdown = ({
               ))}
             </div>
           )}
+
+          <div className="border-t pt-2 mt-2">
+            <button 
+              onClick={() => {
+                if (mapRef) {
+                  mapRef.panTo(center);
+                  mapRef.setZoom(DEFAULT_ZOOM);
+                }
+                setShowFiltersDropdown(false);
+                setActiveFilter(null);
+              }}
+              className="w-full bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center"
+            >
+              <Globe size={16} className="mr-2" />
+              <span className="text-sm">Reset to World View</span>
+            </button>
+          </div>
+
         </div>
       )}
     </div>
@@ -670,6 +690,28 @@ const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, i
   );
 };
 
+const ResetZoomButton = ({ mapRef, buttonStyle }) => {
+  const handleResetZoom = () => {
+    if (mapRef) {
+      // Smooth animation to default view
+      mapRef.panTo(center);
+      mapRef.setZoom(DEFAULT_ZOOM);
+    }
+  };
+
+  return (
+    <button 
+      onClick={handleResetZoom}
+      className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+      style={buttonStyle}
+      title="Reset to world view"
+    >
+      <Globe size={16} className="mr-1" />
+      <span className="text-sm">Reset</span>
+    </button>
+  );
+};
+
 function LocationModal({ onAllow, onCancel, isLoading, error }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
@@ -740,6 +782,8 @@ export default function NewsMap() {
   const [showFiltersDropdown, setShowFiltersDropdown] = useState(false);
   const [hasAskedForLocation, setHasAskedForLocation] = useState(false);
 
+  const [userCountry, setUserCountry] = useState(null);
+  const [countryCenter, setCountryCenter] = useState(center);
 
   const [selectedCategories, setSelectedCategories] = useState(
     Object.keys(categoryIcons).filter(cat => cat !== 'Default')
@@ -829,6 +873,24 @@ export default function NewsMap() {
       setError("Failed to load news data");
     } finally {
       setIsLoading(false);
+    }
+  }, []);
+
+  // Fetch user's country and center coordinates
+  const fetchUserCountry = useCallback(async () => {
+    try {
+      const response = await fetch('/api/news/user-location');
+      if (response.ok) {
+        const data = await response.json();
+        setUserCountry(data.country);
+        if (data.center) {
+          setCountryCenter(data.center);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch user country:', error);
+      // Fallback to default center
+      setCountryCenter(center);
     }
   }, []);
 
@@ -1062,6 +1124,11 @@ const getUserLocation = useCallback(async () => {
     fetchLanguages();
     // getUserLocation(); // Commented out - fetch full data instead of user location
   }, [fetchLanguages]); // Removed getUserLocation and hasAskedForLocation dependencies
+
+  // Fetch user country on component mount
+  useEffect(() => {
+    fetchUserCountry();
+  }, [fetchUserCountry]);
 
   // Handle selected languages change
   useEffect(() => {
@@ -1467,7 +1534,7 @@ const getUserLocation = useCallback(async () => {
 
 
   // Determine map center and zoom - always use default for full world view
-  const mapCenter = center; // Always use default center
+  const mapCenter = countryCenter;
   const mapZoom = DEFAULT_ZOOM; // Always use default zoom
   // const mapCenter = userLocation || center; // Commented out
   // const mapZoom = userLocation ? USER_LOCATION_ZOOM : DEFAULT_ZOOM; // Commented ou
@@ -1496,6 +1563,7 @@ const getUserLocation = useCallback(async () => {
             showFiltersDropdown={showFiltersDropdown}
             setShowFiltersDropdown={setShowFiltersDropdown}
             buttonStyle={buttonStyle}
+            mapRef={mapRef}
           />
         ) : (
           <div className="flex gap-2">
@@ -1512,6 +1580,7 @@ const getUserLocation = useCallback(async () => {
               buttonStyle={buttonStyle}
               isMobile={isMobile}
             />
+            <ResetZoomButton mapRef={mapRef} buttonStyle={buttonStyle} /> {/* Add this line */}
           </div>
         )}
       </div>
@@ -1527,6 +1596,17 @@ const getUserLocation = useCallback(async () => {
           zoomControl: true,
           gestureHandling: "greedy",
           clickableIcons: false,
+          minZoom: 2,
+          maxZoom: 18,
+          restriction: {
+            latLngBounds: {
+              north: 85,
+              south: -85,
+              west: -180,
+              east: 180,
+            },
+            strictBounds: true,
+          },
         }}
         onLoad={handleMapLoad}
         // onIdle={handleBoundsChanged} // Commented out - not fetching based on bounds anymore
