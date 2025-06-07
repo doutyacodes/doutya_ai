@@ -334,16 +334,28 @@ export const ChildrenProvider = ({ children }) => {
     }
   };
 
-  // Load age from localStorage on component mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedAge = localStorage.getItem("selectedAge");
-      if (storedAge) {
-        setSelectedAge(Number(storedAge));
+    useEffect(() => {
+      if (typeof window !== "undefined") {
+        const storedAge = localStorage.getItem("selectedAge");
+        if (storedAge) {
+          let age = Number(storedAge);
+          let clampedAge = age;
+
+          // Clamp only if outside range
+          if (age < 6) clampedAge = 6;
+          else if (age > 13) clampedAge = 13;
+
+          setSelectedAge(clampedAge);
+
+          // Update localStorage only if value was out of bounds
+          if (clampedAge !== age) {
+            localStorage.setItem("selectedAge", clampedAge.toString());
+          }
+        }
+        setIsAgeLoaded(true);
       }
-      setIsAgeLoaded(true);
-    }
-  }, []);
+    }, []);
+
 
   useEffect(() => {
      if (isAgeLoaded) {
@@ -359,7 +371,7 @@ export const ChildrenProvider = ({ children }) => {
   }, [ pathname, isAgeLoaded, selectedAge]);
 
   const handleAgeSubmit = (age) => {
-    if (age >= 4 && age <= 13) {
+    if (age >= 6 && age <= 13) {
       updateSelectedAge(age); // Use the new function to update age
       setShowAgePopup(false); // Close the popup
       // Note: Removed window.location.reload() as context will handle the updates

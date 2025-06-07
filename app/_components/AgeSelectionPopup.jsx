@@ -110,10 +110,10 @@ const AgeSelectionPopup = ({ onSubmit, onClose }) => {
   const [age, setAge] = useState("");
 
   const handleSubmit = () => {
-    if (age >= 4 && age <= 12) {
+    if (age >= 6 && age <= 13) {
       onSubmit(Number(age));
     } else {
-      alert("Please select an age between 4 and 12.");
+      alert("Please select an age between 6 and 13.");
     }
   };
 
@@ -157,10 +157,10 @@ const AgeSelectionPopup = ({ onSubmit, onClose }) => {
                   onChange={(e) => setAge(e.target.value)}
                   className="block w-full rounded-lg border-2 border-red-200 bg-white py-2 pl-4 pr-10 text-gray-700 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 appearance-none"
                 >
-                  <option value="" disabled>Select age (4-13)</option>
-                  {Array.from({ length: 10 }, (_, i) => (
-                    <option key={i} value={i + 4}>
-                      {i + 4} years
+                  <option value="" disabled>Select age (6-13)</option>
+                  {Array.from({ length: 8 }, (_, i) => (
+                    <option key={i} value={i + 6}>
+                      {i + 6} years
                     </option>
                   ))}
                 </select>

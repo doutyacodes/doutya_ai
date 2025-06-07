@@ -107,7 +107,7 @@ const Navbar = () => {
       window.location.reload();
     };
   
-    const ages = Array.from({length: 10}, (_, i) => i + 4); // Creates array [4,5,...13]
+    const ages = Array.from({ length: 8 }, (_, i) => i + 6);  // Creates array [5,6,...13]
     return (
       <div className="relative">
         <button
