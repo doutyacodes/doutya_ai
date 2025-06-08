@@ -2,32 +2,61 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Upload, Loader2, AlertCircle, MapPin, X } from 'lucide-react';
+import { ArrowLeft, Upload, Loader2, AlertCircle, MapPin, X, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import useAuthRedirect from '../_component/useAuthRedirect';
 import RestrictedMapLocationPicker from '../_component/RestrictedMapLocationPicker';
 
 export default function CreateNewsPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    title: '',
-    image_url: '',
-    content: '', // Changed from article_url to content
+  const [selectedMainCategory, setSelectedMainCategory] = useState('');
+
+  // Common form data
+  const [commonData, setCommonData] = useState({
     latitude: '',
     longitude: '',
+    delete_after_hours: 24,
+  });
+
+  // News article specific data
+  const [newsData, setNewsData] = useState({
+    title: '',
+    image_url: '',
+    content: '',
     category_id: '',
-    delete_after_hours: 24, 
+  });
+
+  // Classified ads specific data
+  const [classifiedData, setClassifiedData] = useState({
+    title: '',
+    description: '',
+    ad_type: 'sell',
+    price: '',
+    category: '',
+    contact_info: '',
+    images: [], // Array of image URLs
+  });
+
+  // Obituary specific data
+  const [obituaryData, setObituaryData] = useState({
+    person_name: '',
+    age: '',
+    date_of_death: '',
+    image_url: '',
   });
   
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [file, setFile] = useState(null);
-  const [filePreview, setFilePreview] = useState(null);
+  
+  // File handling states
+  const [files, setFiles] = useState([]); // For classified (multiple images)
+  const [singleFile, setSingleFile] = useState(null); // For news and obituary
+  const [filePreviews, setFilePreviews] = useState([]);
+  const [singleFilePreview, setSingleFilePreview] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
   
-  // Location related states
   const [showLocationPrompt, setShowLocationPrompt] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
@@ -36,10 +65,17 @@ export default function CreateNewsPage() {
 
   useAuthRedirect();
 
-useEffect(() => {
-  fetchCategories();
-  checkLocationPermission();
-}, []);
+  console.log("categroies",categories)
+  // Classified categories
+  const classifiedCategories = [
+    'Vehicle', 'Electronics', 'Furniture', 'Real Estate', 'Jobs', 
+    'Services', 'Fashion', 'Books', 'Sports', 'Others'
+  ];
+
+  useEffect(() => {
+    fetchCategories();
+    checkLocationPermission();
+  }, []);
 
   const fetchCategories = async () => {
     try {
@@ -48,10 +84,38 @@ useEffect(() => {
         throw new Error('Failed to fetch categories');
       }
       const data = await res.json();
-      setCategories(data.categories);
+      
+      // Filter categories to separate main categories and news categories
+      const mainCategories = data.categories.filter(cat => 
+        ['news', 'classifieds', 'obituary'].includes(cat.name.toLowerCase())
+      );
+      
+      const newsCategories = data.categories.filter(cat => 
+        !['news', 'classifieds', 'obituary'].includes(cat.name.toLowerCase())
+      );
+      
+      setCategories({ main: mainCategories, news: newsCategories });
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  // Function to calculate distance between two points in kilometers
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2); 
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    const d = R * c; // Distance in km
+    return d;
+  };
+  
+  const deg2rad = (deg) => {
+    return deg * (Math.PI/180);
   };
 
   const checkLocationPermission = async () => {
@@ -71,7 +135,7 @@ useEffect(() => {
             (position) => {
               const { latitude, longitude } = position.coords;
               setUserLocation({ latitude, longitude });
-              setFormData(prev => ({
+              setCommonData(prev => ({
                 ...prev,
                 latitude: latitude.toString(),
                 longitude: longitude.toString()
@@ -95,7 +159,7 @@ useEffect(() => {
     }
   };
 
-  // Function to request location access
+    // Function to request location access
   const requestLocationAccess = () => {
     setLocationLoading(true);
     setLocationError(null);
@@ -110,7 +174,7 @@ useEffect(() => {
       (position) => {
         const { latitude, longitude } = position.coords;
         setUserLocation({ latitude, longitude });
-        setFormData(prev => ({
+        setCommonData(prev => ({
           ...prev,
           latitude: latitude.toString(),
           longitude: longitude.toString()
@@ -132,164 +196,6 @@ useEffect(() => {
       },
       { enableHighAccuracy: true }
     );
-  };
-
-  // Function to calculate distance between two points in kilometers
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Radius of the earth in km
-    const dLat = deg2rad(lat2 - lat1);
-    const dLon = deg2rad(lon2 - lon1);
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2); 
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-    const d = R * c; // Distance in km
-    return d;
-  };
-  
-  const deg2rad = (deg) => {
-    return deg * (Math.PI/180);
-  };
-
-  const handleLocationChange = (lat, lng) => {
-      setFormData(prev => ({
-          ...prev,
-          latitude: lat,
-          longitude: lng
-      }));
-      
-      // Update validation state
-      setIsLocationValid(lat !== '' && lng !== '');
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  // Handle textarea auto-resize
-  const handleTextareaChange = (e) => {
-    const { name, value } = e.target;
-    
-    // First update the state
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Auto-resize logic
-    e.target.style.height = 'auto';
-    e.target.style.height = `${e.target.scrollHeight}px`;
-  };
-
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      const previewUrl = URL.createObjectURL(selectedFile);
-      setFilePreview(previewUrl);
-    }
-  };
-
-  const uploadImageToCPanel = async (file) => {
-    const formData = new FormData();
-    formData.append('coverImage', file);
-    
-    try {
-      setUploading(true);
-      const response = await fetch('https://wowfy.in/testusr/upload.php', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to upload image');
-      }
-      
-      const data = await response.json();
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      
-      return data.filePath; // This should be the filename returned from PHP
-    } catch (error) {
-      throw new Error(`Image upload failed: ${error.message}`);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormSubmitting(true);
-    setError(null);
-    
-    // Validate that user has allowed location access
-    if (!userLocation) {
-      setError("Location permission is required to post news");
-      setFormSubmitting(false);
-      setShowLocationPrompt(true);
-      return;
-    }
-
-    if (!isLocationValid || !formData.latitude || !formData.longitude) {
-        setError('Please select a valid location within the allowed radius before submitting.');
-        setFormSubmitting(false);
-        return;
-    }
-    
-    // Check if news location is within 10km of user's location
-    if (formData.latitude && formData.longitude) {
-      const newsLat = parseFloat(formData.latitude);
-      const newsLng = parseFloat(formData.longitude);
-      const userLat = userLocation.latitude;
-      const userLng = userLocation.longitude;
-      
-      const distance = calculateDistance(userLat, userLng, newsLat, newsLng);
-      
-      if (distance > 10) {
-        setError("News location must be within 10km of your current location");
-        setFormSubmitting(false);
-        return;
-      }
-    }
-    
-    try {
-      let imageUrl = formData.image_url;
-
-      // If it's a file upload, upload to cPanel first
-      if (file) {
-        const uploadedFileName = await uploadImageToCPanel(file);
-        imageUrl = `https://wowfy.in/testusr/images/${uploadedFileName}`;
-      }
-         
-      const dataToSubmit = {
-        ...formData,
-        image_url: imageUrl,
-        latitude: formData.latitude ? parseFloat(formData.latitude) : userLocation.latitude,
-        longitude: formData.longitude ? parseFloat(formData.longitude) : userLocation.longitude,
-        category_id: formData.category_id ? parseInt(formData.category_id) : null,
-      };
-      
-      const res = await fetch('/api/hyperlocal', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('user_token')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSubmit),
-      });
-      
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Failed to create news');
-      }
-      
-      // Redirect to the news listing page on success
-      router.push('/nearby/home');
-      
-    } catch (err) {
-      setError(err.message);
-      setFormSubmitting(false);
-    }
   };
 
   // Location permission popup
@@ -346,19 +252,599 @@ useEffect(() => {
     </div>
   );
 
+  const handleLocationChange = (lat, lng) => {
+    setCommonData(prev => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng
+    }));
+    setIsLocationValid(lat !== '' && lng !== '');
+  };
+
+  const handleNewsInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewsData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleClassifiedInputChange = (e) => {
+    const { name, value } = e.target;
+    setClassifiedData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleObituaryInputChange = (e) => {
+    const { name, value } = e.target;
+    setObituaryData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleTextareaChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (selectedMainCategory === 'news') {
+      setNewsData(prev => ({ ...prev, [name]: value }));
+    } else if (selectedMainCategory === 'classified') {
+      setClassifiedData(prev => ({ ...prev, [name]: value }));
+    }
+    
+    // Auto-resize logic
+    e.target.style.height = 'auto';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
+
+  // Single file handling (for news and obituary)
+  const handleSingleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setSingleFile(selectedFile);
+      const previewUrl = URL.createObjectURL(selectedFile);
+      setSingleFilePreview(previewUrl);
+    }
+  };
+
+  // Multiple file handling (for classified)
+  const handleMultipleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    if (selectedFiles.length + files.length > 10) {
+      setError('Maximum 10 images allowed');
+      return;
+    }
+    
+    const newFiles = [...files, ...selectedFiles];
+    const newPreviews = [...filePreviews];
+    
+    selectedFiles.forEach(file => {
+      const previewUrl = URL.createObjectURL(file);
+      newPreviews.push(previewUrl);
+    });
+    
+    setFiles(newFiles);
+    setFilePreviews(newPreviews);
+  };
+
+  const removeImage = (index) => {
+    const newFiles = files.filter((_, i) => i !== index);
+    const newPreviews = filePreviews.filter((_, i) => i !== index);
+    setFiles(newFiles);
+    setFilePreviews(newPreviews);
+  };
+
+  const uploadImageToCPanel = async (file) => {
+    const formData = new FormData();
+    formData.append('coverImage', file);
+    
+    try {
+      setUploading(true);
+      const response = await fetch('https://wowfy.in/testusr/upload.php', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+      
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      return data.filePath; // This should be the filename returned from PHP
+    } catch (error) {
+      throw new Error(`Image upload failed: ${error.message}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setFormSubmitting(true);
+    setError(null);
+    
+    // Validate that user has allowed location access
+    if (!userLocation) {
+      setError("Location permission is required to post news");
+      setFormSubmitting(false);
+      setShowLocationPrompt(true);
+      return;
+    }
+    
+    if (!isLocationValid || !commonData.latitude || !commonData.longitude) {
+      setError('Please select a valid location within the allowed radius before submitting.');
+      setFormSubmitting(false);
+      return;
+    }
+
+    // Check if news location is within 10km of user's location
+    if (commonData.latitude && commonData.longitude) {
+      const newsLat = parseFloat(commonData.latitude);
+      const newsLng = parseFloat(commonData.longitude);
+      const userLat = userLocation.latitude;
+      const userLng = userLocation.longitude;
+      
+      const distance = calculateDistance(userLat, userLng, newsLat, newsLng);
+      
+      if (distance > 10) {
+        setError("News location must be within 10km of your current location");
+        setFormSubmitting(false);
+        return;
+      }
+    }
+    
+    try {
+      let endpoint = '';
+      let dataToSubmit = {};
+      
+      // Handle image uploads based on category
+      if (selectedMainCategory === 'classified') {
+        // Upload multiple images for classified
+        const imageUrls = [];
+        for (const file of files) {
+          const uploadedFileName = await uploadImageToCPanel(file);
+          imageUrls.push(`https://wowfy.in/testusr/images/${uploadedFileName}`);
+        }
+        
+        endpoint = '/api/hyperlocal/classified';
+        dataToSubmit = {
+          ...classifiedData,
+          images: imageUrls,
+          ...commonData,
+          latitude: parseFloat(commonData.latitude),
+          longitude: parseFloat(commonData.longitude),
+        };
+      } else if (selectedMainCategory === 'obituary') {
+        // Upload single image for obituary
+        let imageUrl = '';
+        if (singleFile) {
+          const uploadedFileName = await uploadImageToCPanel(singleFile);
+          imageUrl = `https://wowfy.in/testusr/images/${uploadedFileName}`;
+        }
+        
+        endpoint = '/api/hyperlocal/obituary';
+        dataToSubmit = {
+          ...obituaryData,
+          image_url: imageUrl,
+          ...commonData,
+          latitude: parseFloat(commonData.latitude),
+          longitude: parseFloat(commonData.longitude),
+        };
+      } else {
+        // Upload single image for news
+        let imageUrl = newsData.image_url;
+        if (singleFile) {
+          const uploadedFileName = await uploadImageToCPanel(singleFile);
+          imageUrl = `https://wowfy.in/testusr/images/${uploadedFileName}`;
+        }
+        
+        endpoint = '/api/hyperlocal';
+        dataToSubmit = {
+          ...newsData,
+          image_url: imageUrl,
+          ...commonData,
+          latitude: parseFloat(commonData.latitude),
+          longitude: parseFloat(commonData.longitude),
+          category_id: newsData.category_id ? parseInt(newsData.category_id) : null,
+        };
+      }
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('user_token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataToSubmit),
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Failed to create post');
+      }
+      
+      router.push('/nearby/home');
+      
+    } catch (err) {
+      setError(err.message);
+      setFormSubmitting(false);
+    }
+  };
+
+  const renderCategorySpecificFields = () => {
+    switch (selectedMainCategory) {
+      case 'news':
+        return (
+          <>
+            {/* Title */}
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={newsData.title}
+                onChange={handleNewsInputChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                placeholder="Enter news title"
+              />
+            </div>
+            
+            {/* Single Image Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Image <span className="text-red-500">*</span>
+              </label>
+              <div className="flex items-center justify-center w-full">
+                <label htmlFor="single-file-upload" className="w-full flex flex-col items-center px-4 py-6 bg-white text-gray-500 rounded-lg shadow-lg tracking-wide border border-dashed border-gray-400 cursor-pointer hover:bg-gray-50">
+                  {singleFilePreview ? (
+                    <div className="relative w-full h-48">
+                      <img 
+                        src={singleFilePreview} 
+                        alt="Preview" 
+                        className="h-full mx-auto object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 text-red-800" />
+                      <span className="mt-2 text-base">Select an image file</span>
+                    </>
+                  )}
+                  <input 
+                    id="single-file-upload" 
+                    type="file" 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={handleSingleFileChange}
+                    required
+                  />
+                </label>
+              </div>
+            </div>
+            
+            {/* Article Content */}
+            <div>
+              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+                Article Content <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                id="content"
+                name="content"
+                value={newsData.content}
+                onChange={handleTextareaChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500 min-h-[120px]"
+                placeholder="Enter the full article content here..."
+                style={{ resize: 'none', overflow: 'hidden' }}
+              />
+            </div>
+            
+            {/* News Category */}
+            <div>
+              <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-1">
+                News Category
+              </label>
+              <select
+                id="category_id"
+                name="category_id"
+                value={newsData.category_id}
+                onChange={handleNewsInputChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+              >
+                <option value="">Select a category</option>
+                {categories.news && categories.news.map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name
+                      .split(" ")
+                      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(" ")}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </>
+        );
+
+      case 'classified':
+        return (
+          <>
+            {/* Title */}
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                Item Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={classifiedData.title}
+                onChange={handleClassifiedInputChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                placeholder="e.g., Honda Activa 2022"
+              />
+            </div>
+
+            {/* Ad Type */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Ad Type <span className="text-red-500">*</span>
+              </label>
+              <div className="flex space-x-6">
+                <div className="flex items-center">
+                  <input
+                    id="ad-sell"
+                    name="ad_type"
+                    type="radio"
+                    value="sell"
+                    checked={classifiedData.ad_type === 'sell'}
+                    onChange={handleClassifiedInputChange}
+                    className="h-4 w-4 text-red-600 border-gray-300 focus:ring-red-500"
+                  />
+                  <label htmlFor="ad-sell" className="ml-2 block text-sm text-gray-700">
+                    For Sale
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    id="ad-rent"
+                    name="ad_type"
+                    type="radio"
+                    value="rent"
+                    checked={classifiedData.ad_type === 'rent'}
+                    onChange={handleClassifiedInputChange}
+                    className="h-4 w-4 text-red-600 border-gray-300 focus:ring-red-500"
+                  />
+                  <label htmlFor="ad-rent" className="ml-2 block text-sm text-gray-700">
+                    For Rent
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Price */}
+            <div>
+              <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
+                Price
+              </label>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                value={classifiedData.price}
+                onChange={handleClassifiedInputChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                placeholder="Enter price (optional)"
+              />
+            </div>
+
+            {/* Category */}
+            <div>
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                Category <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="category"
+                name="category"
+                value={classifiedData.category}
+                onChange={handleClassifiedInputChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+              >
+                <option value="">Select a category</option>
+                {classifiedCategories.map(category => (
+                  <option key={category} value={category.toLowerCase()}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Multiple Images Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Images (Max 10) <span className="text-red-500">*</span>
+              </label>
+              <div className="flex items-center justify-center w-full">
+                <label htmlFor="multiple-file-upload" className="w-full flex flex-col items-center px-4 py-6 bg-white text-gray-500 rounded-lg shadow-lg tracking-wide border border-dashed border-gray-400 cursor-pointer hover:bg-gray-50">
+                  <Upload className="w-8 h-8 text-red-800" />
+                  <span className="mt-2 text-base">Select images (Max 10)</span>
+                  <input 
+                    id="multiple-file-upload" 
+                    type="file" 
+                    className="hidden" 
+                    accept="image/*"
+                    multiple
+                    onChange={handleMultipleFileChange}
+                  />
+                </label>
+              </div>
+              
+              {/* Image Previews */}
+              {filePreviews.length > 0 && (
+                <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {filePreviews.map((preview, index) => (
+                    <div key={index} className="relative">
+                      <img 
+                        src={preview} 
+                        alt={`Preview ${index + 1}`} 
+                        className="w-full h-24 object-cover rounded-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Description */}
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                Description <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={classifiedData.description}
+                onChange={handleTextareaChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500 min-h-[100px]"
+                placeholder="Describe your item in detail..."
+                style={{ resize: 'none', overflow: 'hidden' }}
+              />
+            </div>
+
+            {/* Contact Info */}
+            <div>
+              <label htmlFor="contact_info" className="block text-sm font-medium text-gray-700 mb-1">
+                Contact Information <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                id="contact_info"
+                name="contact_info"
+                value={classifiedData.contact_info}
+                onChange={handleClassifiedInputChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                placeholder="Phone number, email, or other contact details"
+                rows="2"
+              />
+            </div>
+          </>
+        );
+
+      case 'obituary':
+        return (
+          <>
+            {/* Person Name */}
+            <div>
+              <label htmlFor="person_name" className="block text-sm font-medium text-gray-700 mb-1">
+                Person's Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="person_name"
+                name="person_name"
+                value={obituaryData.person_name}
+                onChange={handleObituaryInputChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                placeholder="Enter person's full name"
+              />
+            </div>
+
+            {/* Age */}
+            <div>
+              <label htmlFor="age" className="block text-sm font-medium text-gray-700 mb-1">
+                Age
+              </label>
+              <input
+                type="number"
+                id="age"
+                name="age"
+                value={obituaryData.age}
+                onChange={handleObituaryInputChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                placeholder="Enter age"
+              />
+            </div>
+
+            {/* Date of Death */}
+            <div>
+              <label htmlFor="date_of_death" className="block text-sm font-medium text-gray-700 mb-1">
+                Date of Death <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                id="date_of_death"
+                name="date_of_death"
+                value={obituaryData.date_of_death}
+                onChange={handleObituaryInputChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+              />
+            </div>
+
+            {/* Single Image Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Photo (Optional)
+              </label>
+              <div className="flex items-center justify-center w-full">
+                <label htmlFor="obituary-file-upload" className="w-full flex flex-col items-center px-4 py-6 bg-white text-gray-500 rounded-lg shadow-lg tracking-wide border border-dashed border-gray-400 cursor-pointer hover:bg-gray-50">
+                  {singleFilePreview ? (
+                    <div className="relative w-full h-48">
+                      <img 
+                        src={singleFilePreview} 
+                        alt="Preview" 
+                        className="h-full mx-auto object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 text-red-800" />
+                      <span className="mt-2 text-base">Select a photo</span>
+                    </>
+                  )}
+                  <input 
+                    id="obituary-file-upload" 
+                    type="file" 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={handleSingleFileChange}
+                  />
+                </label>
+              </div>
+            </div>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+
   return (
     <div className="min-h-screen bg-gray-50 p-6 pb-20">
       {showLocationPrompt && <LocationPrompt />}
-      
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <Link 
             href="/nearby/home" 
             className="flex items-center text-red-800 hover:text-red-700 transition mb-6"
           >
-            <ArrowLeft className="h-5 w-5 mr-2" /> Back to News List
+            <ArrowLeft className="h-5 w-5 mr-2" /> Back to Home
           </Link>
-          <h1 className="text-3xl font-bold text-gray-800">Create Hyperlocal News</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Create Post</h1>
         </div>
         
         <div className="bg-white rounded-lg shadow-md p-6">
@@ -374,228 +860,109 @@ useEffect(() => {
           
           <form onSubmit={handleSubmit}>
             <div className="space-y-6">
-              {/* Title */}
+              {/* Main Category Selection */}
               <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                  Title <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
-                  placeholder="Enter news title"
-                />
-              </div>
-              
-              {/* Image Upload */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image <span className="text-red-500">*</span>
-                </label>
-                <div className="flex items-center justify-center w-full">
-                  <label htmlFor="file-upload" className="w-full flex flex-col items-center px-4 py-6 bg-white text-gray-500 rounded-lg shadow-lg tracking-wide border border-dashed border-gray-400 cursor-pointer hover:bg-gray-50">
-                    {filePreview ? (
-                      <div className="relative w-full h-48">
-                        <img 
-                          src={filePreview} 
-                          alt="Preview" 
-                          className="h-full mx-auto object-contain"
-                        />
-                      </div>
-                    ) : (
-                      <>
-                        <Upload className="w-8 h-8 text-red-800" />
-                        <span className="mt-2 text-base">Select an image file</span>
-                      </>
-                    )}
-                    <input 
-                      id="file-upload" 
-                      type="file" 
-                      className="hidden" 
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      required
-                    />
-                  </label>
-                </div>
-                {file && (
-                  <p className="mt-2 text-sm text-gray-500">
-                    Selected: {file.name} ({Math.round(file.size / 1024)} KB)
-                  </p>
-                )}
-              </div>
-              
-              {/* Article Content - replaced URL input with textarea */}
-              <div>
-                <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
-                  Article Content <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  id="content"
-                  name="content"
-                  value={formData.content}
-                  onChange={handleTextareaChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500 min-h-[120px]"
-                  placeholder="Enter the full article content here..."
-                  style={{ resize: 'none', overflow: 'hidden' }}
-                />
-              </div>
-              
-              {/* Location */}
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Location <MapPin className="h-4 w-4 inline text-red-800 ml-1" />
-                </label>
-                <div className="p-3 bg-amber-50 border border-amber-200 rounded-md mb-3">
-                  <p className="text-sm text-amber-800">
-                    <strong>Note:</strong> News location must be within 10km of your current location.
-                    {userLocation && (
-                      <span className="block mt-1">
-                        Your current location: {userLocation.latitude.toFixed(4)}, {userLocation.longitude.toFixed(4)}
-                      </span>
-                    )}
-                  </p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="latitude" className="block text-xs text-gray-500 mb-1">
-                      Latitude
-                    </label>
-                    <input
-                      type="number"
-                      step="any"
-                      id="latitude"
-                      name="latitude"
-                      value={formData.latitude}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
-                      placeholder="E.g., 28.6139"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="longitude" className="block text-xs text-gray-500 mb-1">
-                      Longitude
-                    </label>
-                    <input
-                      type="number"
-                      step="any"
-                      id="longitude"
-                      name="longitude"
-                      value={formData.longitude}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
-                      placeholder="E.g., 77.2090"
-                    />
-                  </div>
-                </div>
-              </div> */}
-
-              <RestrictedMapLocationPicker
-                  latitude={formData.latitude}
-                  longitude={formData.longitude}
-                  onLocationChange={handleLocationChange}
-                  radiusKm={10} // 10km radius - you can adjust this
-                  isReadOnly={false}
-              />
-              
-              {/* Category */}
-                <div>
-                <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 mb-1">
-                    Category
+                <label htmlFor="main_category" className="block text-sm font-medium text-gray-700 mb-1">
+                  Post Type <span className="text-red-500">*</span>
                 </label>
                 <select
-                    id="category_id"
-                    name="category_id"
-                    value={formData.category_id}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                  id="main_category"
+                  value={selectedMainCategory}
+                  onChange={(e) => setSelectedMainCategory(e.target.value)}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
                 >
-                    <option value="">Select a category</option>
-                    {categories.map(category => (
-                    <option key={category.id} value={category.id}>
-                        {category.name
-                        .split(" ")
-                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                        .join(" ")}
-                    </option>
-                    ))}
+                  <option value="">Select post type</option>
+                  <option value="news">News Article</option>
+                  <option value="classified">Classified Ad</option>
+                  <option value="obituary">Obituary</option>
                 </select>
-                </div>
-
-
-              {/* Delete After Hours */}
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Delete After Hours <span className="text-red-500">*</span>
-                </label>
-                <div className="flex space-x-6">
-                  <div className="flex items-center">
-                    <input
-                      id="delete-24"
-                      name="delete_after_hours"
-                      type="radio"
-                      value="24"
-                      checked={formData.delete_after_hours === 24}
-                      onChange={(e) => setFormData({...formData, delete_after_hours: parseInt(e.target.value)})}
-                      className="h-4 w-4 text-red-600 border-gray-300 focus:ring-red-500"
-                    />
-                    <label htmlFor="delete-24" className="ml-2 block text-sm text-gray-700">
-                      24 hours
-                    </label>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      id="delete-36"
-                      name="delete_after_hours"
-                      type="radio"
-                      value="36"
-                      checked={formData.delete_after_hours === 36}
-                      onChange={(e) => setFormData({...formData, delete_after_hours: parseInt(e.target.value)})}
-                      className="h-4 w-4 text-red-600 border-gray-300 focus:ring-red-500"
-                    />
-                    <label htmlFor="delete-36" className="ml-2 block text-sm text-gray-700">
-                      36 hours
-                    </label>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      id="delete-48"
-                      name="delete_after_hours"
-                      type="radio"
-                      value="48"
-                      checked={formData.delete_after_hours === 48}
-                      onChange={(e) => setFormData({...formData, delete_after_hours: parseInt(e.target.value)})}
-                      className="h-4 w-4 text-red-600 border-gray-300 focus:ring-red-500"
-                    />
-                    <label htmlFor="delete-48" className="ml-2 block text-sm text-gray-700">
-                      48 hours
-                    </label>
-                  </div>
-                </div>
               </div>
-              
-              {/* Submit Button */}
-              <div className="flex justify-end pt-4">
-                <button
-                  type="submit"
-                  disabled={formSubmitting || uploading || !userLocation}
-                  className="px-6 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                  {(formSubmitting || uploading) ? (
-                    <span className="flex items-center">
-                      <Loader2 className="animate-spin mr-2 h-5 w-5" />
-                      {uploading ? 'Uploading...' : 'Creating...'}
-                    </span>
-                  ) : (
-                    'Create News'
-                  )}
-                </button>
-              </div>
+
+              {/* Category Specific Fields */}
+              {selectedMainCategory && renderCategorySpecificFields()}
+
+              {/* Common Fields - Location */}
+              {selectedMainCategory && (
+                <>
+                  <RestrictedMapLocationPicker
+                    latitude={commonData.latitude}
+                    longitude={commonData.longitude}
+                    onLocationChange={handleLocationChange}
+                    radiusKm={10}
+                    isReadOnly={false}
+                  />
+
+                  {/* Delete After Hours */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Delete After Hours <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex space-x-6">
+                      <div className="flex items-center">
+                        <input
+                          id="delete-24"
+                          name="delete_after_hours"
+                          type="radio"
+                          value="24"
+                          checked={commonData.delete_after_hours === 24}
+                          onChange={(e) => setCommonData({...commonData, delete_after_hours: parseInt(e.target.value)})}
+                          className="h-4 w-4 text-red-600 border-gray-300 focus:ring-red-500"
+                        />
+                        <label htmlFor="delete-24" className="ml-2 block text-sm text-gray-700">
+                          24 hours
+                        </label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          id="delete-36"
+                          name="delete_after_hours"
+                          type="radio"
+                          value="36"
+                          checked={commonData.delete_after_hours === 36}
+                          onChange={(e) => setCommonData({...commonData, delete_after_hours: parseInt(e.target.value)})}
+                          className="h-4 w-4 text-red-600 border-gray-300 focus:ring-red-500"
+                        />
+                        <label htmlFor="delete-36" className="ml-2 block text-sm text-gray-700">
+                          36 hours
+                        </label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          id="delete-48"
+                          name="delete_after_hours"
+                          type="radio"
+                          value="48"
+                          checked={commonData.delete_after_hours === 48}
+                          onChange={(e) => setCommonData({...commonData, delete_after_hours: parseInt(e.target.value)})}
+                          className="h-4 w-4 text-red-600 border-gray-300 focus:ring-red-500"
+                        />
+                        <label htmlFor="delete-48" className="ml-2 block text-sm text-gray-700">
+                          48 hours
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="flex justify-end pt-4">
+                    <button
+                      type="submit"
+                      disabled={formSubmitting || uploading || !userLocation || !selectedMainCategory}
+                      className="px-6 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                    >
+                      {(formSubmitting || uploading) ? (
+                        <span className="flex items-center">
+                          <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                          {uploading ? 'Uploading...' : 'Creating...'}
+                        </span>
+                      ) : (
+                        `Create ${selectedMainCategory === 'news' ? 'News' : selectedMainCategory === 'classified' ? 'Ad' : 'Obituary'}`
+                      )}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </form>
         </div>

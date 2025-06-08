@@ -221,7 +221,6 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
       IconComponent = Info;
   }
 
-
   const iconSvg = ReactDOMServer.renderToString(
     <IconComponent color="white" size={iconSize} strokeWidth={strokeWidth} />
   );

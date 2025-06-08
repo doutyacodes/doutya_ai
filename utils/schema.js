@@ -1629,6 +1629,38 @@ export const HYPERLOCAL_NEWS = mysqlTable("hyperlocal_news", {
   created_at: timestamp("created_at").defaultNow(),
 });
 
+export const CLASSIFIED_ADS = mysqlTable("classified_ads", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),               // Name of item (e.g. "Honda Activa 2022")
+  description: text("description").notNull(),                       // Full details
+  ad_type: varchar("ad_type", { length: 50 }).notNull(),           // 'sell', 'rent'
+  price: decimal("price", { precision: 10, scale: 2 }),            // Price (if any)
+  type: varchar("type", { length: 100 }),                  // 'vehicle', 'electronics', etc.
+  images: text("images"),                                        // Comma-separated URLs or JSON array
+  contact_info: text("contact_info"),                              // Phone/email/etc.
+  latitude: decimal("latitude", { precision: 10, scale: 7 }).notNull(),
+  longitude: decimal("longitude", { precision: 10, scale: 7 }).notNull(),
+  category_id: int("category_id").references(() => HYPERLOCAL_CATEGORIES.id),
+  delete_after_hours: int("delete_after_hours").notNull().default(24),
+  created_by: int("created_by").references(() => USER_DETAILS.id).notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const OBITUARIES = mysqlTable("obituaries", {
+  id: int("id").primaryKey().autoincrement(),
+  person_name: varchar("person_name", { length: 100 }).notNull(),
+  age: int("age"),
+  date_of_death: date("date_of_death").notNull(),
+  image_url: text("image_url"),                          // Optional photo
+  latitude: decimal("latitude", { precision: 10, scale: 7 }).notNull(),
+  longitude: decimal("longitude", { precision: 10, scale: 7 }).notNull(),
+  category_id: int("category_id").references(() => HYPERLOCAL_CATEGORIES.id),
+  delete_after_hours: int("delete_after_hours").notNull().default(48),
+  created_by: int("created_by").references(() => USER_DETAILS.id).notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+
 export const HYPERLOCAL_CATEGORIES = mysqlTable("hyperlocal_categories", {
   id: int("id").primaryKey().autoincrement(),
   name: varchar("name", { length: 100 }).notNull(),  // Example: 'local_news', 'ads', 'events'

@@ -48,6 +48,60 @@ const center = {
 };
 
 
+// // Category icons mapping using Lucide React components
+// const categoryIcons = {
+//   "News": <Newspaper size={24} className="text-blue-600" />,
+//   // "Ads": <Tag size={24} className="text-green-600" />,
+//   "Default": <Globe size={24} className="text-gray-500" />
+// };
+
+// // Category colors for map markers or other UI elements
+// const categoryColors = {
+//   "News": "#1E90FF",    // Dodger Blue
+//   // "Ads": "#2E8B57",     // Sea Green
+//   "Default": "#A52A2A"  // Brown
+// };
+
+// Category icons mapping using Lucide React components
+// const categoryIcons = {
+//   "News": <Newspaper size={24} className="text-blue-600" />,
+//   "Alert": <AlertTriangle size={24} className="text-red-600" />,
+//   "Emergency": <Siren size={24} className="text-red-700" />,
+//   "Weather": <Cloud size={24} className="text-sky-500" />,
+//   "Construction": <HardHat size={24} className="text-yellow-600" />,
+//   "Crime": <Shield size={24} className="text-red-500" />,
+//   "Politics": <Vote size={24} className="text-purple-600" />,
+//   "Events": <Calendar size={24} className="text-indigo-600" />,
+//   "Health": <Heart size={24} className="text-pink-600" />,
+//   "Sports": <Trophy size={24} className="text-amber-600" />,
+//   "Environment": <Leaf size={24} className="text-green-500" />,
+//   "Fire": <Flame size={24} className="text-red-600" />,
+//   "Police": <ShieldCheck size={24} className="text-blue-700" />,
+//   "Public Transport": <Bus size={24} className="text-blue-400" />,
+//   "Festival": <PartyPopper size={24} className="text-pink-500" />,
+//   "Default": <Globe size={24} className="text-gray-500" />
+// };
+
+// // Category colors for map markers or other UI elements
+// const categoryColors = {
+//   "News": "#2563EB",        // Blue-600
+//   "Alert": "#DC2626",       // Red-600
+//   "Emergency": "#B91C1C",   // Red-700
+//   "Weather": "#0EA5E9",     // Sky-500
+//   "Construction": "#CA8A04", // Yellow-600
+//   "Crime": "#EF4444",       // Red-500
+//   "Politics": "#9333EA",    // Purple-600
+//   "Events": "#4F46E5",      // Indigo-600
+//   "Health": "#EC4899",      // Pink-600
+//   "Sports": "#F59E0B",      // Amber-600
+//   "Environment": "#22C55E", // Green-500
+//   "Fire": "#DC2626",        // Red-600
+//   "Police": "#1D4ED8",      // Blue-700
+//   "Public Transport": "#60A5FA", // Blue-400
+//   "Festival": "#EC4899",    // Pink-500
+//   "Default": "#6B7280"      // Gray-500
+// };
+
 // Category icons mapping using Lucide React components for local community news
 const categoryIcons = {
   "News": <Newspaper size={24} className="text-blue-600" />,
@@ -60,7 +114,6 @@ const categoryIcons = {
   "Public Notice": <Megaphone size={24} className="text-orange-600" />,
   "Lost & Found": <Search size={24} className="text-teal-600" />,
   "Ads": <Tag size={24} className="text-green-600" />,
-  "Classifieds": <Briefcase size={24} className="text-yellow-600" />,
   "Default": <Globe size={24} className="text-gray-500" />
 };
 
@@ -76,7 +129,6 @@ const categoryColors = {
   "Public Notice": "#EA580C", // Orange-600
   "Lost & Found": "#0D9488", // Teal-600
   "Ads": "#16A34A",          // Green-600
-  "Classifieds": "#CA8A04", // Yellow-600
   "Default": "#6B7280"       // Gray-500
 };
 
@@ -95,60 +147,22 @@ const categoryDescriptions = {
   "Default": "Uncategorized content"
 };
 
-const createCategoryMarkerIcon = (category, newsCount = 0, itemType = 'news') => {
-  // Get color based on category or item type
-  let color;
-  if (itemType === 'obituary') {
-    color = "#374151"; // Gray-700 for obituaries
-  } else if (itemType === 'classified') {
-    color = "#16A34A"; // Green-600 for classifieds
-  } else {
-    color = category ? categoryColors[category] || categoryColors.Default : categoryColors.Default;
-  }
+const createCategoryMarkerIcon = (category, newsCount = 0) => {
+  const color = category ? categoryColors[category] || categoryColors.Default : categoryColors.Default;
   
-  // Get the corresponding icon for the category or item type
-  let IconComponent;
+  // Get the corresponding icon for the category
+    // Get the corresponding icon for the category
+    let IconComponent;
   
-  if (itemType === 'obituary') {
-    IconComponent = Heart; // Heart icon for obituaries
-  } else if (itemType === 'classified') {
-    IconComponent = Tag; // Tag icon for classifieds
-  } else {
-    // Handle news categories
-    switch(category) {
-      case "News":
-        IconComponent = Newspaper;
-        break;
-      case "Alert":
-        IconComponent = AlertTriangle;
-        break;
-      case "Emergency":
-        IconComponent = Siren;
-        break;
-      case "Weather":
-        IconComponent = CloudRain;
-        break;
-      case "Events":
-        IconComponent = Calendar;
-        break;
-      case "Festival":
-        IconComponent = PartyPopper;
-        break;
-      case "Public Notice":
-        IconComponent = Megaphone;
-        break;
-      case "Lost & Found":
-        IconComponent = Search;
-        break;
-      case "Ads":
-        IconComponent = Tag;
-        break;
-      case "Classifieds":
-        IconComponent = Briefcase;
-        break;
-      default:
-        IconComponent = Globe;
-    }
+     switch(category) {
+    case "News":
+      IconComponent = Newspaper;
+      break;
+    // case "Ads":
+    //   IconComponent = Tag;
+    //   break;
+    default:
+      IconComponent = Globe;
   }
   
   // Create SVG string from the icon component with improved styling
@@ -345,8 +359,6 @@ export default function NewsMap() {
 
   const [showCreatorModal, setShowCreatorModal] = useState(true);
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
-
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const markersRef = useRef([]);
   const clusterRef = useRef(null);
@@ -728,7 +740,6 @@ const restrictMapBounds = useCallback(() => {
     const [lat, lng] = locationKey.split(',').map(parseFloat);
     setSelectedLocation({ key: locationKey, lat, lng });
     setCurrentNewsIndex(index);
-    resetImageIndex(); // Reset image index when switching locations
   };
 
   // Navigate through news at the same location
@@ -743,58 +754,10 @@ const restrictMapBounds = useCallback(() => {
     setCurrentNewsIndex((prev) => (prev > 0 ? prev - 1 : prev));
   };
 
-  // Helper function to parse images for classifieds
-  const parseImages = (imageString) => {
-    if (!imageString) return [];
-    try {
-      // Try parsing as JSON array first
-      return JSON.parse(imageString);
-    } catch {
-      // Fallback to comma-separated string
-      return imageString.split(',').map(url => url.trim()).filter(url => url);
-    }
-  };
-
-  // Helper function to get current image for classifieds
-  const getCurrentImage = (imageString, index = 0) => {
-    const images = parseImages(imageString);
-    return images[index] || images[0] || "/placeholders/news-placeholder.jpg";
-  };
-
-  // Helper function to get total image count
-  const getImageCount = (imageString) => {
-    return parseImages(imageString).length;
-  };
-
-  // Reset image index when location changes
-  const resetImageIndex = () => {
-    setCurrentImageIndex(0);
-  };
-
-  // Navigate through images for classifieds
-  const handleNextImage = () => {
-    if (currentNews && currentNews.type === 'classified') {
-      const totalImages = getImageCount(currentNews.image_url);
-      setCurrentImageIndex(prev => (prev + 1) % totalImages);
-    }
-  };
-
-  const handlePrevImage = () => {
-    if (currentNews && currentNews.type === 'classified') {
-      const totalImages = getImageCount(currentNews.image_url);
-      setCurrentImageIndex(prev => (prev - 1 + totalImages) % totalImages);
-    }
-  };
-
   // Open article in new tab
   const openArticle = (id) => {
     window.open(`/nearby/article/${id}`, '_blank');
     // router.push(`/nearby/article/${id}`);
-  };
-
-  // Open handleClassifieds in new tab
-  const handleClassifieds = (id) => {
-    window.open(`/nearby/classifieds/${id}`, '_blank');
   };
 
       // Handle allow button click in modal
@@ -917,7 +880,7 @@ const handleNavigateToCreator = () => {
 
 
   // Custom Map Type Controls Component
-const MapTypeControls = ({ mapRef }) => {
+  const MapTypeControls = ({ mapRef }) => {
   const [mapType, setMapType] = useState("roadmap");
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -965,17 +928,6 @@ const MapTypeControls = ({ mapRef }) => {
       if (mainNews.category && !selectedCategories.includes(mainNews.category)) {
         return null;
       }
-
-      // Handle filtering for different item types
-      if (mainNews.type === 'obituary' && !selectedCategories.includes('Obituary')) {
-        return null;
-      }
-      if (mainNews.type === 'classified' && !selectedCategories.includes('Ads')) {
-        return null;
-      }
-      if (mainNews.type === 'news' && mainNews.category && !selectedCategories.includes(mainNews.category)) {
-        return null;
-      }
       
       const hasHighPriorityNews = newsAtLocation.some(news => news.is_high_priority);
       
@@ -985,10 +937,11 @@ const MapTypeControls = ({ mapRef }) => {
         icon: createCategoryMarkerIcon(
           mainNews.category, 
           newsAtLocation.length, 
-          mainNews.type // Pass the item type (news/classified/obituary)
+          hasHighPriorityNews
         ),
         zIndex: hasHighPriorityNews ? 9999 : 1,
       });
+
       // Add click listener to marker
       marker.addListener('click', () => {
         handleMarkerClick(locationKey);
@@ -1151,7 +1104,7 @@ const MapTypeControls = ({ mapRef }) => {
       </div>
     );
   }
-  console.log("groupedNews", groupedNews)
+
   // Get current news item for the info window
   const getCurrentNewsItem = () => {
     if (!selectedLocation || !groupedNews[selectedLocation.key]) return null;
@@ -1354,6 +1307,38 @@ const MapTypeControls = ({ mapRef }) => {
         {/* Custom Map Type Controls */}
         <MapTypeControls mapRef={mapRef} />
 
+        {/* News Markers */}
+        {/* {Object.keys(groupedNews).map((locationKey) => {
+          const [lat, lng] = locationKey.split(',').map(parseFloat);
+          const newsAtLocation = groupedNews[locationKey];
+          const mainNews = newsAtLocation[0]; // Use the first (most recent) news for the marker
+          
+          // Skip this marker if its category is not in the selected categories
+          if (mainNews.category && !selectedCategories.includes(mainNews.category)) {
+            return null;
+          }
+          
+          return (
+            <MarkerF
+              key={locationKey}
+              position={{ lat, lng }}
+              onClick={() => handleMarkerClick(locationKey)}
+              icon={createCategoryMarkerIcon(mainNews.category, newsAtLocation.length)}
+              label={
+                newsAtLocation.length > 1 
+                ? {
+                    text: `${newsAtLocation.length}`,
+                    color: "#333",
+                    fontSize: "12px",
+                    fontWeight: "bold"
+                }
+                : null
+              }
+            />
+          );
+        })} */}
+        
+
         {/* Info Window */}
         {currentNews && (
           <InfoWindowF
@@ -1366,170 +1351,79 @@ const MapTypeControls = ({ mapRef }) => {
             <div className="max-w-xs relative select-none">
               {/* Custom header with category badge and custom close button */}
               <div className="relative w-full mb-2">
-                {/* Category badge centered */}
-                <div className="flex justify-center">
-                  <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
-                    <span className="flex items-center justify-center">
-                      {currentNews.category ? 
-                        categoryIcons[currentNews.category] || categoryIcons.Default : 
-                        categoryIcons.Default}
-                    </span>
-                    <span>{currentNews.category || "News"}</span>
+              {/* Category badge centered */}
+              <div className="flex justify-center">
+                <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
+                  <span className="flex items-center justify-center">
+                    {currentNews.category ? 
+                      categoryIcons[currentNews.category] || categoryIcons.Default : 
+                      categoryIcons.Default}
                   </span>
-                </div>
-
-                {/* Close button at top-right corner */}
-                <button 
-                  onClick={() => setSelectedLocation(null)}
-                  className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors"
-                  aria-label="Close"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                  <span>{currentNews.category || "News"}</span>
+                </span>
               </div>
 
-              {/* Render different content based on type */}
-              {currentNews.type === 'obituary' ? (
-                // Obituary Card
-                <div>
-                  {/* Person Image */}
-                  <div className="relative h-32 w-full overflow-hidden rounded-lg mb-3">
-                    <img 
-                      src={currentNews.image_url || "/placeholders/person-placeholder.jpg"} 
-                      alt={currentNews.person_name}
-                      className="object-cover w-full h-full"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "/placeholders/person-placeholder.jpg";
-                      }}
-                    />
-                  </div>
-                  
-                  {/* Obituary Details */}
-                  <div className="text-center">
-                    <h3 className="font-semibold text-lg mb-2">{currentNews.person_name}</h3>
-                    <div className="space-y-1 text-sm text-gray-600 mb-3">
-                      {currentNews.age && <p>Age: {currentNews.age} years</p>}
-                      <p>Date of Death: {new Date(currentNews.date_of_death).toLocaleDateString()}</p>
-                      <p className="text-xs text-gray-500 italic">
-                        Posted: {new Date(currentNews.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="text-center text-sm text-gray-700 italic">
-                      "May their soul rest in peace"
-                    </div>
-                  </div>
-                </div>
-              ) : currentNews.type === 'classified' ? (
-                // Classified Ad Card
-                <div>
-                  {/* Images with navigation */}
-                  <div className="relative h-40 w-full overflow-hidden rounded-lg mb-3">
-                    <img 
-                      src={getCurrentImage(currentNews.image_url, currentImageIndex)} 
-                      alt={currentNews.title}
-                      className="object-cover w-full h-full"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "/placeholders/news-placeholder.jpg";
-                      }}
-                    />
-                    
-                    {/* Image navigation arrows (only show if multiple images) */}
-                    {getImageCount(currentNews.image_url) > 1 && (
-                      <>
-                        <button
-                          onClick={handlePrevImage}
-                          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={handleNextImage}
-                          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </button>
-                        
-                        {/* Image counter */}
-                        <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                          {currentImageIndex + 1}/{getImageCount(currentNews.image_url)}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  
-                  {/* Classified Details */}
-                  <h3 className="font-semibold text-lg mb-2 line-clamp-2">{currentNews.title}</h3>
-                  
-                  <div className="mb-3 space-y-1">
-                    {currentNews.price && (
-                      <p className="text-lg font-bold text-green-600">₹{currentNews.price}</p>
-                    )}
-                    <p className="text-sm text-gray-600 capitalize">
-                      <span className="font-medium">{currentNews.ad_type}</span>
-                      {currentNews.item_type && ` • ${currentNews.item_type}`}
-                    </p>
-                    <p className="text-xs text-gray-500 italic">
-                      {new Date(currentNews.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
+              {/* Close button at top-right corner */}
+              <button 
+                onClick={() => setSelectedLocation(null)}
+                className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors"
+                aria-label="Close"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
-                  {/* Action Button */}
-                  <button
-                    onClick={() => handleClassifieds(currentNews.id)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
-                  >
-                    View Details
-                  </button>
-                </div>
-              ) : (
-                // News Card (existing)
-                <div>
-                  {/* News Image */}
-                  <div className="relative h-40 w-full overflow-hidden rounded-lg mb-3">
-                    <img 
-                      src={currentNews.image_url} 
-                      alt={currentNews.title}
-                      className="object-cover w-full h-full"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "/placeholders/news-placeholder.jpg";
-                      }}
-                    />
-                  </div>
-                  
-                  {/* News Content */}
-                  <h3 className="font-semibold text-lg mb-2 line-clamp-2">{currentNews.title}</h3>
-                  
-                  {/* Content */}
-                  <div className="mb-4">
-                    <p className="text-gray-600 text-sm">
-                      {truncate(currentNews.content, 120)}
-                    </p>
-                    <p className="text-xs text-gray-500 italic font-light text-right mt-1">
-                      {new Date(currentNews.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-
-                  {/* Action Button */}
-                  <button
-                    onClick={() => openArticle(currentNews.id)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
-                  >
-                    Read Full Article
-                  </button>
-                </div>
-              )}
               
-              {/* Navigation Controls for Multiple News (only for news/classifieds, not obituaries) */}
-              {hasMultipleNews && currentNews.type !== 'obituary' && (
+              {/* Add CSS to hide the default close button */}
+              <style jsx>{`
+                .gm-ui-hover-effect {
+                  display: none !important;
+                }
+                
+                /* Target the parent container's top padding to remove extra space */
+                .gm-style .gm-style-iw-c {
+                  padding-top: 12px !important;
+                }
+              `}</style>
+              
+              {/* News Image */}
+              <div className="relative h-40 w-full overflow-hidden rounded-lg mb-3">
+                <img 
+                  src={currentNews.image_url} 
+                  alt={currentNews.title}
+                  className="object-cover w-full h-full"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/placeholders/news-placeholder.jpg";
+                  }}
+                />
+              </div>
+              
+              {/* News Content */}
+              <h3 className="font-semibold text-lg mb-2 line-clamp-2">{currentNews.title}</h3>
+              
+              {/* Content */}
+              <div className="mb-4">
+                <p className="text-gray-600 text-sm">
+                  {truncate(currentNews.content, 120)}
+                </p>
+                <p className="text-xs text-gray-500 italic font-light text-right mt-1">
+                  {new Date(currentNews.created_at).toLocaleDateString()}
+                </p>
+              </div>
+
+              {/* Action Button */}
+              <button
+                onClick={() => openArticle(currentNews.id)}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
+              >
+                Read Full Article
+              </button>
+              
+              {/* Navigation Controls for Multiple News */}
+              {hasMultipleNews && (
                 <div className="flex items-center justify-between mt-3">
                   <button
                     onClick={handlePrevNews}
@@ -1558,17 +1452,6 @@ const MapTypeControls = ({ mapRef }) => {
                   </button>
                 </div>
               )}
-              
-              {/* Add CSS to hide the default close button */}
-              <style jsx>{`
-                .gm-ui-hover-effect {
-                  display: none !important;
-                }
-                
-                .gm-style .gm-style-iw-c {
-                  padding-top: 12px !important;
-                }
-              `}</style>
             </div>
           </InfoWindowF>
         )}
