@@ -747,7 +747,7 @@ export default function CreateNewsPage() {
             {/* Person Name */}
             <div>
               <label htmlFor="person_name" className="block text-sm font-medium text-gray-700 mb-1">
-                Person's Name <span className="text-red-500">*</span>
+                Person&apos;s Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"

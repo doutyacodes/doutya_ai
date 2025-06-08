@@ -30,6 +30,7 @@ import {
   } from "lucide-react";
 import { FaHandcuffs } from "react-icons/fa6";
 import { GiCrossedSwords } from "react-icons/gi";
+import { useRouter } from "next/navigation";
 
 // Map container styles
 const containerStyle = {
@@ -400,6 +401,7 @@ const MobileFilterDropdown = ({
   showFiltersDropdown,
   setShowFiltersDropdown,
   buttonStyle,
+  fetchNewsData,
   mapRef 
 }) => {
   const [activeFilter, setActiveFilter] = useState(null);
@@ -569,6 +571,7 @@ const MobileFilterDropdown = ({
                   mapRef.panTo(center);
                   mapRef.setZoom(DEFAULT_ZOOM);
                 }
+                fetchNewsData(null, selectedLanguages);
                 setShowFiltersDropdown(false);
                 setActiveFilter(null);
               }}
@@ -689,13 +692,14 @@ const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, i
   );
 };
 
-const ResetZoomButton = ({ mapRef, buttonStyle }) => {
+const ResetZoomButton = ({ mapRef, buttonStyle, fetchNewsData, selectedLanguages }) => {
   const handleResetZoom = () => {
     if (mapRef) {
       // Smooth animation to default view
       mapRef.panTo(center);
       mapRef.setZoom(DEFAULT_ZOOM);
     }
+    fetchNewsData(null, selectedLanguages);
   };
 
   return (
@@ -770,6 +774,7 @@ export default function NewsMap() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mapRef, setMapRef] = useState(null);
+  const router = useRouter();
 
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
@@ -1562,6 +1567,7 @@ const getUserLocation = useCallback(async () => {
             showFiltersDropdown={showFiltersDropdown}
             setShowFiltersDropdown={setShowFiltersDropdown}
             buttonStyle={buttonStyle}
+            fetchNewsData={fetchNewsData}
             mapRef={mapRef}
           />
         ) : (
@@ -1579,7 +1585,7 @@ const getUserLocation = useCallback(async () => {
               buttonStyle={buttonStyle}
               isMobile={isMobile}
             />
-            <ResetZoomButton mapRef={mapRef} buttonStyle={buttonStyle} /> {/* Add this line */}
+            <ResetZoomButton mapRef={mapRef} buttonStyle={buttonStyle} fetchNewsData={fetchNewsData} selectedLanguages={selectedLanguages}/> {/* Add this line */}
           </div>
         )}
       </div>

@@ -1418,7 +1418,7 @@ const MapTypeControls = ({ mapRef }) => {
                       </p>
                     </div>
                     <div className="text-center text-sm text-gray-700 italic">
-                      "May their soul rest in peace"
+                      &quot;May their soul rest in peace&quot;
                     </div>
                   </div>
                 </div>
