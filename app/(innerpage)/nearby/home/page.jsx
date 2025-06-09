@@ -389,7 +389,7 @@ export default function AdminContentPage() {
                 <p className="text-gray-600 leading-relaxed">
                   Share news, classifieds, and obituaries within a 10km radius of your location. 
                   All content appears as interactive markers on a map, helping you stay connected 
-                  with what's happening in your immediate community.
+                  with what&apos;s happening in your immediate community.
                 </p>
               </div>
 
@@ -441,7 +441,7 @@ export default function AdminContentPage() {
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Confirm Deletion</h3>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete "{contentToDelete?.title || contentToDelete?.person_name}"? This action cannot be undone.
+              Are you sure you want to delete &quot;{contentToDelete?.title || contentToDelete?.person_name}&quot;? This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">
               <button 
