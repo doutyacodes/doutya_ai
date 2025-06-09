@@ -193,6 +193,10 @@ export default function CreateNewsPage() {
         }
         setLocationError(errorMessage);
         setLocationLoading(false);
+        // Show location prompt if permission was denied
+        if (error.code === 1) {
+          setShowLocationPrompt(true);
+        }
       },
       { enableHighAccuracy: true }
     );
@@ -636,7 +640,7 @@ export default function CreateNewsPage() {
                 value={classifiedData.price}
                 onChange={handleClassifiedInputChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
-                placeholder="Enter price (optional)"
+                placeholder="Enter price"
               />
             </div>
 
@@ -863,7 +867,7 @@ export default function CreateNewsPage() {
               {/* Main Category Selection */}
               <div>
                 <label htmlFor="main_category" className="block text-sm font-medium text-gray-700 mb-1">
-                  Post Type <span className="text-red-500">*</span>
+                  Content Type <span className="text-red-500">*</span>
                 </label>
                 <select
                   id="main_category"
@@ -872,7 +876,7 @@ export default function CreateNewsPage() {
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
                 >
-                  <option value="">Select post type</option>
+                  <option value="">Select content type</option>
                   <option value="news">News Article</option>
                   <option value="classified">Classified Ad</option>
                   <option value="obituary">Obituary</option>

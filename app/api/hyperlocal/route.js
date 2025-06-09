@@ -1,10 +1,10 @@
 import { db } from "@/utils";
-import { HYPERLOCAL_CATEGORIES, HYPERLOCAL_NEWS } from "@/utils/schema";
+import { HYPERLOCAL_CATEGORIES, HYPERLOCAL_NEWS, CLASSIFIED_ADS, OBITUARIES } from "@/utils/schema";
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/jwtMiddleware";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 
-// GET - Fetch all news
+// GET - Fetch all content (news, classifieds, obituaries)
 export async function GET(req) {
   // Authenticate user
   const authResult = await authenticate(req);
@@ -14,36 +14,109 @@ export async function GET(req) {
 
   const userData = authResult.decoded_Data;
   const userId = userData.id;
-  console.log("user id", userId)
+  
+  // Get the content type from query parameters
+  const { searchParams } = new URL(req.url);
+  const contentType = searchParams.get('type') || 'all'; // 'all', 'news', 'classifieds', 'obituaries'
 
   try {
-    // Fetch all news items with their associated categories
-    const news = await db
-    .select({
-      id: HYPERLOCAL_NEWS.id,
-      title: HYPERLOCAL_NEWS.title,
-      image_url: HYPERLOCAL_NEWS.image_url,
-      latitude: HYPERLOCAL_NEWS.latitude,
-      longitude: HYPERLOCAL_NEWS.longitude,
-      content: HYPERLOCAL_NEWS.content,
-      category_id: HYPERLOCAL_NEWS.category_id,
-      created_at: HYPERLOCAL_NEWS.created_at,
-      category_name: HYPERLOCAL_CATEGORIES.name,
-    })
-    .from(HYPERLOCAL_NEWS)
-    .leftJoin(HYPERLOCAL_CATEGORIES, eq(HYPERLOCAL_NEWS.category_id, HYPERLOCAL_CATEGORIES.id))
-    .where(eq(HYPERLOCAL_NEWS.created_by, userId))
-    .orderBy(desc(HYPERLOCAL_NEWS.created_at));
+    let allContent = [];
 
-    // Send the news items as a JSON response
+    // Fetch news if requested
+    if (contentType === 'all' || contentType === 'news') {
+      const news = await db
+        .select({
+          id: HYPERLOCAL_NEWS.id,
+          title: HYPERLOCAL_NEWS.title,
+          image_url: HYPERLOCAL_NEWS.image_url,
+          latitude: HYPERLOCAL_NEWS.latitude,
+          longitude: HYPERLOCAL_NEWS.longitude,
+          content: HYPERLOCAL_NEWS.content,
+          category_id: HYPERLOCAL_NEWS.category_id,
+          created_at: HYPERLOCAL_NEWS.created_at,
+          category_name: HYPERLOCAL_CATEGORIES.name,
+          content_type: sql`'news'`.as('content_type')
+        })
+        .from(HYPERLOCAL_NEWS)
+        .leftJoin(HYPERLOCAL_CATEGORIES, eq(HYPERLOCAL_NEWS.category_id, HYPERLOCAL_CATEGORIES.id))
+        .where(eq(HYPERLOCAL_NEWS.created_by, userId))
+        .orderBy(desc(HYPERLOCAL_NEWS.created_at));
+      
+      allContent = [...allContent, ...news];
+    }
+
+    // Fetch classifieds if requested
+    if (contentType === 'all' || contentType === 'classifieds') {
+      const classifieds = await db
+        .select({
+          id: CLASSIFIED_ADS.id,
+          title: CLASSIFIED_ADS.title,
+          description: CLASSIFIED_ADS.description,
+          ad_type: CLASSIFIED_ADS.ad_type,
+          price: CLASSIFIED_ADS.price,
+          type: CLASSIFIED_ADS.type,
+          images: CLASSIFIED_ADS.images,
+          contact_info: CLASSIFIED_ADS.contact_info,
+          latitude: CLASSIFIED_ADS.latitude,
+          longitude: CLASSIFIED_ADS.longitude,
+          category_id: CLASSIFIED_ADS.category_id,
+          created_at: CLASSIFIED_ADS.created_at,
+          category_name: HYPERLOCAL_CATEGORIES.name,
+          content_type: sql`'classifieds'`.as('content_type')
+        })
+        .from(CLASSIFIED_ADS)
+        .leftJoin(HYPERLOCAL_CATEGORIES, eq(CLASSIFIED_ADS.category_id, HYPERLOCAL_CATEGORIES.id))
+        .where(eq(CLASSIFIED_ADS.created_by, userId))
+        .orderBy(desc(CLASSIFIED_ADS.created_at));
+      
+      allContent = [...allContent, ...classifieds];
+    }
+
+    // Fetch obituaries if requested
+    if (contentType === 'all' || contentType === 'obituaries') {
+      const obituaries = await db
+        .select({
+          id: OBITUARIES.id,
+          person_name: OBITUARIES.person_name,
+          age: OBITUARIES.age,
+          date_of_death: OBITUARIES.date_of_death,
+          image_url: OBITUARIES.image_url,
+          latitude: OBITUARIES.latitude,
+          longitude: OBITUARIES.longitude,
+          category_id: OBITUARIES.category_id,
+          created_at: OBITUARIES.created_at,
+          category_name: HYPERLOCAL_CATEGORIES.name,
+          content_type: sql`'obituaries'`.as('content_type')
+        })
+        .from(OBITUARIES)
+        .leftJoin(HYPERLOCAL_CATEGORIES, eq(OBITUARIES.category_id, HYPERLOCAL_CATEGORIES.id))
+        .where(eq(OBITUARIES.created_by, userId))
+        .orderBy(desc(OBITUARIES.created_at));
+      
+      allContent = [...allContent, ...obituaries];
+    }
+
+    // Sort all content by created_at in descending order
+    allContent.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    // Send the content as a JSON response
     return NextResponse.json(
-      { news },
+      { 
+        content: allContent, 
+        type: contentType,
+        count: {
+          total: allContent.length,
+          news: allContent.filter(item => item.content_type === 'news').length,
+          classifieds: allContent.filter(item => item.content_type === 'classifieds').length,
+          obituaries: allContent.filter(item => item.content_type === 'obituaries').length
+        }
+      },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error fetching news:", error);
+    console.error("Error fetching content:", error);
     return NextResponse.json(
-      { message: "Error fetching news", details: error.message },
+      { message: "Error fetching content", details: error.message },
       { status: 500 }
     );
   }

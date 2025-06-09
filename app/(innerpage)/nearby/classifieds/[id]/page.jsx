@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { ChevronLeft, ChevronRight, Phone, Mail, MapPin, Calendar, Tag, DollarSign } from 'lucide-react';
+import ShareButton from '@/app/_components/ShareButton';
 
 export default function ClassifiedPage() {
   const { id } = useParams();
@@ -16,8 +17,8 @@ export default function ClassifiedPage() {
   useEffect(() => {
     async function fetchClassifiedAd() {
       try {
-        const response = await fetch(`/api/classified/${id}`);
-        
+        const response = await fetch(`/api/hyperlocal/classified/${id}`);
+
         if (!response.ok) {
           throw new Error('Failed to fetch classified ad');
         }
@@ -173,6 +174,14 @@ export default function ClassifiedPage() {
               ))}
             </div>
           )}
+          {/* Share Button */}
+          <div className="flex justify-end">
+            <ShareButton
+              title={classifiedAd.title}
+              description={classifiedAd.description.substring(0, 150) + '...'}
+              className="w-full sm:w-auto"
+            />
+          </div>
         </div>
 
         {/* Details Section */}

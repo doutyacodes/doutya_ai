@@ -1,45 +1,44 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Trash2, Edit, Plus, AlertCircle, MapPin, Users, X } from 'lucide-react';
-import useAuthRedirect from '../_component/useAuthRedirect';
+import { Trash2, Edit, Plus, AlertCircle, MapPin, Users, X, Filter, Calendar, DollarSign, Phone, Heart } from 'lucide-react';
 
-export default function AdminNewsPage() {
-  const [news, setNews] = useState([]);
+export default function AdminContentPage() {
+  const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showIntroModal, setShowIntroModal] = useState(true);
-  const [newsToDelete, setNewsToDelete] = useState(null);
+  const [contentToDelete, setContentToDelete] = useState(null);
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [counts, setCounts] = useState({ total: 0, news: 0, classifieds: 0, obituaries: 0 });
   const router = useRouter();
-  
-  useAuthRedirect();
 
   useEffect(() => {
-    fetchNews();
+    fetchContent();
     // Check if user has seen the intro before
-    const hasSeenIntro = localStorage.getItem('hasSeenCreatorIntro');
+    const hasSeenIntro = typeof window !== 'undefined' ? localStorage.getItem('hasSeenCreatorIntro') : null;
     if (hasSeenIntro) {
       setShowIntroModal(false);
     }
-  }, []);
+  }, [activeFilter]);
 
-  const fetchNews = async () => {
+  const fetchContent = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/hyperlocal', {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
+      const res = await fetch(`/api/hyperlocal?type=${activeFilter}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('user_token')}`
+          'Authorization': `Bearer ${token}`
         },
       });
       if (!res.ok) {
-        throw new Error('Failed to fetch news');
+        throw new Error('Failed to fetch content');
       }
       const data = await res.json();
-      setNews(data.news);
+      setContent(data.content);
+      setCounts(data.count);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -49,36 +48,39 @@ export default function AdminNewsPage() {
 
   const handleIntroClose = () => {
     setShowIntroModal(false);
-    localStorage.setItem('hasSeenCreatorIntro', 'true');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hasSeenCreatorIntro', 'true');
+    }
   };
 
   const handleDelete = async () => {
-    if (!newsToDelete) return;
+    if (!contentToDelete) return;
     
     try {
-      const res = await fetch(`/api/hyperlocal/${newsToDelete.id}`, {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
+      const res = await fetch(`/api/hyperlocal/${contentToDelete.id}?type=${contentToDelete.content_type}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('user_token')}`
+          'Authorization': `Bearer ${token}`
         },
         method: 'DELETE',
       });
       
       if (!res.ok) {
-        throw new Error('Failed to delete news');
+        throw new Error('Failed to delete content');
       }
       
-      // Remove the deleted news from the state
-      setNews(news.filter(item => item.id !== newsToDelete.id));
+      // Remove the deleted content from the state
+      setContent(content.filter(item => item.id !== contentToDelete.id));
       setShowDeleteModal(false);
-      setNewsToDelete(null);
+      setContentToDelete(null);
     } catch (err) {
-      console.error('Error deleting news:', err);
+      console.error('Error deleting content:', err);
       setError(err.message);
     }
   };
 
-  const confirmDelete = (newsItem) => {
-    setNewsToDelete(newsItem);
+  const confirmDelete = (contentItem) => {
+    setContentToDelete(contentItem);
     setShowDeleteModal(true);
   };
 
@@ -89,7 +91,178 @@ export default function AdminNewsPage() {
 
   const truncate = (text, length = 100) => {
     if (!text) return "";
-      return text.length > length ? text.slice(0, length) + "..." : text;
+    return text.length > length ? text.slice(0, length) + "..." : text;
+  };
+
+  const getImageUrl = (imageUrl, contentType) => {
+    if (!imageUrl) return '/placeholder-image.jpg';
+    if (imageUrl.startsWith('http')) return imageUrl;
+    
+    // Handle different image sources based on content type
+    if (contentType === 'classifieds' && imageUrl.includes(',')) {
+      // For classifieds with multiple images, take the first one
+      const firstImage = imageUrl.split(',')[0].trim();
+      return firstImage.startsWith('http') ? firstImage : `https://wowfy.in/testusr/images/${firstImage}`;
+    }
+    
+    return `https://wowfy.in/testusr/images/${imageUrl}`;
+  };
+
+  const renderNewsCard = (item) => (
+    <div key={`${item.content_type}-${item.id}`} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+      <div className="relative h-48 w-full">
+        <img
+          src={getImageUrl(item.image_url, item.content_type)}
+          alt={item.title}
+          className="object-cover w-full h-full"
+        />
+        <div className="absolute top-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">
+          NEWS
+        </div>
+      </div>
+      <div className="p-4 flex-grow">
+        <h2 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-2">{item.title}</h2>
+        <p className="text-gray-600 text-sm">
+          {truncate(item.content, 120)}
+        </p>
+      </div>
+      <div className="border-t border-gray-100 p-4 flex justify-between items-center">
+        <span className="text-sm text-gray-500">{formatDate(item.created_at)}</span>
+        <div className="flex space-x-2">
+          <button 
+            onClick={() => router.push(`/nearby/edit/${item.id}?type=news`)}
+            className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition"
+            aria-label="Edit news"
+          >
+            <Edit size={18} />
+          </button>
+          <button 
+            onClick={() => confirmDelete(item)}
+            className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition"
+            aria-label="Delete news"
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderClassifiedCard = (item) => (
+    <div key={`${item.content_type}-${item.id}`} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+      <div className="relative h-48 w-full">
+        <img
+          src={getImageUrl(item.images, item.content_type)}
+          alt={item.title}
+          className="object-cover w-full h-full"
+        />
+        <div className="absolute top-2 left-2 bg-green-600 text-white px-2 py-1 rounded text-xs font-semibold">
+          {item.ad_type?.toUpperCase() || 'CLASSIFIED'}
+        </div>
+        {item.price && (
+          <div className="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-bold flex items-center">
+            <DollarSign size={12} className="mr-1" />
+            {item.price}
+          </div>
+        )}
+      </div>
+      <div className="p-4 flex-grow">
+        <h2 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-2">{item.title}</h2>
+        <p className="text-gray-600 text-sm mb-2">
+          {truncate(item.description, 100)}
+        </p>
+        {item.type && (
+          <span className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium mb-2">
+            {item.type}
+          </span>
+        )}
+        {item.contact_info && (
+          <div className="flex items-center text-gray-500 text-xs">
+            <Phone size={12} className="mr-1" />
+            <span>{truncate(item.contact_info, 30)}</span>
+          </div>
+        )}
+      </div>
+      <div className="border-t border-gray-100 p-4 flex justify-between items-center">
+        <span className="text-sm text-gray-500">{formatDate(item.created_at)}</span>
+        <div className="flex space-x-2">
+          <button 
+            onClick={() => router.push(`/nearby/edit/${item.id}?type=classified`)}
+            className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition"
+            aria-label="Edit classified"
+          >
+            <Edit size={18} />
+          </button>
+          <button 
+            onClick={() => confirmDelete(item)}
+            className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition"
+            aria-label="Delete classified"
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderObituaryCard = (item) => (
+    <div key={`${item.content_type}-${item.id}`} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col border-l-4 border-purple-500">
+      <div className="relative h-48 w-full">
+        <img
+          src={getImageUrl(item.image_url, item.content_type)}
+          alt={item.person_name}
+          className="object-cover w-full h-full"
+        />
+        <div className="absolute top-2 left-2 bg-purple-600 text-white px-2 py-1 rounded text-xs font-semibold flex items-center">
+          <Heart size={12} className="mr-1" />
+          OBITUARY
+        </div>
+      </div>
+      <div className="p-4 flex-grow">
+        <h2 className="text-xl font-semibold text-gray-800 mb-2">{item.person_name}</h2>
+        <div className="space-y-1 text-sm text-gray-600">
+          {item.age && (
+            <p>Age: {item.age} years</p>
+          )}
+          <div className="flex items-center">
+            <Calendar size={14} className="mr-2" />
+            <span>Passed away: {formatDate(item.date_of_death)}</span>
+          </div>
+        </div>
+      </div>
+      <div className="border-t border-gray-100 p-4 flex justify-between items-center">
+        <span className="text-sm text-gray-500">Posted: {formatDate(item.created_at)}</span>
+        <div className="flex space-x-2">
+          <button 
+            onClick={() => router.push(`/nearby/edit/${item.id}?type=obituary`)}
+            className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition"
+            aria-label="Edit obituary"
+          >
+            <Edit size={18} />
+          </button>
+          <button 
+            onClick={() => confirmDelete(item)}
+            className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition"
+            aria-label="Delete obituary"
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderCard = (item) => {
+    switch (item.content_type) {
+      case 'news':
+        return renderNewsCard(item);
+      case 'classifieds':
+        return renderClassifiedCard(item);
+      case 'obituaries':
+        return renderObituaryCard(item);
+      default:
+        return renderNewsCard(item);
+    }
   };
 
   if (loading) {
@@ -98,7 +271,7 @@ export default function AdminNewsPage() {
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="flex items-center space-x-2 text-red-800">
             <div className="w-4 h-4 border-2 border-red-800 border-t-transparent rounded-full animate-spin"></div>
-            <p>Loading news...</p>
+            <p>Loading content...</p>
           </div>
         </div>
       </div>
@@ -111,7 +284,7 @@ export default function AdminNewsPage() {
         <div className="bg-white p-6 rounded-lg shadow-md text-red-800">
           <p className="flex items-center"><AlertCircle className="mr-2" /> Error: {error}</p>
           <button 
-            onClick={fetchNews}
+            onClick={fetchContent}
             className="mt-4 px-4 py-2 bg-red-800 text-white rounded hover:bg-red-700 transition"
           >
             Try Again
@@ -125,67 +298,61 @@ export default function AdminNewsPage() {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center sm:text-left">
-            News Management
-            </h1>
-            <a 
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center sm:text-left">
+            Content Management
+          </h1>
+          <a 
             href="/nearby/create" 
             className="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition"
-            >
+          >
             <Plus className="mr-2 h-5 w-5" /> Create Content
-            </a>
+          </a>
         </div>
 
-        {/* Empty state with responsive padding and button */}
-        {news.length === 0 ? (
-            <div className="bg-white p-4 sm:p-8 rounded-lg shadow-md text-center">
-            <p className="text-gray-600 mb-4">No news articles found.</p>
-            <a 
-                href="/nearby/create" 
-                className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition"
-        >
-            <Plus className="mr-2 h-5 w-5" /> Add Your First News Article
-        </a>
+        {/* Filter Tabs */}
+        <div className="bg-white rounded-lg shadow-sm mb-6 p-4">
+          <div className="flex items-center space-x-4 mb-4">
+            <Filter className="text-gray-600" size={20} />
+            <span className="text-gray-700 font-medium">Filter by type:</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { key: 'all', label: 'All', count: counts.total },
+              { key: 'news', label: 'News', count: counts.news },
+              { key: 'classifieds', label: 'Classifieds', count: counts.classifieds },
+              { key: 'obituaries', label: 'Obituaries', count: counts.obituaries }
+            ].map((filter) => (
+              <button
+                key={filter.key}
+                onClick={() => setActiveFilter(filter.key)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  activeFilter === filter.key
+                    ? 'bg-red-800 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {filter.label} ({filter.count})
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* Content Grid */}
+        {content.length === 0 ? (
+          <div className="bg-white p-4 sm:p-8 rounded-lg shadow-md text-center">
+            <p className="text-gray-600 mb-4">
+              No {activeFilter === 'all' ? 'content' : activeFilter} found.
+            </p>
+            <a 
+              href="/nearby/create" 
+              className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700 transition"
+            >
+              <Plus className="mr-2 h-5 w-5" /> Add {activeFilter === 'all' ? 'Content' : activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)}
+            </a>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {news.map(newsItem => (
-              <div key={newsItem.id} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
-                <div className="relative h-48 w-full">
-                  <img
-                    src={newsItem.image_url.startsWith('http') ? newsItem.image_url : `https://wowfy.in/testusr/images/${newsItem.image_url}`} 
-                    alt={newsItem.title}
-                    
-                    className="object-cover w-full h-full" 
-                  />
-                </div>
-                <div className="p-4 flex-grow">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-2">{newsItem.title}</h2>
-                    <p className="text-gray-600 text-sm">
-                        {truncate(newsItem.content, 120)}
-                    </p>
-                </div>
-                <div className="border-t border-gray-100 p-4 flex justify-between items-center">
-                  <span className="text-sm text-gray-500">{formatDate(newsItem.created_at)}</span>
-                  <div className="flex space-x-2">
-                    <button 
-                      onClick={() => router.push(`/nearby/edit/${newsItem.id}`)}
-                      className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition"
-                      aria-label="Edit news"
-                    >
-                      <Edit size={18} />
-                    </button>
-                    <button 
-                      onClick={() => confirmDelete(newsItem)}
-                      className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition"
-                      aria-label="Delete news"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {content.map(renderCard)}
           </div>
         )}
       </div>
@@ -207,52 +374,47 @@ export default function AdminNewsPage() {
                   <Users className="text-white" size={32} />
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-2">Welcome to Creator Hub!</h2>
-                <p className="text-red-100">Share local news with your community</p>
+                <p className="text-red-100">Share local content with your community</p>
               </div>
             </div>
 
             {/* Content */}
             <div className="p-6 space-y-6">
-              {/* About Nearby News */}
+              {/* About Local Content */}
               <div className="bg-gray-50 rounded-xl p-5">
                 <div className="flex items-center mb-3">
                   <MapPin className="text-red-800 mr-3" size={24} />
-                  <h3 className="text-xl font-semibold text-gray-800">Discover Nearby News</h3>
+                  <h3 className="text-xl font-semibold text-gray-800">Discover Local Content</h3>
                 </div>
                 <p className="text-gray-600 leading-relaxed">
-                  Our &quot;Nearby News&quot; feature shows you local stories within a 10km radius of your location. 
-                  All news articles are displayed as interactive markers on a map, helping you stay connected 
-                  with what&apos;s happening in your immediate community.
+                  Share news, classifieds, and obituaries within a 10km radius of your location. 
+                  All content appears as interactive markers on a map, helping you stay connected 
+                  with what's happening in your immediate community.
                 </p>
               </div>
 
-              {/* About Being a Creator */}
+              {/* Content Types */}
               <div className="bg-red-50 rounded-xl p-5 border-l-4 border-red-800">
                 <div className="flex items-center mb-3">
                   <Plus className="text-red-800 mr-3" size={24} />
-                  <h3 className="text-xl font-semibold text-gray-800">Become a Local Creator</h3>
+                  <h3 className="text-xl font-semibold text-gray-800">Content Types</h3>
                 </div>
-                <p className="text-gray-600 leading-relaxed mb-4">
-                  As a creator, you can contribute to your local community by sharing news and events 
-                  happening around you. Your stories will appear on the map for others in your area to discover.
-                </p>
                 
                 <div className="bg-white rounded-lg p-4 space-y-3">
-                  <h4 className="font-semibold text-gray-800 mb-2">Key Features:</h4>
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li className="flex items-center">
-                      <div className="w-2 h-2 bg-red-800 rounded-full mr-3"></div>
-                      Share news within 10km of your current location
-                    </li>
-                    <li className="flex items-center">
-                      <div className="w-2 h-2 bg-red-800 rounded-full mr-3"></div>
-                      Location access required for accurate positioning
-                    </li>
-                    <li className="flex items-center">
-                      <div className="w-2 h-2 bg-red-800 rounded-full mr-3"></div>
-                      Help build a connected local community
-                    </li>
-                  </ul>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="text-center p-3 bg-blue-50 rounded-lg">
+                      <div className="font-semibold text-blue-800 mb-1">News</div>
+                      <div className="text-gray-600">Share local news and events</div>
+                    </div>
+                    <div className="text-center p-3 bg-green-50 rounded-lg">
+                      <div className="font-semibold text-green-800 mb-1">Classifieds</div>
+                      <div className="text-gray-600">Buy, sell, or rent items</div>
+                    </div>
+                    <div className="text-center p-3 bg-purple-50 rounded-lg">
+                      <div className="font-semibold text-purple-800 mb-1">Obituaries</div>
+                      <div className="text-gray-600">Honor community members</div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -262,7 +424,7 @@ export default function AdminNewsPage() {
                   onClick={handleIntroClose}
                   className="bg-red-800 text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
-                  Start Creating News
+                  Start Creating Content
                 </button>
                 <p className="text-sm text-gray-500 mt-3">
                   You can always view this information again from the help section
@@ -279,7 +441,7 @@ export default function AdminNewsPage() {
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Confirm Deletion</h3>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete &quot;{newsToDelete?.title}&quot;? This action cannot be undone.
+              Are you sure you want to delete "{contentToDelete?.title || contentToDelete?.person_name}"? This action cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">
               <button 

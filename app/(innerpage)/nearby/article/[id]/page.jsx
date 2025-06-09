@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
+import ShareButton from '@/app/_components/ShareButton';
 
 export default function ArticlePage() {
   const { id } = useParams();
@@ -108,14 +109,15 @@ export default function ArticlePage() {
         ))}
       </div>
 
-      
-      {/* Article Category */}
-      {article.category_name && (
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-          <span className="text-red-800 font-medium">Category: </span>
-          <span>{article.category_name}</span>
-        </div>
-      )}
+    {/* Share Button */}
+    <div className="mt-8 flex justify-center">
+      <ShareButton
+        title={article.title}
+        description={article.content.substring(0, 150) + '...'}
+        className="w-full sm:w-auto"
+      />
+    </div>
+
     </div>
   );
 }
