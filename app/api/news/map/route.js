@@ -21,6 +21,7 @@ export async function GET(req) {
         title: MAP_NEWS.title,
         image_url: MAP_NEWS.image_url,
         article_url: MAP_NEWS.article_url,
+        summary: MAP_NEWS.summary,
         source_name: MAP_NEWS.source_name,
         latitude: MAP_NEWS.latitude,
         longitude: MAP_NEWS.longitude,

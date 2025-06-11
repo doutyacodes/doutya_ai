@@ -1676,6 +1676,17 @@ const getUserLocation = useCallback(async () => {
               
               <h3 className="font-semibold text-lg mb-2 line-clamp-2">{currentNews.title}</h3>
               
+              {/* Summary Section */}
+              {
+                currentNews.summary && (
+                <div className="mb-3">
+                  <p className="text-xs text-gray-700 leading-tight text-justify">
+                    {currentNews.summary}
+                  </p>
+                </div>
+                )
+              }
+              
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   {currentNews.article_url && (

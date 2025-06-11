@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, Edit, Plus, AlertCircle, MapPin, Users, X, Filter, Calendar, DollarSign, Phone, Heart } from 'lucide-react';
+import useAuthRedirect from '../_component/useAuthRedirect';
 
 export default function AdminContentPage() {
   const [content, setContent] = useState([]);
@@ -14,6 +15,8 @@ export default function AdminContentPage() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [counts, setCounts] = useState({ total: 0, news: 0, classifieds: 0, obituaries: 0 });
   const router = useRouter();
+
+  useAuthRedirect()
 
   useEffect(() => {
     fetchContent();

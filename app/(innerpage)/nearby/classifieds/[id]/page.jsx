@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { ChevronLeft, ChevronRight, Phone, Mail, MapPin, Calendar, Tag, DollarSign } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Phone, Mail, MapPin, Calendar, Tag, DollarSign, IndianRupee } from 'lucide-react';
 import ShareButton from '@/app/_components/ShareButton';
 
 export default function ClassifiedPage() {
@@ -208,8 +208,8 @@ export default function ClassifiedPage() {
           {/* Price */}
           {classifiedAd.price && (
             <div className="flex items-center gap-2 text-2xl md:text-3xl font-bold text-green-600">
-              <DollarSign size={28} />
-              <span>₹{parseFloat(classifiedAd.price).toLocaleString()}</span>
+              <IndianRupee size={28} />
+              <span>{parseFloat(classifiedAd.price).toLocaleString()}</span>
             </div>
           )}
 

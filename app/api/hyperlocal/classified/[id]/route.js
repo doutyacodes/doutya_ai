@@ -55,16 +55,16 @@ export async function GET(req, { params }) {
     const classifiedAd = classifiedAds[0];
 
     // Check if the ad should be auto-deleted based on delete_after_hours
-    const createdAt = new Date(classifiedAd.created_at);
-    const now = new Date();
-    const hoursElapsed = (now - createdAt) / (1000 * 60 * 60);
+    // const createdAt = new Date(classifiedAd.created_at);
+    // const now = new Date();
+    // const hoursElapsed = (now - createdAt) / (1000 * 60 * 60);
     
-    if (hoursElapsed > classifiedAd.delete_after_hours) {
-      return NextResponse.json(
-        { message: "This classified ad has expired" },
-        { status: 410 } // Gone status code
-      );
-    }
+    // if (hoursElapsed > classifiedAd.delete_after_hours) {
+    //   return NextResponse.json(
+    //     { message: "This classified ad has expired" },
+    //     { status: 410 } // Gone status code
+    //   );
+    // }
 
     return NextResponse.json(
       { classifiedAd },

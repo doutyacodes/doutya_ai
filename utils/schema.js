@@ -1581,6 +1581,7 @@ export const MAP_NEWS = mysqlTable("map_news", {
   title: varchar("title", { length: 255 }).notNull(),
   image_url: text("image_url").notNull(),
   article_url: text("article_url").notNull(),
+  summary: text("summary"),
   source_name: varchar("source_name", { length: 100 }),
   latitude: decimal("latitude", { precision: 10, scale: 7 }),
   longitude: decimal("longitude", { precision: 10, scale: 7 }),
