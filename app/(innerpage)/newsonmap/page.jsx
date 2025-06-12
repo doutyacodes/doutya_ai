@@ -50,39 +50,6 @@ const center = {
 const DEFAULT_ZOOM = 2;
 const USER_LOCATION_ZOOM = 7;
 
-// Category icons mapping using Lucide React components
-const categoryIcons = {
-  "Natural Disaster": <AlertTriangle size={window.innerWidth < 640 ? 12 : 16} className="text-red-600" />,
-  "Crime": <FaHandcuffs size={window.innerWidth < 640 ? 12 : 16} className="text-amber-700" />,
-  "Politics": <Vote size={window.innerWidth < 640 ? 12 : 16} className="text-indigo-600" />,
-  "Protest": <Megaphone size={window.innerWidth < 640 ? 12 : 16} className="text-orange-600" />,
-  "Accident": <Ambulance size={window.innerWidth < 640 ? 12 : 16} className="text-purple-600" />,
-  "Weather": <Cloud size={window.innerWidth < 640 ? 12 : 16} className="text-cyan-500" />,
-  "Festival / Event": <PartyPopper size={window.innerWidth < 640 ? 12 : 16} className="text-pink-500" />,
-  "Conflict / War": <GiCrossedSwords size={window.innerWidth < 640 ? 12 : 16} className="text-red-800" />,
-  "Public Announcement": <MegaphoneIcon size={window.innerWidth < 640 ? 12 : 16} className="text-blue-600" />,
-  "Emergency Alert": <BellRing size={window.innerWidth < 640 ? 12 : 16} className="text-red-500" />,
-  "Sports": <Trophy size={window.innerWidth < 640 ? 12 : 16} className="text-yellow-600" />,
-  "Health": <Heart size={window.innerWidth < 640 ? 12 : 16} className="text-rose-600" />,
-  "Business": <TrendingUp size={window.innerWidth < 640 ? 12 : 16} className="text-slate-700" />,
-  "Entertainment": <Music size={window.innerWidth < 640 ? 12 : 16} className="text-violet-500" />,
-  "Technology": <Laptop size={window.innerWidth < 640 ? 12 : 16} className="text-blue-700" />,
-  "Science": <FlaskConical size={window.innerWidth < 640 ? 12 : 16} className="text-teal-600" />,
-  "Education": <GraduationCap size={window.innerWidth < 640 ? 12 : 16} className="text-emerald-700" />,
-  "Environment": <Leaf size={window.innerWidth < 640 ? 12 : 16} className="text-lime-600" />,
-  "Social Issues": <HandHeart size={window.innerWidth < 640 ? 12 : 16} className="text-coral-600" />,
-  "Transportation": <Train size={window.innerWidth < 640 ? 12 : 16} className="text-gray-600" />,
-  "Automobiles": <Car size={window.innerWidth < 640 ? 12 : 16} className="text-maroon-600" />,
-  "Finance": <BadgeDollarSign size={window.innerWidth < 640 ? 12 : 16} className="text-gold-700" />,
-  "Movies": <Clapperboard size={window.innerWidth < 640 ? 12 : 16} className="text-plum-700" />,
-  "Cricket": <Flag size={window.innerWidth < 640 ? 12 : 16} className="text-olive-600" />,
-  "Military": <Shield size={window.innerWidth < 640 ? 12 : 16} className="text-khaki-700" />,
-  "Space": <Rocket size={window.innerWidth < 640 ? 12 : 16} className="text-navy-600" />,
-  "Lifestyle": <Sparkles size={window.innerWidth < 640 ? 12 : 16} className="text-peach-500" />,
-  "Wildlife": <PawPrint size={window.innerWidth < 640 ? 12 : 16} className="text-brown-600" />,
-  "Default": <Info size={window.innerWidth < 640 ? 12 : 16} className="text-gray-500" />
-};
-
 const categoryColors = {
   "Natural Disaster": "#DC2626", // red-600
   "Crime": "#B45309", // amber-700
@@ -403,6 +370,7 @@ const MobileFilterDropdown = ({
   showFiltersDropdown,
   setShowFiltersDropdown,
   buttonStyle,
+  categoryIcons,
   fetchNewsData,
   mapRef 
 }) => {
@@ -571,7 +539,7 @@ const MobileFilterDropdown = ({
   );
 };
 
-const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, isMobile }) => {
+const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, isMobile, categoryIcons }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleCategory = (category) => {
@@ -810,6 +778,39 @@ export default function NewsMap() {
 
   const [userCountry, setUserCountry] = useState(null);
   const [countryCenter, setCountryCenter] = useState(center);
+
+  // Category icons mapping using Lucide React components
+  const categoryIcons = {
+    "Natural Disaster": <AlertTriangle size={window.innerWidth < 640 ? 12 : 16} className="text-red-600" />,
+    "Crime": <FaHandcuffs size={window.innerWidth < 640 ? 12 : 16} className="text-amber-700" />,
+    "Politics": <Vote size={window.innerWidth < 640 ? 12 : 16} className="text-indigo-600" />,
+    "Protest": <Megaphone size={window.innerWidth < 640 ? 12 : 16} className="text-orange-600" />,
+    "Accident": <Ambulance size={window.innerWidth < 640 ? 12 : 16} className="text-purple-600" />,
+    "Weather": <Cloud size={window.innerWidth < 640 ? 12 : 16} className="text-cyan-500" />,
+    "Festival / Event": <PartyPopper size={window.innerWidth < 640 ? 12 : 16} className="text-pink-500" />,
+    "Conflict / War": <GiCrossedSwords size={window.innerWidth < 640 ? 12 : 16} className="text-red-800" />,
+    "Public Announcement": <MegaphoneIcon size={window.innerWidth < 640 ? 12 : 16} className="text-blue-600" />,
+    "Emergency Alert": <BellRing size={window.innerWidth < 640 ? 12 : 16} className="text-red-500" />,
+    "Sports": <Trophy size={window.innerWidth < 640 ? 12 : 16} className="text-yellow-600" />,
+    "Health": <Heart size={window.innerWidth < 640 ? 12 : 16} className="text-rose-600" />,
+    "Business": <TrendingUp size={window.innerWidth < 640 ? 12 : 16} className="text-slate-700" />,
+    "Entertainment": <Music size={window.innerWidth < 640 ? 12 : 16} className="text-violet-500" />,
+    "Technology": <Laptop size={window.innerWidth < 640 ? 12 : 16} className="text-blue-700" />,
+    "Science": <FlaskConical size={window.innerWidth < 640 ? 12 : 16} className="text-teal-600" />,
+    "Education": <GraduationCap size={window.innerWidth < 640 ? 12 : 16} className="text-emerald-700" />,
+    "Environment": <Leaf size={window.innerWidth < 640 ? 12 : 16} className="text-lime-600" />,
+    "Social Issues": <HandHeart size={window.innerWidth < 640 ? 12 : 16} className="text-coral-600" />,
+    "Transportation": <Train size={window.innerWidth < 640 ? 12 : 16} className="text-gray-600" />,
+    "Automobiles": <Car size={window.innerWidth < 640 ? 12 : 16} className="text-maroon-600" />,
+    "Finance": <BadgeDollarSign size={window.innerWidth < 640 ? 12 : 16} className="text-gold-700" />,
+    "Movies": <Clapperboard size={window.innerWidth < 640 ? 12 : 16} className="text-plum-700" />,
+    "Cricket": <Flag size={window.innerWidth < 640 ? 12 : 16} className="text-olive-600" />,
+    "Military": <Shield size={window.innerWidth < 640 ? 12 : 16} className="text-khaki-700" />,
+    "Space": <Rocket size={window.innerWidth < 640 ? 12 : 16} className="text-navy-600" />,
+    "Lifestyle": <Sparkles size={window.innerWidth < 640 ? 12 : 16} className="text-peach-500" />,
+    "Wildlife": <PawPrint size={window.innerWidth < 640 ? 12 : 16} className="text-brown-600" />,
+    "Default": <Info size={window.innerWidth < 640 ? 12 : 16} className="text-gray-500" />
+  };
 
   const [selectedCategories, setSelectedCategories] = useState(
     Object.keys(categoryIcons).filter(cat => cat !== 'Default')
@@ -1638,6 +1639,7 @@ const getUserLocation = useCallback(async () => {
               showFiltersDropdown={showFiltersDropdown}
               setShowFiltersDropdown={setShowFiltersDropdown}
               buttonStyle={buttonStyle}
+              categoryIcons={categoryIcons}
               fetchNewsData={fetchNewsData}
               mapRef={mapRef}
             />
@@ -1655,6 +1657,7 @@ const getUserLocation = useCallback(async () => {
                 setSelectedCategories={setSelectedCategories}
                 buttonStyle={buttonStyle}
                 isMobile={isMobile}
+                categoryIcons={categoryIcons}
               />
               <ResetZoomButton mapRef={mapRef} buttonStyle={buttonStyle} fetchNewsData={fetchNewsData} selectedLanguages={selectedLanguages} 
               setSelectedLocation={setSelectedLocation}/>
