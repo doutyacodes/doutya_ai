@@ -2,7 +2,7 @@
 import ReactDOMServer from "react-dom/server";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useMediaQuery } from 'react-responsive';
-import { GoogleMap, useLoadScript, MarkerF, InfoWindowF } from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, MarkerF, InfoWindowF, OverlayViewF, OverlayView } from "@react-google-maps/api";
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { 
     MapPin, AlertTriangle, Building2, UserRound, Car, Cloud, 
@@ -26,13 +26,11 @@ import {
     Music,
     HandHeart,
     Sparkles,
-    Info,
-    RotateCw
+    Info
   } from "lucide-react";
 import { FaHandcuffs } from "react-icons/fa6";
 import { GiCrossedSwords } from "react-icons/gi";
 import { useRouter } from "next/navigation";
-import { applyGoogleMapsControlStyle } from "@/utils/googleMapsStyles";
 
 // Map container styles
 const containerStyle = {
@@ -684,6 +682,7 @@ const ResetZoomButton = ({ mapRef, buttonStyle, fetchNewsData, selectedLanguages
     }
     setSelectedLocation(null)
     fetchNewsData(null, selectedLanguages);
+    
   };
 
   return (
@@ -693,7 +692,7 @@ const ResetZoomButton = ({ mapRef, buttonStyle, fetchNewsData, selectedLanguages
       style={buttonStyle}
       title="Reset to world view"
     >
-      <RotateCw size={16} className="mr-1" />
+      <Globe size={16} className="mr-1" />
       <span className="text-sm">Reset</span>
     </button>
   );
@@ -720,7 +719,7 @@ const MobileResetButton = ({ mapRef, fetchNewsData, selectedLanguages, setSelect
         boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
       }}
     >
-      <RotateCw size={20} />
+      <Globe size={20} />
     </button>
   );
 };
@@ -1024,162 +1023,44 @@ const getUserLocation = useCallback(async () => {
     );
   };
 
-  // Handle marker click
-  const handleMarkerClick = useCallback((locationKey, index = 0) => {
-    const [lat, lng] = locationKey.split(',').map(parseFloat);
-    setSelectedLocation({ key: locationKey, lat, lng });
-    setCurrentNewsIndex(index);
-  }, []);
-
-  const createClusterRenderer = () => {
-    return {
-      render: ({ count, position }) => {
-        // Get current zoom level to adjust marker size
-        const currentZoom = mapRef ? mapRef.getZoom() : 5;
-        
-        // Calculate marker size based on zoom level
-        let baseSize, iconSize, fontSize, badgeRadius, strokeWidth;
-        
-        if (currentZoom <= 3) {
-          // Very zoomed out (world view)
-          baseSize = { width: 36, height: 42 };
-          iconSize = 16;
-          fontSize = "8";
-          badgeRadius = 8;
-          strokeWidth = 2;
-        } else if (currentZoom <= 6) {
-          // Country/continent level
-          baseSize = { width: 44, height: 52 };
-          iconSize = 20;
-          fontSize = "9";
-          badgeRadius = 10;
-          strokeWidth = 2.5;
-        } else {
-          // Regional/city level
-          baseSize = { width: 56, height: 66 };
-          iconSize = 26;
-          fontSize = "11";
-          badgeRadius = 12;
-          strokeWidth = 3;
-        }
-        
-        // Create a distinctive cluster marker
-        const clusterColor = '#9333EA'; // Purple color to distinguish from news markers
-        
-        const iconSvg = ReactDOMServer.renderToString(
-          <Newspaper color="white" size={iconSize} strokeWidth={strokeWidth} />
-        );
-
-        console.log('Current zoom:', currentZoom, 'Base size:', baseSize);
-
-        // Create SVG with proper scaling path
-        const svg = `
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${baseSize.width} ${baseSize.height}" width="${baseSize.width}" height="${baseSize.height}">
-            <defs>
-              <filter id="cluster-shadow-${Date.now()}" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.4" />
-              </filter>
-            </defs>
-            
-            <!-- Main cluster marker shape - classic map pin -->
-            <path 
-              d="
-                M ${baseSize.width / 2},4
-                C ${baseSize.width * 0.9},4 ${baseSize.width * 0.95},${baseSize.height * 0.5} ${baseSize.width / 2},${baseSize.height - 2}
-                C ${baseSize.width * 0.05},${baseSize.height * 0.5} ${baseSize.width * 0.1},4 ${baseSize.width / 2},4
-                Z
-              "
-              fill="${clusterColor}"
-              stroke="white"
-              stroke-width="${strokeWidth}"
-              filter="url(#cluster-shadow-${Date.now()})"
-            />
-
-            
-            <!-- Icon inside marker -->
-            <g transform="translate(${baseSize.width/2 - iconSize/2}, ${baseSize.height * 0.2})">${iconSvg}</g>
-            
-            <!-- Count badge at top-right corner -->
-            <circle 
-              cx="${baseSize.width - (badgeRadius + 2)}" 
-              cy="${badgeRadius + 2}" 
-              r="${badgeRadius}" 
-              fill="#EF4444" 
-              stroke="white" 
-              stroke-width="2" 
-            />
-            <text 
-              x="${baseSize.width - (badgeRadius + 2)}" 
-              y="${badgeRadius + 2 + parseInt(fontSize)/3}" 
-              font-family="Arial, sans-serif" 
-              font-size="${fontSize}" 
-              font-weight="bold" 
-              text-anchor="middle" 
-              fill="white"
-            >${count}</text>
-          </svg>
-        `;
-        
-        return new google.maps.Marker({
-          position,
-          icon: {
-            url: `data:image/svg+xml,${encodeURIComponent(svg)}`,
-            scaledSize: new google.maps.Size(baseSize.width, baseSize.height), // Use dynamic scaling
-            anchor: new google.maps.Point(baseSize.width/2, baseSize.height - 4),
-          },
-          zIndex: 10000, // Higher than regular markers
-        });
-      },
-    };
-  };
-
-  // Initial data fetch and location request
-  useEffect(() => {
-    fetchLanguages();
-    // getUserLocation(); // Commented out - fetch full data instead of user location
-  }, [fetchLanguages]); // Removed getUserLocation and hasAskedForLocation dependencies
-
-  // Fetch user country on component mount
-  useEffect(() => {
-    fetchUserCountry();
-  }, [fetchUserCountry]);
-
-  // Handle selected languages change
-  useEffect(() => {
-    if (availableLanguages.length > 0 && selectedLanguages.length >= 0) {
-      // fetchNewsData(mapBounds, selectedLanguages);
-      fetchNewsData(null, selectedLanguages); // Pass null instead of mapBounds
-    }
-  }, [selectedLanguages, fetchNewsData, availableLanguages.length]); // Removed mapBounds dependency
-
-  // Handle page visibility change to restore map state on mobile ONLY
-  useEffect(() => {
-    // Only add visibility change handler for mobile devices
-    if (!isMobile) return;
-
-    const handleVisibilityChange = () => {
-      // Only restore location if:
-      // 1. Page is becoming visible
-      // 2. Map ref exists
-      // 3. User location exists
-      // 4. User hasn't manually interacted with the map
-      // 5. User gave permission (don't ask again)
-      if (!document.hidden && 
-          mapRef && 
-          userLocationRef.current && 
-          !userHasInteractedRef.current &&
-          locationPermissionState === 'granted') {
-        // Restore user location when page becomes visible again on mobile
-        setTimeout(() => {
-          mapRef.panTo(userLocationRef.current);
-          mapRef.setZoom(USER_LOCATION_ZOOM);
-        }, 100);
+const handleMarkerClick = useCallback((locationKey, index = 0) => {
+  const [lat, lng] = locationKey.split(',').map(parseFloat);
+  setSelectedLocation({ key: locationKey, lat, lng });
+  setCurrentNewsIndex(index);
+  
+  // Pan to center the card in viewport
+  if (mapRef) {
+    setTimeout(() => {
+      const bounds = mapRef.getBounds();
+      if (!bounds) return;
+      
+      const north = bounds.getNorthEast().lat();
+      const south = bounds.getSouthWest().lat();
+      const range = north - south;
+      const screenCenter = (north + south) / 2;
+      
+      // Check if marker is in top 30% (card will show below)
+      const isNearTop = lat > (north - range * 0.3);
+      
+      // Determine device type for different offsets
+      const isMobile = window.innerWidth <= 768;
+      const cardOffset = isMobile ? 0.25 : 0.18; // Larger offset for mobile
+      
+      // Calculate where to pan so the ENTIRE CARD is visible and centered
+      let panToLat;
+      if (isNearTop) {
+        // Card shows below marker, so pan UP more to bring entire card to center
+        panToLat = screenCenter - (range * cardOffset);
+      } else {
+        // Card shows above marker, so pan DOWN more to bring entire card to center
+        panToLat = screenCenter + (range * cardOffset);
       }
-    };
+      
+      mapRef.panTo({ lat: panToLat, lng: lng });
+    }, 100);
+  }
+}, [mapRef]);
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [mapRef, isMobile, locationPermissionState]);
 
   // Handle marker clustering
   useEffect(() => {
@@ -1261,271 +1142,6 @@ const getUserLocation = useCallback(async () => {
     };
   }, [mapRef, isLoaded, groupedNews, selectedCategories]);
 
-  // Handle zoom changes to update cluster marker sizes
-  useEffect(() => {
-    if (!mapRef || !clusterRef.current) return;
-    
-    const handleZoomChange = () => {
-      // Small delay to ensure zoom has completed
-      setTimeout(() => {
-        // Get current markers
-        const currentMarkers = markersRef.current;
-        if (currentMarkers.length > 0) {
-          // Clear the existing cluster
-          clusterRef.current.clearMarkers();
-          clusterRef.current.setMap(null);
-          
-          // Create new cluster with updated renderer
-          const newCluster = new MarkerClusterer({
-            map: mapRef,
-            markers: currentMarkers,
-            renderer: createClusterRenderer(),
-            algorithmOptions: {
-              maxZoom: 12,
-              radius: 80,
-            },
-          });
-
-          newCluster.addListener('click', (event, cluster, map) => {
-            handleClusterClick(event, cluster, map);
-          });
-          
-          clusterRef.current = newCluster;
-        }
-      }, 100);
-    };
-    
-    const zoomListener = mapRef.addListener('zoom_changed', handleZoomChange);
-    
-    return () => {
-      if (zoomListener) {
-        google.maps.event.removeListener(zoomListener);
-      }
-    };
-  }, [mapRef]);
-
-  // Handle map bounds change
-  const handleBoundsChanged = useCallback(() => {
-    if (!mapRef) return;
-    
-    try {
-      const bounds = mapRef.getBounds();
-      if (bounds) {
-        // Mark that user has interacted with the map
-        userHasInteractedRef.current = true;
-        
-        const newBounds = {
-          north: bounds.getNorthEast().lat(),
-          south: bounds.getSouthWest().lat(),
-          east: bounds.getNorthEast().lng(),
-          west: bounds.getSouthWest().lng()
-        };
-        
-        // Only fetch if bounds have changed significantly
-        if (!mapBounds || 
-            Math.abs(newBounds.north - mapBounds.north) > 0.5 ||
-            Math.abs(newBounds.south - mapBounds.south) > 0.5 ||
-            Math.abs(newBounds.east - mapBounds.east) > 0.5 ||
-            Math.abs(newBounds.west - mapBounds.west) > 0.5) {
-          setMapBounds(newBounds);
-        }
-      }
-    } catch (error) {
-      console.error('Error getting map bounds:', error);
-    }
-  }, [mapRef, mapBounds]);
-
-  // Handle map load
-  const handleMapLoad = (map) => {
-    setMapRef(map);
-
-    // Inject custom style to adjust controls after map is fully loaded
-    applyGoogleMapsControlStyle(); 
-    
-    // If we have stored user location, apply it immediately
-    const storedLocation = getStoredUserLocation();
-    if (storedLocation && isInitialLoadRef.current) {
-      setUserLocation(storedLocation);
-      userLocationRef.current = storedLocation;
-      map.panTo(storedLocation);
-      map.setZoom(USER_LOCATION_ZOOM);
-      isInitialLoadRef.current = false;
-    }
-    
-    // Add map interaction listeners to track user interaction
-    const addInteractionListeners = () => {
-      map.addListener('dragstart', () => {
-        userHasInteractedRef.current = true;
-      });
-      
-      map.addListener('zoom_changed', () => {
-        // Only mark as interaction if it's not the initial zoom
-        if (!isInitialLoadRef.current) {
-          userHasInteractedRef.current = true;
-        }
-      });
-
-      // Also track clicks on the map
-      map.addListener('click', () => {
-        userHasInteractedRef.current = true;
-      });
-    };
-
-    // Add listeners immediately but mark initial load as complete after delay
-    addInteractionListeners();
-    setTimeout(() => {
-      isInitialLoadRef.current = false;
-    }, 2000);
-    
-    // Add listeners after a short delay to avoid initial load events
-    setTimeout(addInteractionListeners, 1000);
-  };
-
-  // Navigate through news at the same location
-  const handleNextNews = () => {
-    if (selectedLocation && groupedNews[selectedLocation.key]) {
-      const maxIndex = groupedNews[selectedLocation.key].length - 1;
-      setCurrentNewsIndex((prev) => (prev < maxIndex ? prev + 1 : prev));
-    }
-  };
-
-  const handlePrevNews = () => {
-    setCurrentNewsIndex((prev) => (prev > 0 ? prev - 1 : prev));
-  };
-
-  // Open article in new tab
-  const openArticle = (url) => {
-    window.open(url, '_blank');
-  };
-
-  // Custom Map Type Controls Component
-  const MapTypeControls = ({ mapRef }) => {
-    const [mapType, setMapType] = useState("roadmap");
-    const [isExpanded, setIsExpanded] = useState(false);
-    
-    // Close dropdown when clicking outside
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (isExpanded && !event.target.closest('.map-type-controls')) {
-          setIsExpanded(false);
-        }
-      };
-
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [isExpanded]);
-    
-    const changeMapType = (type) => {
-      if (!mapRef) return;
-      mapRef.setMapTypeId(type);
-      setMapType(type);
-      setIsExpanded(false);
-    };
-
-    // Desktop view: Side-by-side buttons
-    if (!isMobile) {
-      return (
-        <div className="absolute top-3 left-4 z-10 flex flex-row map-type-controls">
-          <button 
-            onClick={() => changeMapType("roadmap")}
-            className={`bg-white shadow-md p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center rounded-l-lg border-r border-gray-200 ${mapType === "roadmap" ? "bg-gray-100" : ""}`}
-            style={{
-              ...buttonStyle,
-              color: mapType === "roadmap" ? "black" : "rgba(0,0,0,0.5)",
-              fontWeight: mapType === "roadmap" ? "500" : "normal"
-            }}
-          >
-            Map
-          </button>
-          <button 
-            onClick={() => changeMapType("satellite")}
-            className={`bg-white shadow-md p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center rounded-r-lg ${mapType === "satellite" ? "bg-gray-100" : ""}`}
-            style={{
-              ...buttonStyle,
-              color: mapType === "satellite" ? "black" : "rgba(0,0,0,0.5)",
-              fontWeight: mapType === "satellite" ? "500" : "normal"
-            }}
-          >
-            Satellite
-          </button>
-        </div>
-      );
-    }
-    
-    // Mobile view: Dropdown menu
-    return (
-      <div className="absolute top-3 left-4 z-10 flex flex-col map-type-controls">
-        <button 
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 mb-2 flex items-center justify-center"
-          style={buttonStyle}
-        >
-          <span>{mapType === "roadmap" ? "Map" : "Satellite"}</span>
-        </button>
-
-        {isExpanded && (
-          <div className="bg-white/95 backdrop-blur-sm shadow-lg rounded-lg overflow-hidden absolute top-12 left-0">
-            <button 
-              className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "roadmap" ? "bg-gray-200" : ""}`}
-              onClick={() => changeMapType("roadmap")}
-            >
-              Map
-            </button>
-            <button 
-              className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${mapType === "satellite" ? "bg-gray-200" : ""}`}
-              onClick={() => changeMapType("satellite")}
-            >
-              Satellite
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const handleClusterClick = (event, cluster, map) => {
-    if (!mapRef) return;
-    
-    // In newer versions, we need to access the cluster differently
-    // The event might contain the cluster information
-    let markers = [];
-    
-    if (cluster && cluster.markers) {
-      markers = cluster.markers;
-    } else if (cluster && cluster.getMarkers) {
-      markers = cluster.getMarkers();
-    } else if (event && event.cluster) {
-      markers = event.cluster.markers || [];
-    } else {
-      console.log('Cluster structure:', cluster, 'Event:', event);
-      return;
-    }
-    
-    if (markers.length === 0) return;
-    
-    // Calculate bounds that include all markers in the cluster
-    const bounds = new google.maps.LatLngBounds();
-    markers.forEach(marker => {
-      bounds.extend(marker.getPosition());
-    });
-    
-    // Smoothly fit the map to show all markers in the cluster
-    mapRef.fitBounds(bounds, {
-      duration: 800, // 800ms animation
-    });
-
-    // Ensure minimum zoom level for better visibility with smooth transition
-    const listener = google.maps.event.addListener(mapRef, 'idle', () => {
-      if (mapRef.getZoom() > 12) {
-        mapRef.setZoom(12);
-        // Add smooth transition for zoom adjustment too
-        setTimeout(() => {
-          mapRef.panTo(mapRef.getCenter());
-        }, 100);
-      }
-      google.maps.event.removeListener(listener);
-    });
-  };
 
   // Add this before the return statement
   useEffect(() => {
@@ -1543,96 +1159,9 @@ const getUserLocation = useCallback(async () => {
     };
   }, []);
 
-  // Loading state
-  if (!isLoaded) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="animate-spin h-8 w-8 text-blue-600" />
-          <div className="text-xl font-medium">Loading Map...</div>
-        </div>
-      </div>
-    );
-  }
-
-  // Get current news item for the info window
-  const getCurrentNewsItem = () => {
-    if (!selectedLocation || !groupedNews[selectedLocation.key]) return null;
-    return groupedNews[selectedLocation.key][currentNewsIndex];
-  };
-
-  const currentNews = getCurrentNewsItem();
-  const selectedNewsGroup = selectedLocation ? groupedNews[selectedLocation.key] : [];
-  const hasMultipleNews = selectedNewsGroup && selectedNewsGroup.length > 1;
-
-
-  // Determine map center and zoom - always use default for full world view
-  const mapCenter = countryCenter;
-  const mapZoom = DEFAULT_ZOOM; // Always use default zoom
-  // const mapCenter = userLocation || center; // Commented out
-  // const mapZoom = userLocation ? USER_LOCATION_ZOOM : DEFAULT_ZOOM; // Commented ou
 
   return (
     <div className="relative">
-      {/* Location permission modal */}
-      {showLocationModal && (
-        <LocationModal 
-          onAllow={handleAllowLocation}
-          onCancel={handleCancelLocation}
-          isLoading={locationLoading}
-          error={locationError}
-        />
-      )}
-
-      <>
-        {/* Filter Controls */}
-        <div className="absolute top-3 right-4 z-10">
-          {isMobile ? (
-            <MobileFilterDropdown
-              availableLanguages={availableLanguages}
-              selectedLanguages={selectedLanguages}
-              setSelectedLanguages={setSelectedLanguages}
-              selectedCategories={selectedCategories}
-              setSelectedCategories={setSelectedCategories}
-              showFiltersDropdown={showFiltersDropdown}
-              setShowFiltersDropdown={setShowFiltersDropdown}
-              buttonStyle={buttonStyle}
-              fetchNewsData={fetchNewsData}
-              mapRef={mapRef}
-            />
-          ) : (
-            <div className="flex gap-2">
-              <LanguageFilter
-                availableLanguages={availableLanguages}
-                selectedLanguages={selectedLanguages}
-                setSelectedLanguages={setSelectedLanguages}
-                buttonStyle={buttonStyle}
-                isMobile={isMobile}
-              />
-              <FilterPanel 
-                selectedCategories={selectedCategories}
-                setSelectedCategories={setSelectedCategories}
-                buttonStyle={buttonStyle}
-                isMobile={isMobile}
-              />
-              <ResetZoomButton mapRef={mapRef} buttonStyle={buttonStyle} fetchNewsData={fetchNewsData} selectedLanguages={selectedLanguages} 
-              setSelectedLocation={setSelectedLocation}/>
-            </div>
-          )}
-        </div>
-
-        {/* Mobile Reset Button - positioned where pan control used to be */}
-        {isMobile && (
-          <div className="absolute right-1.5 z-10" style={{ bottom: '165px' }}>
-            <MobileResetButton 
-              mapRef={mapRef} 
-              fetchNewsData={fetchNewsData} 
-              selectedLanguages={selectedLanguages}
-              setSelectedLocation={setSelectedLocation}
-            />
-          </div>
-        )}
-      </>
 
       <GoogleMap
         mapContainerStyle={containerStyle}
@@ -1661,180 +1190,235 @@ const getUserLocation = useCallback(async () => {
             },
             strictBounds: true,
           },
-          disableDefaultUI: true, // Try setting this to true
-          zoomControl: true, // Then explicitly enable zoom control
+          disableDefaultUI: true,
+          zoomControl: true,
+          // ADD THIS PADDING
+          padding: {
+            top: 80,    // Adjust based on your navbar height
+            bottom: 60, // Adjust based on your bottom UI
+            left: 20,
+            right: 20
+          },
         }}
         onLoad={handleMapLoad}
         // onIdle={handleBoundsChanged} // Commented out - not fetching based on bounds anymore
       >
-        {/* Custom Map Type Controls */}
-        <MapTypeControls mapRef={mapRef} />
 
         {/* Info Window */}
+        {/* Adaptive positioned InfoWindow */}
         {currentNews && (
-          <InfoWindowF
+          <OverlayViewF
             position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
-            onCloseClick={() => setSelectedLocation(null)}
-            options={{
-              pixelOffset: new window.google.maps.Size(0, -5)
-            }}
+            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
           >
-          <div className="w-80 max-w-full sm:w-72 relative select-none min-h-96 flex flex-col">
-            <div className="relative w-full mb-2 flex-shrink-0">
-              <div className="flex justify-center">
-                <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
-                  <span className="flex items-center justify-center">
-                    {currentNews.category ? 
-                      categoryIcons[currentNews.category] || categoryIcons.Default : 
-                      categoryIcons.Default}
-                  </span>
-                  <span>{currentNews.category || "News"}</span>
-                </span>
-              </div>
-
-              <button 
-                onClick={() => setSelectedLocation(null)}
-                className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors"
-                aria-label="Close"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <style jsx>{`
-              .gm-ui-hover-effect {
-                display: none !important;
-              }
-                          
-              .summary-scroll::-webkit-scrollbar {
-                width: 4px;
-              }
+            {(() => {
+              if (!mapRef) return null;
               
-              .summary-scroll::-webkit-scrollbar-track {
-                background: #f1f5f9;
-                border-radius: 2px;
-              }
+              const bounds = mapRef.getBounds();
+              if (!bounds) return null;
               
-              .summary-scroll::-webkit-scrollbar-thumb {
-                background: #cbd5e1;
-                border-radius: 2px;
-              }
+              const north = bounds.getNorthEast().lat();
+              const south = bounds.getSouthWest().lat();
+              const range = north - south;
               
-              .summary-scroll::-webkit-scrollbar-thumb:hover {
-                background: #94a3b8;
-              }
-            `}</style>
-            
-            <div className="relative h-32 w-full overflow-hidden rounded-lg mb-3 flex-shrink-0">
-              <img 
-                src={currentNews.image_url} 
-                alt={currentNews.title}
-                className="object-cover w-full h-full"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "/placeholders/news-placeholder.jpg";
-                }}
-              />
-            </div>
-            
-            <h3 className="font-semibold text-base sm:text-sm mb-2 leading-tight flex-shrink-0">
-              {currentNews.title}
-            </h3>
-            
-            {/* Summary Section with Fixed Height and Scroll */}
-            {currentNews.summary && (
-              <div className="mb-3 flex-shrink-0">
+              // Check if marker is in top 30% of visible area
+              const isNearTop = selectedLocation.lat > (north - range * 0.3);
+              
+              return (
                 <div 
-                  className="h-20 overflow-y-auto summary-scroll pr-1"
-                  key={`summary-${currentNews.id || currentNewsIndex}`}
+                  style={{
+                    position: 'absolute',
+                    left: '50%',
+                    transform: isNearTop 
+                      ? 'translateX(-50%) translateY(10px)' // Card BELOW marker
+                      : 'translateX(-50%) translateY(-100%) translateY(-50px)', // Card ABOVE marker
+                    zIndex: 50
+                  }}
                 >
-                  <p className="text-sm text-gray-700 leading-normal text-justify">
-                    {currentNews.summary}
-                  </p>
+                  {/* Arrow */}
+                  {isNearTop ? (
+                    // Arrow pointing UP (card is below marker)
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        left: '50%',
+                        top: '-8px',
+                        transform: 'translateX(-50%)',
+                        width: 0,
+                        height: 0,
+                        borderLeft: '8px solid transparent',
+                        borderRight: '8px solid transparent',
+                        borderBottom: '8px solid white',
+                        filter: 'drop-shadow(0 -2px 4px rgba(0,0,0,0.1))',
+                        zIndex: 10
+                      }}
+                    ></div>
+                  ) : (
+                    // Arrow pointing DOWN (card is above marker)
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        left: '50%',
+                        bottom: '-8px',
+                        transform: 'translateX(-50%)',
+                        width: 0,
+                        height: 0,
+                        borderLeft: '8px solid transparent',
+                        borderRight: '8px solid transparent',
+                        borderTop: '8px solid white',
+                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                        zIndex: 10
+                      }}
+                    ></div>
+                  )}
+
+                  <div className="w-80 max-w-full sm:w-72 relative select-none min-h-96 flex flex-col bg-white rounded-lg shadow-lg border p-4">
+                    {/* Header with category and close button */}
+                    <div className="relative w-full mb-4 flex-shrink-0">
+                      <div className="flex justify-center">
+                        <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
+                          <span className="flex items-center justify-center">
+                            {currentNews.category ? 
+                              categoryIcons[currentNews.category] || categoryIcons.Default : 
+                              categoryIcons.Default}
+                          </span>
+                          <span>{currentNews.category || "News"}</span>
+                        </span>
+                      </div>
+
+                      <button 
+                        onClick={() => setSelectedLocation(null)}
+                        className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors border"
+                        aria-label="Close"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
+                      {/* Content area */}
+                      <div className="flex-1 space-y-3">
+
+                        <style jsx>{`
+                        .gm-ui-hover-effect {
+                          display: none !important;
+                        }
+                                    
+                        .summary-scroll::-webkit-scrollbar {
+                          width: 4px;
+                        }
+                        
+                        .summary-scroll::-webkit-scrollbar-track {
+                          background: #f1f5f9;
+                          border-radius: 2px;
+                        }
+                        
+                        .summary-scroll::-webkit-scrollbar-thumb {
+                          background: #cbd5e1;
+                          border-radius: 2px;
+                        }
+                        
+                        .summary-scroll::-webkit-scrollbar-thumb:hover {
+                          background: #94a3b8;
+                        }
+                      `}</style>
+                      
+                      <div className="relative h-32 w-full overflow-hidden rounded-lg mb-3 flex-shrink-0">
+                        <img 
+                          src={currentNews.image_url} 
+                          alt={currentNews.title}
+                          className="object-cover w-full h-full"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/placeholders/news-placeholder.jpg";
+                          }}
+                        />
+                      </div>
+                      
+                      <h3 className="font-semibold text-base sm:text-sm mb-2 leading-tight flex-shrink-0">
+                        {currentNews.title}
+                      </h3>
+                      
+                      {/* Summary Section with Fixed Height and Scroll */}
+                      {currentNews.summary && (
+                        <div className="mb-3 flex-shrink-0">
+                          <div 
+                            className="h-20 overflow-y-auto summary-scroll pr-1"
+                            key={`summary-${currentNews.id || currentNewsIndex}`}
+                          >
+                            <p className="text-sm text-gray-700 leading-normal text-justify">
+                              {currentNews.summary}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+                        <div className="flex items-center gap-2">
+                          {currentNews.article_url && (
+                            <img
+                              src={getFavicon(currentNews.article_url)}
+                              alt=""
+                              className="w-4 h-4"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          )}
+                          <p className="text-sm text-gray-600">
+                            Source: {currentNews.source_name}
+                          </p>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          {new Date(currentNews.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      
+                      <button
+                        onClick={() => openArticle(currentNews.article_url)}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm flex-shrink-0"
+                      >
+                        Read Full Article
+                      </button>
+                      
+                      {hasMultipleNews && (
+                        <div className="flex items-center justify-between mt-3 flex-shrink-0">
+                          <button
+                            onClick={handlePrevNews}
+                            disabled={currentNewsIndex === 0}
+                            className={`p-1 rounded ${
+                              currentNewsIndex === 0
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-blue-600 hover:bg-blue-50"
+                            }`}
+                          >
+                            ← Previous
+                          </button>
+                          <span className="text-xs text-gray-500">
+                            {currentNewsIndex + 1} of {selectedNewsGroup.length}
+                          </span>
+                          <button
+                            onClick={handleNextNews}
+                            disabled={currentNewsIndex === selectedNewsGroup.length - 1}
+                            className={`p-1 rounded ${
+                              currentNewsIndex === selectedNewsGroup.length - 1
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-blue-600 hover:bg-blue-50"
+                            }`}
+                          >
+                            Next →
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
-            
-            <div className="flex items-center justify-between mb-3 flex-shrink-0">
-              <div className="flex items-center gap-2">
-                {currentNews.article_url && (
-                  <img
-                    src={getFavicon(currentNews.article_url)}
-                    alt=""
-                    className="w-4 h-4"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                )}
-                <p className="text-sm text-gray-600">
-                  Source: {currentNews.source_name}
-                </p>
-              </div>
-              <p className="text-xs text-gray-500">
-                {new Date(currentNews.created_at).toLocaleDateString()}
-              </p>
-            </div>
-            
-            <button
-              onClick={() => openArticle(currentNews.article_url)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm flex-shrink-0"
-            >
-              Read Full Article
-            </button>
-            
-            {hasMultipleNews && (
-              <div className="flex items-center justify-between mt-3 flex-shrink-0">
-                <button
-                  onClick={handlePrevNews}
-                  disabled={currentNewsIndex === 0}
-                  className={`p-1 rounded ${
-                    currentNewsIndex === 0
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-blue-600 hover:bg-blue-50"
-                  }`}
-                >
-                  ← Previous
-                </button>
-                <span className="text-xs text-gray-500">
-                  {currentNewsIndex + 1} of {selectedNewsGroup.length}
-                </span>
-                <button
-                  onClick={handleNextNews}
-                  disabled={currentNewsIndex === selectedNewsGroup.length - 1}
-                  className={`p-1 rounded ${
-                    currentNewsIndex === selectedNewsGroup.length - 1
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-blue-600 hover:bg-blue-50"
-                  }`}
-                >
-                  Next →
-                </button>
-              </div>
-            )}
-          </div>
-          </InfoWindowF>
+              );
+            })()}
+          </OverlayViewF>
         )}
       </GoogleMap>
-
-      {/* Loading overlay */}
-      {isLoading && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white py-2 px-4 rounded-full shadow-md z-10">
-          <div className="flex items-center space-x-2">
-            <Loader2 className="animate-spin h-5 w-5 text-blue-600" />
-            <span>Loading news...</span>
-          </div>
-        </div>
-      )}
-
-      {/* Error message */}
-      {error && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-700 py-2 px-4 rounded-full shadow-md z-10">
-          {error}
-        </div>
-      )}
     </div>
   );
 }

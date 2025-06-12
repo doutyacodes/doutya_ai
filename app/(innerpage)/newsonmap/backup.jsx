@@ -2,7 +2,8 @@
 import ReactDOMServer from "react-dom/server";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useMediaQuery } from 'react-responsive';
-import { GoogleMap, useLoadScript, MarkerF, InfoWindowF } from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, MarkerF, InfoWindowF, OverlayViewF, OverlayView } from "@react-google-maps/api";
+import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { 
     MapPin, AlertTriangle, Building2, UserRound, Car, Cloud, 
     PartyPopper, Swords, Megaphone, AlertCircle, Trophy, 
@@ -17,8 +18,19 @@ import {
     BellRing,
     Flag,
     PawPrint,
-    Loader2
+    Loader2,
+    Newspaper,
+    Vote,
+    MegaphoneIcon,
+    TrendingUp,
+    Music,
+    HandHeart,
+    Sparkles,
+    Info
   } from "lucide-react";
+import { FaHandcuffs } from "react-icons/fa6";
+import { GiCrossedSwords } from "react-icons/gi";
+import { useRouter } from "next/navigation";
 
 // Map container styles
 const containerStyle = {
@@ -39,66 +51,66 @@ const USER_LOCATION_ZOOM = 7;
 // Category icons mapping using Lucide React components
 const categoryIcons = {
   "Natural Disaster": <AlertTriangle size={24} className="text-red-600" />,
-  "Crime": <AlertCircle size={24} className="text-red-700" />,
-  "Politics": <Building2 size={24} className="text-blue-800" />,
-  "Protest": <UserRound size={24} className="text-orange-500" />,
-  "Accident": <Ambulance size={24} className="text-amber-600" />,
-  "Weather": <Cloud size={24} className="text-blue-400" />,
-  "Festival / Event": <PartyPopper size={24} className="text-purple-500" />,
-  "Conflict / War": <Swords size={24} className="text-red-800" />,
-  "Public Announcement": <Megaphone size={24} className="text-blue-600" />,
+  "Crime": <FaHandcuffs size={24} className="text-amber-700" />,
+  "Politics": <Vote size={24} className="text-indigo-600" />,
+  "Protest": <Megaphone size={24} className="text-orange-600" />,
+  "Accident": <Ambulance size={24} className="text-purple-600" />,
+  "Weather": <Cloud size={24} className="text-cyan-500" />,
+  "Festival / Event": <PartyPopper size={24} className="text-pink-500" />,
+  "Conflict / War": <GiCrossedSwords size={24} className="text-red-800" />,
+  "Public Announcement": <MegaphoneIcon size={24} className="text-blue-600" />,
   "Emergency Alert": <BellRing size={24} className="text-red-500" />,
   "Sports": <Trophy size={24} className="text-yellow-600" />,
-  "Health": <Heart size={24} className="text-green-600" />,
-  "Business": <Briefcase size={24} className="text-gray-700" />,
-  "Entertainment": <Film size={24} className="text-pink-500" />,
-  "Technology": <Laptop size={24} className="text-indigo-500" />,
+  "Health": <Heart size={24} className="text-rose-600" />,
+  "Business": <TrendingUp size={24} className="text-slate-700" />,
+  "Entertainment": <Music size={24} className="text-violet-500" />,
+  "Technology": <Laptop size={24} className="text-blue-700" />,
   "Science": <FlaskConical size={24} className="text-teal-600" />,
-  "Education": <GraduationCap size={24} className="text-blue-700" />,
-  "Environment": <Leaf size={24} className="text-green-500" />,
-  "Social Issues": <Users size={24} className="text-purple-600" />,
-  "Transportation": <Train size={24} className="text-cyan-600" />,
-  "Automobiles": <Car size={24} className="text-red-400" />,
-  "Finance": <BadgeDollarSign size={24} className="text-green-700" />,
-  "Movies": <Clapperboard size={24} className="text-purple-700" />,
-  "Cricket": <Flag size={24} className="text-green-400" />,
-  "Military": <Shield size={24} className="text-gray-800" />,
-  "Space": <Rocket size={24} className="text-indigo-600" />,
-  "Lifestyle": <Shirt size={24} className="text-pink-400" />,
-  "Wildlife": <PawPrint size={24} className="text-amber-500" />,
-  "Default": <Globe size={24} className="text-gray-500" />
+  "Education": <GraduationCap size={24} className="text-emerald-700" />,
+  "Environment": <Leaf size={24} className="text-lime-600" />,
+  "Social Issues": <HandHeart size={24} className="text-coral-600" />,
+  "Transportation": <Train size={24} className="text-gray-600" />,
+  "Automobiles": <Car size={24} className="text-maroon-600" />,
+  "Finance": <BadgeDollarSign size={24} className="text-gold-700" />,
+  "Movies": <Clapperboard size={24} className="text-plum-700" />,
+  "Cricket": <Flag size={24} className="text-olive-600" />,
+  "Military": <Shield size={24} className="text-khaki-700" />,
+  "Space": <Rocket size={24} className="text-navy-600" />,
+  "Lifestyle": <Sparkles size={24} className="text-peach-500" />,
+  "Wildlife": <PawPrint size={24} className="text-brown-600" />,
+  "Default": <Info size={24} className="text-gray-500" />
 };
 
 const categoryColors = {
-  "Natural Disaster": "#FF8C00",
-  "Crime": "#2E8B57",
-  "Politics": "#1E90FF",
-  "Protest": "#FF4500",
-  "Accident": "#8A2BE2",
-  "Weather": "#00CED1",
-  "Festival / Event": "#FF1493",
-  "Conflict / War": "#B22222",
-  "Public Announcement": "#FFD700",
-  "Emergency Alert": "#FF00FF",
-  "Sports": "#00FF00",
-  "Health": "#DC143C",
-  "Business": "#4682B4",
-  "Entertainment": "#FF69B4",
-  "Technology": "#7B68EE",
-  "Science": "#A9A9A9",
-  "Education": "#000000",
-  "Environment": "#228B22",
-  "Social Issues": "#FF6347",
-  "Transportation": "#40E0D0",
-  "Automobiles": "#C71585",
-  "Finance": "#008080",
-  "Movies": "#800080",
-  "Cricket": "#DAA520",
-  "Military": "#556B2F",
-  "Space": "#483D8B",
-  "Lifestyle": "#FF7F50",
-  "Wildlife": "#6B8E23",
-  "Default": "#A52A2A"
+  "Natural Disaster": "#DC2626", // red-600
+  "Crime": "#B45309", // amber-700
+  "Politics": "#4338CA", // indigo-600
+  "Protest": "#EA580C", // orange-600
+  "Accident": "#9333EA", // purple-600
+  "Weather": "#06B6D4", // cyan-500
+  "Festival / Event": "#EC4899", // pink-500
+  "Conflict / War": "#991B1B", // red-800
+  "Public Announcement": "#2563EB", // blue-600
+  "Emergency Alert": "#EF4444", // red-500
+  "Sports": "#CA8A04", // yellow-600
+  "Health": "#E11D48", // rose-600
+  "Business": "#475569", // slate-700
+  "Entertainment": "#8B5CF6", // violet-500
+  "Technology": "#1D4ED8", // blue-700
+  "Science": "#0D9488", // teal-600
+  "Education": "#047857", // emerald-700
+  "Environment": "#65A30D", // lime-600
+  "Social Issues": "#FF7F7F", // coral equivalent
+  "Transportation": "#4B5563", // gray-600
+  "Automobiles": "#800020", // maroon equivalent
+  "Finance": "#FFD700", // gold equivalent
+  "Movies": "#DDA0DD", // plum equivalent
+  "Cricket": "#808000", // olive equivalent
+  "Military": "#F0E68C", // khaki equivalent
+  "Space": "#000080", // navy equivalent
+  "Lifestyle": "#FFCBA4", // peach equivalent
+  "Wildlife": "#A0522D", // brown equivalent
+  "Default": "#6B7280" // gray-500
 };
 
 // Get website favicon
@@ -121,21 +133,21 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
   
   let IconComponent;
   
-  switch(category) {
+  switch (category) {
     case "Natural Disaster":
       IconComponent = AlertTriangle;
       break;
     case "Crime":
-      IconComponent = AlertCircle;
+      IconComponent = FaHandcuffs;
       break;
     case "Politics":
-      IconComponent = Building2;
+      IconComponent = Vote;
       break;
     case "Protest":
-      IconComponent = UserRound;
+      IconComponent = Megaphone;
       break;
     case "Accident":
-      IconComponent = Car;
+      IconComponent = Ambulance;
       break;
     case "Weather":
       IconComponent = Cloud;
@@ -144,13 +156,13 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
       IconComponent = PartyPopper;
       break;
     case "Conflict / War":
-      IconComponent = Swords;
+      IconComponent = GiCrossedSwords;
       break;
     case "Public Announcement":
-      IconComponent = Megaphone;
+      IconComponent = MegaphoneIcon;
       break;
     case "Emergency Alert":
-      IconComponent = AlertCircle;
+      IconComponent = BellRing;
       break;
     case "Sports":
       IconComponent = Trophy;
@@ -159,10 +171,10 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
       IconComponent = Heart;
       break;
     case "Business":
-      IconComponent = Briefcase;
+      IconComponent = TrendingUp;
       break;
     case "Entertainment":
-      IconComponent = Film;
+      IconComponent = Music;
       break;
     case "Technology":
       IconComponent = Laptop;
@@ -177,13 +189,37 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
       IconComponent = Leaf;
       break;
     case "Social Issues":
-      IconComponent = Users;
+      IconComponent = HandHeart;
       break;
     case "Transportation":
       IconComponent = Train;
       break;
+    case "Automobiles":
+      IconComponent = Car;
+      break;
+    case "Finance":
+      IconComponent = BadgeDollarSign;
+      break;
+    case "Movies":
+      IconComponent = Clapperboard;
+      break;
+    case "Cricket":
+      IconComponent = Flag;
+      break;
+    case "Military":
+      IconComponent = Shield;
+      break;
+    case "Space":
+      IconComponent = Rocket;
+      break;
+    case "Lifestyle":
+      IconComponent = Sparkles;
+      break;
+    case "Wildlife":
+      IconComponent = PawPrint;
+      break;
     default:
-      IconComponent = Globe;
+      IconComponent = Info;
   }
 
   const iconSvg = ReactDOMServer.renderToString(
@@ -364,7 +400,9 @@ const MobileFilterDropdown = ({
   setSelectedCategories,
   showFiltersDropdown,
   setShowFiltersDropdown,
-  buttonStyle
+  buttonStyle,
+  fetchNewsData,
+  mapRef 
 }) => {
   const [activeFilter, setActiveFilter] = useState(null);
 
@@ -380,6 +418,7 @@ const MobileFilterDropdown = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showFiltersDropdown, setShowFiltersDropdown]);
+
 
   const FilterOption = ({ title, icon, onClick, isActive }) => (
     <button
@@ -531,7 +570,7 @@ const MobileFilterDropdown = ({
 };
 
 const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, isMobile }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleCategory = (category) => {
     setSelectedCategories(prev => {
@@ -634,6 +673,57 @@ const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, i
   );
 };
 
+const ResetZoomButton = ({ mapRef, buttonStyle, fetchNewsData, selectedLanguages, setSelectedLocation }) => {
+  const handleResetZoom = () => {
+    if (mapRef) {
+      // Smooth animation to default view
+      mapRef.panTo(center);
+      mapRef.setZoom(DEFAULT_ZOOM);
+    }
+    setSelectedLocation(null)
+    fetchNewsData(null, selectedLanguages);
+    
+  };
+
+  return (
+    <button 
+      onClick={handleResetZoom}
+      className="bg-white shadow-md rounded-lg p-2 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+      style={buttonStyle}
+      title="Reset to world view"
+    >
+      <Globe size={16} className="mr-1" />
+      <span className="text-sm">Reset</span>
+    </button>
+  );
+};
+
+const MobileResetButton = ({ mapRef, fetchNewsData, selectedLanguages, setSelectedLocation }) => {
+  const handleReset = () => {
+    if (mapRef) {
+      mapRef.panTo(center);
+      mapRef.setZoom(DEFAULT_ZOOM);
+    }
+    setSelectedLocation(null)
+    fetchNewsData(null, selectedLanguages);
+  };
+
+  return (
+    <button 
+      onClick={handleReset}
+      className="bg-white shadow-lg rounded-full p-3 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+      title="Reset to world view"
+      style={{
+        width: '48px',
+        height: '48px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+      }}
+    >
+      <Globe size={20} />
+    </button>
+  );
+};
+
 function LocationModal({ onAllow, onCancel, isLoading, error }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
@@ -693,6 +783,7 @@ export default function NewsMap() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mapRef, setMapRef] = useState(null);
+  const router = useRouter();
 
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
@@ -704,6 +795,8 @@ export default function NewsMap() {
   const [showFiltersDropdown, setShowFiltersDropdown] = useState(false);
   const [hasAskedForLocation, setHasAskedForLocation] = useState(false);
 
+  const [userCountry, setUserCountry] = useState(null);
+  const [countryCenter, setCountryCenter] = useState(center);
 
   const [selectedCategories, setSelectedCategories] = useState(
     Object.keys(categoryIcons).filter(cat => cat !== 'Default')
@@ -715,6 +808,9 @@ export default function NewsMap() {
   const mapZoomRef = useRef(null);
   const isInitialLoadRef = useRef(true);
   const userHasInteractedRef = useRef(false); // Track if user has manually moved the map
+
+  const markersRef = useRef([]);
+  const clusterRef = useRef(null);
 
   // Load Google Maps script
   const { isLoaded } = useLoadScript({
@@ -757,13 +853,14 @@ export default function NewsMap() {
       let url = '/api/news/map';
       const params = new URLSearchParams();
       
-      if (bounds) {
-        const { north, south, east, west } = bounds;
-        params.append('north', north);
-        params.append('south', south);
-        params.append('east', east);
-        params.append('west', west);
-      }
+      // Comment out bounds filtering - fetch all data
+      // if (bounds) {
+      //   const { north, south, east, west } = bounds;
+      //   params.append('north', north);
+      //   params.append('south', south);
+      //   params.append('east', east);
+      //   params.append('west', west);
+      // }
       
       if (languages.length > 0) {
         params.append('languages', languages.join(','));
@@ -792,6 +889,24 @@ export default function NewsMap() {
     }
   }, []);
 
+  // Fetch user's country and center coordinates
+  const fetchUserCountry = useCallback(async () => {
+    try {
+      const response = await fetch('/api/news/user-location');
+      if (response.ok) {
+        const data = await response.json();
+        setUserCountry(data.country);
+        if (data.center) {
+          setCountryCenter(data.center);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch user country:', error);
+      // Fallback to default center
+      setCountryCenter(center);
+    }
+  }, []);
+
   // Fetch available languages
   const fetchLanguages = useCallback(async () => {
     try {
@@ -799,12 +914,13 @@ export default function NewsMap() {
       if (!response.ok) {
         throw new Error('Failed to fetch languages');
       }
-      const result = await response.json();
+      const result = await response.json(); 
       setAvailableLanguages(result.languages);
       const allLanguageCodes = result.languages.map(lang => lang.code);
       setSelectedLanguages(allLanguageCodes);
       
-      fetchNewsData(mapBounds, allLanguageCodes);
+      // fetchNewsData(mapBounds, allLanguageCodes);
+      fetchNewsData(null, allLanguageCodes); // Pass null instead of mapBounds
     } catch (err) {
       console.error("Error fetching languages:", err);
     }
@@ -825,29 +941,6 @@ export default function NewsMap() {
       return 'unavailable';
     }
   }, []);
-
-  // Get user's location
-  // const getUserLocation = useCallback(async () => {
-  //   // First check if we have stored location
-  //   const storedLocation = getStoredUserLocation();
-  //   if (storedLocation) {
-  //     setUserLocation(storedLocation);
-  //     userLocationRef.current = storedLocation;
-  //     return;
-  //   }
-
-  //   // Check permission status
-  //   const permissionState = await checkLocationPermission();
-    
-  //   if (permissionState === 'granted') {
-  //     // Permission already granted, get location silently
-  //     getCurrentPosition();
-  //   } else if (permissionState === 'prompt') {
-  //     // Show our custom modal
-  //     setShowLocationModal(true);
-  //   }
-  //   // If denied or unavailable, just use default view without showing modal
-  // }, [checkLocationPermission]);
 
   // Get user's location
 const getUserLocation = useCallback(async () => {
@@ -930,18 +1023,164 @@ const getUserLocation = useCallback(async () => {
     );
   };
 
+const handleMarkerClick = useCallback((locationKey, index = 0) => {
+  const [lat, lng] = locationKey.split(',').map(parseFloat);
+  setSelectedLocation({ key: locationKey, lat, lng });
+  setCurrentNewsIndex(index);
+  
+  // Pan to center the card in viewport
+  if (mapRef) {
+    setTimeout(() => {
+      const bounds = mapRef.getBounds();
+      if (!bounds) return;
+      
+      const north = bounds.getNorthEast().lat();
+      const south = bounds.getSouthWest().lat();
+      const range = north - south;
+      const screenCenter = (north + south) / 2;
+      
+      // Check if marker is in top 30% (card will show below)
+      const isNearTop = lat > (north - range * 0.3);
+      
+      // Determine device type for different offsets
+      const isMobile = window.innerWidth <= 768;
+      const cardOffset = isMobile ? 0.25 : 0.18; // Larger offset for mobile
+      
+      // Calculate where to pan so the ENTIRE CARD is visible and centered
+      let panToLat;
+      if (isNearTop) {
+        // Card shows below marker, so pan UP more to bring entire card to center
+        panToLat = screenCenter - (range * cardOffset);
+      } else {
+        // Card shows above marker, so pan DOWN more to bring entire card to center
+        panToLat = screenCenter + (range * cardOffset);
+      }
+      
+      mapRef.panTo({ lat: panToLat, lng: lng });
+    }, 100);
+  }
+}, [mapRef]);
+
+  const createClusterRenderer = () => {
+    return {
+      render: ({ count, position }) => {
+        // Get current zoom level to adjust marker size
+        const currentZoom = mapRef ? mapRef.getZoom() : 5;
+        
+        // Calculate marker size based on zoom level
+        let baseSize, iconSize, fontSize, badgeRadius, strokeWidth;
+        
+        if (currentZoom <= 3) {
+          // Very zoomed out (world view)
+          baseSize = { width: 36, height: 42 };
+          iconSize = 16;
+          fontSize = "8";
+          badgeRadius = 8;
+          strokeWidth = 2;
+        } else if (currentZoom <= 6) {
+          // Country/continent level
+          baseSize = { width: 44, height: 52 };
+          iconSize = 20;
+          fontSize = "9";
+          badgeRadius = 10;
+          strokeWidth = 2.5;
+        } else {
+          // Regional/city level
+          baseSize = { width: 56, height: 66 };
+          iconSize = 26;
+          fontSize = "11";
+          badgeRadius = 12;
+          strokeWidth = 3;
+        }
+        
+        // Create a distinctive cluster marker
+        const clusterColor = '#9333EA'; // Purple color to distinguish from news markers
+        
+        const iconSvg = ReactDOMServer.renderToString(
+          <Newspaper color="white" size={iconSize} strokeWidth={strokeWidth} />
+        );
+
+        console.log('Current zoom:', currentZoom, 'Base size:', baseSize);
+
+        // Create SVG with proper scaling path
+        const svg = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${baseSize.width} ${baseSize.height}" width="${baseSize.width}" height="${baseSize.height}">
+            <defs>
+              <filter id="cluster-shadow-${Date.now()}" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.4" />
+              </filter>
+            </defs>
+            
+            <!-- Main cluster marker shape - classic map pin -->
+            <path 
+              d="
+                M ${baseSize.width / 2},4
+                C ${baseSize.width * 0.9},4 ${baseSize.width * 0.95},${baseSize.height * 0.5} ${baseSize.width / 2},${baseSize.height - 2}
+                C ${baseSize.width * 0.05},${baseSize.height * 0.5} ${baseSize.width * 0.1},4 ${baseSize.width / 2},4
+                Z
+              "
+              fill="${clusterColor}"
+              stroke="white"
+              stroke-width="${strokeWidth}"
+              filter="url(#cluster-shadow-${Date.now()})"
+            />
+
+            
+            <!-- Icon inside marker -->
+            <g transform="translate(${baseSize.width/2 - iconSize/2}, ${baseSize.height * 0.2})">${iconSvg}</g>
+            
+            <!-- Count badge at top-right corner -->
+            <circle 
+              cx="${baseSize.width - (badgeRadius + 2)}" 
+              cy="${badgeRadius + 2}" 
+              r="${badgeRadius}" 
+              fill="#EF4444" 
+              stroke="white" 
+              stroke-width="2" 
+            />
+            <text 
+              x="${baseSize.width - (badgeRadius + 2)}" 
+              y="${badgeRadius + 2 + parseInt(fontSize)/3}" 
+              font-family="Arial, sans-serif" 
+              font-size="${fontSize}" 
+              font-weight="bold" 
+              text-anchor="middle" 
+              fill="white"
+            >${count}</text>
+          </svg>
+        `;
+        
+        return new google.maps.Marker({
+          position,
+          icon: {
+            url: `data:image/svg+xml,${encodeURIComponent(svg)}`,
+            scaledSize: new google.maps.Size(baseSize.width, baseSize.height), // Use dynamic scaling
+            anchor: new google.maps.Point(baseSize.width/2, baseSize.height - 4),
+          },
+          zIndex: 10000, // Higher than regular markers
+        });
+      },
+    };
+  };
+
   // Initial data fetch and location request
   useEffect(() => {
     fetchLanguages();
-    getUserLocation();
-  }, [fetchLanguages, getUserLocation, hasAskedForLocation]);
+    // getUserLocation(); // Commented out - fetch full data instead of user location
+  }, [fetchLanguages]); // Removed getUserLocation and hasAskedForLocation dependencies
+
+  // Fetch user country on component mount
+  useEffect(() => {
+    fetchUserCountry();
+  }, [fetchUserCountry]);
 
   // Handle selected languages change
   useEffect(() => {
     if (availableLanguages.length > 0 && selectedLanguages.length >= 0) {
-      fetchNewsData(mapBounds, selectedLanguages);
+      // fetchNewsData(mapBounds, selectedLanguages);
+      fetchNewsData(null, selectedLanguages); // Pass null instead of mapBounds
     }
-  }, [selectedLanguages, mapBounds, fetchNewsData, availableLanguages.length]);
+  }, [selectedLanguages, fetchNewsData, availableLanguages.length]); // Removed mapBounds dependency
 
   // Handle page visibility change to restore map state on mobile ONLY
   useEffect(() => {
@@ -971,6 +1210,129 @@ const getUserLocation = useCallback(async () => {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [mapRef, isMobile, locationPermissionState]);
+
+  // Handle marker clustering
+  useEffect(() => {
+    if (!mapRef || !isLoaded || Object.keys(groupedNews).length === 0) return;
+
+    // Clear existing cluster
+    if (clusterRef.current) {
+      clusterRef.current.clearMarkers();
+      clusterRef.current.setMap(null);
+    }
+
+    // Clear existing markers from ref
+    markersRef.current.forEach(marker => {
+      marker.setMap(null);
+    });
+    markersRef.current = [];
+
+    // Create new markers
+    const newMarkers = Object.keys(groupedNews).map((locationKey) => {
+      const [lat, lng] = locationKey.split(',').map(parseFloat);
+      const newsAtLocation = groupedNews[locationKey];
+      const mainNews = newsAtLocation[0];
+      
+      if (mainNews.category && !selectedCategories.includes(mainNews.category)) {
+        return null;
+      }
+      
+      const hasHighPriorityNews = newsAtLocation.some(news => news.is_high_priority);
+      
+      const marker = new google.maps.Marker({
+        position: { lat, lng },
+        map: null,
+        icon: createCategoryMarkerIcon(
+          mainNews.category, 
+          newsAtLocation.length, 
+          hasHighPriorityNews
+        ),
+        zIndex: hasHighPriorityNews ? 9999 : 1,
+      });
+
+      // Add click listener to marker
+      marker.addListener('click', () => {
+        handleMarkerClick(locationKey);
+      });
+
+      return marker;
+    }).filter(Boolean);
+
+    markersRef.current = newMarkers;
+
+    // Create cluster
+    if (newMarkers.length > 0) {
+      const cluster = new MarkerClusterer({
+        map: mapRef,
+        markers: newMarkers,
+        renderer: createClusterRenderer(),
+        algorithmOptions: {
+          maxZoom: 12,
+          radius: 80,
+        },
+      });
+
+      cluster.addListener('click', (event, cluster, map) => {
+        handleClusterClick(event, cluster, map);
+      });
+      clusterRef.current = cluster;
+    }
+
+    // Cleanup function
+    return () => {
+      if (clusterRef.current) {
+        clusterRef.current.clearMarkers();
+        clusterRef.current.setMap(null);
+      }
+      markersRef.current.forEach(marker => {
+        marker.setMap(null);
+      });
+      markersRef.current = [];
+    };
+  }, [mapRef, isLoaded, groupedNews, selectedCategories]);
+
+  // Handle zoom changes to update cluster marker sizes
+  useEffect(() => {
+    if (!mapRef || !clusterRef.current) return;
+    
+    const handleZoomChange = () => {
+      // Small delay to ensure zoom has completed
+      setTimeout(() => {
+        // Get current markers
+        const currentMarkers = markersRef.current;
+        if (currentMarkers.length > 0) {
+          // Clear the existing cluster
+          clusterRef.current.clearMarkers();
+          clusterRef.current.setMap(null);
+          
+          // Create new cluster with updated renderer
+          const newCluster = new MarkerClusterer({
+            map: mapRef,
+            markers: currentMarkers,
+            renderer: createClusterRenderer(),
+            algorithmOptions: {
+              maxZoom: 12,
+              radius: 80,
+            },
+          });
+
+          newCluster.addListener('click', (event, cluster, map) => {
+            handleClusterClick(event, cluster, map);
+          });
+          
+          clusterRef.current = newCluster;
+        }
+      }, 100);
+    };
+    
+    const zoomListener = mapRef.addListener('zoom_changed', handleZoomChange);
+    
+    return () => {
+      if (zoomListener) {
+        google.maps.event.removeListener(zoomListener);
+      }
+    };
+  }, [mapRef]);
 
   // Handle map bounds change
   const handleBoundsChanged = useCallback(() => {
@@ -1036,22 +1398,15 @@ const getUserLocation = useCallback(async () => {
       });
     };
 
-// Add listeners immediately but mark initial load as complete after delay
-addInteractionListeners();
-setTimeout(() => {
-  isInitialLoadRef.current = false;
-}, 2000);
-    
-    // Add listeners after a short delay to avoid initial load events
-    setTimeout(addInteractionListeners, 1000);
-  };
-
-  // Handle marker click
-  const handleMarkerClick = (locationKey, index = 0) => {
-    const [lat, lng] = locationKey.split(',').map(parseFloat);
-    setSelectedLocation({ key: locationKey, lat, lng });
-    setCurrentNewsIndex(index);
-  };
+  // Add listeners immediately but mark initial load as complete after delay
+  addInteractionListeners();
+  setTimeout(() => {
+    isInitialLoadRef.current = false;
+  }, 2000);
+  
+  // Add listeners after a short delay to avoid initial load events
+  setTimeout(addInteractionListeners, 1000);
+};
 
   // Navigate through news at the same location
   const handleNextNews = () => {
@@ -1155,6 +1510,66 @@ setTimeout(() => {
     );
   };
 
+  const handleClusterClick = (event, cluster, map) => {
+    if (!mapRef) return;
+    
+    // In newer versions, we need to access the cluster differently
+    // The event might contain the cluster information
+    let markers = [];
+    
+    if (cluster && cluster.markers) {
+      markers = cluster.markers;
+    } else if (cluster && cluster.getMarkers) {
+      markers = cluster.getMarkers();
+    } else if (event && event.cluster) {
+      markers = event.cluster.markers || [];
+    } else {
+      console.log('Cluster structure:', cluster, 'Event:', event);
+      return;
+    }
+    
+    if (markers.length === 0) return;
+    
+    // Calculate bounds that include all markers in the cluster
+    const bounds = new google.maps.LatLngBounds();
+    markers.forEach(marker => {
+      bounds.extend(marker.getPosition());
+    });
+    
+    // Smoothly fit the map to show all markers in the cluster
+    mapRef.fitBounds(bounds, {
+      duration: 800, // 800ms animation
+    });
+
+    // Ensure minimum zoom level for better visibility with smooth transition
+    const listener = google.maps.event.addListener(mapRef, 'idle', () => {
+      if (mapRef.getZoom() > 12) {
+        mapRef.setZoom(12);
+        // Add smooth transition for zoom adjustment too
+        setTimeout(() => {
+          mapRef.panTo(mapRef.getCenter());
+        }, 100);
+      }
+      google.maps.event.removeListener(listener);
+    });
+  };
+
+  // Add this before the return statement
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Move Google Maps controls up from bottom and hide pan control */
+      .gm-style .gm-bundled-control {
+        margin-bottom: 60px !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   // Loading state
   if (!isLoaded) {
     return (
@@ -1177,9 +1592,12 @@ setTimeout(() => {
   const selectedNewsGroup = selectedLocation ? groupedNews[selectedLocation.key] : [];
   const hasMultipleNews = selectedNewsGroup && selectedNewsGroup.length > 1;
 
-  // Determine map center and zoom
-  const mapCenter = userLocation || center;
-  const mapZoom = userLocation ? USER_LOCATION_ZOOM : DEFAULT_ZOOM;
+
+  // Determine map center and zoom - always use default for full world view
+  const mapCenter = countryCenter;
+  const mapZoom = DEFAULT_ZOOM; // Always use default zoom
+  // const mapCenter = userLocation || center; // Commented out
+  // const mapZoom = userLocation ? USER_LOCATION_ZOOM : DEFAULT_ZOOM; // Commented ou
 
   return (
     <div className="relative">
@@ -1193,37 +1611,54 @@ setTimeout(() => {
         />
       )}
 
-      {/* Filter Controls - Desktop and Mobile */}
-      <div className="absolute top-3 right-4 z-10">
-        {isMobile ? (
-          <MobileFilterDropdown
-            availableLanguages={availableLanguages}
-            selectedLanguages={selectedLanguages}
-            setSelectedLanguages={setSelectedLanguages}
-            selectedCategories={selectedCategories}
-            setSelectedCategories={setSelectedCategories}
-            showFiltersDropdown={showFiltersDropdown}
-            setShowFiltersDropdown={setShowFiltersDropdown}
-            buttonStyle={buttonStyle}
-          />
-        ) : (
-          <div className="flex gap-2">
-            <LanguageFilter
+      <>
+        {/* Filter Controls */}
+        <div className="absolute top-3 right-4 z-10">
+          {isMobile ? (
+            <MobileFilterDropdown
               availableLanguages={availableLanguages}
               selectedLanguages={selectedLanguages}
               setSelectedLanguages={setSelectedLanguages}
-              buttonStyle={buttonStyle}
-              isMobile={isMobile}
-            />
-            <FilterPanel 
               selectedCategories={selectedCategories}
               setSelectedCategories={setSelectedCategories}
+              showFiltersDropdown={showFiltersDropdown}
+              setShowFiltersDropdown={setShowFiltersDropdown}
               buttonStyle={buttonStyle}
-              isMobile={isMobile}
+              fetchNewsData={fetchNewsData}
+              mapRef={mapRef}
+            />
+          ) : (
+            <div className="flex gap-2">
+              <LanguageFilter
+                availableLanguages={availableLanguages}
+                selectedLanguages={selectedLanguages}
+                setSelectedLanguages={setSelectedLanguages}
+                buttonStyle={buttonStyle}
+                isMobile={isMobile}
+              />
+              <FilterPanel 
+                selectedCategories={selectedCategories}
+                setSelectedCategories={setSelectedCategories}
+                buttonStyle={buttonStyle}
+                isMobile={isMobile}
+              />
+              <ResetZoomButton mapRef={mapRef} buttonStyle={buttonStyle} fetchNewsData={fetchNewsData} selectedLanguages={selectedLanguages} setSelectedLocation={setSelectedLocation}/>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Reset Button - positioned where pan control used to be */}
+        {isMobile && (
+          <div className="absolute right-1.5 z-10" style={{ bottom: '165px' }}>
+            <MobileResetButton 
+              mapRef={mapRef} 
+              fetchNewsData={fetchNewsData} 
+              selectedLanguages={selectedLanguages}
+              setSelectedLocation={setSelectedLocation}
             />
           </div>
         )}
-      </div>
+      </>
 
       <GoogleMap
         mapContainerStyle={containerStyle}
@@ -1233,181 +1668,254 @@ setTimeout(() => {
           fullscreenControl: false,
           streetViewControl: false,
           mapTypeControl: false,
-          zoomControl: true,
+          zoomControlOptions: {
+            position: window.google?.maps?.ControlPosition?.RIGHT_BOTTOM || 6,
+          },
+          panControl: false,
+          rotateControl: false,
+          scaleControl: false,
           gestureHandling: "greedy",
           clickableIcons: false,
+          minZoom: 2,
+          maxZoom: 18,
+          restriction: {
+            latLngBounds: {
+              north: 85,
+              south: -85,
+              west: -180,
+              east: 180,
+            },
+            strictBounds: true,
+          },
+          disableDefaultUI: true,
+          zoomControl: true,
+          // ADD THIS PADDING
+          padding: {
+            top: 80,    // Adjust based on your navbar height
+            bottom: 60, // Adjust based on your bottom UI
+            left: 20,
+            right: 20
+          },
         }}
         onLoad={handleMapLoad}
-        onIdle={handleBoundsChanged}
+        // onIdle={handleBoundsChanged} // Commented out - not fetching based on bounds anymore
       >
         {/* Custom Map Type Controls */}
         <MapTypeControls mapRef={mapRef} />
 
-        {/* News Markers */}
-        {Object.keys(groupedNews)
-          .sort((locationKeyA, locationKeyB) => {
-            const newsAtLocationA = groupedNews[locationKeyA];
-            const newsAtLocationB = groupedNews[locationKeyB];
-            
-            const hasHighPriorityA = newsAtLocationA.some(news => news.is_high_priority);
-            const hasHighPriorityB = newsAtLocationB.some(news => news.is_high_priority);
-            
-            if (hasHighPriorityA && !hasHighPriorityB) return 1;
-            if (!hasHighPriorityA && hasHighPriorityB) return -1;
-            return 0;
-          })
-          .map((locationKey) => {
-            const [lat, lng] = locationKey.split(',').map(parseFloat);
-            const newsAtLocation = groupedNews[locationKey];
-            const mainNews = newsAtLocation[0];
-            
-            if (mainNews.category && !selectedCategories.includes(mainNews.category)) {
-              return null;
-            }
-            
-            const hasHighPriorityNews = newsAtLocation.some(news => news.is_high_priority);
-            
-            return (
-              <MarkerF
-                key={locationKey}
-                position={{ lat, lng }}
-                onClick={() => handleMarkerClick(locationKey)}
-                icon={createCategoryMarkerIcon(
-                  mainNews.category, 
-                  newsAtLocation.length, 
-                  hasHighPriorityNews
-                )}
-                zIndex={hasHighPriorityNews ? 9999 : 1}
-                label={
-                  newsAtLocation.length > 1 
-                  ? {
-                      text: `${newsAtLocation.length}`,
-                      color: "#333",
-                      fontSize: "12px",
-                      fontWeight: "bold"
-                  }
-                  : null
-                }
-              />
-            );
-          })}
-
         {/* Info Window */}
+        {/* Adaptive positioned InfoWindow */}
         {currentNews && (
-          <InfoWindowF
+          <OverlayViewF
             position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
-            onCloseClick={() => setSelectedLocation(null)}
-            options={{
-              pixelOffset: new window.google.maps.Size(0, -5)
-            }}
+            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
           >
-            <div className="max-w-xs relative select-none">
-              <div className="relative w-full mb-2">
-                <div className="flex justify-center">
-                  <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
-                    <span className="flex items-center justify-center">
-                      {currentNews.category ? 
-                        categoryIcons[currentNews.category] || categoryIcons.Default : 
-                        categoryIcons.Default}
-                    </span>
-                    <span>{currentNews.category || "News"}</span>
-                  </span>
-                </div>
-
-                <button 
-                  onClick={() => setSelectedLocation(null)}
-                  className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors"
-                  aria-label="Close"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              <style jsx>{`
-                .gm-ui-hover-effect {
-                  display: none !important;
-                }
-                
-                .gm-style .gm-style-iw-c {
-                  padding-top: 12px !important;
-                }
-              `}</style>
+            {(() => {
+              if (!mapRef) return null;
               
-              <div className="relative h-40 w-full overflow-hidden rounded-lg mb-3">
-                <img 
-                  src={currentNews.image_url} 
-                  alt={currentNews.title}
-                  className="object-cover w-full h-full"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/placeholders/news-placeholder.jpg";
+              const bounds = mapRef.getBounds();
+              if (!bounds) return null;
+              
+              const north = bounds.getNorthEast().lat();
+              const south = bounds.getSouthWest().lat();
+              const range = north - south;
+              
+              // Check if marker is in top 30% of visible area
+              const isNearTop = selectedLocation.lat > (north - range * 0.3);
+              
+              return (
+                <div 
+                  style={{
+                    position: 'absolute',
+                    left: '50%',
+                    transform: isNearTop 
+                      ? 'translateX(-50%) translateY(10px)' // Card BELOW marker
+                      : 'translateX(-50%) translateY(-100%) translateY(-50px)', // Card ABOVE marker
+                    zIndex: 50
                   }}
-                />
-              </div>
-              
-              <h3 className="font-semibold text-lg mb-2 line-clamp-2">{currentNews.title}</h3>
-              
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  {currentNews.article_url && (
-                    <img
-                      src={getFavicon(currentNews.article_url)}
-                      alt=""
-                      className="w-4 h-4"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
+                >
+                  {/* Arrow */}
+                  {isNearTop ? (
+                    // Arrow pointing UP (card is below marker)
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        left: '50%',
+                        top: '-8px',
+                        transform: 'translateX(-50%)',
+                        width: 0,
+                        height: 0,
+                        borderLeft: '8px solid transparent',
+                        borderRight: '8px solid transparent',
+                        borderBottom: '8px solid white',
+                        filter: 'drop-shadow(0 -2px 4px rgba(0,0,0,0.1))',
+                        zIndex: 10
                       }}
-                    />
+                    ></div>
+                  ) : (
+                    // Arrow pointing DOWN (card is above marker)
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        left: '50%',
+                        bottom: '-8px',
+                        transform: 'translateX(-50%)',
+                        width: 0,
+                        height: 0,
+                        borderLeft: '8px solid transparent',
+                        borderRight: '8px solid transparent',
+                        borderTop: '8px solid white',
+                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                        zIndex: 10
+                      }}
+                    ></div>
                   )}
-                  <p className="text-sm text-gray-600">
-                    Source: {currentNews.source_name}
-                  </p>
+
+                  <div className="w-80 max-w-full sm:w-72 relative select-none min-h-96 flex flex-col bg-white rounded-lg shadow-lg border p-4">
+                    {/* Header with category and close button */}
+                    <div className="relative w-full mb-4 flex-shrink-0">
+                      <div className="flex justify-center">
+                        <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
+                          <span className="flex items-center justify-center">
+                            {currentNews.category ? 
+                              categoryIcons[currentNews.category] || categoryIcons.Default : 
+                              categoryIcons.Default}
+                          </span>
+                          <span>{currentNews.category || "News"}</span>
+                        </span>
+                      </div>
+
+                      <button 
+                        onClick={() => setSelectedLocation(null)}
+                        className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors border"
+                        aria-label="Close"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
+                      {/* Content area */}
+                      <div className="flex-1 space-y-3">
+
+                        <style jsx>{`
+                        .gm-ui-hover-effect {
+                          display: none !important;
+                        }
+                                    
+                        .summary-scroll::-webkit-scrollbar {
+                          width: 4px;
+                        }
+                        
+                        .summary-scroll::-webkit-scrollbar-track {
+                          background: #f1f5f9;
+                          border-radius: 2px;
+                        }
+                        
+                        .summary-scroll::-webkit-scrollbar-thumb {
+                          background: #cbd5e1;
+                          border-radius: 2px;
+                        }
+                        
+                        .summary-scroll::-webkit-scrollbar-thumb:hover {
+                          background: #94a3b8;
+                        }
+                      `}</style>
+                      
+                      <div className="relative h-32 w-full overflow-hidden rounded-lg mb-3 flex-shrink-0">
+                        <img 
+                          src={currentNews.image_url} 
+                          alt={currentNews.title}
+                          className="object-cover w-full h-full"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/placeholders/news-placeholder.jpg";
+                          }}
+                        />
+                      </div>
+                      
+                      <h3 className="font-semibold text-base sm:text-sm mb-2 leading-tight flex-shrink-0">
+                        {currentNews.title}
+                      </h3>
+                      
+                      {/* Summary Section with Fixed Height and Scroll */}
+                      {currentNews.summary && (
+                        <div className="mb-3 flex-shrink-0">
+                          <div 
+                            className="h-20 overflow-y-auto summary-scroll pr-1"
+                            key={`summary-${currentNews.id || currentNewsIndex}`}
+                          >
+                            <p className="text-sm text-gray-700 leading-normal text-justify">
+                              {currentNews.summary}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+                        <div className="flex items-center gap-2">
+                          {currentNews.article_url && (
+                            <img
+                              src={getFavicon(currentNews.article_url)}
+                              alt=""
+                              className="w-4 h-4"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          )}
+                          <p className="text-sm text-gray-600">
+                            Source: {currentNews.source_name}
+                          </p>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          {new Date(currentNews.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      
+                      <button
+                        onClick={() => openArticle(currentNews.article_url)}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm flex-shrink-0"
+                      >
+                        Read Full Article
+                      </button>
+                      
+                      {hasMultipleNews && (
+                        <div className="flex items-center justify-between mt-3 flex-shrink-0">
+                          <button
+                            onClick={handlePrevNews}
+                            disabled={currentNewsIndex === 0}
+                            className={`p-1 rounded ${
+                              currentNewsIndex === 0
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-blue-600 hover:bg-blue-50"
+                            }`}
+                          >
+                            ← Previous
+                          </button>
+                          <span className="text-xs text-gray-500">
+                            {currentNewsIndex + 1} of {selectedNewsGroup.length}
+                          </span>
+                          <button
+                            onClick={handleNextNews}
+                            disabled={currentNewsIndex === selectedNewsGroup.length - 1}
+                            className={`p-1 rounded ${
+                              currentNewsIndex === selectedNewsGroup.length - 1
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-blue-600 hover:bg-blue-50"
+                            }`}
+                          >
+                            Next →
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <p className="text-xs text-gray-500">
-                  {new Date(currentNews.created_at).toLocaleDateString()}
-                </p>
-              </div>
-              
-              <button
-                onClick={() => openArticle(currentNews.article_url)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
-              >
-                Read Full Article
-              </button>
-              
-              {hasMultipleNews && (
-                <div className="flex items-center justify-between mt-3">
-                  <button
-                    onClick={handlePrevNews}
-                    disabled={currentNewsIndex === 0}
-                    className={`p-1 rounded ${
-                      currentNewsIndex === 0
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-blue-600 hover:bg-blue-50"
-                    }`}
-                  >
-                    ← Previous
-                  </button>
-                  <span className="text-xs text-gray-500">
-                    {currentNewsIndex + 1} of {selectedNewsGroup.length}
-                  </span>
-                  <button
-                    onClick={handleNextNews}
-                    disabled={currentNewsIndex === selectedNewsGroup.length - 1}
-                    className={`p-1 rounded ${
-                      currentNewsIndex === selectedNewsGroup.length - 1
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-blue-600 hover:bg-blue-50"
-                    }`}
-                  >
-                    Next →
-                  </button>
-                </div>
-              )}
-            </div>
-          </InfoWindowF>
+              );
+            })()}
+          </OverlayViewF>
         )}
       </GoogleMap>
 

@@ -3,7 +3,7 @@ import ReactDOMServer from "react-dom/server";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useMediaQuery } from 'react-responsive';
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
-import { GoogleMap, useLoadScript, MarkerF, InfoWindowF, Circle, OverlayViewF, OverlayView  } from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, MarkerF, InfoWindowF, Circle  } from "@react-google-maps/api";
 import { 
     MapPin, AlertTriangle, Building2, UserRound, Car, Cloud, 
     PartyPopper, Swords, Megaphone, AlertCircle, Trophy, 
@@ -30,10 +30,13 @@ import {
     Bus,
     Siren,
     CloudRain,
-    Search
+    Search,
+    RefreshCw,
+    RotateCw
   } from "lucide-react";
 import { useRouter } from "next/navigation";
 import CreatorPopupModal from "@/app/_components/CreatorPopupModal";
+import { applyGoogleMapsControlStyle } from "@/utils/googleMapsStyles";
 
 // Map container styles
 const containerStyle = {
@@ -223,13 +226,14 @@ const groupNewsByLocation = (newsItems) => {
   return groupedNews;
 };
 
-const ResetZoomButton = ({ mapRef, buttonStyle, fetchNewsData }) => {
+const ResetZoomButton = ({ mapRef, buttonStyle, fetchNewsData, setSelectedLocation }) => {
   const handleResetZoom = () => {
     if (mapRef) {
       // Smooth animation to default view
       mapRef.panTo(center);
       mapRef.setZoom(DEFAULT_ZOOM);
     }
+    setSelectedLocation(null)
     fetchNewsData();
   };
 
@@ -240,18 +244,19 @@ const ResetZoomButton = ({ mapRef, buttonStyle, fetchNewsData }) => {
       style={buttonStyle}
       title="Reset to world view"
     >
-      <Globe size={16} className="mr-1" />
+      <RotateCw size={16} className="mr-1" />
       <span className="text-sm">Reset</span>
     </button>
   );
 };
 
-const MobileResetButton = ({ mapRef, fetchNewsData }) => {
+const MobileResetButton = ({ mapRef, fetchNewsData, setSelectedLocation }) => {
   const handleReset = () => {
     if (mapRef) {
       mapRef.panTo(center);
       mapRef.setZoom(DEFAULT_ZOOM);
     }
+    setSelectedLocation(null)
     fetchNewsData();
   };
 
@@ -266,7 +271,7 @@ const MobileResetButton = ({ mapRef, fetchNewsData }) => {
         boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
       }}
     >
-      <Globe size={20} />
+      <RotateCw size={20} />
     </button>
   );
 };
@@ -1091,21 +1096,21 @@ const MapTypeControls = ({ mapRef }) => {
   );
   };
 
-  // Add this before the return statement
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      /* Move Google Maps controls up from bottom and hide pan control */
-      .gm-style .gm-bundled-control {
-        margin-bottom: 60px !important;
-      }
-    `;
-    document.head.appendChild(style);
+  // // Add this before the return statement
+  // useEffect(() => {
+  //   const style = document.createElement('style');
+  //   style.textContent = `
+  //     /* Move Google Maps controls up from bottom and hide pan control */
+  //     .gm-style .gm-bundled-control {
+  //       margin-bottom: 60px !important;
+  //     }
+  //   `;
+  //   document.head.appendChild(style);
     
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
+  //   return () => {
+  //     document.head.removeChild(style);
+  //   };
+  // }, []);
 
   // Loading state
   if (!isLoaded) {
@@ -1177,7 +1182,7 @@ const MapTypeControls = ({ mapRef }) => {
             <span>{isFilterExpanded ? 'Hide Filters' : 'Show Filters'}</span>
           </button>
 
-          {!isMobile && <ResetZoomButton mapRef={mapRef} buttonStyle={buttonStyle} fetchNewsData={fetchNewsData}/>}
+          {!isMobile && <ResetZoomButton mapRef={mapRef} buttonStyle={buttonStyle} fetchNewsData={fetchNewsData} setSelectedLocation={setSelectedLocation}/>}
 
         </div>
 
@@ -1276,7 +1281,8 @@ const MapTypeControls = ({ mapRef }) => {
         <div className="absolute right-1.5 z-10" style={{ bottom: '165px' }}>
           <MobileResetButton 
             mapRef={mapRef} 
-            fetchNewsData={fetchNewsData} 
+            fetchNewsData={fetchNewsData}
+            setSelectedLocation={setSelectedLocation}
           />
         </div>
       )}
@@ -1309,7 +1315,10 @@ const MapTypeControls = ({ mapRef }) => {
               disableDefaultUI: true,
               zoomControl: !isGettingLocation, // Disable zoom control during location fetch
         }}
-        onLoad={(map) => setMapRef(map)}
+        onLoad={(map) => {
+          setMapRef(map);                // existing logic
+          applyGoogleMapsControlStyle(); // ✅ inject custom styling for controls
+        }}
         onIdle={(map) => {
             handleBoundsChanged(map);
             // Keep bounds checks but with the buffered area
@@ -1319,7 +1328,7 @@ const MapTypeControls = ({ mapRef }) => {
             // Apply restriction with buffer zone
             if (userLocation) restrictMapBounds();
         }}
-        >
+      >
  
         {/* Add radius circle when user location exists */}
         {userLocation && (
@@ -1340,286 +1349,221 @@ const MapTypeControls = ({ mapRef }) => {
 
         {/* Info Window */}
         {currentNews && (
-          <OverlayViewF
+          <InfoWindowF
             position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
-            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-            // onCloseClick={() => setSelectedLocation(null)}
-            // options={{
-            //   pixelOffset: new window.google.maps.Size(0, -5)
-            // }}
+            onCloseClick={() => setSelectedLocation(null)}
+            options={{
+              pixelOffset: new window.google.maps.Size(0, -5)
+            }}
           >
+            <div className="max-w-xs relative select-none">
+              {/* Custom header with category badge and custom close button */}
+              <div className="relative w-full mb-2">
+                {/* Category badge centered */}
+                <div className="flex justify-center">
+                  <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
+                    <span className="flex items-center justify-center">
+                      {currentNews.category ? 
+                        categoryIcons[currentNews.category] || categoryIcons.Default : 
+                        categoryIcons.Default}
+                    </span>
+                    <span>{currentNews.category || "News"}</span>
+                  </span>
+                </div>
 
-             {(() => {
-              if (!mapRef) return null;
-              
-              const bounds = mapRef.getBounds();
-              if (!bounds) return null;
-              
-              const north = bounds.getNorthEast().lat();
-              const south = bounds.getSouthWest().lat();
-              const range = north - south;
-              
-              // Check if marker is in top 30% of visible area
-              const isNearTop = selectedLocation.lat > (north - range * 0.3);
-              
-              return (
-                <div 
-                  style={{
-                    position: 'absolute',
-                    left: '50%',
-                    transform: isNearTop 
-                      ? 'translateX(-50%) translateY(10px)' // Card BELOW marker
-                      : 'translateX(-50%) translateY(-100%) translateY(-50px)', // Card ABOVE marker
-                    zIndex: 50
-                  }}
+                {/* Close button at top-right corner */}
+                <button 
+                  onClick={() => setSelectedLocation(null)}
+                  className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors"
+                  aria-label="Close"
                 >
-                  {/* Arrow */}
-                  {isNearTop ? (
-                    // Arrow pointing UP (card is below marker)
-                    <div 
-                      style={{
-                        position: 'absolute',
-                        left: '50%',
-                        top: '-8px',
-                        transform: 'translateX(-50%)',
-                        width: 0,
-                        height: 0,
-                        borderLeft: '8px solid transparent',
-                        borderRight: '8px solid transparent',
-                        borderBottom: '8px solid white',
-                        filter: 'drop-shadow(0 -2px 4px rgba(0,0,0,0.1))',
-                        zIndex: 10
-                      }}
-                    ></div>
-                  ) : (
-                    // Arrow pointing DOWN (card is above marker)
-                    <div 
-                      style={{
-                        position: 'absolute',
-                        left: '50%',
-                        bottom: '-8px',
-                        transform: 'translateX(-50%)',
-                        width: 0,
-                        height: 0,
-                        borderLeft: '8px solid transparent',
-                        borderRight: '8px solid transparent',
-                        borderTop: '8px solid white',
-                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
-                        zIndex: 10
-                      }}
-                    ></div>
-                  )}
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
 
-                <div className="w-80 max-w-full sm:w-72 relative select-none min-h-96 flex flex-col bg-white rounded-lg shadow-lg border p-4">              {/* Custom header with category badge and custom close button */}
-                  <div className="relative w-full mb-2">
-                    {/* Category badge centered */}
-                    <div className="flex justify-center">
-                      <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
-                        <span className="flex items-center justify-center">
-                          {currentNews.category ? 
-                            categoryIcons[currentNews.category] || categoryIcons.Default : 
-                            categoryIcons.Default}
-                        </span>
-                        <span>{currentNews.category || "News"}</span>
-                      </span>
+              {/* Render different content based on type */}
+              {currentNews.type === 'obituary' ? (
+                // Obituary Card
+                <div>
+                  {/* Person Image */}
+                  <div className="relative h-32 w-full overflow-hidden rounded-lg mb-3">
+                    <img 
+                      src={currentNews.image_url || "/placeholders/person-placeholder.jpg"} 
+                      alt={currentNews.person_name}
+                      className="object-cover w-full h-full"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/placeholders/person-placeholder.jpg";
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Obituary Details */}
+                  <div className="text-center">
+                    <h3 className="font-semibold text-lg mb-2">{currentNews.person_name}</h3>
+                    <div className="space-y-1 text-sm text-gray-600 mb-3">
+                      {currentNews.age && <p>Age: {currentNews.age} years</p>}
+                      <p>Date of Death: {new Date(currentNews.date_of_death).toLocaleDateString()}</p>
+                      <p className="text-xs text-gray-500 italic">
+                        Posted: {new Date(currentNews.created_at).toLocaleDateString()}
+                      </p>
                     </div>
-
-                    {/* Close button at top-right corner */}
-                    <button 
-                      onClick={() => setSelectedLocation(null)}
-                      className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors"
-                      aria-label="Close"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
+                    <div className="text-center text-sm text-gray-700 italic">
+                      &quot;May their soul rest in peace&quot;
+                    </div>
+                  </div>
+                </div>
+              ) : currentNews.type === 'classified' ? (
+                // Classified Ad Card
+                <div>
+                  {/* Images with navigation */}
+                  <div className="relative h-40 w-full overflow-hidden rounded-lg mb-3">
+                    <img 
+                      src={getCurrentImage(currentNews.image_url, currentImageIndex)} 
+                      alt={currentNews.title}
+                      className="object-cover w-full h-full"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/placeholders/news-placeholder.jpg";
+                      }}
+                    />
+                    
+                    {/* Image navigation arrows (only show if multiple images) */}
+                    {getImageCount(currentNews.image_url) > 1 && (
+                      <>
+                        <button
+                          onClick={handlePrevImage}
+                          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={handleNextImage}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                        
+                        {/* Image counter */}
+                        <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                          {currentImageIndex + 1}/{getImageCount(currentNews.image_url)}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Classified Details */}
+                  <h3 className="font-semibold text-lg mb-2 line-clamp-2">{currentNews.title}</h3>
+                  
+                  <div className="mb-3 space-y-1">
+                    {currentNews.price && (
+                      <p className="text-lg font-bold text-green-600">₹{currentNews.price}</p>
+                    )}
+                    <p className="text-sm text-gray-600 capitalize">
+                      <span className="font-medium">{currentNews.ad_type}</span>
+                      {currentNews.item_type && ` • ${currentNews.item_type}`}
+                    </p>
+                    <p className="text-xs text-gray-500 italic">
+                      {new Date(currentNews.created_at).toLocaleDateString()}
+                    </p>
                   </div>
 
-                  {/* Render different content based on type */}
-                  {currentNews.type === 'obituary' ? (
-                    // Obituary Card
-                    <div>
-                      {/* Person Image */}
-                      <div className="relative h-32 w-full overflow-hidden rounded-lg mb-3">
-                        <img 
-                          src={currentNews.image_url || "/placeholders/person-placeholder.jpg"} 
-                          alt={currentNews.person_name}
-                          className="object-cover w-full h-full"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/placeholders/person-placeholder.jpg";
-                          }}
-                        />
-                      </div>
-                      
-                      {/* Obituary Details */}
-                      <div className="text-center">
-                        <h3 className="font-semibold text-lg mb-2">{currentNews.person_name}</h3>
-                        <div className="space-y-1 text-sm text-gray-600 mb-3">
-                          {currentNews.age && <p>Age: {currentNews.age} years</p>}
-                          <p>Date of Death: {new Date(currentNews.date_of_death).toLocaleDateString()}</p>
-                          <p className="text-xs text-gray-500 italic">
-                            Posted: {new Date(currentNews.created_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div className="text-center text-sm text-gray-700 italic">
-                          &quot;May their soul rest in peace&quot;
-                        </div>
-                      </div>
-                    </div>
-                  ) : currentNews.type === 'classified' ? (
-                    // Classified Ad Card
-                    <div>
-                      {/* Images with navigation */}
-                      <div className="relative h-40 w-full overflow-hidden rounded-lg mb-3">
-                        <img 
-                          src={getCurrentImage(currentNews.image_url, currentImageIndex)} 
-                          alt={currentNews.title}
-                          className="object-cover w-full h-full"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/placeholders/news-placeholder.jpg";
-                          }}
-                        />
-                        
-                        {/* Image navigation arrows (only show if multiple images) */}
-                        {getImageCount(currentNews.image_url) > 1 && (
-                          <>
-                            <button
-                              onClick={handlePrevImage}
-                              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={handleNextImage}
-                              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-75 transition-all"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                              </svg>
-                            </button>
-                            
-                            {/* Image counter */}
-                            <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                              {currentImageIndex + 1}/{getImageCount(currentNews.image_url)}
-                            </div>
-                          </>
-                        )}
-                      </div>
-                      
-                      {/* Classified Details */}
-                      <h3 className="font-semibold text-lg mb-2 line-clamp-2">{currentNews.title}</h3>
-                      
-                      <div className="mb-3 space-y-1">
-                        {currentNews.price && (
-                          <p className="text-lg font-bold text-green-600">₹{currentNews.price}</p>
-                        )}
-                        <p className="text-sm text-gray-600 capitalize">
-                          <span className="font-medium">{currentNews.ad_type}</span>
-                          {currentNews.item_type && ` • ${currentNews.item_type}`}
-                        </p>
-                        <p className="text-xs text-gray-500 italic">
-                          {new Date(currentNews.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-
-                      {/* Action Button */}
-                      <button
-                        onClick={() => handleClassifieds(currentNews.id)}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  ) : (
-                    // News Card (existing)
-                    <div>
-                      {/* News Image */}
-                      <div className="relative h-40 w-full overflow-hidden rounded-lg mb-3">
-                        <img 
-                          src={currentNews.image_url} 
-                          alt={currentNews.title}
-                          className="object-cover w-full h-full"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/placeholders/news-placeholder.jpg";
-                          }}
-                        />
-                      </div>
-                      
-                      {/* News Content */}
-                      <h3 className="font-semibold text-lg mb-2 line-clamp-2">{currentNews.title}</h3>
-                      
-                      {/* Content */}
-                      <div className="mb-4">
-                        <p className="text-gray-600 text-sm">
-                          {truncate(currentNews.content, 120)}
-                        </p>
-                        <p className="text-xs text-gray-500 italic font-light text-right mt-1">
-                          {new Date(currentNews.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-
-                      {/* Action Button */}
-                      <button
-                        onClick={() => openArticle(currentNews.id)}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
-                      >
-                        Read Full Article
-                      </button>
-                    </div>
-                  )}
-                  
-                  {/* Navigation Controls for Multiple News (only for news/classifieds, not obituaries) */}
-                  {hasMultipleNews && currentNews.type !== 'obituary' && (
-                    <div className="flex items-center justify-between mt-3">
-                      <button
-                        onClick={handlePrevNews}
-                        disabled={currentNewsIndex === 0}
-                        className={`p-1 rounded ${
-                          currentNewsIndex === 0
-                            ? "text-gray-400 cursor-not-allowed"
-                            : "text-blue-600 hover:bg-blue-50"
-                        }`}
-                      >
-                        ← Previous
-                      </button>
-                      <span className="text-xs text-gray-500">
-                        {currentNewsIndex + 1} of {selectedNewsGroup.length}
-                      </span>
-                      <button
-                        onClick={handleNextNews}
-                        disabled={currentNewsIndex === selectedNewsGroup.length - 1}
-                        className={`p-1 rounded ${
-                          currentNewsIndex === selectedNewsGroup.length - 1
-                            ? "text-gray-400 cursor-not-allowed"
-                            : "text-blue-600 hover:bg-blue-50"
-                        }`}
-                      >
-                        Next →
-                      </button>
-                    </div>
-                  )}
-                  
-                  {/* Add CSS to hide the default close button */}
-                  <style jsx>{`
-                    .gm-ui-hover-effect {
-                      display: none !important;
-                    }
-                    
-                    .gm-style .gm-style-iw-c {
-                      padding-top: 12px !important;
-                    }
-                  `}</style>
+                  {/* Action Button */}
+                  <button
+                    onClick={() => handleClassifieds(currentNews.id)}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
+                  >
+                    View Details
+                  </button>
                 </div>
-              </div>
-              );
-            })()}
-          </OverlayViewF>
+              ) : (
+                // News Card (existing)
+                <div>
+                  {/* News Image */}
+                  <div className="relative h-40 w-full overflow-hidden rounded-lg mb-3">
+                    <img 
+                      src={currentNews.image_url} 
+                      alt={currentNews.title}
+                      className="object-cover w-full h-full"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/placeholders/news-placeholder.jpg";
+                      }}
+                    />
+                  </div>
+                  
+                  {/* News Content */}
+                  <h3 className="font-semibold text-lg mb-2 line-clamp-2">{currentNews.title}</h3>
+                  
+                  {/* Content */}
+                  <div className="mb-4">
+                    <p className="text-gray-600 text-sm">
+                      {truncate(currentNews.content, 120)}
+                    </p>
+                    <p className="text-xs text-gray-500 italic font-light text-right mt-1">
+                      {new Date(currentNews.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  {/* Action Button */}
+                  <button
+                    onClick={() => openArticle(currentNews.id)}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
+                  >
+                    Read Full Article
+                  </button>
+                </div>
+              )}
+              
+              {/* Navigation Controls for Multiple News (only for news/classifieds, not obituaries) */}
+              {hasMultipleNews && currentNews.type !== 'obituary' && (
+                <div className="flex items-center justify-between mt-3">
+                  <button
+                    onClick={handlePrevNews}
+                    disabled={currentNewsIndex === 0}
+                    className={`p-1 rounded ${
+                      currentNewsIndex === 0
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-blue-600 hover:bg-blue-50"
+                    }`}
+                  >
+                    ← Previous
+                  </button>
+                  <span className="text-xs text-gray-500">
+                    {currentNewsIndex + 1} of {selectedNewsGroup.length}
+                  </span>
+                  <button
+                    onClick={handleNextNews}
+                    disabled={currentNewsIndex === selectedNewsGroup.length - 1}
+                    className={`p-1 rounded ${
+                      currentNewsIndex === selectedNewsGroup.length - 1
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-blue-600 hover:bg-blue-50"
+                    }`}
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
+              
+              {/* Add CSS to hide the default close button */}
+              <style jsx>{`
+                .gm-ui-hover-effect {
+                  display: none !important;
+                }
+                
+                .gm-style .gm-style-iw-c {
+                  padding-top: 12px !important;
+                }
+              `}</style>
+            </div>
+          </InfoWindowF>
         )}
       </GoogleMap>
 
