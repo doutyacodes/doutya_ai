@@ -1724,7 +1724,7 @@ const getUserLocation = useCallback(async () => {
               maxWidth: window.innerWidth < 640 ? 280 : 320
             }}
           >
-          <div className="w-full max-w-[280px] sm:max-w-[320px] relative select-none min-h-[320px] sm:min-h-96 flex flex-col">
+          <div className="w-full max-w-[280px] sm:max-w-[320px] relative select-none min-h-[340px] sm:min-h-96 flex flex-col justify-between">
             <div className="relative w-full mb-1.5 flex-shrink-0">
               <div className="flex justify-center">
                 <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-slate-100 text-slate-800 text-xs font-medium rounded-full inline-flex items-center justify-center gap-0.5 shadow-sm">
@@ -1817,15 +1817,19 @@ const getUserLocation = useCallback(async () => {
             {currentNews.summary && (
               <div className="mb-2 sm:mb-3 flex-shrink-0">
                 <div 
-                  className="h-16 sm:h-20 overflow-y-auto summary-scroll pr-1"
+                  className="h-32 md:h-20 overflow-y-auto summary-scroll pr-1"
                   key={`summary-${currentNews.id || currentNewsIndex}`}
                 >
-                  <p className="text-xs sm:text-sm text-gray-700 leading-normal text-justify">
+                  <p className="text-xs sm:text-sm text-gray-700 leading-tight sm:leading-normal text-justify">
                     {currentNews.summary}
                   </p>
                 </div>
               </div>
             )}
+
+            {/* Spacer to push bottom content down */}
+            <div className="flex-grow"></div>
+            <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0"></div>
             
             <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
               <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
@@ -1833,17 +1837,18 @@ const getUserLocation = useCallback(async () => {
                   <img
                     src={getFavicon(currentNews.article_url)}
                     alt=""
-                    className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0"
+                    className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0"
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}
                   />
                 )}
-                <p className="text-xs sm:text-sm text-gray-600 truncate">
+                <p className="text-xs sm:text-sm text-gray-800 truncate font-medium sm:font-normal">
+
                   {currentNews.source_name}
                 </p>
               </div>
-              <p className="text-xs text-gray-500 flex-shrink-0 ml-2">
+              <p className="text-xs text-gray-600 flex-shrink-0 ml-2">
                 {new Date(currentNews.created_at).toLocaleDateString(undefined, {
                   month: 'short',
                   day: 'numeric'
