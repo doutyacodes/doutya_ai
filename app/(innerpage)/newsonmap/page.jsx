@@ -2,7 +2,7 @@
 import ReactDOMServer from "react-dom/server";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useMediaQuery } from 'react-responsive';
-import { GoogleMap, useLoadScript, MarkerF, InfoWindowF } from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, MarkerF, InfoWindowF, OverlayViewF, OverlayView } from "@react-google-maps/api";
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { 
     MapPin, AlertTriangle, Building2, UserRound, Car, Cloud, 
@@ -563,25 +563,6 @@ const MobileFilterDropdown = ({
               ))}
             </div>
           )}
-
-          <div className="border-t pt-2 mt-2">
-            <button 
-              onClick={() => {
-                if (mapRef) {
-                  mapRef.panTo(center);
-                  mapRef.setZoom(DEFAULT_ZOOM);
-                }
-                fetchNewsData(null, selectedLanguages);
-                setShowFiltersDropdown(false);
-                setActiveFilter(null);
-              }}
-              className="w-full bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center"
-            >
-              <Globe size={16} className="mr-2" />
-              <span className="text-sm">Reset to World View</span>
-            </button>
-          </div>
-
         </div>
       )}
     </div>
@@ -692,14 +673,16 @@ const FilterPanel = ({ selectedCategories, setSelectedCategories, buttonStyle, i
   );
 };
 
-const ResetZoomButton = ({ mapRef, buttonStyle, fetchNewsData, selectedLanguages }) => {
+const ResetZoomButton = ({ mapRef, buttonStyle, fetchNewsData, selectedLanguages, setSelectedLocation }) => {
   const handleResetZoom = () => {
     if (mapRef) {
       // Smooth animation to default view
       mapRef.panTo(center);
       mapRef.setZoom(DEFAULT_ZOOM);
     }
+    setSelectedLocation(null)
     fetchNewsData(null, selectedLanguages);
+    
   };
 
   return (
@@ -711,6 +694,32 @@ const ResetZoomButton = ({ mapRef, buttonStyle, fetchNewsData, selectedLanguages
     >
       <Globe size={16} className="mr-1" />
       <span className="text-sm">Reset</span>
+    </button>
+  );
+};
+
+const MobileResetButton = ({ mapRef, fetchNewsData, selectedLanguages, setSelectedLocation }) => {
+  const handleReset = () => {
+    if (mapRef) {
+      mapRef.panTo(center);
+      mapRef.setZoom(DEFAULT_ZOOM);
+    }
+    setSelectedLocation(null)
+    fetchNewsData(null, selectedLanguages);
+  };
+
+  return (
+    <button 
+      onClick={handleReset}
+      className="bg-white shadow-lg rounded-full p-3 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+      title="Reset to world view"
+      style={{
+        width: '48px',
+        height: '48px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+      }}
+    >
+      <Globe size={20} />
     </button>
   );
 };
@@ -1014,12 +1023,39 @@ const getUserLocation = useCallback(async () => {
     );
   };
 
-  // Handle marker click
-  const handleMarkerClick = useCallback((locationKey, index = 0) => {
-    const [lat, lng] = locationKey.split(',').map(parseFloat);
-    setSelectedLocation({ key: locationKey, lat, lng });
-    setCurrentNewsIndex(index);
-  }, []);
+const handleMarkerClick = useCallback((locationKey, index = 0) => {
+  const [lat, lng] = locationKey.split(',').map(parseFloat);
+  setSelectedLocation({ key: locationKey, lat, lng });
+  setCurrentNewsIndex(index);
+  
+  // Wait for InfoWindow to render, then adjust map view
+  setTimeout(() => {
+    if (mapRef) {
+      const bounds = mapRef.getBounds();
+      const center = mapRef.getCenter();
+      
+      // Calculate if we need to pan to keep InfoWindow visible
+      const navbarHeight = 80; // Adjust to your navbar height
+      const infoWindowHeight = 400; // Approximate height of your InfoWindow
+      
+      // Get current map bounds
+      const ne = bounds.getNorthEast();
+      const sw = bounds.getSouthWest();
+      
+      // Calculate the effective visible area (minus navbar)
+      const latRange = ne.lat() - sw.lat();
+      const navbarLatOffset = (navbarHeight / window.innerHeight) * latRange;
+      const effectiveNorth = ne.lat() - navbarLatOffset;
+      
+      // Check if marker is too close to top
+      if (lat > effectiveNorth - (latRange * 0.1)) {
+        // Pan down to make room for InfoWindow
+        const newLat = lat - (latRange * 0.15);
+        mapRef.panTo({ lat: newLat, lng: lng });
+      }
+    }
+  }, 100); // Small delay to let InfoWindow render
+}, [mapRef]);
 
   const createClusterRenderer = () => {
     return {
@@ -1514,6 +1550,22 @@ const getUserLocation = useCallback(async () => {
     });
   };
 
+  // Add this before the return statement
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Move Google Maps controls up from bottom and hide pan control */
+      .gm-style .gm-bundled-control {
+        margin-bottom: 60px !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   // Loading state
   if (!isLoaded) {
     return (
@@ -1555,40 +1607,54 @@ const getUserLocation = useCallback(async () => {
         />
       )}
 
-      {/* Filter Controls - Desktop and Mobile */}
-      <div className="absolute top-3 right-4 z-10">
-        {isMobile ? (
-          <MobileFilterDropdown
-            availableLanguages={availableLanguages}
-            selectedLanguages={selectedLanguages}
-            setSelectedLanguages={setSelectedLanguages}
-            selectedCategories={selectedCategories}
-            setSelectedCategories={setSelectedCategories}
-            showFiltersDropdown={showFiltersDropdown}
-            setShowFiltersDropdown={setShowFiltersDropdown}
-            buttonStyle={buttonStyle}
-            fetchNewsData={fetchNewsData}
-            mapRef={mapRef}
-          />
-        ) : (
-          <div className="flex gap-2">
-            <LanguageFilter
+      <>
+        {/* Filter Controls */}
+        <div className="absolute top-3 right-4 z-10">
+          {isMobile ? (
+            <MobileFilterDropdown
               availableLanguages={availableLanguages}
               selectedLanguages={selectedLanguages}
               setSelectedLanguages={setSelectedLanguages}
-              buttonStyle={buttonStyle}
-              isMobile={isMobile}
-            />
-            <FilterPanel 
               selectedCategories={selectedCategories}
               setSelectedCategories={setSelectedCategories}
+              showFiltersDropdown={showFiltersDropdown}
+              setShowFiltersDropdown={setShowFiltersDropdown}
               buttonStyle={buttonStyle}
-              isMobile={isMobile}
+              fetchNewsData={fetchNewsData}
+              mapRef={mapRef}
             />
-            <ResetZoomButton mapRef={mapRef} buttonStyle={buttonStyle} fetchNewsData={fetchNewsData} selectedLanguages={selectedLanguages}/> {/* Add this line */}
+          ) : (
+            <div className="flex gap-2">
+              <LanguageFilter
+                availableLanguages={availableLanguages}
+                selectedLanguages={selectedLanguages}
+                setSelectedLanguages={setSelectedLanguages}
+                buttonStyle={buttonStyle}
+                isMobile={isMobile}
+              />
+              <FilterPanel 
+                selectedCategories={selectedCategories}
+                setSelectedCategories={setSelectedCategories}
+                buttonStyle={buttonStyle}
+                isMobile={isMobile}
+              />
+              <ResetZoomButton mapRef={mapRef} buttonStyle={buttonStyle} fetchNewsData={fetchNewsData} selectedLanguages={selectedLanguages} setSelectedLocation={setSelectedLocation}/>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Reset Button - positioned where pan control used to be */}
+        {isMobile && (
+          <div className="absolute right-1.5 z-10" style={{ bottom: '165px' }}>
+            <MobileResetButton 
+              mapRef={mapRef} 
+              fetchNewsData={fetchNewsData} 
+              selectedLanguages={selectedLanguages}
+              setSelectedLocation={setSelectedLocation}
+            />
           </div>
         )}
-      </div>
+      </>
 
       <GoogleMap
         mapContainerStyle={containerStyle}
@@ -1598,7 +1664,12 @@ const getUserLocation = useCallback(async () => {
           fullscreenControl: false,
           streetViewControl: false,
           mapTypeControl: false,
-          zoomControl: true,
+          zoomControlOptions: {
+            position: window.google?.maps?.ControlPosition?.RIGHT_BOTTOM || 6,
+          },
+          panControl: false,
+          rotateControl: false,
+          scaleControl: false,
           gestureHandling: "greedy",
           clickableIcons: false,
           minZoom: 2,
@@ -1612,6 +1683,15 @@ const getUserLocation = useCallback(async () => {
             },
             strictBounds: true,
           },
+          disableDefaultUI: true,
+          zoomControl: true,
+          // ADD THIS PADDING
+          padding: {
+            top: 80,    // Adjust based on your navbar height
+            bottom: 60, // Adjust based on your bottom UI
+            left: 20,
+            right: 20
+          },
         }}
         onLoad={handleMapLoad}
         // onIdle={handleBoundsChanged} // Commented out - not fetching based on bounds anymore
@@ -1620,132 +1700,218 @@ const getUserLocation = useCallback(async () => {
         <MapTypeControls mapRef={mapRef} />
 
         {/* Info Window */}
+        {/* Adaptive positioned InfoWindow */}
         {currentNews && (
-          <InfoWindowF
+          <OverlayViewF
             position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
-            onCloseClick={() => setSelectedLocation(null)}
-            options={{
-              pixelOffset: new window.google.maps.Size(0, -5)
-            }}
+            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
           >
-            <div className="max-w-xs relative select-none">
-              <div className="relative w-full mb-2">
-                <div className="flex justify-center">
-                  <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
-                    <span className="flex items-center justify-center">
-                      {currentNews.category ? 
-                        categoryIcons[currentNews.category] || categoryIcons.Default : 
-                        categoryIcons.Default}
-                    </span>
-                    <span>{currentNews.category || "News"}</span>
-                  </span>
-                </div>
-
-                <button 
-                  onClick={() => setSelectedLocation(null)}
-                  className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors"
-                  aria-label="Close"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              <style jsx>{`
-                .gm-ui-hover-effect {
-                  display: none !important;
-                }
-                
-                .gm-style .gm-style-iw-c {
-                  padding-top: 12px !important;
-                }
-              `}</style>
+            {(() => {
+              if (!mapRef) return null;
               
-              <div className="relative h-40 w-full overflow-hidden rounded-lg mb-3">
-                <img 
-                  src={currentNews.image_url} 
-                  alt={currentNews.title}
-                  className="object-cover w-full h-full"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/placeholders/news-placeholder.jpg";
+              const bounds = mapRef.getBounds();
+              if (!bounds) return null;
+              
+              const north = bounds.getNorthEast().lat();
+              const south = bounds.getSouthWest().lat();
+              const range = north - south;
+              
+              // Check if marker is in top 30% of visible area
+              const isNearTop = selectedLocation.lat > (north - range * 0.3);
+              
+              return (
+                <div 
+                  style={{
+                    position: 'absolute',
+                    left: '50%',
+                    transform: isNearTop 
+                      ? 'translateX(-50%) translateY(10px)' // Card BELOW marker
+                      : 'translateX(-50%) translateY(-100%) translateY(-50px)', // Card ABOVE marker
+                    zIndex: 50
                   }}
-                />
-              </div>
-              
-              <h3 className="font-semibold text-lg mb-2 line-clamp-2">{currentNews.title}</h3>
-              
-              {/* Summary Section */}
-              {
-                currentNews.summary && (
-                <div className="mb-3">
-                  <p className="text-xs text-gray-700 leading-tight text-justify">
-                    {currentNews.summary}
-                  </p>
-                </div>
-                )
-              }
-              
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  {currentNews.article_url && (
-                    <img
-                      src={getFavicon(currentNews.article_url)}
-                      alt=""
-                      className="w-4 h-4"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
+                >
+                  {/* Arrow */}
+                  {isNearTop ? (
+                    // Arrow pointing UP (card is below marker)
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        left: '50%',
+                        top: '-8px',
+                        transform: 'translateX(-50%)',
+                        width: 0,
+                        height: 0,
+                        borderLeft: '8px solid transparent',
+                        borderRight: '8px solid transparent',
+                        borderBottom: '8px solid white',
+                        filter: 'drop-shadow(0 -2px 4px rgba(0,0,0,0.1))',
+                        zIndex: 10
                       }}
-                    />
+                    ></div>
+                  ) : (
+                    // Arrow pointing DOWN (card is above marker)
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        left: '50%',
+                        bottom: '-8px',
+                        transform: 'translateX(-50%)',
+                        width: 0,
+                        height: 0,
+                        borderLeft: '8px solid transparent',
+                        borderRight: '8px solid transparent',
+                        borderTop: '8px solid white',
+                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                        zIndex: 10
+                      }}
+                    ></div>
                   )}
-                  <p className="text-sm text-gray-600">
-                    Source: {currentNews.source_name}
-                  </p>
+
+                  <div className="w-80 max-w-full sm:w-72 relative select-none min-h-96 flex flex-col bg-white rounded-lg shadow-lg border p-4">
+                    {/* Header with category and close button */}
+                    <div className="relative w-full mb-4 flex-shrink-0">
+                      <div className="flex justify-center">
+                        <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
+                          <span className="flex items-center justify-center">
+                            {currentNews.category ? 
+                              categoryIcons[currentNews.category] || categoryIcons.Default : 
+                              categoryIcons.Default}
+                          </span>
+                          <span>{currentNews.category || "News"}</span>
+                        </span>
+                      </div>
+
+                      <button 
+                        onClick={() => setSelectedLocation(null)}
+                        className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors border"
+                        aria-label="Close"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
+                      {/* Content area */}
+                      <div className="flex-1 space-y-3">
+
+                        <style jsx>{`
+                        .gm-ui-hover-effect {
+                          display: none !important;
+                        }
+                                    
+                        .summary-scroll::-webkit-scrollbar {
+                          width: 4px;
+                        }
+                        
+                        .summary-scroll::-webkit-scrollbar-track {
+                          background: #f1f5f9;
+                          border-radius: 2px;
+                        }
+                        
+                        .summary-scroll::-webkit-scrollbar-thumb {
+                          background: #cbd5e1;
+                          border-radius: 2px;
+                        }
+                        
+                        .summary-scroll::-webkit-scrollbar-thumb:hover {
+                          background: #94a3b8;
+                        }
+                      `}</style>
+                      
+                      <div className="relative h-32 w-full overflow-hidden rounded-lg mb-3 flex-shrink-0">
+                        <img 
+                          src={currentNews.image_url} 
+                          alt={currentNews.title}
+                          className="object-cover w-full h-full"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/placeholders/news-placeholder.jpg";
+                          }}
+                        />
+                      </div>
+                      
+                      <h3 className="font-semibold text-base sm:text-sm mb-2 leading-tight flex-shrink-0">
+                        {currentNews.title}
+                      </h3>
+                      
+                      {/* Summary Section with Fixed Height and Scroll */}
+                      {currentNews.summary && (
+                        <div className="mb-3 flex-shrink-0">
+                          <div 
+                            className="h-20 overflow-y-auto summary-scroll pr-1"
+                            key={`summary-${currentNews.id || currentNewsIndex}`}
+                          >
+                            <p className="text-sm text-gray-700 leading-normal text-justify">
+                              {currentNews.summary}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+                        <div className="flex items-center gap-2">
+                          {currentNews.article_url && (
+                            <img
+                              src={getFavicon(currentNews.article_url)}
+                              alt=""
+                              className="w-4 h-4"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          )}
+                          <p className="text-sm text-gray-600">
+                            Source: {currentNews.source_name}
+                          </p>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          {new Date(currentNews.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      
+                      <button
+                        onClick={() => openArticle(currentNews.article_url)}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm flex-shrink-0"
+                      >
+                        Read Full Article
+                      </button>
+                      
+                      {hasMultipleNews && (
+                        <div className="flex items-center justify-between mt-3 flex-shrink-0">
+                          <button
+                            onClick={handlePrevNews}
+                            disabled={currentNewsIndex === 0}
+                            className={`p-1 rounded ${
+                              currentNewsIndex === 0
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-blue-600 hover:bg-blue-50"
+                            }`}
+                          >
+                            ← Previous
+                          </button>
+                          <span className="text-xs text-gray-500">
+                            {currentNewsIndex + 1} of {selectedNewsGroup.length}
+                          </span>
+                          <button
+                            onClick={handleNextNews}
+                            disabled={currentNewsIndex === selectedNewsGroup.length - 1}
+                            className={`p-1 rounded ${
+                              currentNewsIndex === selectedNewsGroup.length - 1
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-blue-600 hover:bg-blue-50"
+                            }`}
+                          >
+                            Next →
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <p className="text-xs text-gray-500">
-                  {new Date(currentNews.created_at).toLocaleDateString()}
-                </p>
-              </div>
-              
-              <button
-                onClick={() => openArticle(currentNews.article_url)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm"
-              >
-                Read Full Article
-              </button>
-              
-              {hasMultipleNews && (
-                <div className="flex items-center justify-between mt-3">
-                  <button
-                    onClick={handlePrevNews}
-                    disabled={currentNewsIndex === 0}
-                    className={`p-1 rounded ${
-                      currentNewsIndex === 0
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-blue-600 hover:bg-blue-50"
-                    }`}
-                  >
-                    ← Previous
-                  </button>
-                  <span className="text-xs text-gray-500">
-                    {currentNewsIndex + 1} of {selectedNewsGroup.length}
-                  </span>
-                  <button
-                    onClick={handleNextNews}
-                    disabled={currentNewsIndex === selectedNewsGroup.length - 1}
-                    className={`p-1 rounded ${
-                      currentNewsIndex === selectedNewsGroup.length - 1
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-blue-600 hover:bg-blue-50"
-                    }`}
-                  >
-                    Next →
-                  </button>
-                </div>
-              )}
-            </div>
-          </InfoWindowF>
+              );
+            })()}
+          </OverlayViewF>
         )}
       </GoogleMap>
 

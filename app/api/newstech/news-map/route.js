@@ -125,7 +125,7 @@ async function generateSummaryWithOpenAI(articleText) {
   try {
     const prompt = `
       Generate a concise news summary from the following article text. 
-      The summary must be exactly between 220-230 characters (including spaces and punctuation).
+      The summary must be exactly between 280-300 characters (including spaces and punctuation).
       Make it engaging and informative, capturing the key points of the news.
       Return only the summary text, nothing else.
       
