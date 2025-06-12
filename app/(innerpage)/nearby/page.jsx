@@ -1278,7 +1278,7 @@ const MapTypeControls = ({ mapRef }) => {
 
       {/* Mobile Reset Button - positioned where pan control used to be */}
       {isMobile && (
-        <div className="absolute right-1.5 z-10" style={{ bottom: '165px' }}>
+        <div className="absolute right-1.5 z-10" style={{ bottom: '238px' }}>
           <MobileResetButton 
             mapRef={mapRef} 
             fetchNewsData={fetchNewsData}

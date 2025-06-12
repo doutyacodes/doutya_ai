@@ -1527,22 +1527,6 @@ const getUserLocation = useCallback(async () => {
     });
   };
 
-  // Add this before the return statement
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.textContent = `
-      /* Move Google Maps controls up from bottom and hide pan control */
-      .gm-style .gm-bundled-control {
-        margin-bottom: 60px !important;
-      }
-    `;
-    document.head.appendChild(style);
-    
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
-
   // Loading state
   if (!isLoaded) {
     return (
@@ -1623,7 +1607,7 @@ const getUserLocation = useCallback(async () => {
 
         {/* Mobile Reset Button - positioned where pan control used to be */}
         {isMobile && (
-          <div className="absolute right-1.5 z-10" style={{ bottom: '165px' }}>
+          <div className="absolute right-1.5 z-10" style={{ bottom: '238px' }}>
             <MobileResetButton 
               mapRef={mapRef} 
               fetchNewsData={fetchNewsData} 

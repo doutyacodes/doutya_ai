@@ -5,7 +5,7 @@ export const applyGoogleMapsControlStyle = () => {
     style.id = "gm-custom-style";
     style.textContent = `
       .gm-style .gm-bundled-control {
-        margin-bottom: 60px !important;
+        margin-bottom: 130px !important;
       }
     `;
     document.head.appendChild(style);
