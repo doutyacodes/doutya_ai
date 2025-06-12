@@ -52,35 +52,35 @@ const USER_LOCATION_ZOOM = 7;
 
 // Category icons mapping using Lucide React components
 const categoryIcons = {
-  "Natural Disaster": <AlertTriangle size={24} className="text-red-600" />,
-  "Crime": <FaHandcuffs size={24} className="text-amber-700" />,
-  "Politics": <Vote size={24} className="text-indigo-600" />,
-  "Protest": <Megaphone size={24} className="text-orange-600" />,
-  "Accident": <Ambulance size={24} className="text-purple-600" />,
-  "Weather": <Cloud size={24} className="text-cyan-500" />,
-  "Festival / Event": <PartyPopper size={24} className="text-pink-500" />,
-  "Conflict / War": <GiCrossedSwords size={24} className="text-red-800" />,
-  "Public Announcement": <MegaphoneIcon size={24} className="text-blue-600" />,
-  "Emergency Alert": <BellRing size={24} className="text-red-500" />,
-  "Sports": <Trophy size={24} className="text-yellow-600" />,
-  "Health": <Heart size={24} className="text-rose-600" />,
-  "Business": <TrendingUp size={24} className="text-slate-700" />,
-  "Entertainment": <Music size={24} className="text-violet-500" />,
-  "Technology": <Laptop size={24} className="text-blue-700" />,
-  "Science": <FlaskConical size={24} className="text-teal-600" />,
-  "Education": <GraduationCap size={24} className="text-emerald-700" />,
-  "Environment": <Leaf size={24} className="text-lime-600" />,
-  "Social Issues": <HandHeart size={24} className="text-coral-600" />,
-  "Transportation": <Train size={24} className="text-gray-600" />,
-  "Automobiles": <Car size={24} className="text-maroon-600" />,
-  "Finance": <BadgeDollarSign size={24} className="text-gold-700" />,
-  "Movies": <Clapperboard size={24} className="text-plum-700" />,
-  "Cricket": <Flag size={24} className="text-olive-600" />,
-  "Military": <Shield size={24} className="text-khaki-700" />,
-  "Space": <Rocket size={24} className="text-navy-600" />,
-  "Lifestyle": <Sparkles size={24} className="text-peach-500" />,
-  "Wildlife": <PawPrint size={24} className="text-brown-600" />,
-  "Default": <Info size={24} className="text-gray-500" />
+  "Natural Disaster": <AlertTriangle size={window.innerWidth < 640 ? 12 : 16} className="text-red-600" />,
+  "Crime": <FaHandcuffs size={window.innerWidth < 640 ? 12 : 16} className="text-amber-700" />,
+  "Politics": <Vote size={window.innerWidth < 640 ? 12 : 16} className="text-indigo-600" />,
+  "Protest": <Megaphone size={window.innerWidth < 640 ? 12 : 16} className="text-orange-600" />,
+  "Accident": <Ambulance size={window.innerWidth < 640 ? 12 : 16} className="text-purple-600" />,
+  "Weather": <Cloud size={window.innerWidth < 640 ? 12 : 16} className="text-cyan-500" />,
+  "Festival / Event": <PartyPopper size={window.innerWidth < 640 ? 12 : 16} className="text-pink-500" />,
+  "Conflict / War": <GiCrossedSwords size={window.innerWidth < 640 ? 12 : 16} className="text-red-800" />,
+  "Public Announcement": <MegaphoneIcon size={window.innerWidth < 640 ? 12 : 16} className="text-blue-600" />,
+  "Emergency Alert": <BellRing size={window.innerWidth < 640 ? 12 : 16} className="text-red-500" />,
+  "Sports": <Trophy size={window.innerWidth < 640 ? 12 : 16} className="text-yellow-600" />,
+  "Health": <Heart size={window.innerWidth < 640 ? 12 : 16} className="text-rose-600" />,
+  "Business": <TrendingUp size={window.innerWidth < 640 ? 12 : 16} className="text-slate-700" />,
+  "Entertainment": <Music size={window.innerWidth < 640 ? 12 : 16} className="text-violet-500" />,
+  "Technology": <Laptop size={window.innerWidth < 640 ? 12 : 16} className="text-blue-700" />,
+  "Science": <FlaskConical size={window.innerWidth < 640 ? 12 : 16} className="text-teal-600" />,
+  "Education": <GraduationCap size={window.innerWidth < 640 ? 12 : 16} className="text-emerald-700" />,
+  "Environment": <Leaf size={window.innerWidth < 640 ? 12 : 16} className="text-lime-600" />,
+  "Social Issues": <HandHeart size={window.innerWidth < 640 ? 12 : 16} className="text-coral-600" />,
+  "Transportation": <Train size={window.innerWidth < 640 ? 12 : 16} className="text-gray-600" />,
+  "Automobiles": <Car size={window.innerWidth < 640 ? 12 : 16} className="text-maroon-600" />,
+  "Finance": <BadgeDollarSign size={window.innerWidth < 640 ? 12 : 16} className="text-gold-700" />,
+  "Movies": <Clapperboard size={window.innerWidth < 640 ? 12 : 16} className="text-plum-700" />,
+  "Cricket": <Flag size={window.innerWidth < 640 ? 12 : 16} className="text-olive-600" />,
+  "Military": <Shield size={window.innerWidth < 640 ? 12 : 16} className="text-khaki-700" />,
+  "Space": <Rocket size={window.innerWidth < 640 ? 12 : 16} className="text-navy-600" />,
+  "Lifestyle": <Sparkles size={window.innerWidth < 640 ? 12 : 16} className="text-peach-500" />,
+  "Wildlife": <PawPrint size={window.innerWidth < 640 ? 12 : 16} className="text-brown-600" />,
+  "Default": <Info size={window.innerWidth < 640 ? 12 : 16} className="text-gray-500" />
 };
 
 const categoryColors = {
@@ -710,18 +710,30 @@ const MobileResetButton = ({ mapRef, fetchNewsData, selectedLanguages, setSelect
   };
 
   return (
-    <button 
-      onClick={handleReset}
-      className="bg-white shadow-lg rounded-full p-3 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
-      title="Reset to world view"
-      style={{
-        width: '48px',
-        height: '48px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-      }}
-    >
-      <RotateCw size={20} />
-    </button>
+    // <button 
+    //   onClick={handleReset}
+    //   className="bg-white shadow-lg rounded-full p-3 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+    //   title="Reset to world view"
+    //   style={{
+    //     width: '48px',
+    //     height: '48px',
+    //     boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+    //   }}
+    // >
+    //   <RotateCw size={20} />
+    // </button>
+  <button 
+    onClick={handleReset}
+    className="bg-white p-1 shadow-lg rounded-full hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+    title="Reset to world view"
+    style={{
+      width: '55px',
+      height: '55px',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+    }}
+  >
+    <span className="text-gray-700 font-medium text-[10px]">World View</span>
+  </button>
   );
 };
 
@@ -821,8 +833,9 @@ export default function NewsMap() {
   const isMobile = useMediaQuery({ maxWidth: 640 });
 
   const buttonStyle = {
-    minWidth: isMobile ? '80px' : '100px',
-    height: isMobile ? '34px' : '38px'
+    minWidth: isMobile ? '60px' : '100px',  // Changed from 80px to 60px for mobile
+    height: isMobile ? '28px' : '38px',     // Changed from 34px to 28px for mobile
+    fontSize: isMobile ? '12px' : '14px'    // Added smaller font size for mobile
   };
 
   // Store user location in sessionStorage for persistence
@@ -1483,6 +1496,50 @@ const getUserLocation = useCallback(async () => {
     );
   };
 
+// Custom Zoom Controls Component
+  const ZoomControls = ({ mapRef }) => {
+    const handleZoomIn = () => {
+      if (!mapRef) return;
+      const currentZoom = mapRef.getZoom();
+      mapRef.setZoom(currentZoom + 1);
+    };
+
+    const handleZoomOut = () => {
+      if (!mapRef) return;
+      const currentZoom = mapRef.getZoom();
+      mapRef.setZoom(currentZoom - 1);
+    };
+
+    return (
+      <div className="absolute right-3.5 z-10 bg-white shadow-md rounded-lg overflow-hidden" style={{ bottom: isMobile ? '165px' : '120px' }}>
+        <button 
+          onClick={handleZoomIn}
+          className="block w-full hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center border-b border-gray-200"
+          style={{
+            width: isMobile ? '32px' : '40px',
+            height: isMobile ? '32px' : '40px',
+            fontSize: isMobile ? '16px' : '18px',
+            fontWeight: 'normal'
+          }}
+        >
+          +
+        </button>
+        <button 
+          onClick={handleZoomOut}
+          className="block w-full hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+          style={{
+            width: isMobile ? '32px' : '40px',
+            height: isMobile ? '32px' : '40px',
+            fontSize: isMobile ? '16px' : '18px',
+            fontWeight: 'normal'
+          }}
+        >
+          −
+        </button>
+      </div>
+    );
+  };
+
   const handleClusterClick = (event, cluster, map) => {
     if (!mapRef) return;
     
@@ -1607,7 +1664,7 @@ const getUserLocation = useCallback(async () => {
 
         {/* Mobile Reset Button - positioned where pan control used to be */}
         {isMobile && (
-          <div className="absolute right-1.5 z-10" style={{ bottom: '238px' }}>
+          <div className="absolute right-1 z-10" style={{ bottom: '238px' }}>
             <MobileResetButton 
               mapRef={mapRef} 
               fetchNewsData={fetchNewsData} 
@@ -1626,9 +1683,7 @@ const getUserLocation = useCallback(async () => {
           fullscreenControl: false,
           streetViewControl: false,
           mapTypeControl: false,
-          zoomControlOptions: {
-            position: window.google?.maps?.ControlPosition?.RIGHT_BOTTOM || 6,
-          },
+          zoomControl: false,
           panControl: false,
           rotateControl: false,
           scaleControl: false,
@@ -1645,14 +1700,15 @@ const getUserLocation = useCallback(async () => {
             },
             strictBounds: true,
           },
-          disableDefaultUI: true, // Try setting this to true
-          zoomControl: true, // Then explicitly enable zoom control
+          disableDefaultUI: true,
         }}
         onLoad={handleMapLoad}
-        // onIdle={handleBoundsChanged} // Commented out - not fetching based on bounds anymore
       >
         {/* Custom Map Type Controls */}
         <MapTypeControls mapRef={mapRef} />
+
+        {/* Custom Zoom Controls */}
+        <ZoomControls mapRef={mapRef} />
 
         {/* Info Window */}
         {currentNews && (
@@ -1660,28 +1716,30 @@ const getUserLocation = useCallback(async () => {
             position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
             onCloseClick={() => setSelectedLocation(null)}
             options={{
-              pixelOffset: new window.google.maps.Size(0, -5)
+              pixelOffset: new window.google.maps.Size(0, -5),
+              disableAutoPan: false,
+              maxWidth: window.innerWidth < 640 ? 280 : 320
             }}
           >
-          <div className="w-80 max-w-full sm:w-72 relative select-none min-h-96 flex flex-col">
-            <div className="relative w-full mb-2 flex-shrink-0">
+          <div className="w-full max-w-[280px] sm:max-w-[320px] relative select-none min-h-[320px] sm:min-h-96 flex flex-col">
+            <div className="relative w-full mb-1.5 flex-shrink-0">
               <div className="flex justify-center">
-                <span className="px-3 py-1.5 bg-slate-100 text-slate-800 text-sm font-medium rounded-full inline-flex items-center justify-center gap-1 shadow-sm">
-                  <span className="flex items-center justify-center">
+                <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-slate-100 text-slate-800 text-xs font-medium rounded-full inline-flex items-center justify-center gap-0.5 shadow-sm">
+                  <span className="flex items-center justify-center text-[10px] sm:text-xs">
                     {currentNews.category ? 
                       categoryIcons[currentNews.category] || categoryIcons.Default : 
                       categoryIcons.Default}
                   </span>
-                  <span>{currentNews.category || "News"}</span>
+                  <span className="text-xs sm:text-sm">{currentNews.category || "News"}</span>
                 </span>
               </div>
 
               <button 
                 onClick={() => setSelectedLocation(null)}
-                className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-sm transition-colors"
+                className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-md transition-colors border border-gray-200"
                 aria-label="Close"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -1691,9 +1749,28 @@ const getUserLocation = useCallback(async () => {
               .gm-ui-hover-effect {
                 display: none !important;
               }
+              
+              .gm-style-iw-chr {
+                display: none !important;
+              }
+              
+              .gm-style-iw-t button.gm-ui-hover-effect,
+              .gm-style-iw-chr button {
+                display: none !important;
+              }
+              
+              .gm-style-iw-c {
+                padding: 8px !important;
+              }
+              
+              .gm-style-iw-d {
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+              }
                           
               .summary-scroll::-webkit-scrollbar {
-                width: 4px;
+                width: 3px;
               }
               
               .summary-scroll::-webkit-scrollbar-track {
@@ -1709,9 +1786,15 @@ const getUserLocation = useCallback(async () => {
               .summary-scroll::-webkit-scrollbar-thumb:hover {
                 background: #94a3b8;
               }
+              
+              @media (max-width: 640px) {
+                .gm-style-iw-c {
+                  padding: 6px !important;
+                }
+              }
             `}</style>
             
-            <div className="relative h-32 w-full overflow-hidden rounded-lg mb-3 flex-shrink-0">
+            <div className="relative h-24 sm:h-32 w-full overflow-hidden rounded-md sm:rounded-lg mb-2 sm:mb-3 flex-shrink-0">
               <img 
                 src={currentNews.image_url} 
                 alt={currentNews.title}
@@ -1723,64 +1806,67 @@ const getUserLocation = useCallback(async () => {
               />
             </div>
             
-            <h3 className="font-semibold text-base sm:text-sm mb-2 leading-tight flex-shrink-0">
+            <h3 className="font-semibold text-sm sm:text-base mb-2 leading-tight flex-shrink-0">
               {currentNews.title}
             </h3>
             
             {/* Summary Section with Fixed Height and Scroll */}
             {currentNews.summary && (
-              <div className="mb-3 flex-shrink-0">
+              <div className="mb-2 sm:mb-3 flex-shrink-0">
                 <div 
-                  className="h-20 overflow-y-auto summary-scroll pr-1"
+                  className="h-16 sm:h-20 overflow-y-auto summary-scroll pr-1"
                   key={`summary-${currentNews.id || currentNewsIndex}`}
                 >
-                  <p className="text-sm text-gray-700 leading-normal text-justify">
+                  <p className="text-xs sm:text-sm text-gray-700 leading-normal text-justify">
                     {currentNews.summary}
                   </p>
                 </div>
               </div>
             )}
             
-            <div className="flex items-center justify-between mb-3 flex-shrink-0">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
+              <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
                 {currentNews.article_url && (
                   <img
                     src={getFavicon(currentNews.article_url)}
                     alt=""
-                    className="w-4 h-4"
+                    className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0"
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}
                   />
                 )}
-                <p className="text-sm text-gray-600">
-                  Source: {currentNews.source_name}
+                <p className="text-xs sm:text-sm text-gray-600 truncate">
+                  {currentNews.source_name}
                 </p>
               </div>
-              <p className="text-xs text-gray-500">
-                {new Date(currentNews.created_at).toLocaleDateString()}
+              <p className="text-xs text-gray-500 flex-shrink-0 ml-2">
+                {new Date(currentNews.created_at).toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric'
+                })}
               </p>
             </div>
             
             <button
               onClick={() => openArticle(currentNews.article_url)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors shadow-sm flex-shrink-0"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded text-xs sm:text-sm font-medium transition-colors shadow-sm flex-shrink-0"
             >
-              Read Full Article
+              Read Article
             </button>
             
             {hasMultipleNews && (
-              <div className="flex items-center justify-between mt-3 flex-shrink-0">
+              <div className="flex items-center justify-between mt-2 sm:mt-3 flex-shrink-0">
                 <button
                   onClick={handlePrevNews}
                   disabled={currentNewsIndex === 0}
-                  className={`p-1 rounded ${
+                  className={`p-1 rounded text-xs sm:text-sm ${
                     currentNewsIndex === 0
                       ? "text-gray-400 cursor-not-allowed"
                       : "text-blue-600 hover:bg-blue-50"
                   }`}
                 >
-                  ← Previous
+                  ← Prev
                 </button>
                 <span className="text-xs text-gray-500">
                   {currentNewsIndex + 1} of {selectedNewsGroup.length}
@@ -1788,7 +1874,7 @@ const getUserLocation = useCallback(async () => {
                 <button
                   onClick={handleNextNews}
                   disabled={currentNewsIndex === selectedNewsGroup.length - 1}
-                  className={`p-1 rounded ${
+                  className={`p-1 rounded text-xs sm:text-sm ${
                     currentNewsIndex === selectedNewsGroup.length - 1
                       ? "text-gray-400 cursor-not-allowed"
                       : "text-blue-600 hover:bg-blue-50"
