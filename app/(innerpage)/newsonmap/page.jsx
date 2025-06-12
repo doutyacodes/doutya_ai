@@ -1725,21 +1725,20 @@ const getUserLocation = useCallback(async () => {
             }}
           >
           <div className="w-full max-w-[280px] sm:max-w-[320px] relative select-none min-h-[300px] sm:min-h-96 flex flex-col justify-between">
-            <div className="relative w-full mb-1.5 flex-shrink-0">
-              <div className="flex justify-center">
-                <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-slate-100 text-slate-800 text-xs font-medium rounded-full inline-flex items-center justify-center gap-0.5 shadow-sm">
-                  <span className="flex items-center justify-center text-[10px] sm:text-xs">
-                    {currentNews.category ? 
-                      categoryIcons[currentNews.category] || categoryIcons.Default : 
-                      categoryIcons.Default}
-                  </span>
-                  <span className="text-xs sm:text-sm">{currentNews.category || "News"}</span>
+            {/* Header section with category and close button aligned */}
+            <div className="relative w-full mb-3 flex-shrink-0 flex items-center justify-center">
+              <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-slate-100 text-slate-800 text-xs font-medium rounded-full inline-flex items-center justify-center gap-0.5 shadow-sm">
+                <span className="flex items-center justify-center text-[10px] sm:text-xs">
+                  {currentNews.category ? 
+                    categoryIcons[currentNews.category] || categoryIcons.Default : 
+                    categoryIcons.Default}
                 </span>
-              </div>
-
+                <span className="text-xs sm:text-sm">{currentNews.category || "News"}</span>
+              </span>
+              
               <button 
                 onClick={() => setSelectedLocation(null)}
-                className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-md transition-colors border border-gray-200"
+                className="absolute right-0 w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-white hover:bg-gray-100 shadow-md transition-colors border border-gray-200"
                 aria-label="Close"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1797,7 +1796,8 @@ const getUserLocation = useCallback(async () => {
               }
             `}</style>
             
-            <div className="relative h-24 sm:h-32 w-full overflow-hidden rounded-md sm:rounded-lg mb-2 sm:mb-3 flex-shrink-0">
+            {/* Image section */}
+            <div className="relative h-24 sm:h-32 w-full overflow-hidden rounded-md sm:rounded-lg mb-3 flex-shrink-0">
               <img 
                 src={currentNews.image_url} 
                 alt={currentNews.title}
@@ -1809,13 +1809,14 @@ const getUserLocation = useCallback(async () => {
               />
             </div>
             
-            <h3 className="font-semibold text-sm sm:text-base mb-2 leading-tight flex-shrink-0">
+            {/* Title section */}
+            <h3 className="font-semibold text-sm sm:text-base mb-3 leading-tight flex-shrink-0">
               {currentNews.title}
             </h3>
             
             {/* Summary Section with Fixed Height and Scroll */}
             {currentNews.summary && (
-              <div className="mb-2 sm:mb-3 flex-shrink-0">
+              <div className="mb-3 flex-shrink-0">
                 <div 
                   className="h-26 md:h-20 overflow-y-auto summary-scroll pr-1"
                   key={`summary-${currentNews.id || currentNewsIndex}`}
@@ -1829,9 +1830,9 @@ const getUserLocation = useCallback(async () => {
 
             {/* Spacer to push bottom content down */}
             <div className="flex-grow"></div>
-            <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0"></div>
             
-            <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
+            {/* Source and date section */}
+            <div className="flex items-center justify-between mb-3 flex-shrink-0">
               <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
                 {currentNews.article_url && (
                   <img
@@ -1855,6 +1856,7 @@ const getUserLocation = useCallback(async () => {
               </p>
             </div>
             
+            {/* Read article button */}
             <button
               onClick={() => openArticle(currentNews.article_url)}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded text-xs sm:text-sm font-medium transition-colors shadow-sm flex-shrink-0"
@@ -1862,8 +1864,9 @@ const getUserLocation = useCallback(async () => {
               Read Article
             </button>
             
+            {/* Navigation buttons */}
             {hasMultipleNews && (
-              <div className="flex items-center justify-between mt-2 sm:mt-3 flex-shrink-0">
+              <div className="flex items-center justify-between mt-3 flex-shrink-0">
                 <button
                   onClick={handlePrevNews}
                   disabled={currentNewsIndex === 0}
