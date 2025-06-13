@@ -768,6 +768,9 @@ export default function NewsMap() {
   const [userCountry, setUserCountry] = useState(null);
   const [countryCenter, setCountryCenter] = useState(center);
 
+  const [lastFetchTime, setLastFetchTime] = useState(Date.now());
+
+
   // Category icons mapping using Lucide React components
   const categoryIcons = {
     "Natural Disaster": <AlertTriangle size={window.innerWidth < 640 ? 12 : 16} className="text-red-600" />,
@@ -814,6 +817,8 @@ export default function NewsMap() {
 
   const markersRef = useRef([]);
   const clusterRef = useRef(null);
+  const existingMarkersRef = useRef(new Map()); // Track markers by location key
+
 
   // Load Google Maps script
   const { isLoaded } = useLoadScript({
@@ -883,9 +888,12 @@ export default function NewsMap() {
   };
 
   // Fetch news data based on map bounds
-  const fetchNewsData = useCallback(async (bounds, languages = []) => {
+  const fetchNewsData = useCallback(async (bounds, languages = [], isAutoRefresh = false) => {
     try {
-      setIsLoading(true);
+      // Don't show loading spinner for auto-refresh
+      if (!isAutoRefresh) {
+        setIsLoading(true);
+      }
       
       let url = '/api/news/map';
       const params = new URLSearchParams();
@@ -920,9 +928,14 @@ export default function NewsMap() {
       setGroupedNews(grouped);
     } catch (err) {
       console.error("Error fetching news:", err);
-      setError("Failed to load news data");
+      // Only show error for manual fetches, not auto-refresh
+      if (!isAutoRefresh) {
+        setError("Failed to load news data");
+      }
     } finally {
-      setIsLoading(false);
+      if (!isAutoRefresh) {
+        setIsLoading(false);
+      }
     }
   }, []);
 
@@ -1182,11 +1195,10 @@ const getUserLocation = useCallback(async () => {
 
   // Handle selected languages change
   useEffect(() => {
-    if (availableLanguages.length > 0 && selectedLanguages.length >= 0) {
-      // fetchNewsData(mapBounds, selectedLanguages);
-      fetchNewsData(null, selectedLanguages); // Pass null instead of mapBounds
-    }
-  }, [selectedLanguages, fetchNewsData, availableLanguages.length]); // Removed mapBounds dependency
+      if (availableLanguages.length > 0 && selectedLanguages.length >= 0) {
+      fetchNewsData(null, selectedLanguages, false); // false = manual fetch
+      }
+  }, [selectedLanguages, fetchNewsData, availableLanguages.length]);
 
   // Handle page visibility change to restore map state on mobile ONLY
   useEffect(() => {
@@ -1221,56 +1233,84 @@ const getUserLocation = useCallback(async () => {
   useEffect(() => {
     if (!mapRef || !isLoaded || Object.keys(groupedNews).length === 0) return;
 
-    // Clear existing cluster
-    if (clusterRef.current) {
-      clusterRef.current.clearMarkers();
-      clusterRef.current.setMap(null);
+    // Get current markers map
+    const currentMarkers = existingMarkersRef.current;
+    const newLocationKeys = new Set(Object.keys(groupedNews));
+    const existingLocationKeys = new Set(currentMarkers.keys());
+
+    // Remove markers that no longer exist
+    for (const locationKey of existingLocationKeys) {
+      if (!newLocationKeys.has(locationKey)) {
+        const marker = currentMarkers.get(locationKey);
+        if (marker) {
+          marker.setMap(null);
+          currentMarkers.delete(locationKey);
+        }
+      }
     }
 
-    // Clear existing markers from ref
-    markersRef.current.forEach(marker => {
-      marker.setMap(null);
-    });
-    markersRef.current = [];
-
-    // Create new markers
-    const newMarkers = Object.keys(groupedNews).map((locationKey) => {
+    // Update or create markers
+    const allMarkers = [];
+    Object.keys(groupedNews).forEach((locationKey) => {
       const [lat, lng] = locationKey.split(',').map(parseFloat);
       const newsAtLocation = groupedNews[locationKey];
       const mainNews = newsAtLocation[0];
       
       if (mainNews.category && !selectedCategories.includes(mainNews.category)) {
-        return null;
+        // Hide marker if category not selected
+        if (currentMarkers.has(locationKey)) {
+          currentMarkers.get(locationKey).setMap(null);
+        }
+        return;
       }
       
       const hasHighPriorityNews = newsAtLocation.some(news => news.is_high_priority);
       
-      const marker = new google.maps.Marker({
-        position: { lat, lng },
-        map: null,
-        icon: createCategoryMarkerIcon(
+      let marker = currentMarkers.get(locationKey);
+      
+      if (marker) {
+        // Update existing marker
+        marker.setMap(mapRef);
+        marker.setIcon(createCategoryMarkerIcon(
           mainNews.category, 
           newsAtLocation.length, 
           hasHighPriorityNews
-        ),
-        zIndex: hasHighPriorityNews ? 9999 : 1,
-      });
+        ));
+        marker.setZIndex(hasHighPriorityNews ? 9999 : 1);
+      } else {
+        // Create new marker
+        marker = new google.maps.Marker({
+          position: { lat, lng },
+          map: mapRef,
+          icon: createCategoryMarkerIcon(
+            mainNews.category, 
+            newsAtLocation.length, 
+            hasHighPriorityNews
+          ),
+          zIndex: hasHighPriorityNews ? 9999 : 1,
+        });
 
-      // Add click listener to marker
-      marker.addListener('click', () => {
-        handleMarkerClick(locationKey);
-      });
+        // Add click listener to new marker
+        marker.addListener('click', () => {
+          handleMarkerClick(locationKey);
+        });
 
-      return marker;
-    }).filter(Boolean);
+        currentMarkers.set(locationKey, marker);
+      }
+      
+      allMarkers.push(marker);
+    });
 
-    markersRef.current = newMarkers;
+    // Update cluster with all visible markers
+    if (clusterRef.current) {
+      clusterRef.current.clearMarkers();
+      clusterRef.current.setMap(null);
+    }
 
-    // Create cluster
-    if (newMarkers.length > 0) {
+    if (allMarkers.length > 0) {
       const cluster = new MarkerClusterer({
         map: mapRef,
-        markers: newMarkers,
+        markers: allMarkers,
         renderer: createClusterRenderer(),
         algorithmOptions: {
           maxZoom: 12,
@@ -1284,16 +1324,16 @@ const getUserLocation = useCallback(async () => {
       clusterRef.current = cluster;
     }
 
+    // Update markersRef for compatibility
+    markersRef.current = allMarkers;
+
     // Cleanup function
     return () => {
       if (clusterRef.current) {
         clusterRef.current.clearMarkers();
         clusterRef.current.setMap(null);
       }
-      markersRef.current.forEach(marker => {
-        marker.setMap(null);
-      });
-      markersRef.current = [];
+      // Don't clear existingMarkersRef here - we want to keep markers for reuse
     };
   }, [mapRef, isLoaded, groupedNews, selectedCategories]);
 
@@ -1339,6 +1379,29 @@ const getUserLocation = useCallback(async () => {
       }
     };
   }, [mapRef]);
+
+  // Auto-refresh news data every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (availableLanguages.length > 0) {
+        fetchNewsData(null, selectedLanguages, true); // true = auto-refresh
+        setLastFetchTime(Date.now());
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [fetchNewsData, selectedLanguages, availableLanguages.length]);
+
+  // Cleanup all markers on component unmount
+  useEffect(() => {
+    return () => {
+      // Clean up all markers when component unmounts
+      existingMarkersRef.current.forEach(marker => {
+        marker.setMap(null);
+      });
+      existingMarkersRef.current.clear();
+    };
+  }, []);
 
   // Handle map bounds change
   const handleBoundsChanged = useCallback(() => {
@@ -1645,7 +1708,7 @@ const getUserLocation = useCallback(async () => {
         onClose={closeModal}
         forceOpen={forceOpen}
       />
-      
+
       {/* Location permission modal */}
       {showLocationModal && (
         <LocationModal 
