@@ -662,7 +662,7 @@ const ResetZoomButton = ({ mapRef, buttonStyle, fetchNewsData, selectedLanguages
       title="Reset to world view"
     >
       <RotateCw size={16} className="mr-1" />
-      <span className="text-sm">Reset</span>
+      <span className="text-sm">World View</span>
     </button>
   );
 };
@@ -678,18 +678,6 @@ const MobileResetButton = ({ mapRef, fetchNewsData, selectedLanguages, setSelect
   };
 
   return (
-    // <button 
-    //   onClick={handleReset}
-    //   className="bg-white shadow-lg rounded-full p-3 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
-    //   title="Reset to world view"
-    //   style={{
-    //     width: '48px',
-    //     height: '48px',
-    //     boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-    //   }}
-    // >
-    //   <RotateCw size={20} />
-    // </button>
   <button 
     onClick={handleReset}
     className="bg-white p-1 shadow-lg rounded-full hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
