@@ -33,6 +33,7 @@ import { FaHandcuffs } from "react-icons/fa6";
 import { GiCrossedSwords } from "react-icons/gi";
 import { useRouter } from "next/navigation";
 import { applyGoogleMapsControlStyle } from "@/utils/googleMapsStyles";
+import NewsMapModal, { useNewsMapModal } from "@/app/_components/NewsMapModal";
 
 // Map container styles
 const containerStyle = {
@@ -819,12 +820,45 @@ export default function NewsMap() {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
   });
 
+  const {
+    isModalOpen,
+    forceOpen,
+    openModal,
+    closeModal,
+    checkAndOpenModal
+  } = useNewsMapModal();
+
+    // Use ref to ensure we only call checkAndOpenModal once
+    const hasTriggeredModalCheck = useRef(false);
+
+    // Check and open modal when component mounts (for auto-show on first 2 visits)
+    useEffect(() => {
+      // Only trigger once per component mount
+      if (!hasTriggeredModalCheck.current) {
+        hasTriggeredModalCheck.current = true;
+        checkAndOpenModal();
+      }
+    }, []); // Empty dependency array - only run on mount
+
+    // Reset the trigger flag when component unmounts
+    useEffect(() => {
+      return () => {
+        hasTriggeredModalCheck.current = false;
+      };
+    }, []);
+
   const isMobile = useMediaQuery({ maxWidth: 640 });
 
   const buttonStyle = {
     minWidth: isMobile ? '60px' : '100px',  // Changed from 80px to 60px for mobile
     height: isMobile ? '28px' : '38px',     // Changed from 34px to 28px for mobile
     fontSize: isMobile ? '12px' : '14px'    // Added smaller font size for mobile
+  };
+
+
+  // Manual trigger function for help button
+  const handleHelpClick = () => {
+    openModal(true); // Force open regardless of visit count
   };
 
   // Store user location in sessionStorage for persistence
@@ -1604,6 +1638,14 @@ const getUserLocation = useCallback(async () => {
 
   return (
     <div className="relative">
+      
+      {/* The Modal Component */}
+      <NewsMapModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        forceOpen={forceOpen}
+      />
+      
       {/* Location permission modal */}
       {showLocationModal && (
         <LocationModal 
