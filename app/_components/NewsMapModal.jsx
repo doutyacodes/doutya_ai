@@ -189,7 +189,7 @@ const NewsMapModal = ({ isOpen, onClose, forceOpen = false }) => {
             <div className="space-y-2 text-sm text-gray-700">
               <p>• Click individual markers to see news cards with titles, images, and summaries</p>
               <p>• Click clustered markers to zoom in and see individual stories</p>
-              <p>• Use "Read More" button to access the full original article</p>
+              <p>• Use &quot;Read More&quot; button to access the full original article</p>
             </div>
           </div>
         </div>
@@ -245,7 +245,7 @@ const NewsMapModal = ({ isOpen, onClose, forceOpen = false }) => {
               Reset & Refresh
             </h4>
             <p className="text-gray-600 text-sm">
-              Use the "World View" button to reset all filters, reload fresh content, and return to the global map view.
+              Use the &quot;World View&quot; button to reset all filters, reload fresh content, and return to the global map view.
             </p>
           </div>
         </div>
