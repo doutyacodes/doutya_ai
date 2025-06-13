@@ -36,7 +36,7 @@ const NewsMapModal = ({ isOpen, onClose, forceOpen = false }) => {
   const slides = [
     {
       id: 'overview',
-      title: 'Welcome to Global News Map',
+      title: 'Welcome to News On Map',
       icon: <Globe className="w-8 h-8 text-red-800" />,
       content: (
         <div className="space-y-4">
@@ -111,7 +111,7 @@ const NewsMapModal = ({ isOpen, onClose, forceOpen = false }) => {
                 </div>
                 <div className="flex items-center">
                   <RefreshCw className="w-4 h-4 text-red-600 mr-2" />
-                  <span className="text-sm text-red-800">World View - Reset to global</span>
+                  <span className="text-sm text-red-800">World View - Reset to world view</span>
                 </div>
               </div>
             </div>
@@ -245,7 +245,7 @@ const NewsMapModal = ({ isOpen, onClose, forceOpen = false }) => {
               Reset & Refresh
             </h4>
             <p className="text-gray-600 text-sm">
-              Use the &quot;World View&quot; button to reset all filters, reload fresh content, and return to the global map view.
+              Use the &quot;World View&quot; button to reset all filters, reload fresh content, and return to the world map view.
             </p>
           </div>
         </div>
