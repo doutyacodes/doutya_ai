@@ -16,7 +16,7 @@ const ContactPage = () => {
           <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
             {/* Company Name */}
             <div className="mb-8 text-center">
-              <h2 className="text-3xl font-bold text-red-800 mb-2">Doutya News</h2>
+              <h2 className="text-3xl font-bold text-red-800 mb-2">Doutya News Platform</h2>
               <p className="text-gray-600 text-lg">(Doutya Technologies)</p>
             </div>
 
@@ -42,8 +42,8 @@ const ContactPage = () => {
                   <Phone className="w-6 h-6 text-red-800 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-2">Phone</h3>
-                    <a href="tel:+916361400800" className="text-red-800 hover:text-red-900 transition-colors">
-                      +91 - 6361400800
+                    <a href="tel:+919633738938" className="text-red-800 hover:text-red-900 transition-colors">
+                      +91 - 9633738938
                     </a>
                   </div>
                 </div>
@@ -52,8 +52,8 @@ const ContactPage = () => {
                   <Mail className="w-6 h-6 text-red-800 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-2">Email</h3>
-                    <a href="mailto:contact@axaranews.com" className="text-red-800 hover:text-red-900 transition-colors">
-                      contact@axaranews.com
+                    <a href="mailto:contact@doutya.com" className="text-red-800 hover:text-red-900 transition-colors">
+                      contact@doutya.com
                     </a>
                   </div>
                 </div>
@@ -63,7 +63,7 @@ const ContactPage = () => {
             {/* Get In Touch Button */}
             <div className="mt-12 text-center">
               <a 
-                href="mailto:contact@axaranews.com" 
+                href="mailto:contact@doutya.com" 
                 className="group inline-flex items-center bg-red-800 hover:bg-red-900 text-white px-8 py-4 rounded-full text-lg font-semibold transition-colors duration-300"
               >
                 Get In Touch

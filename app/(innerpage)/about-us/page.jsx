@@ -87,10 +87,10 @@ export default function OurStory() {
           >
             <h2 className="text-2xl font-semibold text-red-800 mb-5 border-b border-red-100 pb-2 flex items-center">
               <BookOpen className="mr-2 text-red-800" size={20} />
-              About Doutya News Group
+              About Doutya News Platform
             </h2>
             <p className="text-gray-700 leading-relaxed text-justify mb-4">
-              At Doutya News Group, we&apos;re reimagining the future of journalism — blending the power of technology, clarity, and integrity to create a truly inclusive news ecosystem.
+              At Doutya News Platform, we&apos;re reimagining the future of journalism — blending the power of technology, clarity, and integrity to create a truly inclusive news ecosystem.
             </p>
             <p className="text-gray-700 leading-relaxed text-justify mb-4">
               What began during the 2018 Kerala floods as a grassroots volunteering platform has evolved into a full-fledged AI-powered media company. Officially incorporated in 2020 and proudly 100% remote since the pandemic, Doutya has grown from a tech services firm into a bold force in the world of news and media.
@@ -111,7 +111,7 @@ export default function OurStory() {
             </h2>
             <div className="space-y-5">
               <div>
-                <h3 className="text-lg font-medium text-red-800 mb-2">Doutya News</h3>
+                <h3 className="text-lg font-medium text-red-800 mb-2">Doutya News Platform</h3>
                 <p className="text-gray-700 leading-relaxed text-justify">
                   Delivers multiperspective analysis on global and local stories, helping readers see every side before forming an opinion.
                 </p>

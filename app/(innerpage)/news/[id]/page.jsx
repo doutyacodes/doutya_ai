@@ -149,11 +149,11 @@ function NewsArticleSchema({ article }) {
     dateModified: article.updated_at || article.created_at,
     author: {
       '@type': 'Organization',
-      name: 'Doutya News'
+      name: 'Doutya News Platform'
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Doutya News',
+      name: 'Doutya News Platform',
       logo: {
         '@type': 'ImageObject',
         url: 'https://www.doutya.com/images/logo2.png'
@@ -205,7 +205,7 @@ function OrganizationSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Doutya News',
+    name: 'Doutya News Platform',
     url: 'https://www.doutya.com',
     logo: 'https://www.doutya.com/images/logo2.png',
     sameAs: [
@@ -254,19 +254,19 @@ export async function generateMetadata({ params }) {
     const modifiedDate = updated_at ? new Date(updated_at).toISOString() : formattedDate;
 
     return {
-      title: `${title || 'News Article'} | Doutya News`,
+      title: `${title || 'News Article'} | Doutya News Platform`,
       description: cleanDescription,
       keywords: [...categories, 'news', 'doutya', 'current events', primaryCategory.toLowerCase()].join(', '),
-      authors: [{ name: 'Doutya News' }],
-      publisher: 'Doutya News',
+      authors: [{ name: 'Doutya News Platform' }],
+      publisher: 'Doutya News Platform',
       openGraph: {
-        title: title || 'News Article | Doutya News',
+        title: title || 'News Article | Doutya News Platform',
         description: cleanDescription,
         url: `https://www.doutya.com/news/${id}`,
         type: 'article',
         publishedTime: formattedDate,
         modifiedTime: modifiedDate,
-        authors: ['Doutya News'],
+        authors: ['Doutya News Platform'],
         section: primaryCategory,
         tags: categories,
         locale: 'en_US',
@@ -282,14 +282,14 @@ export async function generateMetadata({ params }) {
             url: 'https://www.doutya.com/default-news-image.jpg',
             width: 1200,
             height: 630,
-            alt: 'Doutya News',
+            alt: 'Doutya News Platform',
           }
         ],
-        siteName: 'Doutya News',
+        siteName: 'Doutya News Platform',
       },
       twitter: {
         card: 'summary_large_image',
-        title: title || 'News Article | Doutya News',
+        title: title || 'News Article | Doutya News Platform',
         description: cleanDescription,
         site: '@doutyaNews',
         creator: '@doutyaNews',

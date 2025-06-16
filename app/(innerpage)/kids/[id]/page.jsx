@@ -16,11 +16,11 @@ function NewsArticleSchema({ article }) {
     dateModified: article.updated_at || article.created_at,
     author: {
       '@type': 'Organization',
-      name: 'Doutya News'
+      name: 'Doutya News Platform'
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Doutya News',
+      name: 'Doutya News Platform',
       logo: {
         '@type': 'ImageObject',
         url: 'https://www.doutya.com/images/logo2.png'
@@ -129,11 +129,11 @@ export async function generateMetadata({ params }) {
       : "https://www.doutya.com/default-image.jpg"; // Fallback image URL
 
     return {
-      title: `${title || 'News Article'} | Doutya News`,
+      title: `${title || 'News Article'} | Doutya News Platform`,
       description: cleanDescription,
       keywords: [...categories, 'news', 'doutya', 'current events'].join(', '),
-      authors: [{ name: 'Doutya News' }],
-      publisher: 'Doutya News',
+      authors: [{ name: 'Doutya News Platform' }],
+      publisher: 'Doutya News Platform',
       openGraph: {
         title: title || 'News Article | Doutya News',
         description: cleanDescription,
@@ -141,7 +141,7 @@ export async function generateMetadata({ params }) {
         type: 'article',
         publishedTime: formattedDate,
         modifiedTime: modifiedDate,
-        authors: ['Doutya News'],
+        authors: ['Doutya News Platform'],
         section: primaryCategory,
         tags: categories,
         locale: 'en_US',
@@ -157,7 +157,7 @@ export async function generateMetadata({ params }) {
       },
       twitter: {
         card: 'summary_large_image',
-        title: title || 'News Article | Doutya News',
+        title: title || 'News Article | Doutya News Platform',
         description: cleanDescription,
         site: '@doutyaNews',
         creator: '@doutyaNews',
@@ -191,7 +191,7 @@ export async function generateMetadata({ params }) {
         'format-detection': 'telephone=no',
         'apple-mobile-web-app-capable': 'yes',
         'apple-mobile-web-app-status-bar-style': 'black-translucent',
-        'apple-mobile-web-app-title': 'Doutya News',
+        'apple-mobile-web-app-title': 'Doutya News Platform',
       }
     };
   } catch (error) {

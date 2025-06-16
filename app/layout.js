@@ -17,17 +17,17 @@ const poppins = Poppins({
 
 export const metadata = {
   title: {
-    default: "Doutya News – Multiperspective News, Interactive Maps & Kids News Powered by AI",
-    template: '%s | Doutya News'
+    default: "Doutya News Platform – Multiperspective News, Interactive Maps & Kids News Powered by AI",
+    template: '%s | Doutya News Platform'
   },
-  description: "Doutya News brings you global and local stories with multiple perspectives, interactive News Maps, and age-appropriate News for kids—powered by AI for clarity and context.",
+  description: "Doutya News Platform brings you global and local stories with multiple perspectives, interactive News Maps, and age-appropriate News for kids—powered by AI for clarity and context.",
   metadataBase: new URL('https://www.doutya.com'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "Doutya News – Multiperspective News, Interactive Maps & Kids News Powered by AI",
-    description: "Doutya News brings you global and local stories with multiple perspectives, interactive News Maps, and age-appropriate News for kids—powered by AI for clarity and context.",
+    title: "Doutya News Platform – Multiperspective News, Interactive Maps & Kids News Powered by AI",
+    description: "Doutya News Platform brings you global and local stories with multiple perspectives, interactive News Maps, and age-appropriate News for kids—powered by AI for clarity and context.",
     url: 'https://www.doutya.com',
     siteName: 'Doutya News',
     locale: 'en_US',
@@ -43,8 +43,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Doutya News – Multiperspective News, Interactive Maps & Kids News Powered by AI",
-    description: "Doutya News brings you global and local stories with multiple perspectives, interactive News Maps, and age-appropriate News for kids—powered by AI for clarity and context.",
+    title: "Doutya News Platform – Multiperspective News, Interactive Maps & Kids News Powered by AI",
+    description: "Doutya News Platform brings you global and local stories with multiple perspectives, interactive News Maps, and age-appropriate News for kids—powered by AI for clarity and context.",
     images: ['https://www.doutya.com/images/logo2.png'],
   },
   robots: {
