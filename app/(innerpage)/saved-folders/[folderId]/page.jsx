@@ -187,7 +187,7 @@ const SavedFolderDetailsPage = () => {
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Remove Article</h3>
             <p className="text-gray-600 mb-4">
-              Are you sure you want to remove "{removeConfirm.news.title}" from this folder? 
+              Are you sure you want to remove &ldquo;{removeConfirm.news.title}&ldquo; from this folder? 
               The article will still be available in the main news feed.
             </p>
             <div className="flex gap-3">

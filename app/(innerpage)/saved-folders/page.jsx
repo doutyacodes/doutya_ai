@@ -253,7 +253,7 @@ const SavedFoldersPage = () => {
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
               <h3 className="text-lg font-semibold mb-4">Delete Folder</h3>
               <p className="text-gray-600 mb-4">
-                Are you sure you want to delete "{deleteConfirm.name}"? This will permanently delete the folder and all saved news articles within it. This action cannot be undone.
+                Are you sure you want to delete &ldquo;{deleteConfirm.name}&ldquo;? This will permanently delete the folder and all saved news articles within it. This action cannot be undone.
               </p>
               <div className="flex gap-3">
                 <button
