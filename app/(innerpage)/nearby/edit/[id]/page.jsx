@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Upload, Loader2, AlertCircle, MapPin, X, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import useAuthRedirect from '../../_component/useAuthRedirect';
+import useAuthRedirect from '../../../../_components/useAuthRedirect';
 import RestrictedMapLocationPicker from '../../_component/RestrictedMapLocationPicker';
 
 export default function CreateNewsPage() {

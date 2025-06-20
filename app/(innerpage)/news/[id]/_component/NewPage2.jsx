@@ -3,6 +3,7 @@
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import NewsDetails2 from "@/app/_components/NewsComponent2";
 import NewsData2 from "@/app/_components/NewsData2";
+import useAuthRedirect from "@/app/_components/useAuthRedirect";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useChildren } from "@/context/CreateContext";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,8 @@ export default function NewsSection() {
   const params = useParams();
   const { id } = params;
   const { selectedRegion } = useChildren();
+
+  useAuthRedirect();
 
   const fetchNews = async () => {
     try {

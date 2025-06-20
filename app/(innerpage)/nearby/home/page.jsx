@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, Edit, Plus, AlertCircle, MapPin, Users, X, Filter, Calendar, DollarSign, Phone, Heart } from 'lucide-react';
-import useAuthRedirect from '../_component/useAuthRedirect';
+import useAuthRedirect from '../../../_components/useAuthRedirect';
 
 export default function AdminContentPage() {
   const [content, setContent] = useState([]);

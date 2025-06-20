@@ -15,6 +15,8 @@ export async function GET(req, { params }) {
   if (!authResult.authenticated) {
     return authResult.response;
   }
+  const userData = authResult.decoded_Data;
+  const userId = userData.id;
   
   try {
     // Fetch the news item

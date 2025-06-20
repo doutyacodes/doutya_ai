@@ -11,6 +11,7 @@ import { Circle, Eye, Scale, Vote } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { HiArrowLeft, HiMagnifyingGlass } from "react-icons/hi2";
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import useAuthRedirect from "@/app/_components/useAuthRedirect";
 
 
 export default function NewsSection() {
@@ -32,6 +33,8 @@ export default function NewsSection() {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
+
+  useAuthRedirect();
 
   const fetchNews = async () => {
     try {

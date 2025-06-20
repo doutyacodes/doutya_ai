@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import moment from "moment";
 import Image from "next/image";
-import { FaEllipsisH, FaShareAlt, FaStar } from "react-icons/fa";
+import { FaBookmark, FaEllipsisH, FaFlag, FaShareAlt, FaStar } from "react-icons/fa";
 import {
   FacebookShareButton,
   TwitterShareButton,
@@ -27,17 +27,8 @@ import { GrFormView } from "react-icons/gr";
 import { useSwipeable } from "react-swipeable"; // Add this import at the top
 import Cookies from 'js-cookie';
 import { trackAction } from "./(analytics)/shareUrlTracker";
+import SaveNewsModal from "./SaveNewsModal";
 
-// Define viewpoint colors with both background and text variants
-// const viewpointColors = {
-//   0: { bg: "bg-indigo-600", text: "text-indigo-600" },
-//   1: { bg: "bg-emerald-600", text: "text-emerald-600" },
-//   2: { bg: "bg-purple-600", text: "text-purple-600" },
-//   3: { bg: "bg-blue-600", text: "text-blue-600" },
-//   4: { bg: "bg-teal-600", text: "text-teal-600" },
-//   5: { bg: "bg-rose-600", text: "text-rose-600" },
-//   6: { bg: "bg-cyan-600", text: "text-cyan-600" }
-// };
 
 const viewpointColors2 = {
   0: { bg: "bg-[#2A1721]", text: "text-[#2A1721]" },
@@ -47,36 +38,6 @@ const viewpointColors2 = {
   4: { bg: "bg-[#2D2923]", text: "text-[#2D2923]" },
   5: { bg: "bg-[#2F3E46]", text: "text-[#1C2B30]" },
 };
-
-// const viewpointColors = {
-//   0: { bg: "bg-[#8B0000]", text: "text-[#8B0000]" },
-//   1: { bg: "bg-[#00008B]", text: "text-[#00008B]" },
-//   2: { bg: "bg-[#006400]", text: "text-[#006400]" },
-//   3: { bg: "bg-[#4B0082]", text: "text-[#4B0082]" },
-//   4: { bg: "bg-[#8B4513]", text: "text-[#8B4513]" },
-//   5: { bg: "bg-[#2F4F4F]", text: "text-[#2F4F4F]" },
-// };
-
-
-/* Latest */
-
-// const viewpointColors = {
-//   0: { bg: "bg-[#FF4500]", text: "text-[#FF4500]" }, // Orange-Red
-//   1: { bg: "bg-[#00bf62]", text: "text-[#00bf62]" }, // green
-//   2: { bg: "bg-[#4682B4]", text: "text-[#4682B4]" }, // Steel Blue
-//   3: { bg: "bg-[#DC143C]", text: "text-[#DC143C]" }, // Crimson (Red)
-//   4: { bg: "bg-[#FF8C00]", text: "text-[#FF8C00]" }, // Dark Orange
-//   5: { bg: "bg-[#FF6347]", text: "text-[#FF6347]" }, // Tomato (Red-Orange)
-// };
-
-// const viewpointColors = {
-//   0: { bg: "bg-[#1E90FF]", text: "text-[#1E90FF]" }, // Dodger Blue
-//   1: { bg: "bg-[#32CD32]", text: "text-[#32CD32]" }, // Lime Green
-//   2: { bg: "bg-[#6A5ACD]", text: "text-[#6A5ACD]" }, // Slate Blue
-//   3: { bg: "bg-[#20B2AA]", text: "text-[#20B2AA]" }, // Light Sea Green
-//   4: { bg: "bg-[#FFD700]", text: "text-[#FFD700]" }, // Gold
-//   5: { bg: "bg-[#00CED1]", text: "text-[#00CED1]" }, // Dark Turquoise
-// };
 
 const viewpointColors = {
   0: { bg: "bg-[#1E90FF]", text: "text-[#1E90FF]" }, // Dodger Blue
@@ -133,6 +94,8 @@ const NewsData2 = ({
   const title = article.title;
   const isBelowMd = useMediaQuery({ query: "(max-width: 768px)" });
   const [isPaused, setIsPaused] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showSaveNewsModal, setShowSaveNewsModal] = useState(false);
 
    // Get color variants for viewpoint based on index
    const getViewpointColor = (index, type = 'bg') => {
@@ -160,6 +123,17 @@ const NewsData2 = ({
       setShowReportPopup(false);
     }
   };
+
+  const handleSaveNews = () => {
+    setShowSaveNewsModal(true);
+    setShowDropdown(false);
+  };
+
+  const handleReportModal = () => {
+    setShowReportPopup(true);
+    setShowDropdown(false);
+  };
+
 
   const categoriesList = (data) => {
     if (!data) return null; // Handle cases where data is null or undefined
@@ -202,13 +176,6 @@ const NewsData2 = ({
     }
     return () => clearInterval(interval);
   }, [allArticles.length, isPaused]);
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setCurrentIndex((prevIndex) => (prevIndex + 1) % allArticles.length);
-  //   }, 5000);
-  //   return () => clearInterval(interval);
-  // }, [allArticles.length]);
 
   const handleDotClick = (index) => {
     setCurrentIndex(index);
@@ -263,7 +230,7 @@ const NewsData2 = ({
       {...handlers} 
         //   whileTap={{ scale: 0.95 }}
         className={cn(
-          "bg-[#f5f5f5] shadow-md cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow flex flex-col p-1 ",
+          "bg-[#f5f5f5] shadow-md cursor-pointer overflow-hidden rounded-lg hover:shadow-lg transition-shadow flex flex-col p-1 ",
           size &&
             "max-w-7xl mx-auto w-full md:flex-row md:gap-6 max-md:min-h-[40vh] md:p-5"
         )}
@@ -318,17 +285,6 @@ const NewsData2 = ({
               }}
             />
           )}
-          {/* Date at the top */}
-          {/* <span className="absolute top-2 left-2 text-white text-xs flex items-center font-medium bg-black bg-opacity-60 px-2 py-1 rounded-md">
-            <GrFormView size={18} />
-            {allArticles[currentIndex]?.viewpoint || article.viewpoint} Viewpoint
-          </span> */}
-          {/* <span className="absolute top-2 left-2 text-white text-xs flex items-center font-medium bg-orange-500  px-2 py-1 rounded-md">
-            <GrFormView size={18} />
-            {allArticles[currentIndex]?.viewpoint || article.viewpoint}{" "}
-            Viewpoint
-          </span> */}
-
           {/* Viewpoint label above image - with background color */}
           <span className={cn(
             "absolute top-2 left-2 text-white text-xs flex items-center font-medium px-2 py-1 rounded-md",
@@ -436,17 +392,47 @@ const NewsData2 = ({
                   </div>
                 </div>
 
-                {/* Report Icon */}
-                <div
-                  onClick={() => {
-                    setShowReportPopup(true);
-                    console.log("Report popup triggered");
-                  }}
-                  className="text-gray-500 cursor-pointer rotate-90"
-                >
-                  <FaEllipsisH size={16} />
+                {/* More Options Dropdown */}
+                <div className="relative">
+                  <div
+                    onClick={() => setShowDropdown(!showDropdown)}
+                    className="text-gray-500 cursor-pointer rotate-90 hover:text-gray-700 transition-colors"
+                  >
+                    <FaEllipsisH size={16} />
+                  </div>
+                  
+                  {/* Dropdown Menu */}
+                  {showDropdown && (
+                    <>
+                      {/* Backdrop */}
+                      <div 
+                        className="fixed inset-0 z-40" 
+                        onClick={() => setShowDropdown(false)}
+                      ></div>
+                      
+                      {/* Dropdown Content */}
+                      <div className="absolute right-0 bottom-5 bg-white border shadow-lg rounded-lg py-2 z-50 min-w-[160px] max-w-[200px] sm:max-w-none">
+                        <button
+                          onClick={handleSaveNews}
+                          className="flex items-center space-x-3 w-full px-4 py-2 text-left text-gray-700 hover:bg-red-50 hover:text-red-800 transition-colors"
+                        >
+                          <FaBookmark size={14} />
+                          <span className="text-sm font-medium">Save News</span>
+                        </button>
+                        
+                        <button
+                          onClick={handleReportModal}
+                          className="flex items-center space-x-3 w-full px-4 py-2 text-left text-gray-700 hover:bg-red-50 hover:text-red-800 transition-colors"
+                        >
+                          <FaFlag size={14} />
+                          <span className="text-sm font-medium">Report</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
+
               <div className="flex flex-col gap-[1px]">
                 <motion.div
                   whileHover={{ scale: 1.1 }}
@@ -460,22 +446,22 @@ const NewsData2 = ({
               </div>
             </div>
           </div>
-          {size && (
-            <Link
-              href={`/kids/${article.id}`}
-              className="text-sm max-md:line-clamp-4 text-justify max-md:leading-5 text-gray-800 mb-2 max-md:mt-4 cursor-pointer max-md:text-xs  max-md:px-2 md:mt-6"
-            >
-              {article.description}
-            </Link>
-          )}
         </div>
+
+        {/* Save News Modal */}
+        <SaveNewsModal
+          isOpen={showSaveNewsModal}
+          onClose={() => setShowSaveNewsModal(false)}
+          newsId={article.id}
+          newsTitle={article.title}
+        />
 
         {/* Report Popup */}
         <AnimatePresence>
           {showReportPopup && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[99999999999999999]">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[99999999999999999] p-4 overflow-y-auto">
               <motion.div
-                className="bg-white max-w-sm w-full p-6 rounded-lg shadow-xl space-y-6 relative"
+                className="bg-white max-w-sm w-full p-6 rounded-lg shadow-xl space-y-6 relative mx-auto my-auto max-h-[90vh] overflow-y-auto"
                 initial={{ y: -50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
               >

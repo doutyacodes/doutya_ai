@@ -1713,3 +1713,24 @@ export const ARTICLE_ANALYSIS = mysqlTable("article_analysis", {
   createdBy: int("created_by").references(() => ADMIN_DETAILS.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const USER_FOLDERS = mysqlTable("user_folders", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id")
+    .notNull()
+    .references(() => USER_DETAILS.id),
+  name: varchar("name", { length: 255 }).notNull(), // e.g., "Read Later"
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const SAVED_NEWS = mysqlTable("saved_news", {
+  id: int("id").primaryKey().autoincrement(),
+  user_folder_id: int("user_folder_id")
+    .notNull()
+    .references(() => USER_FOLDERS.id),
+  news_id: int("news_id")
+    .notNull()
+    .references(() => ADULT_NEWS.id),
+  saved_at: timestamp("saved_at").defaultNow(),
+});
