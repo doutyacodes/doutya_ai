@@ -29,7 +29,7 @@ const pathname = usePathname();
             <div className="w-full">
               {children}
             </div>
-            {/* {showBottomNav && <BottomNavigation />} */}
+            {showBottomNav && <BottomNavigation />}
           </LayoutWrapper>
           {/* <RightSideBar /> */}
         </div>
