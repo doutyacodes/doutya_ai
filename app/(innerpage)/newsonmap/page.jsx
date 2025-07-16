@@ -27,7 +27,11 @@ import {
     HandHeart,
     Sparkles,
     Info,
-    RotateCw
+    RotateCw,
+    DollarSign,
+    AlertOctagon,
+    Speaker,
+    Target
   } from "lucide-react";
 import { FaHandcuffs } from "react-icons/fa6";
 import { GiCrossedSwords } from "react-icons/gi";
@@ -52,35 +56,36 @@ const DEFAULT_ZOOM = 2;
 const USER_LOCATION_ZOOM = 7;
 
 const categoryColors = {
-  "Natural Disaster": "#DC2626", // red-600
-  "Crime": "#B45309", // amber-700
-  "Politics": "#4338CA", // indigo-600
-  "Protest": "#EA580C", // orange-600
-  "Accident": "#9333EA", // purple-600
-  "Weather": "#06B6D4", // cyan-500
-  "Festival / Event": "#EC4899", // pink-500
-  "Conflict / War": "#991B1B", // red-800
-  "Public Announcement": "#2563EB", // blue-600
-  "Emergency Alert": "#EF4444", // red-500
-  "Sports": "#CA8A04", // yellow-600
-  "Health": "#E11D48", // rose-600
-  "Business": "#475569", // slate-700
-  "Entertainment": "#8B5CF6", // violet-500
-  "Technology": "#1D4ED8", // blue-700
-  "Science": "#0D9488", // teal-600
-  "Education": "#047857", // emerald-700
-  "Environment": "#65A30D", // lime-600
-  "Social Issues": "#FF7F7F", // coral equivalent
-  "Transportation": "#4B5563", // gray-600
-  "Automobiles": "#800020", // maroon equivalent
-  "Finance": "#FFD700", // gold equivalent
-  "Movies": "#DDA0DD", // plum equivalent
-  "Cricket": "#808000", // olive equivalent
-  "Military": "#F0E68C", // khaki equivalent
-  "Space": "#000080", // navy equivalent
-  "Lifestyle": "#FFCBA4", // peach equivalent
-  "Wildlife": "#A0522D", // brown equivalent
-  "Default": "#6B7280" // gray-500
+    "Natural Disaster": "#DC2626", // red-600
+    "Crime": "#B45309", // amber-700
+    "Politics": "#4338CA", // indigo-600
+    "Geopolitics": "#1E293B", // slate-800 (dark blue-gray)
+    "Protest": "#EA580C", // orange-600
+    "Accident": "#B91C1C", // red-700 (darker red for emphasis)
+    "Weather": "#06B6D4", // cyan-500
+    "Festival / Event": "#EC4899", // pink-500
+    "Conflict / War": "#7F1D1D", // red-900 (darkest red)
+    "Public Announcement": "#2563EB", // blue-600
+    "Emergency Alert": "#EF4444", // red-500
+    "Sports": "#CA8A04", // yellow-600
+    "Health": "#E11D48", // rose-600
+    "Business": "#475569", // slate-700
+    "Entertainment": "#8B5CF6", // violet-500
+    "Technology": "#1D4ED8", // blue-700
+    "Science": "#0D9488", // teal-600
+    "Education": "#047857", // emerald-700
+    "Environment": "#65A30D", // lime-600
+    "Social Issues": "#9333EA", // purple-600
+    "Transportation": "#4B5563", // gray-600
+    "Automobiles": "#3F3F46", // zinc-700
+    "Finance": "#15803D", // green-700
+    "Movies": "#C026D3", // fuchsia-600
+    "Cricket": "#D97706", // amber-600
+    "Military": "#57534E", // stone-600
+    "Space": "#075985", // sky-800
+    "Lifestyle": "#FB7185", // rose-400
+    "Wildlife": "#C2410C", // orange-700
+    "Default": "#6B7280" // gray-500
 };
 
 // Get website favicon
@@ -113,11 +118,14 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
     case "Politics":
       IconComponent = Vote;
       break;
+    case "Geopolitics":
+      IconComponent = Globe;
+      break;
     case "Protest":
       IconComponent = Megaphone;
       break;
     case "Accident":
-      IconComponent = Ambulance;
+      IconComponent = AlertOctagon;
       break;
     case "Weather":
       IconComponent = Cloud;
@@ -129,7 +137,7 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
       IconComponent = GiCrossedSwords;
       break;
     case "Public Announcement":
-      IconComponent = MegaphoneIcon;
+      IconComponent = Speaker;
       break;
     case "Emergency Alert":
       IconComponent = BellRing;
@@ -141,7 +149,7 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
       IconComponent = Heart;
       break;
     case "Business":
-      IconComponent = TrendingUp;
+      IconComponent = DollarSign;
       break;
     case "Entertainment":
       IconComponent = Music;
@@ -168,13 +176,13 @@ const createCategoryMarkerIcon = (category, newsCount = 0, hasHighPriority = fal
       IconComponent = Car;
       break;
     case "Finance":
-      IconComponent = BadgeDollarSign;
+      IconComponent = TrendingUp;
       break;
     case "Movies":
       IconComponent = Clapperboard;
       break;
     case "Cricket":
-      IconComponent = Flag;
+      IconComponent = Target;
       break;
     case "Military":
       IconComponent = Shield;
@@ -679,18 +687,20 @@ const MobileResetButton = ({ mapRef, fetchNewsData, selectedLanguages, setSelect
   };
 
   return (
-  <button 
-    onClick={handleReset}
-    className="bg-white p-1 shadow-lg rounded-full hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
-    title="Reset to world view"
-    style={{
-      width: '55px',
-      height: '55px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-    }}
-  >
-    <span className="text-gray-700 font-medium text-[10px]">World View</span>
-  </button>
+    <button 
+      onClick={handleReset}
+      className="bg-white border-4 border-gray-400 shadow-lg rounded-full hover:bg-gray-50 hover:border-blue-400 active:scale-95 transition-all duration-200 flex items-center justify-center"
+      title="Reset to world view"
+      style={{
+        width: '55px',
+        height: '55px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+      }}
+    >
+      <span className="text-gray-700 hover:text-blue-600 font-semibold text-[9px] leading-tight text-center transition-colors duration-200">
+        World<br />View
+      </span>
+    </button>
   );
 };
 
@@ -770,39 +780,39 @@ export default function NewsMap() {
 
   const [lastFetchTime, setLastFetchTime] = useState(Date.now());
 
-
-  // Category icons mapping using Lucide React components
   const categoryIcons = {
-    "Natural Disaster": <AlertTriangle size={window.innerWidth < 640 ? 12 : 16} className="text-red-600" />,
-    "Crime": <FaHandcuffs size={window.innerWidth < 640 ? 12 : 16} className="text-amber-700" />,
-    "Politics": <Vote size={window.innerWidth < 640 ? 12 : 16} className="text-indigo-600" />,
-    "Protest": <Megaphone size={window.innerWidth < 640 ? 12 : 16} className="text-orange-600" />,
-    "Accident": <Ambulance size={window.innerWidth < 640 ? 12 : 16} className="text-purple-600" />,
-    "Weather": <Cloud size={window.innerWidth < 640 ? 12 : 16} className="text-cyan-500" />,
-    "Festival / Event": <PartyPopper size={window.innerWidth < 640 ? 12 : 16} className="text-pink-500" />,
-    "Conflict / War": <GiCrossedSwords size={window.innerWidth < 640 ? 12 : 16} className="text-red-800" />,
-    "Public Announcement": <MegaphoneIcon size={window.innerWidth < 640 ? 12 : 16} className="text-blue-600" />,
-    "Emergency Alert": <BellRing size={window.innerWidth < 640 ? 12 : 16} className="text-red-500" />,
-    "Sports": <Trophy size={window.innerWidth < 640 ? 12 : 16} className="text-yellow-600" />,
-    "Health": <Heart size={window.innerWidth < 640 ? 12 : 16} className="text-rose-600" />,
-    "Business": <TrendingUp size={window.innerWidth < 640 ? 12 : 16} className="text-slate-700" />,
-    "Entertainment": <Music size={window.innerWidth < 640 ? 12 : 16} className="text-violet-500" />,
-    "Technology": <Laptop size={window.innerWidth < 640 ? 12 : 16} className="text-blue-700" />,
-    "Science": <FlaskConical size={window.innerWidth < 640 ? 12 : 16} className="text-teal-600" />,
-    "Education": <GraduationCap size={window.innerWidth < 640 ? 12 : 16} className="text-emerald-700" />,
-    "Environment": <Leaf size={window.innerWidth < 640 ? 12 : 16} className="text-lime-600" />,
-    "Social Issues": <HandHeart size={window.innerWidth < 640 ? 12 : 16} className="text-coral-600" />,
-    "Transportation": <Train size={window.innerWidth < 640 ? 12 : 16} className="text-gray-600" />,
-    "Automobiles": <Car size={window.innerWidth < 640 ? 12 : 16} className="text-maroon-600" />,
-    "Finance": <BadgeDollarSign size={window.innerWidth < 640 ? 12 : 16} className="text-gold-700" />,
-    "Movies": <Clapperboard size={window.innerWidth < 640 ? 12 : 16} className="text-plum-700" />,
-    "Cricket": <Flag size={window.innerWidth < 640 ? 12 : 16} className="text-olive-600" />,
-    "Military": <Shield size={window.innerWidth < 640 ? 12 : 16} className="text-khaki-700" />,
-    "Space": <Rocket size={window.innerWidth < 640 ? 12 : 16} className="text-navy-600" />,
-    "Lifestyle": <Sparkles size={window.innerWidth < 640 ? 12 : 16} className="text-peach-500" />,
-    "Wildlife": <PawPrint size={window.innerWidth < 640 ? 12 : 16} className="text-brown-600" />,
-    "Default": <Info size={window.innerWidth < 640 ? 12 : 16} className="text-gray-500" />
+      "Natural Disaster": <AlertTriangle size={window.innerWidth < 640 ? 12 : 16} className="text-red-600" />,
+      "Crime": <FaHandcuffs size={window.innerWidth < 640 ? 12 : 16} className="text-amber-700" />,
+      "Politics": <Vote size={window.innerWidth < 640 ? 12 : 16} className="text-indigo-600" />,
+      "Geopolitics": <Globe size={window.innerWidth < 640 ? 12 : 16} className="text-slate-800" />,
+      "Protest": <Megaphone size={window.innerWidth < 640 ? 12 : 16} className="text-orange-600" />,
+      "Accident": <AlertOctagon size={window.innerWidth < 640 ? 12 : 16} className="text-red-700" />,
+      "Weather": <Cloud size={window.innerWidth < 640 ? 12 : 16} className="text-cyan-500" />,
+      "Festival / Event": <PartyPopper size={window.innerWidth < 640 ? 12 : 16} className="text-pink-500" />,
+      "Conflict / War": <GiCrossedSwords size={window.innerWidth < 640 ? 12 : 16} className="text-red-900" />,
+      "Public Announcement": <Speaker size={window.innerWidth < 640 ? 12 : 16} className="text-blue-600" />,
+      "Emergency Alert": <BellRing size={window.innerWidth < 640 ? 12 : 16} className="text-red-500" />,
+      "Sports": <Trophy size={window.innerWidth < 640 ? 12 : 16} className="text-yellow-600" />,
+      "Health": <Heart size={window.innerWidth < 640 ? 12 : 16} className="text-rose-600" />,
+      "Business": <DollarSign size={window.innerWidth < 640 ? 12 : 16} className="text-slate-700" />,
+      "Entertainment": <Music size={window.innerWidth < 640 ? 12 : 16} className="text-violet-500" />,
+      "Technology": <Laptop size={window.innerWidth < 640 ? 12 : 16} className="text-blue-700" />,
+      "Science": <FlaskConical size={window.innerWidth < 640 ? 12 : 16} className="text-teal-600" />,
+      "Education": <GraduationCap size={window.innerWidth < 640 ? 12 : 16} className="text-emerald-700" />,
+      "Environment": <Leaf size={window.innerWidth < 640 ? 12 : 16} className="text-lime-600" />,
+      "Social Issues": <HandHeart size={window.innerWidth < 640 ? 12 : 16} className="text-purple-600" />,
+      "Transportation": <Train size={window.innerWidth < 640 ? 12 : 16} className="text-gray-600" />,
+      "Automobiles": <Car size={window.innerWidth < 640 ? 12 : 16} className="text-zinc-700" />,
+      "Finance": <TrendingUp size={window.innerWidth < 640 ? 12 : 16} className="text-green-700" />,
+      "Movies": <Clapperboard size={window.innerWidth < 640 ? 12 : 16} className="text-fuchsia-600" />,
+      "Cricket": <Target size={window.innerWidth < 640 ? 12 : 16} className="text-amber-600" />,
+      "Military": <Shield size={window.innerWidth < 640 ? 12 : 16} className="text-stone-600" />,
+      "Space": <Rocket size={window.innerWidth < 640 ? 12 : 16} className="text-sky-800" />,
+      "Lifestyle": <Sparkles size={window.innerWidth < 640 ? 12 : 16} className="text-rose-400" />,
+      "Wildlife": <PawPrint size={window.innerWidth < 640 ? 12 : 16} className="text-orange-700" />,
+      "Default": <Info size={window.innerWidth < 640 ? 12 : 16} className="text-gray-500" />
   };
+
 
   const [selectedCategories, setSelectedCategories] = useState(
     Object.keys(categoryIcons).filter(cat => cat !== 'Default')
@@ -1597,7 +1607,7 @@ const getUserLocation = useCallback(async () => {
     };
 
     return (
-      <div className="absolute right-3.5 z-10 bg-white shadow-md rounded-lg overflow-hidden" style={{ bottom: isMobile ? '165px' : '120px' }}>
+      <div className="absolute right-3.5 z-10 bg-white shadow-md rounded-lg overflow-hidden" style={{ bottom: isMobile ? '150px' : '115px' }}>
         <button 
           onClick={handleZoomIn}
           className="block w-full hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center border-b border-gray-200"
@@ -1668,6 +1678,34 @@ const getUserLocation = useCallback(async () => {
       }
       google.maps.event.removeListener(listener);
     });
+  };
+
+  // Help Button Component (place this below your ZoomControls component)
+  const HelpButton = ({ isMobile }) => {
+    return (
+      <div className="absolute right-2.5 z-10" style={{ bottom: isMobile ? '100px' : '55px' }}>
+        <button 
+          onClick={handleHelpClick}
+          className="bg-red-800 hover:bg-red-900 transition-colors duration-200 flex items-center justify-center rounded-full shadow-md"
+          style={{
+            width: isMobile ? '40px' : '48px',
+            height: isMobile ? '40px' : '48px',
+          }}
+        >
+          <svg 
+            width={isMobile ? '20' : '24'} 
+            height={isMobile ? '20' : '24'} 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            className="text-white"
+          >
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    );
   };
 
   // Loading state
@@ -1805,6 +1843,9 @@ const getUserLocation = useCallback(async () => {
 
         {/* Custom Zoom Controls */}
         <ZoomControls mapRef={mapRef} />
+
+        {/* Help Button below ZoomControls */}
+        <HelpButton isMobile={isMobile} />
 
         {/* Info Window */}
         {currentNews && (

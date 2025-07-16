@@ -12,12 +12,12 @@ export default function BottomNavigation() {
   function getActiveTabFromPath(path) {
     if (path === '/news' || path.startsWith('/news/')) {
       return '/news';
-    } else if (path === '/kids' || path.startsWith('/kids/')) {
-      return '/kids';
     } else if (path === '/newsonmap' || path.startsWith('/newsonmap/')) {
       return '/newsonmap';
-    } else if (path === '/nearby' || path.startsWith('/nearby/')) {
-      return '/nearby';
+    } else if (path === '/saved-folders' || path.startsWith('/saved-folders/')) {
+      return '/saved-folders';
+    } else if (path === '/trending' || path.startsWith('/trending/')) {
+      return '/trending';
     }
     return path;
   }
@@ -34,19 +34,19 @@ export default function BottomNavigation() {
       displayName: ['News', '']
     },
     {
-      name: 'News for Kids',
-      path: '/kids',
-      displayName: ['News for', 'Kids']
-    },
-    {
       name: 'News on Map',
       path: '/newsonmap',
       displayName: ['News on', 'Map']
     },
     {
-      name: 'Nearby News',
-      path: '/nearby',
-      displayName: ['Local', 'News']
+      name: 'Saved News',
+      path: '/saved-folders',
+      displayName: ['Saved', 'News']
+    },
+    {
+      name: 'Trending News',
+      path: '/trending',
+      displayName: ['Trending', 'News']
     },
   ];
 
@@ -61,17 +61,17 @@ export default function BottomNavigation() {
     if (tabPath === '/news') {
       return pathname === '/news' || pathname.startsWith('/news/');
     }
-    // For kids tab
-    else if (tabPath === '/kids') {
-      return pathname === '/kids' || pathname.startsWith('/kids/');
-    }
     // For news-map tab
     else if (tabPath === '/newsonmap') {
       return pathname === '/newsonmap' || pathname.startsWith('/newsonmap/');
     }
-    // For hyperlocal map tab
-    else if (tabPath === '/nearby') {
-      return pathname === '/nearby' || pathname.startsWith('/nearby/');
+    // For saved news tab
+    else if (tabPath === '/saved-folders') {
+      return pathname === '/saved-folders' || pathname.startsWith('/saved-folders/');
+    }
+    // For trending news tab
+    else if (tabPath === '/trending') {
+      return pathname === '/trending' || pathname.startsWith('/trending/');
     }
     return false;
   };

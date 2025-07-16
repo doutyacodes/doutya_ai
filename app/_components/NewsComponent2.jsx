@@ -273,14 +273,6 @@ export default function NewsDetails2({ id, showNames }) {
           </div>
 
           <div className="relative w-full aspect-video mb-6">
-            {/* <Image
-              src={`https://wowfy.in/testusr/images/${image_url}`}
-              alt={title}
-              layout="fill"
-              objectFit="cover"
-              className="rounded-md"
-            /> */}
-
           {article.media_type === 'video' ? (
             <video 
               src={`https://wowfy.in/testusr/images/${image_url}`}

@@ -5,25 +5,15 @@ import { usePathname } from "next/navigation";
 import ProtectedRoute from "../_components/ProtectedRoute";
 import { ChildrenProvider } from "@/context/CreateContext";
 import Navbar from "../_components/Navbar";
-import SideBar from "../_components/SideBar";
-import RightSideBar from "../_components/RightSideBar";
 import LayoutWrapper from "../_components/LayoutWrapper";
 import BottomNavigation from "../_components/BottomNav";
 
 const ProtectLayout = ({ children }) => {
   const pathname = usePathname();
   const [showBottomNav, setShowBottomNav] = useState(true);
-  
-  // useEffect(() => {
-  //   // Hide bottom nav for /news/[id] and /kids/[id] routes
-  //   const isNewsDetailPage = /^\/news\/[^\/]+$/.test(pathname);
-  //   const isKidsNewsDetailPage = /^\/kids\/[^\/]+$/.test(pathname);
-    
-  //   setShowBottomNav(!(isNewsDetailPage || isKidsNewsDetailPage));
-  // }, [pathname]);
 
   return (
-    <ProtectedRoute allowedRoutes={["/","/search", "/our-story","/our-features","/about-us", "/contact-us", "/kids", "newsonmap", "/testing3","/news", "/newstech", "/landing"]}>
+    <ProtectedRoute allowedRoutes={["/","/pricing","/our-story","/our-features","/about-us", "/contact-us", "/newsonmap", "/landing"]}>
       <ChildrenProvider>
         <div className="relative min-h-screen flex bg-white">
           {/* <SideBar /> */}
@@ -34,7 +24,7 @@ const ProtectLayout = ({ children }) => {
             <div className="w-full">
               {children}
             </div>
-            {showBottomNav && <BottomNavigation />}
+            {/* {showBottomNav && <BottomNavigation />} */}
           </LayoutWrapper>
           {/* <RightSideBar /> */}
         </div>

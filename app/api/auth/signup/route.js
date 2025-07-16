@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(req) {
   try {
-    const { name, username, password, mobile } = await req.json();
+    const { name, username, password, mobile, examTypeId } = await req.json();
 
     const existingUser = await db
       .select()
@@ -47,16 +47,17 @@ export async function POST(req) {
     const hashedPassword = await hash(password, 10);
 
     // Create new user
-    const newUser = await db
-      .insert(USER_DETAILS)
-      .values({
-        name,
-        username,
-        password: hashedPassword,
-        mobile,
-        is_active: true,
-      })
-      .execute();
+  const newUser = await db
+    .insert(USER_DETAILS)
+    .values({
+      name,
+      username,
+      password: hashedPassword,
+      mobile,
+      exam_type_id: examTypeId,
+      is_active: true,
+    })
+    .execute();
 
     // Fetch the newly created user
     const createdUser = await db

@@ -12,13 +12,13 @@ const ProtectedRoute = ({ children, allowedRoutes = [] }) => {
 
   useEffect(() => {
     const isAllowed = 
-      allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/kids/")|| pathname.startsWith("/news/") || pathname.startsWith("/newsonmap") || pathname.startsWith("/newstech") || pathname.startsWith("/nearby");
+      allowedRoutes.includes(pathname) || pathname.startsWith("/newsonmap") || pathname.startsWith("/newstech");
 
       console.log("isAuthenticated", isAuthenticated, "isAllowed", isAllowed)
 
     if (!loading && !isAuthenticated && !isAllowed) {
       console.log("Redirecting...")
-      router.replace("/login"); // Redirect to login page
+      router.replace("/auth/login"); // Redirect to login page
     }
   }, [isAuthenticated, loading, pathname, router, allowedRoutes]);
 
@@ -27,7 +27,7 @@ const ProtectedRoute = ({ children, allowedRoutes = [] }) => {
   }
 
   const isAllowed = 
-    allowedRoutes.includes(pathname) || pathname.startsWith("/learn/")|| pathname.startsWith("/kids/")|| pathname.startsWith("/news/") || pathname.startsWith("/newsonmap") || pathname.startsWith("/newstech") || pathname.startsWith("/nearby");
+    allowedRoutes.includes(pathname) || pathname.startsWith("/newsonmap") || pathname.startsWith("/newstech");
 
   return isAuthenticated || isAllowed ? children : null;
 };

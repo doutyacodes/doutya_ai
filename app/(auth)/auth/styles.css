@@ -1,0 +1,39 @@
+/* Add this to your global CSS file (globals.css or equivalent) */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thumb-red-800 {
+  scrollbar-color: #991b1b #f3f4f6;
+}
+
+.scrollbar-track-gray-100 {
+  scrollbar-color: #991b1b #f3f4f6;
+}
+
+/* For WebKit browsers */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #991b1b;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #7f1d1d;
+}
+
+/* For line clamping */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

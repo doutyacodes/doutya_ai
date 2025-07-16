@@ -268,6 +268,7 @@ const NewsMapModal = ({ isOpen, onClose, forceOpen = false }) => {
   const handleClose = () => {
     setShouldShow(false);
     onClose();
+    setCurrentSlide(0)
   };
 
   if (!shouldShow) return null;

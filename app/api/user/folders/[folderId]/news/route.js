@@ -37,11 +37,12 @@ export async function GET(req, { params }) {
       );
     }
     
-    // Fetch all saved news in this folder with news details
+    // Fetch all saved news in this folder with news details and grouped perspectives
     const savedNews = await db
       .select({
         id: SAVED_NEWS.id,
         saved_at: SAVED_NEWS.saved_at,
+        note: SAVED_NEWS.note,
         news: {
           id: ADULT_NEWS.id,
           title: ADULT_NEWS.title,
@@ -53,17 +54,59 @@ export async function GET(req, { params }) {
           media_type: ADULT_NEWS.media_type,
           created_at: ADULT_NEWS.created_at,
           updated_at: ADULT_NEWS.updated_at,
+          group_id: ADULT_NEWS.news_group_id,
         }
       })
       .from(SAVED_NEWS)
       .innerJoin(ADULT_NEWS, eq(SAVED_NEWS.news_id, ADULT_NEWS.id))
       .where(eq(SAVED_NEWS.user_folder_id, folderId))
       .orderBy(desc(SAVED_NEWS.saved_at));
-    
+
+      console.log("savedNews", savedNews)
+
+    // Get all perspectives for each news item
+    const newsWithPerspectives = await Promise.all(
+      savedNews.map(async (savedItem) => {
+        if (savedItem.news.group_id) {
+          // Get all news articles in the same group
+          const allPerspectives = await db
+            .select({
+              id: ADULT_NEWS.id,
+              title: ADULT_NEWS.title,
+              image_url: ADULT_NEWS.image_url,
+              summary: ADULT_NEWS.summary,
+              description: ADULT_NEWS.description,
+              viewpoint: ADULT_NEWS.viewpoint,
+              show_date: ADULT_NEWS.show_date,
+              media_type: ADULT_NEWS.media_type,
+              created_at: ADULT_NEWS.created_at,
+              updated_at: ADULT_NEWS.updated_at,
+              group_id: ADULT_NEWS.news_group_id,
+            })
+            .from(ADULT_NEWS)
+            .where(eq(ADULT_NEWS.news_group_id, savedItem.news.group_id))
+            .orderBy(ADULT_NEWS.viewpoint);
+          
+          return {
+            ...savedItem,
+            allPerspectives
+          };
+        } else {
+          // If no group, just return the single news item as the only perspective
+          return {
+            ...savedItem,
+            allPerspectives: [savedItem.news]
+          };
+        }
+      })
+    );
+
+    console.log("newsWithPerspectives", newsWithPerspectives)
+
     return NextResponse.json(
       { 
         folder: folder[0],
-        savedNews 
+        savedNews: newsWithPerspectives 
       },
       { status: 200 }
     );
@@ -71,106 +114,6 @@ export async function GET(req, { params }) {
     console.error("Error fetching folder news:", error);
     return NextResponse.json(
       { message: "Error fetching folder news", details: error.message },
-      { status: 500 }
-    );
-  }
-}
-
-// POST - Add news to folder (for future use)
-export async function POST(req, { params }) {
-  // Authenticate user
-  const authResult = await authenticate(req);
-  if (!authResult.authenticated) {
-    return authResult.response;
-  }
-  
-  const userData = authResult.decoded_Data;
-  const userId = userData.id;
-  const folderId = parseInt(params.folderId);
-  
-  try {
-    const { newsId } = await req.json();
-    
-    // Validate input
-    if (!newsId) {
-      return NextResponse.json(
-        { message: "News ID is required" },
-        { status: 400 }
-      );
-    }
-    
-    // Check if folder exists and belongs to user
-    const folder = await db
-      .select()
-      .from(USER_FOLDERS)
-      .where(
-        and(
-          eq(USER_FOLDERS.id, folderId),
-          eq(USER_FOLDERS.user_id, userId)
-        )
-      )
-      .limit(1);
-    
-    if (folder.length === 0) {
-      return NextResponse.json(
-        { message: "Folder not found" },
-        { status: 404 }
-      );
-    }
-    
-    // Check if news exists
-    const news = await db
-      .select()
-      .from(ADULT_NEWS)
-      .where(eq(ADULT_NEWS.id, newsId))
-      .limit(1);
-    
-    if (news.length === 0) {
-      return NextResponse.json(
-        { message: "News article not found" },
-        { status: 404 }
-      );
-    }
-    
-    // Check if news is already saved in this folder
-    const existingSave = await db
-      .select()
-      .from(SAVED_NEWS)
-      .where(
-        and(
-          eq(SAVED_NEWS.user_folder_id, folderId),
-          eq(SAVED_NEWS.news_id, newsId)
-        )
-      )
-      .limit(1);
-    
-    if (existingSave.length > 0) {
-      return NextResponse.json(
-        { message: "News article is already saved in this folder" },
-        { status: 409 }
-      );
-    }
-    
-    // Save news to folder
-    const [savedNews] = await db
-      .insert(SAVED_NEWS)
-      .values({
-        user_folder_id: folderId,
-        news_id: newsId,
-      })
-      .returning();
-    
-    return NextResponse.json(
-      { 
-        message: "News saved to folder successfully",
-        savedNews 
-      },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error("Error saving news to folder:", error);
-    return NextResponse.json(
-      { message: "Error saving news to folder", details: error.message },
       { status: 500 }
     );
   }

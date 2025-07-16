@@ -9,7 +9,7 @@ const useAuth = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("user_token");
     if (!token) {
       setIsAuthenticated(false);
       setLoading(false);
@@ -30,7 +30,7 @@ const useAuth = () => {
   const logout = () => {
     localStorage.removeItem("token"); // Remove token from storage
     setIsAuthenticated(false); // Update state
-    router.replace("/login"); // Redirect to login page
+    router.replace("/auth/login"); // Redirect to login page
   };
 
   return { isAuthenticated, loading, logout };

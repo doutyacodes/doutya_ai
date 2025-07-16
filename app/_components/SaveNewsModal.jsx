@@ -10,6 +10,9 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
   const [newFolderName, setNewFolderName] = useState('');
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [confirmSave, setConfirmSave] = useState(false);
+  const [notes, setNotes] = useState(''); // NEW: Add notes state
+  const [errorMessage, setErrorMessage] = useState(''); // NEW: Add error message state
+  const [successMessage, setSuccessMessage] = useState(''); // NEW: Add success message state
   const router = useRouter()
 
   // Fetch user folders when modal opens
@@ -44,6 +47,7 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
     if (!newFolderName.trim()) return;
     
     setLoading(true);
+    setErrorMessage(''); // NEW: Clear previous error
     try {
       const response = await fetch('/api/user/folders', {
         method: 'POST',
@@ -54,14 +58,20 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
         body: JSON.stringify({ name: newFolderName.trim() }),
       });
       
+      const data = await response.json(); // NEW: Get response data
+      
       if (response.ok) {
-        const data = await response.json();
         setFolders([...folders, data.folder]);
         setNewFolderName('');
         setShowCreateFolder(false);
+        setSuccessMessage(data.message); // NEW: Show success message
+      } else {
+        // NEW: Handle error response
+        setErrorMessage(data.message || 'Error creating folder');
       }
     } catch (error) {
       console.error('Error creating folder:', error);
+      setErrorMessage('Error creating folder'); // NEW: Show error message
     } finally {
       setLoading(false);
     }
@@ -71,6 +81,7 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
     if (!selectedFolder) return;
     
     setLoading(true);
+    setErrorMessage(''); // NEW: Clear previous error
     try {
       const response = await fetch('/api/user/save-news', {
         method: 'POST',
@@ -80,18 +91,25 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
         },
         body: JSON.stringify({ 
           folderId: selectedFolder.id, 
-          newsId: newsId 
+          newsId: newsId,
+          note: notes.trim() || null // NEW: Include notes in request
         }),
       });
+      
+      const data = await response.json(); // NEW: Get response data
       
       if (response.ok) {
         // Success - close modal and show success message
         onClose();
+        console.log(data.message); // NEW: Log success message
         // You can add a toast notification here
-        console.log('News saved successfully!');
+      } else {
+        // NEW: Handle error response
+        setErrorMessage(data.message || 'Error saving news');
       }
     } catch (error) {
       console.error('Error saving news:', error);
+      setErrorMessage('Error saving news'); // NEW: Show error message
     } finally {
       setLoading(false);
     }
@@ -112,6 +130,9 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
     setNewFolderName('');
     setSelectedFolder(null);
     setConfirmSave(false);
+    setNotes(''); // NEW: Reset notes
+    setErrorMessage(''); // NEW: Reset error message
+    setSuccessMessage(''); // NEW: Reset success message
   };
 
   const handleClose = () => {
@@ -134,6 +155,22 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
             <FaTimes size={18} />
           </button>
         </div>
+
+        {/* NEW: Error/Success Messages */}
+        {(errorMessage || successMessage) && (
+          <div className="px-4 pt-4">
+            {errorMessage && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4">
+                <p className="text-sm">{errorMessage}</p>
+              </div>
+            )}
+            {successMessage && (
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md mb-4">
+                <p className="text-sm">{successMessage}</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Content */}
         <div className="p-4">
@@ -179,6 +216,7 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
                         onClick={() => {
                           setShowCreateFolder(false);
                           setNewFolderName('');
+                          setErrorMessage(''); // NEW: Clear error when canceling
                         }}
                         className="flex-1 bg-gray-200 text-gray-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-300 transition-colors"
                       >
@@ -251,14 +289,35 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
                 <p className="text-sm text-gray-600 mb-2">
                   Save this news to:
                 </p>
-                <p className="text-base font-semibold text-red-700">
+                <p className="text-base font-semibold text-red-700 mb-4">
                   {selectedFolder?.name}
                 </p>
+                
+                {/* NEW: Notes Section */}
+                <div className="text-left mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Add a note (optional)
+                  </label>
+                  <textarea
+                    placeholder="Write your thoughts about this news..."
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    rows={3}
+                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none text-sm"
+                    maxLength={500}
+                  />
+                  <p className="text-xs text-gray-500 mt-1 text-right">
+                    {notes.length}/500 characters
+                  </p>
+                </div>
               </div>
               
               <div className="flex space-x-3">
                 <button
-                  onClick={() => setConfirmSave(false)}
+                  onClick={() => {
+                    setConfirmSave(false);
+                    setErrorMessage(''); // NEW: Clear error when going back
+                  }}
                   className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md font-medium hover:bg-gray-300 transition-colors"
                 >
                   Back

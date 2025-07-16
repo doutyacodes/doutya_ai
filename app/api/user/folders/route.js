@@ -5,38 +5,6 @@ import { eq, and, like, desc } from 'drizzle-orm';
 import { authenticate } from '@/lib/jwtMiddleware';
 import { db } from '@/utils';
 
-// // GET - Fetch user folders
-// export async function GET(req) {
-//   // Authenticate user
-//   const authResult = await authenticate(req);
-//   if (!authResult.authenticated) {
-//     return authResult.response;
-//   }
-  
-//   const userData = authResult.decoded_Data;
-//   const userId = userData.id;
-  
-//   try {
-//     const folders = await db
-//       .select()
-//       .from(USER_FOLDERS)
-//       .where(eq(USER_FOLDERS.user_id, userId))
-//       .orderBy(USER_FOLDERS.created_at);
-    
-//     return NextResponse.json(
-//       { folders },
-//       { status: 200 }
-//     );
-//   } catch (error) {
-//     console.error("Error fetching folders:", error);
-//     return NextResponse.json(
-//       { message: "Error fetching folders", details: error.message },
-//       { status: 500 }
-//     );
-//   }
-// }
-
-
 // GET - Fetch user folders (with optional search)
 export async function GET(req) {
   // Authenticate user

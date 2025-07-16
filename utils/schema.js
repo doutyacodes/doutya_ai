@@ -34,6 +34,7 @@ export const USER_DETAILS = mysqlTable("user_details", {
   username: varchar("username", { length: 255 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
   mobile: varchar("mobile", { length: 15 }).notNull().unique(),
+  exam_type_id: int("exam_type_id").references(() => EXAM_TYPES.id),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
   is_active: boolean("is_active").default(true),
@@ -1732,5 +1733,13 @@ export const SAVED_NEWS = mysqlTable("saved_news", {
   news_id: int("news_id")
     .notNull()
     .references(() => ADULT_NEWS.id),
+  note: text("note"),
+  exam_type_id: int("exam_type_id").references(() => EXAM_TYPES.id),
   saved_at: timestamp("saved_at").defaultNow(),
+});
+
+export const EXAM_TYPES = mysqlTable("exam_types", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 100 }).notNull().unique(), // e.g., 'UPSC'
+  description: text("description"), // ✅ Short explanation or abbreviation
 });

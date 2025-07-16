@@ -3,7 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowLeft, Trash2, Calendar, Eye, Search, X } from 'lucide-react';
+import { ArrowLeft, Trash2, Calendar, Eye, Search, X, FileText } from 'lucide-react';
+import NotesModal from '../_components/NotesModal';
+import { motion } from 'framer-motion';
+import { GrFormView } from 'react-icons/gr';
+import { FaStar } from 'react-icons/fa';
 
 const SavedFolderDetailsPage = () => {
   const router = useRouter();
@@ -17,6 +21,25 @@ const SavedFolderDetailsPage = () => {
   const [error, setError] = useState('');
   const [removeConfirm, setRemoveConfirm] = useState(null);
   const [removingId, setRemovingId] = useState(null);
+  const [notesModal, setNotesModal] = useState({ isOpen: false, savedItem: null });
+  const [currentPerspectives, setCurrentPerspectives] = useState({});
+  const [isPaused, setIsPaused] = useState({});
+
+    // Viewpoint colors
+  const viewpointColors = {
+    0: { bg: "bg-[#1E90FF]", text: "text-[#1E90FF]" }, // Dodger Blue
+    1: { bg: "bg-[#00bf62]", text: "text-[#00bf62]" }, // green
+    2: { bg: "bg-[#6A5ACD]", text: "text-[#6A5ACD]" }, // Slate Blue
+    3: { bg: "bg-[#20B2AA]", text: "text-[#20B2AA]" }, // Light Sea Green
+    4: { bg: "bg-[#DAA520]", text: "text-[#DAA520]" }, // Goldenrod
+    5: { bg: "bg-[#00CED1]", text: "text-[#00CED1]" }, // Dark Turquoise
+  };
+
+  // Get color variants for viewpoint based on index
+  const getViewpointColor = (index, type = 'bg') => {
+    const colorSet = viewpointColors[index % Object.keys(viewpointColors).length];
+    return type === 'bg' ? colorSet.bg : colorSet.text;
+  };
 
   // Utility function for class names
   const cn = (...classes) => classes.filter(Boolean).join(' ');
@@ -69,6 +92,43 @@ const SavedFolderDetailsPage = () => {
     }
   }, [searchQuery, savedNews]);
 
+  // Initialize current perspectives when savedNews changes
+  useEffect(() => {
+    const initialPerspectives = {};
+    const initialPaused = {};
+    savedNews.forEach(savedItem => {
+      if (savedItem.allPerspectives && savedItem.allPerspectives.length > 0) {
+        const currentIndex = savedItem.allPerspectives.findIndex(
+          perspective => perspective.id === savedItem.news.id
+        );
+        initialPerspectives[savedItem.id] = currentIndex >= 0 ? currentIndex : 0;
+        initialPaused[savedItem.id] = false;
+      }
+    });
+    setCurrentPerspectives(initialPerspectives);
+    setIsPaused(initialPaused);
+  }, [savedNews]);
+
+  // Auto-rotate perspectives
+  useEffect(() => {
+    const intervals = {};
+    
+    savedNews.forEach(savedItem => {
+      if (savedItem.allPerspectives && savedItem.allPerspectives.length > 1 && !isPaused[savedItem.id]) {
+        intervals[savedItem.id] = setInterval(() => {
+          setCurrentPerspectives(prev => ({
+            ...prev,
+            [savedItem.id]: (prev[savedItem.id] + 1) % savedItem.allPerspectives.length
+          }));
+        }, 3000); // Change every 3 seconds
+      }
+    });
+
+    return () => {
+      Object.values(intervals).forEach(interval => clearInterval(interval));
+    };
+  }, [savedNews, isPaused]);
+
   // Handle remove news from folder
   const handleRemoveNews = async (savedNewsId) => {
     try {
@@ -99,6 +159,55 @@ const SavedFolderDetailsPage = () => {
   const handleNewsClick = (newsId) => {
     router.push(`/news/${newsId}`);
   };
+
+  const handleUpdateNote = (savedItemId, newNote) => {
+    setSavedNews(prev => prev.map(item => 
+      item.id === savedItemId 
+        ? { ...item, note: newNote }
+        : item
+    ));
+    setFilteredNews(prev => prev.map(item => 
+      item.id === savedItemId 
+        ? { ...item, note: newNote }
+        : item
+    ));
+  };
+
+  // Handle perspective change
+  const handlePerspectiveChange = (savedItemId, perspectiveIndex) => {
+    setCurrentPerspectives(prev => ({
+      ...prev,
+      [savedItemId]: perspectiveIndex
+    }));
+  };
+
+      // Handle dot click for perspective change
+    const handleDotClick = (savedItemId, perspectiveIndex) => {
+      setCurrentPerspectives(prev => ({
+        ...prev,
+        [savedItemId]: perspectiveIndex
+      }));
+    };
+
+    // Handle pause/resume
+    const handleMouseEnter = (savedItemId) => {
+      setIsPaused(prev => ({ ...prev, [savedItemId]: true }));
+    };
+
+    const handleMouseLeave = (savedItemId) => {
+      setIsPaused(prev => ({ ...prev, [savedItemId]: false }));
+    };
+
+    // Get current perspective for a saved item
+    const getCurrentPerspective = (savedItem) => {
+      const currentIndex = currentPerspectives[savedItem.id] || 0;
+      return savedItem.allPerspectives?.[currentIndex] || savedItem.news;
+    };
+
+    // Get current perspective index
+    const getCurrentPerspectiveIndex = (savedItem) => {
+      return currentPerspectives[savedItem.id] || 0;
+    };
 
   // Format date
   const formatDate = (dateString) => {
@@ -188,7 +297,7 @@ const SavedFolderDetailsPage = () => {
             <h3 className="text-lg font-semibold mb-4">Remove Article</h3>
             <p className="text-gray-600 mb-4">
               Are you sure you want to remove &ldquo;{removeConfirm.news.title}&ldquo; from this folder? 
-              The article will still be available in the main news feed.
+              {/* The article will still be available in the main news feed. */}
             </p>
             <div className="flex gap-3">
               <button
@@ -209,6 +318,14 @@ const SavedFolderDetailsPage = () => {
           </div>
         </div>
       )}
+
+      {/* Notes Modal */}
+      <NotesModal
+        isOpen={notesModal.isOpen}
+        onClose={() => setNotesModal({ isOpen: false, savedItem: null })}
+        savedItem={notesModal.savedItem}
+        onUpdateNote={handleUpdateNote}
+      />
 
       {/* Content */}
       <div className="max-w-6xl mx-auto px-4 py-6">
@@ -240,36 +357,64 @@ const SavedFolderDetailsPage = () => {
             {filteredNews.map((savedItem) => (
               <div
                 key={savedItem.id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow overflow-hidden group"
+                className="bg-[#f5f5f5] shadow-md cursor-pointer overflow-hidden rounded-lg hover:shadow-lg transition-shadow flex flex-col p-1"
+                onMouseEnter={() => handleMouseEnter(savedItem.id)}
+                onMouseLeave={() => handleMouseLeave(savedItem.id)}
+                onTouchStart={() => handleMouseEnter(savedItem.id)}
+                onTouchEnd={() => handleMouseLeave(savedItem.id)}
               >
+                {/* Perspectives Header */}
+                {savedItem.allPerspectives && savedItem.allPerspectives.length > 1 && (
+                  <p className="text-[10px] md:text-xs text-black text-nowrap font-medium bg-opacity-80 py-2 rounded-md">
+                    <span className="flex gap-[3px] items-center overflow-x-auto w-full">
+                      <span className="font-bold">Perspectives of</span>:{" "}
+                      {savedItem.allPerspectives.map(p => p.viewpoint).join(', ')}
+                    </span>
+                  </p>
+                )}
+
                 {/* Image/Video Section */}
-                <div className="relative aspect-video overflow-hidden">
-                  {savedItem.news.media_type === 'video' ? (
-                    <video 
-                      src={`https://wowfy.in/testusr/images/${savedItem.news.image_url}`}
-                      poster={`https://wowfy.in/testusr/images/${savedItem.news.image_url.replace('.mp4', '.jpg')}`}
-                      className={cn("w-full h-full object-cover cursor-pointer")}
-                      controls
-                      controlsList="nodownload noplaybackrate nofullscreen"
-                      disablePictureInPicture
-                      autoPlay
-                      muted
-                      loop
-                      onClick={() => handleNewsClick(savedItem.news.id)}
-                    >           
-                      Your browser does not support the video tag.
-                    </video>
-                  ) : (
-                    <Image
-                      src={`https://wowfy.in/testusr/images/${savedItem.news.image_url}`}
-                      alt={savedItem.news.title}
-                      width={400}
-                      height={300}
-                      className={cn("w-full h-full object-cover cursor-pointer")}
-                      onClick={() => handleNewsClick(savedItem.news.id)}
-                    />
-                  )}
+                <div className="relative w-full h-48">
+                  {(() => {
+                    const currentPerspective = getCurrentPerspective(savedItem);
+                    const currentIndex = getCurrentPerspectiveIndex(savedItem);
+                    
+                    return currentPerspective.media_type === 'video' ? (
+                      <video 
+                        src={`https://wowfy.in/testusr/images/${currentPerspective.image_url}`}
+                        poster={`https://wowfy.in/testusr/images/${currentPerspective.image_url.replace('.mp4', '.jpg')}`}
+                        className="w-full h-full object-cover max-md:rounded-md cursor-pointer"
+                        controls
+                        controlsList="nodownload noplaybackrate nofullscreen"
+                        disablePictureInPicture
+                        autoPlay
+                        muted
+                        loop
+                        onClick={() => handleNewsClick(currentPerspective.id)}
+                      >           
+                        Your browser does not support the video tag.
+                      </video>
+                    ) : (
+                      <Image
+                        src={`https://wowfy.in/testusr/images/${currentPerspective.image_url}`}
+                        alt={currentPerspective.title}
+                        width={400}
+                        height={300}
+                        className="w-full h-full object-cover max-md:rounded-md cursor-pointer"
+                        onClick={() => handleNewsClick(currentPerspective.id)}
+                      />
+                    );
+                  })()}
                   
+                  {/* Viewpoint label above image */}
+                  <span className={cn(
+                    "absolute top-2 left-2 text-white text-xs flex items-center font-medium px-2 py-1 rounded-md",
+                    getViewpointColor(getCurrentPerspectiveIndex(savedItem), 'bg') + " bg-opacity-90"
+                  )}>
+                    <GrFormView size={18} />
+                    {getCurrentPerspective(savedItem).viewpoint} Perspective
+                  </span>
+
                   {/* Remove Button */}
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
@@ -286,41 +431,93 @@ const SavedFolderDetailsPage = () => {
                 </div>
 
                 {/* Content Section */}
-                <div className="p-4">
-                  <h3 
-                    className="font-semibold text-gray-900 mb-2 line-clamp-2 cursor-pointer hover:text-red-800 transition-colors"
-                    onClick={() => handleNewsClick(savedItem.news.id)}
+                <div className="flex flex-col flex-grow p-2">
+                  {/* Title with animation */}
+                  <motion.div
+                    key={`${savedItem.id}-${getCurrentPerspectiveIndex(savedItem)}`}
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    transition={{ 
+                      duration: 0.5,
+                      type: "spring",
+                      stiffness: 100,
+                      damping: 15
+                    }}
+                    className="scrollable-container"
                   >
-                    {savedItem.news.title}
-                  </h3>
-                  
-                  {savedItem.news.summary && (
+                    <span className={cn(
+                      "text-xs flex items-center font-semibold mb-1",
+                      getViewpointColor(getCurrentPerspectiveIndex(savedItem), 'text')
+                    )}>
+                      <GrFormView size={18} className={getViewpointColor(getCurrentPerspectiveIndex(savedItem), 'text')} />
+                      {getCurrentPerspective(savedItem).viewpoint} Perspective
+                    </span>
+                    
+                    <h3
+                      onClick={() => handleNewsClick(getCurrentPerspective(savedItem).id)}
+                      className="text-lg font-medium text-gray-800 mb-2 cursor-pointer line-clamp-3 hover:text-red-800 transition-colors"
+                    >
+                      {getCurrentPerspective(savedItem).title}
+                    </h3>
+                  </motion.div>
+
+                  {/* Dots Navigation - Only show if there are multiple perspectives */}
+                  {savedItem.allPerspectives && savedItem.allPerspectives.length > 1 && (
+                    <div className="flex justify-center my-2 space-x-2">
+                      {savedItem.allPerspectives.map((_, index) => (
+                        <button
+                          key={index}
+                          className={cn(
+                            "w-2 h-2 rounded-full transition",
+                            getCurrentPerspectiveIndex(savedItem) === index
+                              ? "bg-red-800"
+                              : "bg-gray-400 hover:bg-gray-600"
+                          )}
+                          onClick={() => handleDotClick(savedItem.id, index)}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Summary */}
+                  {getCurrentPerspective(savedItem).summary && (
                     <p 
                       className="text-gray-600 text-sm mb-3 line-clamp-3 cursor-pointer"
-                      onClick={() => handleNewsClick(savedItem.news.id)}
+                      onClick={() => handleNewsClick(getCurrentPerspective(savedItem).id)}
                     >
-                      {savedItem.news.summary}
+                      {getCurrentPerspective(savedItem).summary}
                     </p>
                   )}
                   
-                  <div className="flex items-center justify-between text-xs text-gray-500">
+                  {/* Date information */}
+                  <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       <span>Saved {formatDate(savedItem.saved_at)}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      <span>{formatDate(savedItem.news.show_date)}</span>
+                      <span>{formatDate(getCurrentPerspective(savedItem).show_date)}</span>
                     </div>
                   </div>
-                  
-                  {savedItem.news.viewpoint && (
-                    <div className="mt-2">
-                      <span className="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
-                        {savedItem.news.viewpoint}
-                      </span>
-                    </div>
-                  )}
+
+                  {/* Notes section */}
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setNotesModal({ isOpen: true, savedItem: savedItem });
+                      }}
+                      className="flex items-center gap-2 text-sm text-red-700 hover:text-red-800 transition-colors"
+                    >
+                      <FileText className="w-4 h-4" />
+                      <span>{savedItem.note ? 'View/Edit Notes' : 'Add Notes'}</span>
+                      {savedItem.note && (
+                        <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

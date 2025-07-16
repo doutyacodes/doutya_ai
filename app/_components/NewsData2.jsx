@@ -364,6 +364,16 @@ const NewsData2 = ({
             {/* Footer with Share and Report Options */}
             <div className="flex flex-row-reverse justify-between items-center mt-auto">
               <div className="flex items-center space-x-5">
+                {/* Save News Icon */}
+                <div className="text-gray-500 cursor-pointer hover:text-yellow-500 transition-colors">
+                  <FaStar 
+                    size={16} 
+                    onClick={handleSaveNews}
+                    className="hover:fill-yellow-500"
+                    title="Save News"
+                  />
+                </div>
+
                 {/* Share Icon */}
                 <div className="text-gray-500 cursor-pointer relative group">
                   <FaShareAlt size={16} />
@@ -413,14 +423,6 @@ const NewsData2 = ({
                       {/* Dropdown Content */}
                       <div className="absolute right-0 bottom-5 bg-white border shadow-lg rounded-lg py-2 z-50 min-w-[160px] max-w-[200px] sm:max-w-none">
                         <button
-                          onClick={handleSaveNews}
-                          className="flex items-center space-x-3 w-full px-4 py-2 text-left text-gray-700 hover:bg-red-50 hover:text-red-800 transition-colors"
-                        >
-                          <FaBookmark size={14} />
-                          <span className="text-sm font-medium">Save News</span>
-                        </button>
-                        
-                        <button
                           onClick={handleReportModal}
                           className="flex items-center space-x-3 w-full px-4 py-2 text-left text-gray-700 hover:bg-red-50 hover:text-red-800 transition-colors"
                         >
@@ -448,7 +450,7 @@ const NewsData2 = ({
           </div>
         </div>
 
-        {/* Save News Modal */}
+         {/* Save News Modal */}
         <SaveNewsModal
           isOpen={showSaveNewsModal}
           onClose={() => setShowSaveNewsModal(false)}
@@ -521,6 +523,7 @@ const NewsData2 = ({
             </div>
           )}
         </AnimatePresence>
+
       </div>
     </>
   );
