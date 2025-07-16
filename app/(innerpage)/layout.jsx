@@ -9,8 +9,13 @@ import LayoutWrapper from "../_components/LayoutWrapper";
 import BottomNavigation from "../_components/BottomNav";
 
 const ProtectLayout = ({ children }) => {
-  const pathname = usePathname();
+const pathname = usePathname();
   const [showBottomNav, setShowBottomNav] = useState(true);
+
+  useEffect(() => {
+    // Hide bottom nav on home page ("/"), show on all other pages
+    setShowBottomNav(pathname !== "/");
+  }, [pathname]);
 
   return (
     <ProtectedRoute allowedRoutes={["/","/pricing","/our-story","/our-features","/about-us", "/contact-us", "/newsonmap", "/landing"]}>
