@@ -360,7 +360,12 @@ const LandingPage = () => {
               className="flex items-center space-x-2 sm:space-x-3"
               whileHover={{ scale: 1.05 }}
             >
-              <Image src={"/images/logo.png"} width={150} height={75} alt="logo" />
+              <Image
+                src={"/images/logo.png"}
+                width={150}
+                height={75}
+                alt="logo"
+              />
             </motion.div>
 
             {/* Desktop Navigation */}
@@ -455,7 +460,7 @@ const LandingPage = () => {
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold mt-4"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => handleClick()}
                   >
                     Start Learning
                   </motion.button>
