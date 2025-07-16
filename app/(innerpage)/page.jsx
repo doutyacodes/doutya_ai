@@ -49,6 +49,7 @@ import {
 import Link from "next/link";
 import PricingPage from "../_components/PricingPage";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 // Removed PricingPage import
 
 const LandingPage = () => {
@@ -359,12 +360,7 @@ const LandingPage = () => {
               className="flex items-center space-x-2 sm:space-x-3"
               whileHover={{ scale: 1.05 }}
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-xl flex items-center justify-center shadow-lg">
-                <Newspaper className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-              </div>
-              <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                Doutya
-              </span>
+              <Image src={"/images/logo.png"} width={150} height={75} alt="logo" />
             </motion.div>
 
             {/* Desktop Navigation */}
@@ -1090,12 +1086,9 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
             <div className="sm:col-span-2 lg:col-span-2">
-              <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-xl flex items-center justify-center">
-                  <Newspaper className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-                </div>
-                <span className="text-xl sm:text-2xl font-bold">Doutya</span>
-              </div>
+              {/* <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                <Image src={"/images/logo.png"} width={150} height={75} alt="logo" />
+              </div> */}
               <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
                 Built in India, for India&apos;s Future Thinkers.
               </h3>
