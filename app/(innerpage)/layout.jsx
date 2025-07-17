@@ -14,7 +14,7 @@ const pathname = usePathname();
 
   useEffect(() => {
     // Hide bottom nav on home page ("/"), show on all other pages
-    setShowBottomNav(pathname !== "/" || pathname !=="/pricing");
+    setShowBottomNav(pathname !== "/" && pathname !=="/pricing");
   }, [pathname]);
 
   return (
