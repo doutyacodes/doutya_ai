@@ -11,10 +11,12 @@ import BottomNavigation from "../_components/BottomNav";
 const ProtectLayout = ({ children }) => {
 const pathname = usePathname();
   const [showBottomNav, setShowBottomNav] = useState(true);
+  const [showTopNav, setShowTopNav] = useState(true);
 
   useEffect(() => {
     // Hide bottom nav on home page ("/"), show on all other pages
     setShowBottomNav(pathname !== "/");
+    setShowTopNav(pathname !== "/" || pathname !=="/pricing");
   }, [pathname]);
 
   return (
