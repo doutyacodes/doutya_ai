@@ -35,6 +35,7 @@ export const USER_DETAILS = mysqlTable("user_details", {
   password: varchar("password", { length: 255 }).notNull(),
   mobile: varchar("mobile", { length: 15 }).notNull().unique(),
   exam_type_id: int("exam_type_id").references(() => EXAM_TYPES.id),
+  plan: mysqlEnum("plan", ["starter", "pro", "elite"]).notNull(), // Enum for plan
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
   is_active: boolean("is_active").default(true),

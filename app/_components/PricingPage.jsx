@@ -1,20 +1,43 @@
 "use client";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowRight,
-  BarChart3,
-  BookOpen,
   Check,
-  Crown,
-  Newspaper,
-  Star,
-  Target,
   X,
+  Crown,
+  Star,
+  ArrowRight,
+  Users,
+  Clock,
+  BookOpen,
+  Globe,
+  Target,
+  Award,
+  Shield,
+  Zap,
+  Eye,
+  Calendar,
+  Download,
+  MessageCircle,
+  ChevronDown,
+  ChevronUp,
+  Newspaper,
+  TrendingUp,
+  MapPin,
+  Bookmark,
+  Brain,
+  Lightbulb,
+  Filter,
+  BarChart3,
+  FolderOpen,
+  FileText,
+  Tag,
 } from "lucide-react";
-import { useState } from "react";
 
 const PricingPage = () => {
   const [billingCycle, setBillingCycle] = useState("monthly");
+  const [activeTab, setActiveTab] = useState("features");
+  const [expandedFaq, setExpandedFaq] = useState(null);
 
   const plans = [
     {
@@ -29,18 +52,17 @@ const PricingPage = () => {
       borderColor: "border-blue-200",
       icon: BookOpen,
       features: [
+        "Save up to 25 articles",
+        "Organize with folders",
+        "View global trending articles",
         "Basic current affairs coverage",
-        "2 perspectives per news",
-        "Monthly analysis reports",
-        "Basic study notes",
         "Mobile app access",
         "Community forum access",
-        "Email support",
       ],
       limitations: [
-        "Limited to 50 articles/month",
-        "No premium insights",
-        "Standard support response",
+        "No personal notes",
+        "No exam-specific trending",
+        "Limited article saves (25 max)",
       ],
     },
     {
@@ -54,20 +76,16 @@ const PricingPage = () => {
       borderColor: "border-red-300",
       icon: Target,
       features: [
+        "Save up to 75 articles",
+        "Organize with folders",
+        "Add personal notes",
+        "View global + your exam trending",
         "Complete current affairs coverage",
-        "4 perspectives per news",
         "Weekly detailed analysis",
-        "Advanced study notes with tags",
-        "Global affairs map access",
-        "Trending topics dashboard",
-        "Custom folder organization",
         "Priority support",
         "Exam-specific content curation",
       ],
-      limitations: [
-        "Limited to 200 articles/month",
-        "Standard download limits",
-      ],
+      limitations: ["Limited to 75 article saves"],
     },
     {
       name: "Elite",
@@ -81,18 +99,16 @@ const PricingPage = () => {
       borderColor: "border-purple-300",
       icon: Crown,
       features: [
-        "Unlimited current affairs access",
-        "All 4+ perspectives per news",
-        "Daily analysis & insights",
+        "Unlimited article saves",
+        "Organize with folders + tags",
+        "Add personal notes",
+        "View global + all exams trending",
         "AI-powered study recommendations",
         "Premium global affairs tracking",
         "Advanced analytics dashboard",
-        "Unlimited custom folders",
         "Personal study planner",
         "Expert-curated content",
         "Priority customer support",
-        "Offline reading capability",
-        "Custom alerts & notifications",
         "Interview preparation content",
       ],
       limitations: [],
@@ -111,19 +127,24 @@ const PricingPage = () => {
         "Yes, you can upgrade or downgrade your plan at any time. When upgrading, you'll get immediate access to new features. When downgrading, changes take effect at your next billing cycle.",
     },
     {
-      question: "Is there a free trial available?",
+      question: "What does 'Your Exam' trending mean?",
       answer:
-        "We offer a 7-day free trial for new users to explore all features. No credit card required to start your trial.",
+        "This shows the most saved articles specifically by students preparing for your chosen exam type (UPSC, SSC, Banking, etc.). It helps you focus on what's most relevant for your specific preparation.",
+    },
+    {
+      question: "How do tags work in the Elite plan?",
+      answer:
+        "Tags allow you to categorize your saved articles with custom labels like 'Environment', 'Economy', 'Current Affairs', etc. This makes finding and organizing your study material much easier.",
+    },
+    {
+      question: "Can I add personal notes to articles?",
+      answer:
+        "Personal notes are available in Pro and Elite plans. You can add your own insights, important points, and study notes to any saved article for better revision.",
     },
     {
       question: "What payment methods do you accept?",
       answer:
         "We accept all major credit cards, debit cards, UPI, net banking, and digital wallets including Paytm, PhonePe, and Google Pay.",
-    },
-    {
-      question: "How often is the content updated?",
-      answer:
-        "Our content is updated multiple times daily. We track news from over 500+ sources and provide real-time analysis to keep you updated with the latest developments.",
     },
   ];
 
@@ -132,28 +153,20 @@ const PricingPage = () => {
       name: "Rahul Verma",
       role: "Civil Services 2023 - Rank 23",
       content:
-        "The Pro plan was perfect for my civil services preparation. The multiple perspectives helped me ace the interview round.",
+        "The Pro plan was perfect for my civil services preparation. Being able to see UPSC-specific trending articles helped me focus on what mattered most.",
       avatar:
         "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop&crop=face",
       plan: "Pro",
     },
-    {
-      name: "Ananya Singh",
-      role: "Foreign Service Officer 2023",
-      content:
-        "Elite plan's global affairs tracking was invaluable for my diplomatic services preparation. Worth every penny!",
-      avatar:
-        "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop&crop=face",
-      plan: "Elite",
-    },
+
     {
       name: "Karthik Kumar",
       role: "Defense Services Qualified 2023",
       content:
-        "Started with Starter plan and upgraded to Pro. Great value for comprehensive current affairs.",
+        "Started with Starter plan to test the waters. The global trending articles alone were so helpful that I upgraded to Pro within a month.",
       avatar:
         "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop&crop=face",
-      plan: "Starter",
+      plan: "Pro",
     },
   ];
 
@@ -185,6 +198,68 @@ const PricingPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <motion.nav
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="fixed top-0 w-full bg-white/80 backdrop-blur-xl border-b border-gray-100 z-50"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex justify-between items-center h-16 sm:h-20">
+            <motion.div
+              className="flex items-center space-x-2 sm:space-x-3"
+              whileHover={{ scale: 1.05 }}
+            >
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
+                <Newspaper className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              </div>
+              <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                Doutya
+              </span>
+            </motion.div>
+
+            <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+              <a
+                href="#features"
+                className="text-gray-600 hover:text-red-600 transition-colors font-medium text-sm lg:text-base"
+              >
+                Features
+              </a>
+              <a
+                href="#pricing"
+                className="text-gray-600 hover:text-red-600 transition-colors font-medium text-sm lg:text-base"
+              >
+                Pricing
+              </a>
+              <a
+                href="#faq"
+                className="text-gray-600 hover:text-red-600 transition-colors font-medium text-sm lg:text-base"
+              >
+                FAQ
+              </a>
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 lg:px-8 py-2 lg:py-3 rounded-xl lg:rounded-2xl hover:shadow-lg transition-all duration-300 font-semibold text-sm lg:text-base"
+              >
+                Start Free Trial
+              </motion.button>
+            </div>
+
+            {/* Mobile CTA */}
+            <div className="md:hidden">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-300 font-semibold text-sm"
+              >
+                Start Trial
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </motion.nav>
+
       {/* Hero Section */}
       <section className="pt-12 sm:pt-16  px-4 sm:px-6 bg-gradient-to-br from-gray-50 to-white">
         <div className="max-w-7xl mx-auto text-center">
@@ -371,8 +446,8 @@ const PricingPage = () => {
             className="text-center mb-8 sm:mb-12"
           >
             <div className="inline-flex items-center px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 text-blue-700 rounded-full text-xs sm:text-sm font-semibold mb-4 sm:mb-6">
-              <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              Detailed Comparison
+              <Brain className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              What You Get
             </div>
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
@@ -447,57 +522,41 @@ const PricingPage = () => {
                 <tbody>
                   {[
                     {
-                      feature: "Current Affairs Coverage",
-                      starter: "Basic",
-                      pro: "Complete",
+                      feature: "Save articles",
+                      starter: "Up to 25",
+                      pro: "Up to 75",
                       elite: "Unlimited",
                     },
                     {
-                      feature: "Perspectives per News",
-                      starter: "2",
-                      pro: "4",
-                      elite: "4+",
-                    },
-                    {
-                      feature: "Monthly Analysis Reports",
+                      feature: "Organize with folders",
                       starter: "✓",
-                      pro: "Weekly",
-                      elite: "Daily",
+                      pro: "✓",
+                      elite: "✓ + Tags",
                     },
                     {
-                      feature: "Global Affairs Map",
+                      feature: "Add personal notes",
                       starter: "✗",
                       pro: "✓",
                       elite: "✓",
                     },
                     {
-                      feature: "Custom Folders",
-                      starter: "Basic",
-                      pro: "Advanced",
-                      elite: "Unlimited",
+                      feature: "View most saved articles (trending)",
+                      starter: "Global only",
+                      pro: "Global + Your Exam",
+                      elite: "Global + All Exams",
                     },
+
                     {
                       feature: "AI Recommendations",
                       starter: "✗",
                       pro: "✗",
                       elite: "✓",
                     },
-                    {
-                      feature: "Offline Reading",
-                      starter: "✗",
-                      pro: "✗",
-                      elite: "✓",
-                    },
+
                     {
                       feature: "Priority Support",
                       starter: "✗",
                       pro: "✓",
-                      elite: "✓",
-                    },
-                    {
-                      feature: "Interview Prep Content",
-                      starter: "✗",
-                      pro: "✗",
                       elite: "✓",
                     },
                   ].map((row, index) => (
