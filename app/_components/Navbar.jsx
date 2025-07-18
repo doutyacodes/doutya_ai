@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ import {
   Crown,
   Star,
   Shield,
+  Loader2,
 } from "lucide-react";
 import { useChildren } from "@/context/CreateContext";
 
@@ -26,14 +27,9 @@ const Navbar = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
-  // const [selectedAge, setSelectedAge] = useState(() => {
-  //   // Check if running in browser environment
-  //   if (typeof window !== 'undefined') {
-  //     return localStorage.getItem('selectedAge') || '6';
-  //   }
-  //   return '6'; // Default age if not in browser or no stored age
-  // });
+  const [userPlan, setUserPlan] = useState(null);
+  const [planLoading, setPlanLoading] = useState(true);
+  const [planError, setPlanError] = useState(null);
 
   const {
     getCurrentAge,
@@ -48,10 +44,51 @@ const Navbar = () => {
   const isKidsSection = pathname.startsWith("/kids");
   // Check if we're in the maps section
   const isMapsSection = pathname.startsWith("/newsonmap");
-
   const isHyperlocalSection = pathname.startsWith("/nearby");
-
   const isNewsSection = pathname === "/news";
+
+  // Fetch user plan data
+  useEffect(() => {
+    const fetchUserPlan = async () => {
+      try {
+        setPlanLoading(true);
+        setPlanError(null);
+        const token = localStorage.getItem('user_token');
+        if (!token) {
+          // If no token, user is not logged in - don't show plan
+          setPlanLoading(false);
+          return;
+        }
+
+        const response = await fetch('/api/user/plan', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data)
+          setUserPlan(data);
+        } else if (response.status === 401) {
+          // Token expired or invalid
+          localStorage.removeItem('user_token');
+          setUserPlan(null);
+        } else {
+          const errorData = await response.json();
+          setPlanError(errorData.message || 'Failed to fetch plan');
+        }
+      } catch (error) {
+        console.error('Error fetching user plan:', error);
+        setPlanError('Network error');
+      } finally {
+        setPlanLoading(false);
+      }
+    };
+
+    fetchUserPlan();
+  }, []);
 
   const getCurrentDate = () => {
     const now = new Date();
@@ -62,43 +99,53 @@ const Navbar = () => {
     });
   };
 
-  // Plan indicator component
+  // Plan indicator component with real data
   const PlanIndicator = () => {
-    // For now, randomly select a plan for UI purposes
-    const plans = [
-      { 
-        name: 'Standard', 
-        color: 'bg-blue-100 text-blue-800 border-blue-200', 
-        icon: Shield,
-        hoverColor: 'hover:bg-blue-200'
-      },
-      { 
-        name: 'Pro', 
-        color: 'bg-purple-100 text-purple-800 border-purple-200', 
-        icon: Star,
-        hoverColor: 'hover:bg-purple-200'
-      },
-      { 
-        name: 'Elite', 
-        color: 'bg-yellow-100 text-yellow-800 border-yellow-200', 
-        icon: Crown,
-        hoverColor: 'hover:bg-yellow-200'
-      }
-    ];
-    
-    // Randomly select a plan (you can replace this with actual logic later)
-    const currentPlan = plans[Math.floor(Math.random() * plans.length)];
-    const IconComponent = currentPlan.icon;
+    // Don't show anything while loading or if there's an error or no user
+    if (planLoading || planError || !userPlan) {
+      return null;
+    }
+
+    const planDetails = userPlan.plan_details;
+
+    // Icon mapping
+    const iconMap = {
+      Shield: Shield,
+      Star: Star,
+      Crown: Crown,
+    };
+
+    const IconComponent = iconMap[planDetails.icon] || Shield;
 
     return (
-      <div className={cn(
-        "flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-xs font-medium transition-all duration-200 cursor-pointer",
-        currentPlan.color,
-        currentPlan.hoverColor
-      )}>
+      <div 
+        className={cn(
+          "flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-xs font-medium transition-all duration-200 cursor-pointer",
+          planDetails.color,
+          planDetails.hover_color
+        )}
+        title={`${planDetails.display_name} Plan - ${userPlan.exam_type?.name || 'No exam selected'}`}
+      >
         <IconComponent className="w-3.5 h-3.5" />
-        <span className="hidden sm:inline">{currentPlan.name}</span>
-        <span className="sm:hidden">{currentPlan.name.charAt(0)}</span>
+        <span className="hidden sm:inline">{planDetails.display_name}</span>
+        <span className="sm:hidden">{planDetails.display_name.charAt(0)}</span>
+        {userPlan.exam_type && (
+          <span className="hidden md:inline text-xs opacity-75">
+            • {userPlan.exam_type.name}
+          </span>
+        )}
+      </div>
+    );
+  };
+
+  // Loading indicator for plan
+  const PlanLoadingIndicator = () => {
+    if (!planLoading) return null;
+
+    return (
+      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-gray-200 text-xs font-medium">
+        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+        <span className="hidden sm:inline text-gray-500">Loading...</span>
       </div>
     );
   };
@@ -124,14 +171,6 @@ const Navbar = () => {
             <div className="absolute right-3 -top-2 w-4 h-4 bg-white transform rotate-45 border-l border-t border-black/5" />
 
             <div className="relative bg-white rounded-lg">
-              {/* <Link 
-                href="/newstech"
-                className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
-              >
-                <Newspaper className="w-4 h-4" />
-                <span className="font-medium">NewsTech</span>
-              </Link> */}
-
               <Link
                 href="/about-us"
                 className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200"
@@ -147,6 +186,24 @@ const Navbar = () => {
                 <Mail className="w-4 h-4" />
                 <span className="font-medium">Contact Us</span>
               </Link>
+
+              {/* Show plan details in dropdown for mobile */}
+              {userPlan && (
+                <>
+                  <div className="border-t border-gray-100 my-1"></div>
+                  <div className="px-4 py-2.5">
+                    <div className="text-xs text-gray-500 mb-1">Current Plan</div>
+                    <div className="font-medium text-gray-800">
+                      {userPlan.plan_details.display_name}
+                      {userPlan.exam_type && (
+                        <span className="text-xs text-gray-500 ml-2">
+                          ({userPlan.exam_type.name})
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -165,7 +222,7 @@ const Navbar = () => {
       window.location.reload();
     };
 
-    const ages = Array.from({ length: 8 }, (_, i) => i + 6); // Creates array [5,6,...13]
+    const ages = Array.from({ length: 8 }, (_, i) => i + 6); // Creates array [6,7,...13]
     return (
       <div className="relative">
         <button
@@ -207,7 +264,6 @@ const Navbar = () => {
     );
   };
 
-  // Function to determine which logo to show in the center
   const getMainLogo = () => {
     // Check if we're in the hyperlocal section
     if (isHyperlocalSection) {
@@ -264,20 +320,19 @@ const Navbar = () => {
       >
         <div className="max-w-7xl mx-auto px-4">
           <div className="relative grid items-center w-full md:grid-cols-3">
-            {/* Left Column - Empty space to maintain layout (previously Kids Toggle) */}
+            {/* Left Column - Date and Age Selector */}
             <div className="hidden md:flex items-center justify-start">
               {!isKidsSection && (
                 <div className="text-gray-700 font-medium text-sm">
                   {getCurrentDate()}
                 </div>
               )}
-              {/* DesktopDoutyaKidsToggle is commented out but space is maintained */}
               {isKidsSection && !isMapsSection && <AgeSelector />}
             </div>
 
             {/* Logo Column with Mobile Age Selector on Left */}
             <div className="flex items-center justify-center relative">
-              {/* Mobile Age Selector - Left of Logo */}
+              {/* Mobile Date/Age Selector - Left of Logo */}
               <div className="md:hidden absolute left-0">
                 {!isKidsSection && (
                   <div className="text-gray-700 font-medium text-[10px]">
@@ -304,13 +359,13 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Social Media Column - Desktop Only */}
+            {/* Right Column - Plan Indicator, Social Media, and Menu */}
             <div className="hidden md:flex justify-end items-center">
               <div className="flex items-center gap-3">
-                {/* Plan Indicator */}
+                {/* Plan Indicator or Loading */}
+                <PlanLoadingIndicator />
                 <PlanIndicator />
                 
-                {/* {isKidsSection && !isMapsSection && <AgeSelector />} */}
                 <SocialMediaNav />
                 <NavDropdownAlt />
               </div>
@@ -321,6 +376,7 @@ const Navbar = () => {
         {/* Mobile Plan Indicator - Show below navbar on mobile */}
         <div className="md:hidden px-4 pb-2">
           <div className="flex justify-center">
+            <PlanLoadingIndicator />
             <PlanIndicator />
           </div>
         </div>
