@@ -23,9 +23,10 @@ export async function GET(req) {
   const userId = userData.id;
   
   try {
-    // Get user's exam type
+    // Get user's plan and exam type
     const user = await db
       .select({
+        plan: USER_DETAILS.plan,
         exam_type_id: USER_DETAILS.exam_type_id,
         exam_type_name: EXAM_TYPES.name
       })
@@ -34,13 +35,14 @@ export async function GET(req) {
       .where(eq(USER_DETAILS.id, userId))
       .limit(1);
 
-    if (!user.length || !user[0].exam_type_id) {
+    if (!user.length) {
       return NextResponse.json(
-        { message: "User exam type not found" },
+        { message: "User not found" },
         { status: 400 }
       );
     }
 
+    const userPlan = user[0].plan;
     const userExamTypeId = user[0].exam_type_id;
     const examTypeName = user[0].exam_type_name;
 
@@ -48,6 +50,44 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const sortBy = searchParams.get('sort') || 'most_saved';
     const timeFilter = searchParams.get('time_filter') || 'all_time';
+    const selectedExamTypeId = searchParams.get('exam_type_id'); // For Elite users
+
+    // Determine which exam type to filter by based on plan
+    let filterExamTypeId = null;
+    let availableExamTypes = [];
+
+    switch (userPlan) {
+      case 'starter':
+        // No exam filtering for starter
+        filterExamTypeId = null;
+        break;
+      case 'pro':
+        // Filter by user's exam type
+        if (!userExamTypeId) {
+          return NextResponse.json(
+            { message: "Pro user must have an exam type set" },
+            { status: 400 }
+          );
+        }
+        filterExamTypeId = userExamTypeId;
+        break;
+      case 'elite':
+        // Elite users can select any exam type
+        if (selectedExamTypeId) {
+          filterExamTypeId = parseInt(selectedExamTypeId);
+        } else if (userExamTypeId) {
+          // Default to user's exam type if available
+          filterExamTypeId = userExamTypeId;
+        }
+        // Get all available exam types for Elite users
+        availableExamTypes = await db
+          .select({
+            id: EXAM_TYPES.id,
+            name: EXAM_TYPES.name
+          })
+          .from(EXAM_TYPES);
+        break;
+    }
 
     // Calculate date filter for time-based queries
     let dateFilter = null;
@@ -74,7 +114,7 @@ export async function GET(req) {
         save_count: count(SAVED_NEWS.id).as('save_count'),
         recent_saves: sql`COUNT(CASE WHEN ${SAVED_NEWS.saved_at} >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN 1 END)`.as('recent_saves'),
         latest_save: sql`MAX(${SAVED_NEWS.saved_at})`.as('latest_save'),
-        group_id: ADULT_NEWS.news_group_id, // Add group_id for fetching perspectives
+        group_id: ADULT_NEWS.news_group_id,
         news: {
           id: ADULT_NEWS.id,
           title: ADULT_NEWS.title,
@@ -90,17 +130,23 @@ export async function GET(req) {
       })
       .from(SAVED_NEWS)
       .innerJoin(ADULT_NEWS, eq(SAVED_NEWS.news_id, ADULT_NEWS.id))
-      .where(eq(SAVED_NEWS.exam_type_id, userExamTypeId))
       .groupBy(SAVED_NEWS.news_id, ADULT_NEWS.id);
+
+    // Apply exam type filter based on plan
+    let whereConditions = [];
+    
+    if (filterExamTypeId) {
+      whereConditions.push(eq(SAVED_NEWS.exam_type_id, filterExamTypeId));
+    }
 
     // Apply date filter if specified
     if (dateFilter) {
-      baseQuery = baseQuery.where(
-        and(
-          eq(SAVED_NEWS.exam_type_id, userExamTypeId),
-          gte(SAVED_NEWS.saved_at, dateFilter)
-        )
-      );
+      whereConditions.push(gte(SAVED_NEWS.saved_at, dateFilter));
+    }
+
+    // Apply where conditions
+    if (whereConditions.length > 0) {
+      baseQuery = baseQuery.where(and(...whereConditions));
     }
 
     // Apply sorting
@@ -132,7 +178,6 @@ export async function GET(req) {
       trendingNews.map(async (item) => {
         let allPerspectives = [item.news];
         
-        // If the news has a group_id, fetch all perspectives in that group
         if (item.news.group_id) {
           const perspectivesQuery = await db
             .select({
@@ -166,10 +211,20 @@ export async function GET(req) {
       })
     );
 
+    // Get the current exam type name for display
+    let currentExamTypeName = examTypeName;
+    if (userPlan === 'elite' && selectedExamTypeId && parseInt(selectedExamTypeId) !== userExamTypeId) {
+      const selectedExamType = availableExamTypes.find(et => et.id === parseInt(selectedExamTypeId));
+      currentExamTypeName = selectedExamType?.name || examTypeName;
+    }
+
     return NextResponse.json(
       { 
         trending_news: newsWithPerspectives,
-        exam_type: examTypeName,
+        user_plan: userPlan,
+        exam_type: currentExamTypeName,
+        current_exam_type_id: filterExamTypeId,
+        available_exam_types: userPlan === 'elite' ? availableExamTypes : [],
         total_count: newsWithPerspectives.length
       },
       { status: 200 }

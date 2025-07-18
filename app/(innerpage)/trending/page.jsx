@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { Search, TrendingUp, Eye, Calendar, Users, Bookmark, ChevronDown, Filter, Star } from 'lucide-react';
+import { Search, TrendingUp, Eye, Calendar, Users, Bookmark, ChevronDown, Filter, Star, Crown, Shield } from 'lucide-react';
 import SaveNewsModal from '@/app/_components/SaveNewsModal';
 import { motion } from 'framer-motion';
 import { GrFormView } from 'react-icons/gr';
@@ -11,6 +11,10 @@ const TrendingPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [examType, setExamType] = useState('');
+  const [userPlan, setUserPlan] = useState('');
+  const [currentExamTypeId, setCurrentExamTypeId] = useState(null);
+  const [availableExamTypes, setAvailableExamTypes] = useState([]);
+  const [selectedExamTypeId, setSelectedExamTypeId] = useState(null);
   const [sortBy, setSortBy] = useState('most_saved');
   const [timeFilter, setTimeFilter] = useState('today');
   const [showSaveNewsModal, setShowSaveNewsModal] = useState(false);
@@ -26,6 +30,32 @@ const TrendingPage = () => {
       4: { bg: 'bg-orange-600', text: 'text-orange-600' },
     };
     return colors[index % 5]?.[type] || colors[0][type];
+  };
+
+  const getPlanIcon = (plan) => {
+    switch (plan) {
+      case 'starter':
+        return <Shield className="w-4 h-4" />;
+      case 'pro':
+        return <Star className="w-4 h-4" />;
+      case 'elite':
+        return <Crown className="w-4 h-4" />;
+      default:
+        return <Shield className="w-4 h-4" />;
+    }
+  };
+
+  const getPlanColor = (plan) => {
+    switch (plan) {
+      case 'starter':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'pro':
+        return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'elite':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
   };
 
   const filteredNews = trendingNews.filter(item =>
@@ -49,35 +79,35 @@ const TrendingPage = () => {
 
   useEffect(() => {
     fetchTrendingNews();
-  }, [sortBy, timeFilter]);
+  }, [sortBy, timeFilter, selectedExamTypeId]);
 
   useEffect(() => {
-  const intervals = {};
-  
-  filteredNews.forEach(item => {
-    if (item.all_perspectives && item.all_perspectives.length > 1) {
-      const newsId = item.news.id;
-      const isPaused = isPausedStates[newsId];
-      
-      if (!isPaused) {
-        intervals[newsId] = setInterval(() => {
-          setCurrentIndices(prev => {
-            const currentIndex = prev[newsId] || 0;
-            const nextIndex = (currentIndex + 1) % item.all_perspectives.length;
-            return {
-              ...prev,
-              [newsId]: nextIndex
-            };
-          });
-        }, 3000);
+    const intervals = {};
+    
+    filteredNews.forEach(item => {
+      if (item.all_perspectives && item.all_perspectives.length > 1) {
+        const newsId = item.news.id;
+        const isPaused = isPausedStates[newsId];
+        
+        if (!isPaused) {
+          intervals[newsId] = setInterval(() => {
+            setCurrentIndices(prev => {
+              const currentIndex = prev[newsId] || 0;
+              const nextIndex = (currentIndex + 1) % item.all_perspectives.length;
+              return {
+                ...prev,
+                [newsId]: nextIndex
+              };
+            });
+          }, 3000);
+        }
       }
-    }
-  });
+    });
 
-  return () => {
-    Object.values(intervals).forEach(interval => clearInterval(interval));
-  };
-}, [filteredNews, isPausedStates]);
+    return () => {
+      Object.values(intervals).forEach(interval => clearInterval(interval));
+    };
+  }, [filteredNews, isPausedStates]);
 
   const fetchTrendingNews = async () => {
     try {
@@ -87,7 +117,12 @@ const TrendingPage = () => {
         time_filter: timeFilter,
       });
       
-      const response = await fetch(`/api/trending?${params}`,{
+      // Add exam_type_id for Elite users
+      if (userPlan === 'elite' && selectedExamTypeId) {
+        params.append('exam_type_id', selectedExamTypeId);
+      }
+      
+      const response = await fetch(`/api/trending?${params}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('user_token')}`,
           'Content-Type': 'application/json',
@@ -98,6 +133,14 @@ const TrendingPage = () => {
       if (response.ok) {
         setTrendingNews(data.trending_news || []);
         setExamType(data.exam_type || '');
+        setUserPlan(data.user_plan || '');
+        setCurrentExamTypeId(data.current_exam_type_id);
+        setAvailableExamTypes(data.available_exam_types || []);
+        
+        // Set initial selected exam type for Elite users
+        if (data.user_plan === 'elite' && !selectedExamTypeId && data.current_exam_type_id) {
+          setSelectedExamTypeId(data.current_exam_type_id);
+        }
       } else {
         console.error('Error fetching trending news:', data.message);
       }
@@ -109,12 +152,15 @@ const TrendingPage = () => {
   };
 
   const handleNewsClick = (newsId) => {
-    // Navigate to news detail page
     window.location.href = `/news/${newsId}`;
   };
 
   const handleSaveNews = () => {
-      setShowSaveNewsModal(true);
+    setShowSaveNewsModal(true);
+  };
+
+  const handleExamTypeChange = (examTypeId) => {
+    setSelectedExamTypeId(examTypeId);
   };
 
   const formatDate = (dateString) => {
@@ -127,6 +173,65 @@ const TrendingPage = () => {
     if (diffDays === 2) return 'Yesterday';
     if (diffDays <= 7) return `${diffDays - 1} days ago`;
     return date.toLocaleDateString();
+  };
+
+  const renderPlanSpecificInfo = () => {
+    switch (userPlan) {
+      case 'starter':
+        return (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+            <div className="flex items-center gap-2 text-blue-800">
+              <Shield className="w-4 h-4" />
+              <span className="text-sm font-medium">Starter Plan</span>
+            </div>
+            <p className="text-xs text-blue-600 mt-1">
+              Showing trending articles from all users across all exam types
+            </p>
+          </div>
+        );
+      case 'pro':
+        return (
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4">
+            <div className="flex items-center gap-2 text-purple-800">
+              <Star className="w-4 h-4" />
+              <span className="text-sm font-medium">Pro Plan</span>
+            </div>
+            <p className="text-xs text-purple-600 mt-1">
+              Showing trending articles from {examType} aspirants only
+            </p>
+          </div>
+        );
+      case 'elite':
+        return (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-yellow-800">
+                <Crown className="w-4 h-4" />
+                <span className="text-sm font-medium">Elite Plan</span>
+              </div>
+              <div className="relative">
+                <select
+                  value={selectedExamTypeId || ''}
+                  onChange={(e) => handleExamTypeChange(e.target.value)}
+                  className="appearance-none bg-white border border-yellow-300 rounded px-3 py-1 pr-8 text-xs focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                >
+                  {availableExamTypes.map((examType) => (
+                    <option key={examType.id} value={examType.id}>
+                      {examType.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-yellow-600 pointer-events-none" />
+              </div>
+            </div>
+            <p className="text-xs text-yellow-600 mt-1">
+              Showing trending articles from {examType} aspirants
+            </p>
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   if (loading) {
@@ -156,7 +261,7 @@ const TrendingPage = () => {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col space-y-4">
-            {/* Title and Exam Type */}
+            {/* Title and Plan */}
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
@@ -164,9 +269,15 @@ const TrendingPage = () => {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900">Trending News Articles</h1>
-                  <p className="text-sm text-gray-600">
-                    Most saved articles by {examType} aspirants
-                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-sm text-gray-600">Most saved articles</span>
+                    {userPlan && (
+                      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${getPlanColor(userPlan)}`}>
+                        {getPlanIcon(userPlan)}
+                        {userPlan.charAt(0).toUpperCase() + userPlan.slice(1)}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
               
@@ -179,20 +290,11 @@ const TrendingPage = () => {
               </div>
             </div>
 
+            {/* Plan-specific information */}
+            {renderPlanSpecificInfo()}
+
             {/* Search and Filters */}
             <div className="flex flex-col justify-end sm:flex-row gap-4">
-              {/* Search */}
-              {/* <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search trending articles..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                />
-              </div> */}
-
               {/* Filters */}
               <div className="flex gap-2">
                 {/* Sort Filter */}
