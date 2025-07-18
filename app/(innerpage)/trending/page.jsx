@@ -1,7 +1,6 @@
 "use client"
-
 import React, { useState, useEffect } from 'react';
-import { Search, TrendingUp, Eye, Calendar, Users, Bookmark, ChevronDown, Filter, Star, Crown, Shield } from 'lucide-react';
+import { Search, TrendingUp, Eye, Calendar, Users, Bookmark, ChevronDown, Filter, Star, Crown, Shield, Lock } from 'lucide-react';
 import SaveNewsModal from '@/app/_components/SaveNewsModal';
 import { motion } from 'framer-motion';
 import { GrFormView } from 'react-icons/gr';
@@ -10,16 +9,20 @@ const TrendingPage = () => {
   const [trendingNews, setTrendingNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [examType, setExamType] = useState('');
   const [userPlan, setUserPlan] = useState('');
-  const [currentExamTypeId, setCurrentExamTypeId] = useState(null);
+  const [userExamTypeId, setUserExamTypeId] = useState(null);
+  const [userExamTypeName, setUserExamTypeName] = useState('');
+  const [currentFilterExamTypeId, setCurrentFilterExamTypeId] = useState(null);
+  const [currentFilterExamTypeName, setCurrentFilterExamTypeName] = useState('');
   const [availableExamTypes, setAvailableExamTypes] = useState([]);
-  const [selectedExamTypeId, setSelectedExamTypeId] = useState(null);
+  const [selectedExamTypeId, setSelectedExamTypeId] = useState('all');
+  const [canAccessCurrentFilter, setCanAccessCurrentFilter] = useState(true);
   const [sortBy, setSortBy] = useState('most_saved');
   const [timeFilter, setTimeFilter] = useState('today');
   const [showSaveNewsModal, setShowSaveNewsModal] = useState(false);
   const [currentIndices, setCurrentIndices] = useState({});
   const [isPausedStates, setIsPausedStates] = useState({});
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const getViewpointColor = (index, type) => {
     const colors = {
@@ -117,8 +120,8 @@ const TrendingPage = () => {
         time_filter: timeFilter,
       });
       
-      // Add exam_type_id for Elite users
-      if (userPlan === 'elite' && selectedExamTypeId) {
+      // Add exam_type_id parameter for all users
+      if (selectedExamTypeId && selectedExamTypeId !== 'all') {
         params.append('exam_type_id', selectedExamTypeId);
       }
       
@@ -132,14 +135,21 @@ const TrendingPage = () => {
       
       if (response.ok) {
         setTrendingNews(data.trending_news || []);
-        setExamType(data.exam_type || '');
         setUserPlan(data.user_plan || '');
-        setCurrentExamTypeId(data.current_exam_type_id);
+        setUserExamTypeId(data.user_exam_type_id);
+        setUserExamTypeName(data.user_exam_type_name || '');
+        setCurrentFilterExamTypeId(data.current_filter_exam_type_id);
+        setCurrentFilterExamTypeName(data.current_filter_exam_type_name || '');
         setAvailableExamTypes(data.available_exam_types || []);
+        setCanAccessCurrentFilter(data.can_access_current_filter);
         
-        // Set initial selected exam type for Elite users
-        if (data.user_plan === 'elite' && !selectedExamTypeId && data.current_exam_type_id) {
-          setSelectedExamTypeId(data.current_exam_type_id);
+        // Set initial selected exam type based on current filter
+        if (!selectedExamTypeId || selectedExamTypeId === 'all') {
+          if (data.current_filter_exam_type_id) {
+            setSelectedExamTypeId(data.current_filter_exam_type_id.toString());
+          } else {
+            setSelectedExamTypeId('all');
+          }
         }
       } else {
         console.error('Error fetching trending news:', data.message);
@@ -160,6 +170,20 @@ const TrendingPage = () => {
   };
 
   const handleExamTypeChange = (examTypeId) => {
+    // Check if user can access this filter
+    if (examTypeId === 'all') {
+      setSelectedExamTypeId('all');
+      return;
+    }
+
+    const examType = availableExamTypes.find(et => et.id.toString() === examTypeId);
+
+    if (examType && !examType.canAccess) {
+      // Show upgrade modal for locked options
+      setShowUpgradeModal(true);
+      return;
+    }
+
     setSelectedExamTypeId(examTypeId);
   };
 
@@ -175,29 +199,65 @@ const TrendingPage = () => {
     return date.toLocaleDateString();
   };
 
+  const renderExamTypeFilter = () => {
+    return (
+      <div className="relative">
+        <select
+          value={selectedExamTypeId}
+          onChange={(e) => handleExamTypeChange(e.target.value)}
+          className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent min-w-[120px]"
+        >
+          <option value="all">All Exams</option>
+          {availableExamTypes.map((examType) => (
+            <option 
+              key={examType.id} 
+              value={examType.id}
+              disabled={!examType.canAccess}
+            >
+              {examType.name} {!examType.canAccess ? '🔒' : ''}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+      </div>
+    );
+  };
+
   const renderPlanSpecificInfo = () => {
+    const currentDisplayName = currentFilterExamTypeName || 'All Exams';
+    
     switch (userPlan) {
       case 'starter':
         return (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-            <div className="flex items-center gap-2 text-blue-800">
-              <Shield className="w-4 h-4" />
-              <span className="text-sm font-medium">Starter Plan</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-blue-800">
+                <Shield className="w-4 h-4" />
+                <span className="text-sm font-medium">Starter Plan</span>
+              </div>
+              {renderExamTypeFilter()}
             </div>
-            <p className="text-xs text-blue-600 mt-1">
-              Showing trending articles from all users across all exam types
+            <p className="text-xs text-blue-600 mt-2">
+              Showing trending articles from all users across all exam types. 
+              <span className="font-medium"> Upgrade to Pro</span> to filter by specific exam types.
             </p>
           </div>
         );
       case 'pro':
         return (
           <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4">
-            <div className="flex items-center gap-2 text-purple-800">
-              <Star className="w-4 h-4" />
-              <span className="text-sm font-medium">Pro Plan</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-purple-800">
+                <Star className="w-4 h-4" />
+                <span className="text-sm font-medium">Pro Plan</span>
+              </div>
+              {renderExamTypeFilter()}
             </div>
-            <p className="text-xs text-purple-600 mt-1">
-              Showing trending articles from {examType} aspirants only
+            <p className="text-xs text-purple-600 mt-2">
+              Showing trending articles from <span className="font-medium">{currentDisplayName}</span> aspirants.
+              {userExamTypeName && currentDisplayName !== userExamTypeName && (
+                <span> Upgrade to Elite to access all exam types.</span>
+              )}
             </p>
           </div>
         );
@@ -209,29 +269,57 @@ const TrendingPage = () => {
                 <Crown className="w-4 h-4" />
                 <span className="text-sm font-medium">Elite Plan</span>
               </div>
-              <div className="relative">
-                <select
-                  value={selectedExamTypeId || ''}
-                  onChange={(e) => handleExamTypeChange(e.target.value)}
-                  className="appearance-none bg-white border border-yellow-300 rounded px-3 py-1 pr-8 text-xs focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                >
-                  {availableExamTypes.map((examType) => (
-                    <option key={examType.id} value={examType.id}>
-                      {examType.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-yellow-600 pointer-events-none" />
-              </div>
+              {renderExamTypeFilter()}
             </div>
-            <p className="text-xs text-yellow-600 mt-1">
-              Showing trending articles from {examType} aspirants
+            <p className="text-xs text-yellow-600 mt-2">
+              Showing trending articles from <span className="font-medium">{currentDisplayName}</span> aspirants.
+              Full access to all exam type filters.
             </p>
           </div>
         );
       default:
         return null;
     }
+  };
+
+  const UpgradeModal = () => {
+    if (!showUpgradeModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+          <div className="text-center">
+            <Lock className="w-12 h-12 text-red-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Upgrade Required
+            </h3>
+            <p className="text-gray-600 mb-4">
+              {userPlan === 'starter' 
+                ? 'Upgrade to Pro or Elite plan to filter by specific exam types.'
+                : 'Upgrade to Elite plan to access all exam type filters.'}
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowUpgradeModal(false);
+                  // Add upgrade logic here
+                  window.location.href = '/pricing';
+                }}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Upgrade Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   if (loading) {
@@ -295,7 +383,19 @@ const TrendingPage = () => {
 
             {/* Search and Filters */}
             <div className="flex flex-col justify-end sm:flex-row gap-4">
-              {/* Filters */}
+              {/* Search */}
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search trending articles..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Other Filters */}
               <div className="flex gap-2">
                 {/* Sort Filter */}
                 <div className="relative">
@@ -527,6 +627,9 @@ const TrendingPage = () => {
           </div>
         )}
       </div>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal />
     </div>
   );
 };
