@@ -11,8 +11,8 @@ function getPlanDetails(plan) {
     starter: {
       display_name: "Starter",
       icon: "Shield",
-      color: "border-gray-300 bg-gray-50 text-gray-700",
-      hover_color: "hover:border-gray-400 hover:bg-gray-100",
+      color: "border-blue-300 bg-blue-50 text-blue-700",
+      hover_color: "hover:border-blue-400 hover:bg-blue-100",
       features: [
         "Basic news access",
         "Limited saved articles",
@@ -26,8 +26,8 @@ function getPlanDetails(plan) {
     pro: {
       display_name: "Pro",
       icon: "Star",
-      color: "border-blue-300 bg-blue-50 text-blue-700",
-      hover_color: "hover:border-blue-400 hover:bg-blue-100",
+      color: "border-orange-300 bg-orange-50 text-orange-700",
+      hover_color: "hover:border-orange-400 hover:bg-orange-100",
       features: [
         "Full news access",
         "Unlimited saved articles",
@@ -42,8 +42,8 @@ function getPlanDetails(plan) {
     elite: {
       display_name: "Elite",
       icon: "Crown",
-      color: "border-yellow-300 bg-yellow-50 text-yellow-700",
-      hover_color: "hover:border-yellow-400 hover:bg-yellow-100",
+      color: "border-purple-300 bg-purple-50 text-purple-700",
+      hover_color: "hover:border-purple-400 hover:bg-purple-100",
       features: [
         "Premium news access",
         "Unlimited everything",
