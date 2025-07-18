@@ -199,66 +199,7 @@ const PricingPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <motion.nav
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="fixed top-0 w-full bg-white/80 backdrop-blur-xl border-b border-gray-100 z-50"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex justify-between items-center h-16 sm:h-20">
-            <motion.div
-              className="flex items-center space-x-2 sm:space-x-3"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg">
-                <Newspaper className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-              </div>
-              <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                Doutya
-              </span>
-            </motion.div>
-
-            <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
-              <a
-                href="#features"
-                className="text-gray-600 hover:text-red-600 transition-colors font-medium text-sm lg:text-base"
-              >
-                Features
-              </a>
-              <a
-                href="#pricing"
-                className="text-gray-600 hover:text-red-600 transition-colors font-medium text-sm lg:text-base"
-              >
-                Pricing
-              </a>
-              <a
-                href="#faq"
-                className="text-gray-600 hover:text-red-600 transition-colors font-medium text-sm lg:text-base"
-              >
-                FAQ
-              </a>
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 lg:px-8 py-2 lg:py-3 rounded-xl lg:rounded-2xl hover:shadow-lg transition-all duration-300 font-semibold text-sm lg:text-base"
-              >
-                Start Free Trial
-              </motion.button>
-            </div>
-
-            {/* Mobile CTA */}
-            <div className="md:hidden">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-300 font-semibold text-sm"
-              >
-                Start Trial
-              </motion.button>
-            </div>
-          </div>
-        </div>
-      </motion.nav>
+      
 
       {/* Hero Section */}
       <section className="pt-12 sm:pt-16  px-4 sm:px-6 bg-gradient-to-br from-gray-50 to-white">
