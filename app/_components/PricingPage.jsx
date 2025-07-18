@@ -57,7 +57,6 @@ const PricingPage = () => {
         "View global trending articles",
         "Basic current affairs coverage",
         "Mobile app access",
-        "Community forum access",
       ],
       limitations: [
         "No personal notes",
