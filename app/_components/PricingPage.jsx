@@ -472,7 +472,7 @@ const PricingPage = () => {
                       feature: "Organize with folders",
                       starter: "✓",
                       pro: "✓",
-                      elite: "✓ + Tags",
+                      elite: "✓",
                     },
                     {
                       feature: "Add personal notes",

@@ -344,8 +344,13 @@ const Navbar = () => {
 
               <Link href="/">{getMainLogo()}</Link>
 
-              {/* Mobile Menu Button - Right of Logo */}
-              <div className="md:hidden absolute right-0">
+              {/* Mobile Plan + Menu Button - Right of Logo */}
+              <div className="md:hidden absolute right-0 flex items-center gap-2">
+                {/* Mobile Plan Indicators */}
+                <PlanLoadingIndicator />
+                <PlanIndicator />
+                
+                {/* Mobile Menu Button */}
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   className="text-white p-1.5 transition-colors duration-200 w-8 h-8 flex items-center justify-center"
@@ -370,14 +375,6 @@ const Navbar = () => {
                 <NavDropdownAlt />
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Mobile Plan Indicator - Show below navbar on mobile */}
-        <div className="md:hidden px-4 pb-2">
-          <div className="flex justify-center">
-            <PlanLoadingIndicator />
-            <PlanIndicator />
           </div>
         </div>
       </nav>
