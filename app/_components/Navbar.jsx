@@ -88,7 +88,7 @@ const Navbar = () => {
     };
 
     fetchUserPlan();
-  }, []);
+  }, [pathname]);
 
   const getCurrentDate = () => {
     const now = new Date();
@@ -118,7 +118,8 @@ const Navbar = () => {
     const IconComponent = iconMap[planDetails.icon] || Shield;
 
     return (
-      <div 
+      <Link 
+      href={"/upgrade-plan"}
         className={cn(
           "flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-xs font-medium transition-all duration-200 cursor-pointer",
           planDetails.color,
@@ -134,7 +135,7 @@ const Navbar = () => {
             • {userPlan.exam_type.name}
           </span>
         )}
-      </div>
+      </Link>
     );
   };
 

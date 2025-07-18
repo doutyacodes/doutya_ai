@@ -134,7 +134,7 @@ export default function Signup() {
       icon: Crown,
       features: [
         "Unlimited article saves",
-        "Organize with folders + tags",
+        "Organize with folders ",
         "Add personal notes",
         "View global + all exams trending",
         "AI-powered study recommendations",
