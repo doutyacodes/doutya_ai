@@ -374,7 +374,7 @@ const LandingPage = () => {
                 href="#features"
                 className="text-gray-600 hover:text-red-600 transition-all duration-300 font-medium text-sm lg:text-base"
               >
-                Features
+                Featuress
               </a>
               <a
                 href="#how-it-works"
