@@ -56,7 +56,6 @@ const PricingPage = () => {
         "Organize with folders",
         "View global trending articles",
         "Basic current affairs coverage",
-        "Mobile app access",
       ],
       limitations: [
         "No personal notes",
@@ -80,7 +79,6 @@ const PricingPage = () => {
         "Add personal notes",
         "View global + your exam trending",
         "Complete current affairs coverage",
-        "Weekly detailed analysis",
         "Priority support",
         "Exam-specific content curation",
       ],
@@ -99,7 +97,7 @@ const PricingPage = () => {
       icon: Crown,
       features: [
         "Unlimited article saves",
-        "Organize with folders + tags",
+        "Organize with folders",
         "Add personal notes",
         "View global + all exams trending",
         "AI-powered study recommendations",
