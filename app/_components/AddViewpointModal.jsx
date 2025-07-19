@@ -1,68 +1,68 @@
-import React, { useState } from 'react';
-import { X, Sparkles, Loader2, Plus } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import { X, Sparkles, Loader2, Plus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 
-const AddViewpointModal = ({ 
-  isOpen, 
-  onClose, 
+const AddViewpointModal = ({
+  isOpen,
+  onClose,
   newsId, // Changed from newsGroupId to newsId
-  currentCount, 
-  onSuccess 
+  currentCount,
+  onSuccess,
 }) => {
-  const [viewpoint, setViewpoint] = useState('');
+  const [viewpoint, setViewpoint] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const maxViewpoints = 3;
   const remainingViewpoints = maxViewpoints - currentCount;
 
   const handleSubmit = async () => {
     if (!viewpoint.trim()) {
-      setError('Please enter a viewpoint');
+      setError("Please enter a viewpoint");
       return;
     }
 
     if (viewpoint.trim().length < 3) {
-      setError('Viewpoint must be at least 3 characters long');
+      setError("Viewpoint must be at least 3 characters long");
       return;
     }
 
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const token = localStorage.getItem('user_token');
+      const token = localStorage.getItem("user_token");
       if (!token) {
-        throw new Error('Authentication required');
+        throw new Error("Authentication required");
       }
 
-      const response = await fetch('/api/user/generate-viewpoint', {
-        method: 'POST',
+      const response = await fetch("/api/user/generate-viewpoint", {
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           newsId: newsId, // Changed from newsGroupId to newsId
-          viewpoint: viewpoint.trim()
+          viewpoint: viewpoint.trim(),
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        toast.success('Custom viewpoint created successfully!');
-        setViewpoint('');
+        toast.success("Custom viewpoint created successfully!");
+        setViewpoint("");
         onSuccess(); // Refresh the parent component
         onClose();
       } else {
-        throw new Error(data.error || 'Failed to create viewpoint');
+        throw new Error(data.error || "Failed to create viewpoint");
       }
     } catch (err) {
-      console.error('Error creating viewpoint:', err);
-      setError(err.message || 'Failed to create viewpoint. Please try again.');
-      toast.error('Failed to create viewpoint');
+      console.error("Error creating viewpoint:", err);
+      setError(err.message || "Failed to create viewpoint. Please try again.");
+      toast.error("Failed to create viewpoint");
     } finally {
       setIsLoading(false);
     }
@@ -70,8 +70,8 @@ const AddViewpointModal = ({
 
   const handleClose = () => {
     if (!isLoading) {
-      setViewpoint('');
-      setError('');
+      setViewpoint("");
+      setError("");
       onClose();
     }
   };
@@ -123,8 +123,10 @@ const AddViewpointModal = ({
                     Create Your Perspective
                   </h4>
                   <p className="text-sm text-purple-700">
-                    AI will generate a unique viewpoint of this news tailored to your specified perspective. 
-                    Be specific for better results (e.g., "Environmental activist", "Small business owner", "Student").
+                   {` AI will generate a unique viewpoint of this news tailored to
+                    your specified perspective. Be specific for better results
+                    (e.g., "Environmental activist", "Small business owner",
+                    "Student").`}
                   </p>
                 </div>
               </div>
@@ -132,7 +134,10 @@ const AddViewpointModal = ({
 
             {/* Input Field */}
             <div className="mb-6">
-              <label htmlFor="viewpoint" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="viewpoint"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Viewpoint Perspective
               </label>
               <div className="relative">
@@ -142,7 +147,7 @@ const AddViewpointModal = ({
                   value={viewpoint}
                   onChange={(e) => setViewpoint(e.target.value)}
                   onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !isLoading && viewpoint.trim()) {
+                    if (e.key === "Enter" && !isLoading && viewpoint.trim()) {
                       handleSubmit();
                     }
                   }}
@@ -199,7 +204,8 @@ const AddViewpointModal = ({
             {/* Usage Info */}
             <div className="mt-4 p-3 bg-gray-50 rounded-lg">
               <p className="text-xs text-gray-600 text-center">
-                ✨ Elite members can create up to {maxViewpoints} custom viewpoints per article
+                ✨ Elite members can create up to {maxViewpoints} custom
+                viewpoints per article
               </p>
             </div>
           </div>
