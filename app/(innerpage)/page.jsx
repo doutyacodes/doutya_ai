@@ -61,16 +61,13 @@ const LandingPage = () => {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [openFAQ, setOpenFAQ] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isGeneratingTest, setIsGeneratingTest] = useState(false);
   const [testPerspectives, setTestPerspectives] = useState([]);
 
   // Modal states
-  const [showViewpointModal, setShowViewpointModal] = useState(false);
+ const [showViewpointModal, setShowViewpointModal] = useState(false);
   const [customViewpoint, setCustomViewpoint] = useState("");
   const [generatedCount, setGeneratedCount] = useState(0);
-  const [isModalChanging, setIsModalChanging] = useState(false);
-  const [lastGenerateClick, setLastGenerateClick] = useState(0);
-  const [modalError, setModalError] = useState(null);
+  const [isGeneratingTest, setIsGeneratingTest] = useState(false);
 
   const router = useRouter();
 
@@ -120,105 +117,51 @@ const LandingPage = () => {
     }
   }, []);
 
-  // Prevent body scroll when modal is open
+  // Simple body scroll prevention
   useEffect(() => {
     if (showViewpointModal) {
-      document.body.classList.add('modal-open');
-      document.body.style.paddingRight = window.innerWidth - document.documentElement.clientWidth + 'px';
-    } else {
-      document.body.classList.remove('modal-open');
-      document.body.style.paddingRight = '';
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalStyle;
+      };
     }
-
-    return () => {
-      document.body.classList.remove('modal-open');
-      document.body.style.paddingRight = '';
-    };
   }, [showViewpointModal]);
 
-  // Handle escape key to close modal
+ // Simple escape key handler
   useEffect(() => {
     const handleEscape = (event) => {
       if (event.key === 'Escape' && showViewpointModal && !isGeneratingTest) {
-        handleModalCancel();
+        handleModalClose();
       }
     };
 
     if (showViewpointModal) {
       document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
     }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-    };
   }, [showViewpointModal, isGeneratingTest]);
 
-  // Handle modal errors
-  useEffect(() => {
-    if (modalError) {
-      console.error('Modal error:', modalError);
-      setShowViewpointModal(false);
-      setModalError(null);
-      toast.error('Something went wrong with the modal. Please try again.');
-    }
-  }, [modalError]);
 
-  // Auto-rotate perspectives
-  useEffect(() => {
-    if (!isAutoPlaying) return;
 
-    const interval = setInterval(() => {
-      setCurrentPerspective((prev) => (prev + 1) % allPerspectives.length);
-    }, 6000); // Increased to 6 seconds for more content
+  
 
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, allPerspectives.length]);
-
-  // Debounced modal state management
-  const debouncedSetShowViewpointModal = useCallback((value) => {
-    if (isModalChanging) return;
-    
-    setIsModalChanging(true);
-    setShowViewpointModal(value);
-    
-    setTimeout(() => {
-      setIsModalChanging(false);
-    }, 300);
-  }, [isModalChanging]);
-
-  // Handle generate button click with debouncing
-  const handleGenerateClick = useCallback(() => {
+  // Simplified handlers
+  const handleGenerateClick = () => {
     if (generatedCount >= 2) {
-      toast.error(
-        "Demo limit reached! You can generate maximum 2 test perspectives."
-      );
+      toast.error("Demo limit reached! You can generate maximum 2 test perspectives.");
       return;
     }
-    
-    if (isModalChanging) return;
-    
-    debouncedSetShowViewpointModal(true);
-  }, [generatedCount, isModalChanging, debouncedSetShowViewpointModal]);
+    setShowViewpointModal(true);
+  };
 
-  // Handle modal cancel with debouncing
-  const handleModalCancel = useCallback(() => {
-    if (isGeneratingTest || isModalChanging) return;
-    
-    debouncedSetShowViewpointModal(false);
-    
-    setTimeout(() => {
-      setCustomViewpoint("");
-    }, 100);
-  }, [isGeneratingTest, isModalChanging, debouncedSetShowViewpointModal]);
+  const handleModalClose = () => {
+    if (isGeneratingTest) return;
+    setShowViewpointModal(false);
+    setCustomViewpoint("");
+  };
 
-  // Generate test perspective with debouncing and error handling
-  const generateTestPerspective = useCallback(async () => {
-    const now = Date.now();
-    if (now - lastGenerateClick < 1000) {
-      return;
-    }
-    setLastGenerateClick(now);
-
+  const generateTestPerspective = async () => {
     if (!customViewpoint.trim()) {
       toast.error("Please enter a viewpoint");
       return;
@@ -277,10 +220,9 @@ const LandingPage = () => {
         setGeneratedCount(newCount);
         sessionStorage.setItem("doutya_generated_count", newCount.toString());
 
-        setTimeout(() => {
-          debouncedSetShowViewpointModal(false);
-          setCustomViewpoint("");
-        }, 200);
+        // Close modal after successful generation
+        setShowViewpointModal(false);
+        setCustomViewpoint("");
 
         toast.success(`Test perspective generated! (${newCount}/2)`);
       } else {
@@ -292,16 +234,22 @@ const LandingPage = () => {
     } finally {
       setIsGeneratingTest(false);
     }
-  }, [customViewpoint, generatedCount, allPerspectives.length, isGeneratingTest, lastGenerateClick, debouncedSetShowViewpointModal]);
-
-  // Remove test perspectives
-  const removeTestPerspectives = () => {
-    setAllPerspectives(basePerspectives);
-    setCurrentPerspective(0);
-    setGeneratedCount(0);
-    sessionStorage.removeItem("doutya_generated_count");
-    toast.info("Test perspectives cleared!");
   };
+
+
+  // Handle modal cancel with debouncing
+  const handleModalCancel = useCallback(() => {
+    if (isGeneratingTest ) return;
+    
+    
+    setTimeout(() => {
+      setCustomViewpoint("");
+    }, 100);
+  }, [isGeneratingTest]);
+
+  // Generate test perspective with debouncing and error handling
+  
+
 
   // Enhanced animation variants
   const fadeInUp = {
@@ -468,131 +416,116 @@ const LandingPage = () => {
   ];
 
   // Custom Viewpoint Modal Component with all fixes
+   // Completely rewritten modal component with no AnimatePresence
   const CustomViewpointModal = () => {
-    try {
-      return (
-        <AnimatePresence mode="wait">
-          {showViewpointModal && (
-            <>
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="fixed inset-0 bg-black bg-opacity-50 z-[9999] modal-backdrop"
-                style={{ backdropFilter: 'blur(4px)' }}
-                onClick={(e) => {
-                  if (e.target === e.currentTarget && !isGeneratingTest) {
-                    handleModalCancel();
-                  }
-                }}
-              />
-              
-              {/* Modal */}
-              <div className="fixed inset-0 flex items-center justify-center z-[10000] p-4 pointer-events-none modal-container">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                  transition={{ 
-                    duration: 0.3,
-                    ease: [0.22, 1, 0.36, 1]
-                  }}
-                  className="bg-white rounded-2xl p-6 w-full max-w-md mx-auto shadow-2xl pointer-events-auto modal-content"
-                  style={{ transform: 'translateZ(0)' }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="text-center mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Sparkles className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
-                      Generate Demo Perspective
-                    </h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      This will generate a demo viewpoint related to the person,
-                      organization, or entity you specify. Our AI will create a unique
-                      perspective on the climate summit story.
-                    </p>
-                  </div>
+    if (!showViewpointModal) return null;
 
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Enter your viewpoint:
-                      </label>
-                      <input
-                        type="text"
-                        value={customViewpoint}
-                        onChange={(e) => setCustomViewpoint(e.target.value)}
-                        placeholder="e.g., Small Business Owner, Student Leader, Tech Entrepreneur..."
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all modal-input"
-                        style={{ transition: 'all 0.2s ease-in-out' }}
-                        maxLength={50}
-                        disabled={isGeneratingTest}
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        {customViewpoint.length}/50 characters
-                      </p>
-                    </div>
-
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <div className="flex items-start">
-                        <Info className="w-4 h-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
-                        <p className="text-xs text-blue-700">
-                          <strong>Demo Limit:</strong> You can generate{" "}
-                          {2 - generatedCount} more perspective
-                          {2 - generatedCount !== 1 ? "s" : ""}
-                          {generatedCount > 0 && ` (${generatedCount}/2 used)`}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex space-x-3 mt-6">
-                    <button
-                      onClick={handleModalCancel}
-                      disabled={isGeneratingTest}
-                      className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed modal-button"
-                      style={{ 
-                        touchAction: 'manipulation',
-                        userSelect: 'none'
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={generateTestPerspective}
-                      disabled={isGeneratingTest || !customViewpoint.trim()}
-                      className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-xl font-medium hover:from-purple-600 hover:to-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center modal-button"
-                      style={{ 
-                        touchAction: 'manipulation',
-                        userSelect: 'none'
-                      }}
-                    >
-                      {isGeneratingTest ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                          Generating...
-                        </>
-                      ) : (
-                        "Generate"
-                      )}
-                    </button>
-                  </div>
-                </motion.div>
+    const modalContent = (
+      <div 
+        className={`fixed inset-0 z-[9999] transition-all duration-300 ${
+          showViewpointModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        {/* Backdrop */}
+        <div 
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          onClick={handleModalClose}
+        />
+        
+        {/* Modal */}
+        <div className="absolute inset-0 flex items-center justify-center p-4">
+          <div 
+            className={`bg-white rounded-2xl p-6 w-full max-w-md mx-auto shadow-2xl transform transition-all duration-300 ${
+              showViewpointModal ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-8 h-8 text-white" />
               </div>
-            </>
-          )}
-        </AnimatePresence>
-      );
-    } catch (error) {
-      setModalError(error);
-      return null;
-    }
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                Generate Demo Perspective
+              </h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                This will generate a demo viewpoint related to the person,
+                organization, or entity you specify. Our AI will create a unique
+                perspective on the climate summit story.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Enter your viewpoint:
+                </label>
+                <input
+                  type="text"
+                  value={customViewpoint}
+                  onChange={(e) => setCustomViewpoint(e.target.value)}
+                  placeholder="e.g., Small Business Owner, Student Leader, Tech Entrepreneur..."
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-colors"
+                  maxLength={50}
+                  disabled={isGeneratingTest}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {customViewpoint.length}/50 characters
+                </p>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <div className="flex items-start">
+                  <Info className="w-4 h-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
+                  <p className="text-xs text-blue-700">
+                    <strong>Demo Limit:</strong> You can generate{" "}
+                    {2 - generatedCount} more perspective
+                    {2 - generatedCount !== 1 ? "s" : ""}
+                    {generatedCount > 0 && ` (${generatedCount}/2 used)`}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex space-x-3 mt-6">
+              <button
+                onClick={handleModalClose}
+                disabled={isGeneratingTest}
+                className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={generateTestPerspective}
+                disabled={isGeneratingTest || !customViewpoint.trim()}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-xl font-medium hover:from-purple-600 hover:to-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center"
+              >
+                {isGeneratingTest ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Generating...
+                  </>
+                ) : (
+                  "Generate"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+  
+    return modalContent;
   };
 
+   // Remove test perspectives
+  const removeTestPerspectives = () => {
+    setAllPerspectives(basePerspectives);
+    setCurrentPerspective(0);
+    setGeneratedCount(0);
+    sessionStorage.removeItem("doutya_generated_count");
+    toast.info("Test perspectives cleared!");
+  };
   return (
     <>
       {/* Add CSS styles for modal */}
