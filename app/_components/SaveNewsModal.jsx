@@ -233,7 +233,7 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
           <div className="flex-1">
             <h4 className="font-semibold text-purple-900">Upgrade Your Plan</h4>
             <p className="text-sm text-purple-700">
-              You've reached your limit. Upgrade to save more articles and
+              You&apos;ve reached your limit. Upgrade to save more articles and
               unlock premium features!
             </p>
           </div>
