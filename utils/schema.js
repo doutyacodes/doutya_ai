@@ -1744,3 +1744,40 @@ export const EXAM_TYPES = mysqlTable("exam_types", {
   name: varchar("name", { length: 100 }).notNull().unique(), // e.g., 'UPSC'
   description: text("description"), // ✅ Short explanation or abbreviation
 });
+
+
+export const PROMPT_HISTORY = mysqlTable("prompt_history", {
+  id: int("id").primaryKey().autoincrement(),
+  original_title: varchar("original_title", { length: 255 }).notNull(),
+  original_description: text("original_description").notNull(),
+  category_ids: json("category_ids").notNull(), // Array of category IDs
+  viewpoints: json("viewpoints").notNull(), // Array of viewpoints
+  prompt_text: text("prompt_text").notNull(), // Complete prompt sent to OpenAI
+  openai_response: text("openai_response"), // Raw response from OpenAI
+  parsed_results: json("parsed_results"), // Parsed and structured results
+  processing_status: mysqlEnum("processing_status", [
+    "pending",
+    "completed",
+    "failed",
+  ]).default("pending"),
+  error_message: text("error_message"), // Error message if processing failed
+  created_by: int("created_by").references(() => ADMIN_DETAILS.id), // Admin who created this
+  news_id: int("news_id"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const USER_NEWS = mysqlTable("user_news", {
+  id: int("id").primaryKey().autoincrement(),
+  news_category_id: int("news_category_id").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  image_url: text("image_url").notNull(),
+  summary: text("summary"),
+  description: text("description").notNull(),
+  viewpoint: varchar("viewpoint", { length: 255 }),
+  news_group_id: int("news_group_id").notNull(),
+  user_id: int("user_id").notNull(),
+  show_date: datetime("show_date").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});

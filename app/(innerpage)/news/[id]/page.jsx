@@ -85,7 +85,7 @@ function OrganizationSchema() {
 }
 
 export async function generateMetadata({ params }) {
-  const { id } = params;
+  const { id } = await params;
   if (!id || isNaN(id)) {
     return notFound();
   }
@@ -202,7 +202,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function NewsSection({ params }) {
-  const { id } = params;
+  const { id } = await params;
   
   try {
     const response = await GlobalApi.fetchOneNews2({ id: parseInt(id) });
