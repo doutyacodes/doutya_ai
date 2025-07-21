@@ -1781,3 +1781,75 @@ export const USER_NEWS = mysqlTable("user_news", {
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
+
+export const AI_PERSONALITIES = mysqlTable("ai_personalities", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description").notNull(),
+  emoji: varchar("emoji", { length: 10 }).notNull(),
+  traits: json("traits").notNull(),
+  response_style: text("response_style").notNull(),
+  bg_gradient: varchar("bg_gradient", { length: 255 }).notNull(),
+  is_active: boolean("is_active").default(true),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const AI_CHAT_ROOMS = mysqlTable("ai_chat_rooms", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  topic: text("topic").notNull(),
+  ai_personalities: json("ai_personalities").notNull(),
+  status: mysqlEnum("status", ["active", "completed", "cancelled"]).default("active"),
+  conversation_count: int("conversation_count").default(0),
+  max_conversations: int("max_conversations").default(5),
+  is_custom_topic: boolean("is_custom_topic").default(false),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const AI_CHAT_MESSAGES = mysqlTable("ai_chat_messages", {
+  id: int("id").primaryKey().autoincrement(),
+  chat_room_id: int("chat_room_id").notNull().references(() => AI_CHAT_ROOMS.id, { onDelete: "cascade" }),
+  sender: mysqlEnum("sender", ["user", "ai"]).notNull(),
+  content: text("content").notNull(),
+  ai_personality_id: int("ai_personality_id").references(() => AI_PERSONALITIES.id),
+  conversation_turn: int("conversation_turn").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const AI_CHAT_REPORTS = mysqlTable("ai_chat_reports", {
+  id: int("id").primaryKey().autoincrement(),
+  chat_room_id: int("chat_room_id").notNull().references(() => AI_CHAT_ROOMS.id, { onDelete: "cascade" }),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  overall_analysis: text("overall_analysis").notNull(),
+  strengths: text("strengths").notNull(),
+  improvements: text("improvements").notNull(),
+  insights: text("insights").notNull(),
+  argument_quality_score: int("argument_quality_score"),
+  persuasiveness_score: int("persuasiveness_score"),
+  logical_consistency_score: int("logical_consistency_score"),
+  openai_response: text("openai_response"),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const AI_CHAT_TOPIC_OPTIONS = mysqlTable("ai_chat_topic_options", {
+  id: int("id").primaryKey().autoincrement(),
+  topic: text("topic").notNull(),
+  category: varchar("category", { length: 100 }),
+  difficulty_level: mysqlEnum("difficulty_level", ["beginner", "intermediate", "advanced"]).default("intermediate"),
+  is_active: boolean("is_active").default(true),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const AI_CHAT_USAGE = mysqlTable("ai_chat_usage", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  plan_type: mysqlEnum("plan_type", ["pro", "elite"]).notNull(),
+  chats_created_today: int("chats_created_today").default(0),
+  chats_created_this_month: int("chats_created_this_month").default(0),
+  last_reset_date: timestamp("last_reset_date").defaultNow(), // changed from `date` to `timestamp`
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
