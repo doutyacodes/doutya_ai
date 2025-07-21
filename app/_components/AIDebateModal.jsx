@@ -559,10 +559,10 @@ const AIDebateModal = ({ isOpen, onClose, newsId, newsTitle }) => {
                     <div>
                       <p className="text-blue-800 font-medium text-sm">Debate Rules</p>
                       <p className="text-blue-700 text-sm mt-1">
-                        • You'll have 7 message turns to present your arguments<br/>
+                        • You&apos;ll have 7 message turns to present your arguments<br/>
                         • Maximum 500 characters per message<br/>
                         • AI will start the debate with an opening statement<br/>
-                        • You'll receive a detailed analysis report at the end
+                        • You&apos;ll receive a detailed analysis report at the end
                       </p>
                     </div>
                   </div>
@@ -731,7 +731,7 @@ const AIDebateModal = ({ isOpen, onClose, newsId, newsTitle }) => {
                 <div className="text-center mb-6">
                   <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
                   <h4 className="text-2xl font-bold text-gray-900 mb-2">Debate Complete!</h4>
-                  <p className="text-gray-600">Here's your performance analysis</p>
+                  <p className="text-gray-600">Here&apos;s your performance analysis</p>
                 </div>
 
                 {/* Winner Announcement */}
