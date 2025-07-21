@@ -88,7 +88,7 @@ const Navbar = () => {
     };
 
     fetchUserPlan();
-  }, [pathname]);
+  }, []);
 
   const getCurrentDate = () => {
     const now = new Date();

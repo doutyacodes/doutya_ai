@@ -6,7 +6,7 @@ import Image from "next/image";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import { IoIosCloseCircle } from "react-icons/io";
 import { FaEllipsisH, FaShareAlt } from "react-icons/fa";
-import { ArrowLeft, ChevronLeft, ChevronRight, Home, Plus, Sparkles } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Home, Plus, Sparkles, MessageCircle, Crown } from "lucide-react";
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -24,7 +24,8 @@ import { useRouter } from "next/navigation";
 import PerspectiveNavigation from "../(innerpage)/news/_components/PerspectiveNavigation/PerspectiveNavigation";
 import { cn } from "@/lib/utils";
 import { trackAction } from "./(analytics)/shareUrlTracker";
-import AddViewpointModal from "./AddViewpointModal"; // Import the modal component
+import AddViewpointModal from "./AddViewpointModal";
+import AIDebateModal from "./AIDebateModal"; // Import the AI Debate Modal
 
 export default function NewsDetails2({ id, showNames }) {
   const [article, setArticle] = useState(null);
@@ -48,6 +49,9 @@ export default function NewsDetails2({ id, showNames }) {
   const [hasElitePlan, setHasElitePlan] = useState(false);
   const [newsGroupId, setNewsGroupId] = useState(null);
   const [showAddViewpointModal, setShowAddViewpointModal] = useState(false);
+
+  // AI Debate functionality
+  const [showDebateModal, setShowDebateModal] = useState(false);
 
   const fetchArticle = async () => {
     const token = localStorage.getItem("user_token");
@@ -235,9 +239,6 @@ export default function NewsDetails2({ id, showNames }) {
   };
 
   const newsContent = () => {
-    const regularArticles = allArticles.filter(article => !article.user_created);
-    const customArticles = allArticles.filter(article => article.user_created);
-
     return (
       <div className="w-full p-4 md:p-6">
         {/* Viewpoints Header */}
@@ -311,7 +312,7 @@ export default function NewsDetails2({ id, showNames }) {
                   <span className="hidden sm:inline">Add Viewpoint</span>
                   <span className="sm:hidden">Add</span>
                 </motion.button>
-             )}
+              )}
             </div>
           </div>
 
@@ -375,6 +376,7 @@ export default function NewsDetails2({ id, showNames }) {
           <div className="text-xs text-slate-500">{formatDate(article?.created_at)}</div>
 
           <div className="flex items-center space-x-8 w-fit my-6">
+            {/* Share Icon */}
             <div className="text-gray-500 cursor-pointer relative group">
               <FaShareAlt size={16} />
               <div className="hidden group-hover:flex gap-2 absolute -top-10 left-0 bg-white border shadow-lg rounded-md p-2 z-50">
@@ -437,6 +439,22 @@ export default function NewsDetails2({ id, showNames }) {
               </div>
             </div>
 
+            {/* AI Debate Button (Elite Feature) */}
+            {hasElitePlan && (
+              <div 
+                onClick={() => setShowDebateModal(true)}
+                className="text-purple-600 cursor-pointer hover:text-purple-800 transition-colors flex items-center gap-2 group"
+                title="Start AI Debate - Elite Feature"
+              >
+                <MessageCircle size={16} />
+                <span className="text-sm font-medium hidden sm:inline group-hover:text-purple-800">
+                  AI Debate
+                </span>
+                <Crown size={12} className="text-yellow-500" />
+              </div>
+            )}
+
+            {/* Report Icon */}
             <div
               onClick={() => setShowReportPopup(true)}
               className="text-gray-500 cursor-pointer rotate-90"
@@ -557,6 +575,14 @@ export default function NewsDetails2({ id, showNames }) {
           newsId={id}
           currentCount={userNewsCount}
           onSuccess={handleViewpointSuccess}
+        />
+
+        {/* AI Debate Modal */}
+        <AIDebateModal
+          isOpen={showDebateModal}
+          onClose={() => setShowDebateModal(false)}
+          newsId={id}
+          newsTitle={article?.title}
         />
 
         {/* Report Popup */}

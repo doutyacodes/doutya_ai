@@ -1853,3 +1853,53 @@ export const AI_CHAT_USAGE = mysqlTable("ai_chat_usage", {
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
+export const AI_DEBATE_ROOMS = mysqlTable("ai_debate_rooms", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  topic: text("topic").notNull(),
+  user_position: text("user_position").notNull(), // User's chosen side
+  ai_position: text("ai_position").notNull(), // AI's assigned side
+  status: mysqlEnum("status", ["active", "completed", "cancelled"]).default("active"),
+  conversation_count: int("conversation_count").default(0),
+  max_conversations: int("max_conversations").default(7), // 7 user messages limit
+  news_id: int("news_id").references(() => ADULT_NEWS.id), // Optional: link to news article
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const AI_DEBATE_MESSAGES = mysqlTable("ai_debate_messages", {
+  id: int("id").primaryKey().autoincrement(),
+  debate_room_id: int("debate_room_id").notNull().references(() => AI_DEBATE_ROOMS.id, { onDelete: "cascade" }),
+  sender: mysqlEnum("sender", ["user", "ai"]).notNull(),
+  content: text("content").notNull(),
+  character_count: int("character_count").notNull(),
+  conversation_turn: int("conversation_turn").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const AI_DEBATE_REPORTS = mysqlTable("ai_debate_reports", {
+  id: int("id").primaryKey().autoincrement(),
+  debate_room_id: int("debate_room_id").notNull().references(() => AI_DEBATE_ROOMS.id, { onDelete: "cascade" }),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  overall_analysis: text("overall_analysis").notNull(),
+  strengths: text("strengths").notNull(),
+  improvements: text("improvements").notNull(),
+  insights: text("insights").notNull(),
+  argument_quality_score: int("argument_quality_score"), // 1-10
+  persuasiveness_score: int("persuasiveness_score"), // 1-10
+  factual_accuracy_score: int("factual_accuracy_score"), // 1-10
+  logical_consistency_score: int("logical_consistency_score"), // 1-10
+  winner: mysqlEnum("winner", ["user", "ai", "tie"]), // Who won the debate
+  openai_response: text("openai_response"), // Raw OpenAI response
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const AI_DEBATE_USAGE = mysqlTable("ai_debate_usage", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  debates_created_today: int("debates_created_today").default(0),
+  debates_created_this_month: int("debates_created_this_month").default(0),
+  last_reset_date: timestamp("last_reset_date").defaultNow(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
