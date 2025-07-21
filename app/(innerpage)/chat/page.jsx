@@ -872,7 +872,7 @@ const AIChatSystem = () => {
                 <div>
                   <p className="text-blue-800 font-medium text-sm">Debate Format</p>
                   <p className="text-blue-700 text-sm mt-1">
-                    You'll have 5 conversation turns to present your arguments. After that, 
+                    You&apos;ll have 5 conversation turns to present your arguments. After that, 
                     our AI will analyze the debate and provide you with a comprehensive report.
                   </p>
                 </div>

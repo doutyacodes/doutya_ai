@@ -64,7 +64,7 @@ const LandingPage = () => {
   const [testPerspectives, setTestPerspectives] = useState([]);
 
   // Modal states
- const [showViewpointModal, setShowViewpointModal] = useState(false);
+  const [showViewpointModal, setShowViewpointModal] = useState(false);
   const [customViewpoint, setCustomViewpoint] = useState("");
   const [generatedCount, setGeneratedCount] = useState(0);
   const [isGeneratingTest, setIsGeneratingTest] = useState(false);
@@ -121,35 +121,33 @@ const LandingPage = () => {
   useEffect(() => {
     if (showViewpointModal) {
       const originalStyle = window.getComputedStyle(document.body).overflow;
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
       return () => {
         document.body.style.overflow = originalStyle;
       };
     }
   }, [showViewpointModal]);
 
- // Simple escape key handler
+  // Simple escape key handler
   useEffect(() => {
     const handleEscape = (event) => {
-      if (event.key === 'Escape' && showViewpointModal && !isGeneratingTest) {
+      if (event.key === "Escape" && showViewpointModal && !isGeneratingTest) {
         handleModalClose();
       }
     };
 
     if (showViewpointModal) {
-      document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
+      return () => document.removeEventListener("keydown", handleEscape);
     }
   }, [showViewpointModal, isGeneratingTest]);
-
-
-
-  
 
   // Simplified handlers
   const handleGenerateClick = () => {
     if (generatedCount >= 2) {
-      toast.error("Demo limit reached! You can generate maximum 2 test perspectives.");
+      toast.error(
+        "Demo limit reached! You can generate maximum 2 test perspectives."
+      );
       return;
     }
     setShowViewpointModal(true);
@@ -170,7 +168,7 @@ const LandingPage = () => {
     if (isGeneratingTest) return;
 
     setIsGeneratingTest(true);
-    
+
     try {
       const response = await fetch("/api/test-perspective", {
         method: "POST",
@@ -213,7 +211,7 @@ const LandingPage = () => {
           isTest: true,
         };
 
-        setAllPerspectives(prev => [...prev, newTestPerspective]);
+        setAllPerspectives((prev) => [...prev, newTestPerspective]);
         setCurrentPerspective(allPerspectives.length);
 
         const newCount = generatedCount + 1;
@@ -236,20 +234,16 @@ const LandingPage = () => {
     }
   };
 
-
   // Handle modal cancel with debouncing
   const handleModalCancel = useCallback(() => {
-    if (isGeneratingTest ) return;
-    
-    
+    if (isGeneratingTest) return;
+
     setTimeout(() => {
       setCustomViewpoint("");
     }, 100);
   }, [isGeneratingTest]);
 
   // Generate test perspective with debouncing and error handling
-  
-
 
   // Enhanced animation variants
   const fadeInUp = {
@@ -416,27 +410,29 @@ const LandingPage = () => {
   ];
 
   // Custom Viewpoint Modal Component with all fixes
-   // Completely rewritten modal component with no AnimatePresence
+  // Completely rewritten modal component with no AnimatePresence
   const CustomViewpointModal = () => {
     if (!showViewpointModal) return null;
 
     const modalContent = (
-      <div 
+      <div
         className={`fixed inset-0 z-[9999] transition-all duration-300 ${
-          showViewpointModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          showViewpointModal ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
         {/* Backdrop */}
-        <div 
+        <div
           className="absolute inset-0 bg-black/50 backdrop-blur-sm"
           onClick={handleModalClose}
         />
-        
+
         {/* Modal */}
         <div className="absolute inset-0 flex items-center justify-center p-4">
-          <div 
+          <div
             className={`bg-white rounded-2xl p-6 w-full max-w-md mx-auto shadow-2xl transform transition-all duration-300 ${
-              showViewpointModal ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+              showViewpointModal
+                ? "scale-100 opacity-100"
+                : "scale-95 opacity-0"
             }`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -514,11 +510,10 @@ const LandingPage = () => {
       </div>
     );
 
-  
     return modalContent;
   };
 
-   // Remove test perspectives
+  // Remove test perspectives
   const removeTestPerspectives = () => {
     setAllPerspectives(basePerspectives);
     setCurrentPerspective(0);
@@ -1188,7 +1183,7 @@ const LandingPage = () => {
                   </div>
 
                   <p className="text-gray-600 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
-                   {` "${testimonial.content}"`}
+                    {` "${testimonial.content}"`}
                   </p>
 
                   <div className="flex items-center">
