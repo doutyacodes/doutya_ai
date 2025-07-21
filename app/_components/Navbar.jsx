@@ -100,26 +100,35 @@ const Navbar = () => {
   };
 
   // Plan indicator component with real data
-  const PlanIndicator = () => {
-    // Don't show anything while loading or if there's an error or no user
-    if (planLoading || planError || !userPlan) {
-      return null;
-    }
+ // Plan indicator component with real data
+const PlanIndicator = () => {
+  const [isPlanDropdownOpen, setIsPlanDropdownOpen] = useState(false);
 
-    const planDetails = userPlan.plan_details;
+  // Don't show anything while loading or if there's an error or no user
+  if (planLoading || planError || !userPlan) {
+    return null;
+  }
 
-    // Icon mapping
-    const iconMap = {
-      Shield: Shield,
-      Star: Star,
-      Crown: Crown,
-    };
+  const planDetails = userPlan.plan_details;
 
-    const IconComponent = iconMap[planDetails.icon] || Shield;
+  // Icon mapping
+  const iconMap = {
+    Shield: Shield,
+    Star: Star,
+    Crown: Crown,
+  };
 
-    return (
-      <Link 
-      href={"/upgrade-plan"}
+  const IconComponent = iconMap[planDetails.icon] || Shield;
+
+  const handlePlanNavigation = (path) => {
+    setIsPlanDropdownOpen(false);
+    window.location.href = path;
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsPlanDropdownOpen(!isPlanDropdownOpen)}
         className={cn(
           "flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-xs font-medium transition-all duration-200 cursor-pointer",
           planDetails.color,
@@ -135,9 +144,42 @@ const Navbar = () => {
             • {userPlan.exam_type.name}
           </span>
         )}
-      </Link>
-    );
-  };
+      </button>
+
+      {isPlanDropdownOpen && (
+        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 transform opacity-100 scale-100 transition-all duration-200 origin-top-right ring-1 ring-black ring-opacity-5">
+          <div className="absolute right-3 -top-2 w-4 h-4 bg-white transform rotate-45 border-l border-t border-black/5" />
+
+          <div className="relative bg-white rounded-lg">
+            <button
+              onClick={() => handlePlanNavigation('/upgrade-plan')}
+              className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200 w-full text-left"
+            >
+              <Crown className="w-4 h-4" />
+              <span className="font-medium">Upgrade Plan</span>
+            </button>
+
+            <button
+              onClick={() => handlePlanNavigation('/chat')}
+              className="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-red-100 hover:text-red-800 transition-colors duration-200 w-full text-left"
+            >
+              <Users className="w-4 h-4" />
+              <span className="font-medium">Chat</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Close dropdown when clicking outside */}
+      {isPlanDropdownOpen && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setIsPlanDropdownOpen(false)}
+        />
+      )}
+    </div>
+  );
+};
 
   // Loading indicator for plan
   const PlanLoadingIndicator = () => {
