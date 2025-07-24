@@ -406,7 +406,7 @@ const DebateChatPage = () => {
               <h4 className="font-medium text-blue-900 mb-2">AI vs AI Debate</h4>
               <p className="text-sm text-blue-700 mb-4">
                 Watch a pre-generated debate between two AI personas on this news topic. 
-                You'll observe different perspectives and argumentation techniques.
+                You&apos;ll observe different perspectives and argumentation techniques.
               </p>
               
               {debateInfo && (debateInfo.forPosition || debateInfo.againstPosition) && (
@@ -435,12 +435,12 @@ const DebateChatPage = () => {
               <h4 className="font-medium text-green-900 mb-2">MCQ Challenge Mode</h4>
               <p className="text-sm text-green-700 mb-4">
                 Navigate through an interactive debate about this news topic. 
-                You'll make choices that shape the conversation and explore different viewpoints.
+                You&apos;ll make choices that shape the conversation and explore different viewpoints.
               </p>
               
               {debateInfo && (debateInfo.forPosition || debateInfo.againstPosition) && (
                 <div className="bg-white border border-green-300 rounded p-3 mt-4">
-                  <p className="font-medium text-green-900 text-sm mb-2">Debate Positions You'll Explore:</p>
+                  <p className="font-medium text-green-900 text-sm mb-2">Debate Positions You&apos;ll Explore:</p>
                   <div className="space-y-1">
                     {debateInfo.forPosition && (
                       <p className="text-green-800 text-xs">• FOR: {debateInfo.forPosition.title}</p>
@@ -561,7 +561,7 @@ const DebateChatPage = () => {
           {visibleConversations.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>Click "Show Next Round" to begin watching the AI debate</p>
+              <p>Click {`"Show Next Round"`} to begin watching the AI debate</p>
             </div>
           )}
         </div>
@@ -754,7 +754,7 @@ const DebateChatPage = () => {
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Debate Report</h2>
-            <p className="text-gray-600">Here's your performance analysis</p>
+            <p className="text-gray-600">Here&apos;s your performance analysis</p>
           </div>
 
           {report && (
