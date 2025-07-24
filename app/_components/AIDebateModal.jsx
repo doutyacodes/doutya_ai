@@ -1,838 +1,760 @@
-"use client";
-
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  MessageCircle, 
-  Send, 
-  X, 
-  Crown,
-  Sparkles,
-  User,
-  Bot,
-  Loader2,
-  CheckCircle,
-  Award,
-  BarChart3,
-  TrendingUp,
-  Target,
-  Brain,
-  Trophy,
-  Lightbulb,
-  ThumbsUp,
-  AlertCircle,
-  Clock,
-  RefreshCw,
-  Shuffle
-} from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { X, MessageCircle, Loader2, Crown, ArrowRight, ChevronRight, CheckCircle, Brain, Users, HelpCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 
 const AIDebateModal = ({ isOpen, onClose, newsId, newsTitle }) => {
-  // State management
-  const [currentStep, setCurrentStep] = useState('topic'); // topic, positions, debate, report
-  const [topic, setTopic] = useState('');
-  const [userPosition, setUserPosition] = useState('');
-  const [aiPosition, setAIPosition] = useState('');
+  const [step, setStep] = useState("select"); // select, setup, debate, mcq, report
+  const [debateType, setDebateType] = useState("user_vs_ai");
+  const [topic, setTopic] = useState("");
+  const [userPosition, setUserPosition] = useState("");
+  const [aiPosition, setAiPosition] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  
+  // Debate state
   const [debateRoom, setDebateRoom] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [userMessage, setUserMessage] = useState("");
+  const [conversationIndex, setConversationIndex] = useState(0);
+  const [isDebateCompleted, setIsDebateCompleted] = useState(false);
   const [report, setReport] = useState(null);
-  const [error, setError] = useState('');
-  const [generatedPositions, setGeneratedPositions] = useState([]);
-  const [selectedPositionPair, setSelectedPositionPair] = useState(0);
   
-  // Character count and validation
-  const [characterCount, setCharacterCount] = useState(0);
-  const maxCharacters = 500;
+  // AI vs AI state
+  const [aiConversations, setAiConversations] = useState([]);
+  const [visibleConversations, setVisibleConversations] = useState([]);
+  const [currentRound, setCurrentRound] = useState(0);
   
-  // Refs
-  const messagesEndRef = useRef(null);
-  const sendingMessageRef = useRef(false);
+  // MCQ state
+  const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [mcqHistory, setMcqHistory] = useState([]);
+  const [currentLevel, setCurrentLevel] = useState(1);
 
-  // Auto scroll to bottom
+  const debateTypes = [
+    {
+      id: "user_vs_ai",
+      title: "Debate with AI",
+      description: "Engage in a structured debate with AI taking an opposing view",
+      icon: MessageCircle,
+      color: "purple",
+      available: true,
+    },
+    {
+      id: "ai_vs_ai",
+      title: "Watch AI vs AI",
+      description: "Watch two AIs debate each other on the topic",
+      icon: Users,
+      color: "blue",
+      available: !!newsId, // Only available when newsId is provided
+    },
+    {
+      id: "mcq",
+      title: "MCQ Challenge",
+      description: "Navigate through an interactive debate decision tree",
+      icon: HelpCircle,
+      color: "green",
+      available: !!newsId, // Only available when newsId is provided
+    }
+  ];
+
+  // Initialize topic from news if provided
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (newsTitle && isOpen) {
+      setTopic(`Discussion about: ${newsTitle}`);
     }
-  }, [messages]);
+  }, [newsTitle, isOpen]);
 
-  // Handle message input
-  const handleMessageChange = (e) => {
-    const value = e.target.value;
-    if (value.length <= maxCharacters) {
-      setNewMessage(value);
-      setCharacterCount(value.length);
+  const handleReset = () => {
+    setStep("select");
+    setDebateType("user_vs_ai");
+    setTopic(newsTitle ? `Discussion about: ${newsTitle}` : "");
+    setUserPosition("");
+    setAiPosition("");
+    setError("");
+    setDebateRoom(null);
+    setMessages([]);
+    setUserMessage("");
+    setConversationIndex(0);
+    setIsDebateCompleted(false);
+    setReport(null);
+    setAiConversations([]);
+    setVisibleConversations([]);
+    setCurrentRound(0);
+    setCurrentQuestion(null);
+    setMcqHistory([]);
+    setCurrentLevel(1);
+  };
+
+  const handleClose = () => {
+    if (!isLoading) {
+      handleReset();
+      onClose();
     }
   };
 
-  // Reset modal state when closed
-  useEffect(() => {
-    if (!isOpen) {
-      setCurrentStep('topic');
-      setTopic('');
-      setUserPosition('');
-      setAIPosition('');
-      setDebateRoom(null);
-      setMessages([]);
-      setNewMessage('');
-      setCharacterCount(0);
-      setReport(null);
-      setError('');
-      setGeneratedPositions([]);
-      setSelectedPositionPair(0);
-    }
-  }, [isOpen]);
-
-  // Enhanced position generation with multiple options
-  const generatePositions = async () => {
-    if (!topic.trim()) {
-      setError('Please enter a topic first');
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-
-    try {
-      // Call OpenAI to generate sophisticated debate positions
-      const response = await fetch('/api/ai-debate/generate-positions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('user_token')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          topic: topic.trim()
-        }),
-      });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        setGeneratedPositions(data.positions);
-        setSelectedPositionPair(0);
-        setUserPosition(data.positions[0].position1);
-        setAIPosition(data.positions[0].position2);
-        setCurrentStep('positions');
-      } else {
-        // Fallback to client-side generation if API fails
-        const fallbackPositions = generateFallbackPositions(topic);
-        setGeneratedPositions(fallbackPositions);
-        setSelectedPositionPair(0);
-        setUserPosition(fallbackPositions[0].position1);
-        setAIPosition(fallbackPositions[0].position2);
-        setCurrentStep('positions');
-      }
-    } catch (error) {
-      console.error('Error generating positions:', error);
-      // Fallback generation
-      const fallbackPositions = generateFallbackPositions(topic);
-      setGeneratedPositions(fallbackPositions);
-      setSelectedPositionPair(0);
-      setUserPosition(fallbackPositions[0].position1);
-      setAIPosition(fallbackPositions[0].position2);
-      setCurrentStep('positions');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Fallback position generation
-  const generateFallbackPositions = (topicText) => {
-    const topicLower = topicText.toLowerCase();
-    
-    // Technology/AI topics
-    if (topicLower.includes('technology') || topicLower.includes('ai') || topicLower.includes('digital') || topicLower.includes('automation')) {
-      return [
-        {
-          position1: 'Technology advancement significantly benefits society and should be accelerated',
-          position2: 'Rapid technological advancement poses serious risks and should be carefully regulated',
-          type: 'Pro vs Cautious'
-        },
-        {
-          position1: 'AI and automation will create more jobs than they eliminate',
-          position2: 'AI and automation will lead to widespread unemployment and inequality',
-          type: 'Optimistic vs Pessimistic'
-        },
-        {
-          position1: 'Technology companies should have freedom to innovate without heavy regulation',
-          position2: 'Technology companies need strict oversight to protect public interests',
-          type: 'Free Market vs Regulation'
-        }
-      ];
-    }
-    
-    // Environment/Climate topics
-    if (topicLower.includes('environment') || topicLower.includes('climate') || topicLower.includes('green') || topicLower.includes('carbon')) {
-      return [
-        {
-          position1: 'Environmental protection should be the top global priority, even at economic cost',
-          position2: 'Economic stability must be maintained while pursuing environmental goals gradually',
-          type: 'Environmental Priority vs Economic Balance'
-        },
-        {
-          position1: 'Individual actions and lifestyle changes are key to solving climate change',
-          position2: 'Systemic changes and government policies are more important than individual actions',
-          type: 'Individual vs Systemic'
-        },
-        {
-          position1: 'Renewable energy transition should happen as quickly as possible',
-          position2: 'Energy transition needs to be gradual to avoid economic disruption',
-          type: 'Rapid vs Gradual Transition'
-        }
-      ];
-    }
-    
-    // Education topics
-    if (topicLower.includes('education') || topicLower.includes('school') || topicLower.includes('learning') || topicLower.includes('university')) {
-      return [
-        {
-          position1: 'Traditional classroom education provides the best learning outcomes',
-          position2: 'Online and personalized learning approaches are more effective than traditional methods',
-          type: 'Traditional vs Modern'
-        },
-        {
-          position1: 'Higher education should be free and accessible to all qualified students',
-          position2: 'Market-based education systems drive quality and innovation more effectively',
-          type: 'Free Access vs Market-Based'
-        },
-        {
-          position1: 'Standardized testing is essential for measuring educational progress',
-          position2: 'Alternative assessment methods better capture student learning and potential',
-          type: 'Standardized vs Alternative Assessment'
-        }
-      ];
-    }
-    
-    // Social Media topics
-    if (topicLower.includes('social media') || topicLower.includes('internet') || topicLower.includes('platform') || topicLower.includes('online')) {
-      return [
-        {
-          position1: 'Social media platforms have a net positive impact on society and communication',
-          position2: 'Social media platforms cause more harm than good to society and mental health',
-          type: 'Positive vs Negative Impact'
-        },
-        {
-          position1: 'Content moderation should prioritize free speech over safety concerns',
-          position2: 'Platform safety should take precedence over unrestricted free speech',
-          type: 'Free Speech vs Safety'
-        },
-        {
-          position1: 'Social media algorithms improve user experience and content discovery',
-          position2: 'Algorithmic content curation creates echo chambers and polarization',
-          type: 'Algorithmic Benefits vs Risks'
-        }
-      ];
-    }
-    
-    // Default generic positions
-    return [
-      {
-        position1: `The benefits and positive aspects of ${topicText} outweigh any potential drawbacks`,
-        position2: `The risks and negative consequences of ${topicText} are more significant than any benefits`,
-        type: 'Benefits vs Risks'
-      },
-      {
-        position1: `${topicText} should be actively promoted and supported by society`,
-        position2: `${topicText} should be approached with caution and careful regulation`,
-        type: 'Support vs Caution'
-      },
-      {
-        position1: `Current approaches to ${topicText} are effective and should be maintained`,
-        position2: `Fundamental changes are needed in how we handle ${topicText}`,
-        type: 'Status Quo vs Reform'
-      }
-    ];
-  };
-
-  // Handle position pair selection
-  const selectPositionPair = (index) => {
-    setSelectedPositionPair(index);
-    setUserPosition(generatedPositions[index].position1);
-    setAIPosition(generatedPositions[index].position2);
-  };
-
-  // Swap positions
-  const swapPositions = () => {
-    const temp = userPosition;
-    setUserPosition(aiPosition);
-    setAIPosition(temp);
-  };
-
-  // Create debate
   const createDebate = async () => {
-    if (!topic.trim() || !userPosition.trim() || !aiPosition.trim()) {
-      setError('Please fill in all fields');
-      return;
+    if (debateType === "user_vs_ai") {
+      if (!topic.trim() || !userPosition.trim() || !aiPosition.trim()) {
+        setError("Please enter topic and both positions");
+        return;
+      }
     }
 
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const response = await fetch('/api/ai-debate/create', {
-        method: 'POST',
+      const token = localStorage.getItem("user_token");
+      const response = await fetch("/api/ai-debate/create", {
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('user_token')}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           topic: topic.trim(),
-          userPosition: userPosition.trim(),
-          aiPosition: aiPosition.trim(),
-          newsId: newsId || null
+          debateType,
+          userPosition: userPosition.trim() || null,
+          aiPosition: aiPosition.trim() || null,
+          newsId,
         }),
       });
 
       const data = await response.json();
-      
+
       if (response.ok) {
         setDebateRoom(data.debate);
-        setMessages([data.debate.openingMessage]);
-        setCurrentStep('debate');
+        
+        if (debateType === "user_vs_ai") {
+          setMessages(data.messages || []);
+          setStep("debate");
+        } else if (debateType === "ai_vs_ai") {
+          setAiConversations(data.conversations || []);
+          setVisibleConversations([]);
+          setCurrentRound(0);
+          setStep("debate");
+        } else if (debateType === "mcq") {
+          setCurrentQuestion(data.currentQuestion);
+          setCurrentLevel(1);
+          setMcqHistory([]);
+          setStep("mcq");
+        }
       } else {
-        setError(data.error || 'Failed to create debate');
+        throw new Error(data.error || "Failed to create debate");
       }
-    } catch (error) {
-      console.error('Error creating debate:', error);
-      setError('Failed to create debate');
+    } catch (err) {
+      console.error("Error creating debate:", err);
+      setError(err.message || "Failed to create debate. Please try again.");
+      toast.error("Failed to create debate");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Send message
   const sendMessage = async () => {
-    if (!newMessage.trim() || !debateRoom || sendingMessageRef.current) return;
+    if (!userMessage.trim() || isLoading) return;
 
-    sendingMessageRef.current = true;
-    const messageContent = newMessage.trim();
-    
-    // Clear input immediately
-    setNewMessage('');
-    setCharacterCount(0);
-    setError('');
+    setIsLoading(true);
+    const messageText = userMessage.trim();
+    setUserMessage("");
 
     try {
+      const token = localStorage.getItem("user_token");
       const response = await fetch(`/api/ai-debate/${debateRoom.id}/message`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('user_token')}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          content: messageContent,
-        }),
+        body: JSON.stringify({ content: messageText }),
       });
 
       const data = await response.json();
-      
+
       if (response.ok) {
-        // Add both user message and AI response
         setMessages(prev => [...prev, data.userMessage, data.aiResponse]);
         
-        // Update debate room with new conversation count
-        setDebateRoom(prev => ({
-          ...prev,
-          conversation_count: data.conversationTurn
-        }));
-
-        // Check if debate is completed
         if (data.debateCompleted) {
+          setIsDebateCompleted(true);
           setReport(data.report);
-          setCurrentStep('report');
+          setStep("report");
         }
       } else {
-        setError(data.error || 'Failed to send message');
-        // Restore message on error
-        setNewMessage(messageContent);
-        setCharacterCount(messageContent.length);
+        throw new Error(data.error || "Failed to send message");
       }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setError('Failed to send message');
-      setNewMessage(messageContent);
-      setCharacterCount(messageContent.length);
+    } catch (err) {
+      console.error("Error sending message:", err);
+      toast.error("Failed to send message");
+      setUserMessage(messageText); // Restore message
     } finally {
-      sendingMessageRef.current = false;
+      setIsLoading(false);
     }
   };
+
+  const showNextAIConversation = async () => {
+    if (currentRound >= aiConversations.length) return;
+
+    setIsLoading(true);
+
+    try {
+      const token = localStorage.getItem("user_token");
+      const response = await fetch(`/api/ai-debate/${debateRoom.id}/message`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action: "show_next" }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const newRound = currentRound + 1;
+        setCurrentRound(newRound);
+        
+        // Add the conversations for this round to visible list
+        const roundConversations = aiConversations.filter(conv => conv.conversation_round === newRound);
+        setVisibleConversations(prev => [...prev, ...roundConversations]);
+
+        if (data.debateCompleted) {
+          setIsDebateCompleted(true);
+          setReport(data.report);
+          setStep("report");
+        }
+      } else {
+        throw new Error(data.error || "Failed to show next conversation");
+      }
+    } catch (err) {
+      console.error("Error showing next conversation:", err);
+      toast.error("Failed to load next conversation");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const submitMcqAnswer = async (selectedOption) => {
+    setIsLoading(true);
+
+    try {
+      const token = localStorage.getItem("user_token");
+      const response = await fetch(`/api/ai-debate/${debateRoom.id}/message`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ selectedOptionId: selectedOption.id }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Add current question and answer to history
+        setMcqHistory(prev => [...prev, {
+          question: currentQuestion,
+          selectedOption: selectedOption,
+          level: currentLevel,
+        }]);
+
+        if (data.isCompleted) {
+          setIsDebateCompleted(true);
+          setReport(data.report);
+          setStep("report");
+        } else {
+          setCurrentQuestion(data.nextQuestion);
+          setCurrentLevel(data.currentLevel);
+        }
+      } else {
+        throw new Error(data.error || "Failed to submit answer");
+      }
+    } catch (err) {
+      console.error("Error submitting MCQ answer:", err);
+      toast.error("Failed to submit answer");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const renderSelectType = () => (
+    <div className="p-6">
+      <div className="text-center mb-6">
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">Choose Debate Type</h3>
+        <p className="text-gray-600">Select how you'd like to engage with AI</p>
+      </div>
+
+      <div className="space-y-4">
+        {debateTypes.map((type) => (
+          <motion.button
+            key={type.id}
+            onClick={() => type.available && setDebateType(type.id)}
+            disabled={!type.available}
+            className={`w-full p-4 rounded-lg border-2 transition-all ${
+              !type.available 
+                ? "border-gray-200 bg-gray-100 opacity-50 cursor-not-allowed"
+                : debateType === type.id
+                ? `border-${type.color}-500 bg-${type.color}-50`
+                : "border-gray-200 hover:border-gray-300"
+            }`}
+            whileHover={type.available ? { scale: 1.02 } : {}}
+            whileTap={type.available ? { scale: 0.98 } : {}}
+          >
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-full bg-${type.color}-100 flex items-center justify-center ${!type.available ? 'opacity-50' : ''}`}>
+                <type.icon className={`w-6 h-6 text-${type.color}-600`} />
+              </div>
+              <div className="text-left flex-1">
+                <h4 className="font-semibold text-gray-900">{type.title}</h4>
+                <p className="text-sm text-gray-600">{type.description}</p>
+                {!type.available && (
+                  <p className="text-xs text-red-500 mt-1">Requires news article context</p>
+                )}
+              </div>
+              {type.available && debateType === type.id && (
+                <CheckCircle className={`w-6 h-6 text-${type.color}-600 ml-auto`} />
+              )}
+            </div>
+          </motion.button>
+        ))}
+      </div>
+
+      <div className="flex gap-3 mt-6">
+        <button
+          onClick={handleClose}
+          className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => setStep("setup")}
+          disabled={!debateTypes.find(t => t.id === debateType)?.available}
+          className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          Continue
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderSetup = () => (
+    <div className="p-6">
+      <div className="text-center mb-6">
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          Setup Your {debateTypes.find(t => t.id === debateType)?.title}
+        </h3>
+        <p className="text-gray-600">Configure the debate parameters</p>
+      </div>
+
+      <div className="space-y-4">
+        {debateType === "user_vs_ai" && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Topic
+              </label>
+              <textarea
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder="Enter the debate topic..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none resize-none"
+                rows={3}
+                maxLength={500}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Your Position
+              </label>
+              <input
+                type="text"
+                value={userPosition}
+                onChange={(e) => setUserPosition(e.target.value)}
+                placeholder="e.g., I support this because..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                maxLength={200}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                AI Position
+              </label>
+              <input
+                type="text"
+                value={aiPosition}
+                onChange={(e) => setAiPosition(e.target.value)}
+                placeholder="e.g., I oppose this because..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                maxLength={200}
+              />
+            </div>
+          </>
+        )}
+
+        {debateType === "ai_vs_ai" && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 className="font-medium text-blue-900 mb-2">AI vs AI Debate</h4>
+            <p className="text-sm text-blue-700">
+              Watch a pre-generated debate between two AI personas on "{newsTitle}". 
+              You'll observe different perspectives and argumentation techniques.
+            </p>
+          </div>
+        )}
+
+        {debateType === "mcq" && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <h4 className="font-medium text-green-900 mb-2">MCQ Challenge Mode</h4>
+            <p className="text-sm text-green-700">
+              Navigate through an interactive debate about "{newsTitle}". 
+              You'll make choices that shape the conversation and explore different viewpoints.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {error && (
+        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+      )}
+
+      <div className="flex gap-3 mt-6">
+        <button
+          onClick={() => setStep("select")}
+          className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+        >
+          Back
+        </button>
+        <button
+          onClick={createDebate}
+          disabled={isLoading}
+          className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Loading...
+            </>
+          ) : (
+            <>
+              Start Debate
+              <ArrowRight className="w-4 h-4" />
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderDebate = () => (
+    <div className="flex flex-col h-96">
+      {/* Header */}
+      <div className="p-4 border-b bg-gray-50">
+        <h3 className="font-semibold text-gray-900">{debateRoom?.topic}</h3>
+        <p className="text-sm text-gray-600">
+          {debateType === "ai_vs_ai" 
+            ? `Round ${currentRound} of ${Math.max(...(visibleConversations.length > 0 ? visibleConversations.map(c => c.conversation_round) : [0]))}`
+            : `Message ${messages.length} of ${debateRoom?.max_conversations * 2 || 14}`
+          }
+        </p>
+      </div>
+      
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {debateType === "ai_vs_ai" ? (
+          // AI vs AI: Show each message individually
+          visibleConversations.map((message, index) => (
+            <div
+              key={message.id || `${message.conversation_round}-${index}`}
+              className={`flex ${
+                message.sender === "ai_1" ? "justify-start" : "justify-end"
+              }`}
+            >
+              <div
+                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                  message.sender === "ai_1"
+                    ? "bg-blue-100 text-blue-900"
+                    : "bg-green-100 text-green-900"
+                }`}
+              >
+                <div className="font-semibold text-xs mb-1">
+                  { (message.sender === "ai_1" ? "AI 1" : "AI 2")}
+                </div>
+                <p className="text-sm">{message.content}</p>
+              </div>
+            </div>
+          ))
+        ) : (
+          // User vs AI: Show all messages
+          messages.map((message, index) => (
+            <div
+              key={message.id || index}
+              className={`flex ${
+                message.sender === "user" ? "justify-end" : "justify-start"
+              }`}
+            >
+              <div
+                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                  message.sender === "user"
+                    ? "bg-purple-600 text-white"
+                    : "bg-gray-100 text-gray-900"
+                }`}
+              >
+                <p className="text-sm">{message.content}</p>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Input/Actions */}
+      <div className="p-4 border-t">
+        {debateType === "ai_vs_ai" ? (
+          currentRound < Math.max(...(aiConversations.length > 0 ? aiConversations.map(c => c.conversation_round) : [0])) ? (
+            <button
+              onClick={showNextAIConversation}
+              disabled={isLoading}
+              className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                <>
+                  Show Next Round
+                  <ChevronRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          ) : (
+            <div className="text-center">
+              <p className="text-gray-600 mb-3">Debate completed!</p>
+              <button
+                onClick={() => setStep("report")}
+                className="px-6 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors"
+              >
+                View Report
+              </button>
+            </div>
+          )
+        ) : (
+          !isDebateCompleted && (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={userMessage}
+                onChange={(e) => setUserMessage(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                placeholder="Type your response..."
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                maxLength={500}
+                disabled={isLoading}
+              />
+              <button
+                onClick={sendMessage}
+                disabled={!userMessage.trim() || isLoading}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send"}
+              </button>
+            </div>
+          )
+        )}
+      </div>
+    </div>
+);
+
+  const renderMcq = () => (
+    <div className="p-6">
+      {currentQuestion ? (
+        <div>
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm text-gray-500">
+                Level {currentLevel} of 5
+              </span>
+              <div className="flex space-x-1">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-2 h-2 rounded-full ${
+                      i < currentLevel ? "bg-green-500" : "bg-gray-200"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+            
+            {/* AI Message */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center gap-2 mb-2">
+                <Brain className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-900">{currentQuestion.ai_persona}</span>
+              </div>
+              <p className="text-blue-800">{currentQuestion.ai_message}</p>
+            </div>
+
+            {/* Options */}
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-gray-700 mb-3">
+                Choose your response:
+              </p>
+              {currentQuestion.options?.map((option, index) => (
+                <button
+                  key={option.id}
+                  onClick={() => submitMcqAnswer(option)}
+                  disabled={isLoading}
+                  className="w-full p-4 text-left rounded-lg border-2 border-gray-200 hover:border-green-300 hover:bg-green-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-gray-600">
+                      {String.fromCharCode(65 + index)}.
+                    </span>
+                    <span className="text-gray-900">{option.option_text}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {isLoading && (
+            <div className="text-center py-4">
+              <Loader2 className="w-6 h-6 animate-spin mx-auto text-purple-600" />
+              <p className="text-gray-600 mt-2">Processing your choice...</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="text-center py-8">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-purple-600" />
+          <p className="text-gray-600">Loading debate...</p>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderReport = () => (
+    <div className="p-6">
+      <div className="text-center mb-6">
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          Debate Report
+        </h3>
+        <p className="text-gray-600">Here's your performance analysis</p>
+      </div>
+
+      {report && (
+        <div className="space-y-4">
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <h4 className="font-semibold text-purple-900 mb-2">Overall Analysis</h4>
+            <p className="text-purple-800 text-sm">{report.overall_analysis}</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h4 className="font-semibold text-green-900 mb-2">Strengths</h4>
+              <p className="text-green-800 text-sm">{report.strengths}</p>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 className="font-semibold text-blue-900 mb-2">Improvements</h4>
+              <p className="text-blue-800 text-sm">{report.improvements}</p>
+            </div>
+          </div>
+
+          {report.winner && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <h4 className="font-semibold text-yellow-900 mb-2">Result</h4>
+              <p className="text-yellow-800 text-sm">
+                Winner: {
+                  report.winner === "user" ? "You" : 
+                  report.winner === "tie" ? "Tie" : 
+                  report.winner === "ai_1" ? "AI Position 1" :
+                  report.winner === "ai_2" ? "AI Position 2" :
+                  "AI"
+                }
+              </p>
+            </div>
+          )}
+
+          {/* MCQ specific metrics */}
+          {debateType === "mcq" && report.choice_count && (
+            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+              <h4 className="font-semibold text-indigo-900 mb-2">MCQ Summary</h4>
+              <p className="text-indigo-800 text-sm">
+                You made {report.choice_count} decisions navigating through the debate tree.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="flex gap-3 mt-6">
+        <button
+          onClick={handleReset}
+          className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+        >
+          New Debate
+        </button>
+        <button
+          onClick={handleClose}
+          className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[95vh] flex flex-col overflow-hidden"
-      >
-        {/* Header - Fixed */}
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-                <MessageCircle className="w-6 h-6" />
+    <AnimatePresence>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ duration: 0.2 }}
+          className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <MessageCircle className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <h3 className="text-xl font-bold flex items-center gap-2">
-                  AI Debate Arena
-                  <Crown className="w-5 h-5 text-yellow-300" />
-                </h3>
-                <p className="text-purple-100 text-sm">Elite Feature - One-on-One AI Debate</p>
+                <h3 className="text-lg font-semibold text-gray-900">AI Debate</h3>
+                <div className="flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-yellow-500" />
+                  <span className="text-sm text-gray-500">Elite Feature</span>
+                </div>
               </div>
             </div>
             <button
-              onClick={onClose}
-              className="text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-xl transition-colors"
+              onClick={handleClose}
+              disabled={isLoading}
+              className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
             >
-              <X className="w-5 h-5" />
+              <X size={20} />
             </button>
           </div>
-        </div>
 
-        {/* Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto">
-          <AnimatePresence mode="wait">
-            {/* Step 1: Topic Selection */}
-            {currentStep === 'topic' && (
-              <motion.div
-                key="topic"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="p-6 min-h-full flex flex-col"
-              >
-                <div className="text-center mb-6">
-                  <Brain className="w-16 h-16 text-purple-600 mx-auto mb-4" />
-                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Debate Topic</h4>
-                  <p className="text-gray-600">What would you like to debate about?</p>
-                </div>
-
-                {newsTitle && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-                    <p className="text-blue-800 text-sm font-medium">Suggested topic from current news:</p>
-                    <p className="text-blue-900 font-semibold">{newsTitle}</p>
-                  </div>
-                )}
-
-                <div className="space-y-4 flex-1">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Debate Topic
-                    </label>
-                    <textarea
-                      value={topic}
-                      onChange={(e) => setTopic(e.target.value)}
-                      placeholder="Enter a topic you'd like to debate about..."
-                      className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                      rows="3"
-                    />
-                  </div>
-
-                  {error && (
-                    <div className="text-red-600 text-sm flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4" />
-                      {error}
-                    </div>
-                  )}
-
-                  <button
-                    onClick={generatePositions}
-                    disabled={!topic.trim() || isLoading}
-                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold flex items-center justify-center gap-2"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Generating Positions...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-5 h-5" />
-                        Generate Debate Positions
-                      </>
-                    )}
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Step 2: Position Selection */}
-            {currentStep === 'positions' && (
-              <motion.div
-                key="positions"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="p-6 min-h-full flex flex-col"
-              >
-                <div className="text-center mb-6">
-                  <Target className="w-16 h-16 text-purple-600 mx-auto mb-4" />
-                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Position</h4>
-                  <p className="text-gray-600">Pick which side you want to argue for</p>
-                </div>
-
-                <div className="bg-gray-50 rounded-xl p-4 mb-6">
-                  <h5 className="font-semibold text-gray-900 mb-2">Topic:</h5>
-                  <p className="text-gray-700">{topic}</p>
-                </div>
-
-                {/* Position Options */}
-                {generatedPositions.length > 1 && (
-                  <div className="mb-6">
-                    <h5 className="font-semibold text-gray-900 mb-3">Choose a debate framework:</h5>
-                    <div className="space-y-3">
-                      {generatedPositions.map((positionPair, index) => (
-                        <motion.button
-                          key={index}
-                          onClick={() => selectPositionPair(index)}
-                          className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
-                            selectedPositionPair === index
-                              ? 'border-purple-500 bg-purple-50'
-                              : 'border-gray-200 hover:border-gray-300 bg-white'
-                          }`}
-                          whileHover={{ scale: 1.01 }}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-semibold text-purple-700">{positionPair.type}</span>
-                            {selectedPositionPair === index && (
-                              <CheckCircle className="w-5 h-5 text-purple-600" />
-                            )}
-                          </div>
-                          <div className="grid md:grid-cols-2 gap-3 text-sm">
-                            <div className="bg-blue-50 p-3 rounded-lg">
-                              <span className="font-medium text-blue-800">Position A:</span>
-                              <p className="text-blue-700 mt-1">{positionPair.position1}</p>
-                            </div>
-                            <div className="bg-orange-50 p-3 rounded-lg">
-                              <span className="font-medium text-orange-800">Position B:</span>
-                              <p className="text-orange-700 mt-1">{positionPair.position2}</p>
-                            </div>
-                          </div>
-                        </motion.button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Selected Positions Display */}
-                <div className="grid md:grid-cols-2 gap-4 mb-6">
-                  <motion.div className="p-6 rounded-xl border-2 border-purple-500 bg-purple-50">
-                    <div className="flex items-center gap-3 mb-3">
-                      <User className="w-8 h-8 text-purple-600" />
-                      <div>
-                        <p className="font-bold text-gray-900">Your Position</p>
-                        <p className="text-sm text-gray-600">You will argue for this side</p>
-                      </div>
-                    </div>
-                    <p className="text-gray-800 font-medium">{userPosition}</p>
-                  </motion.div>
-
-                  <div className="p-6 rounded-xl border-2 border-gray-200 bg-gray-50">
-                    <div className="flex items-center gap-3 mb-3">
-                      <Bot className="w-8 h-8 text-indigo-600" />
-                      <div>
-                        <p className="font-bold text-gray-900">AI Position</p>
-                        <p className="text-sm text-gray-600">AI will argue for this side</p>
-                      </div>
-                    </div>
-                    <p className="text-gray-800 font-medium">{aiPosition}</p>
-                  </div>
-                </div>
-
-                {/* Swap positions button */}
-                <div className="text-center mb-6">
-                  <button
-                    onClick={swapPositions}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-purple-600 border border-purple-300 rounded-lg hover:bg-purple-50 transition-colors"
-                  >
-                    <Shuffle className="w-4 h-4" />
-                    Swap Positions
-                  </button>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-                  <div className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-blue-600 mt-0.5" />
-                    <div>
-                      <p className="text-blue-800 font-medium text-sm">Debate Rules</p>
-                      <p className="text-blue-700 text-sm mt-1">
-                        • You&apos;ll have 7 message turns to present your arguments<br/>
-                        • Maximum 500 characters per message<br/>
-                        • AI will start the debate with an opening statement<br/>
-                        • You&apos;ll receive a detailed analysis report at the end
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {error && (
-                  <div className="text-red-600 text-sm flex items-center gap-2 mb-4">
-                    <AlertCircle className="w-4 h-4" />
-                    {error}
-                  </div>
-                )}
-
-                <div className="flex gap-3 mt-auto">
-                  <button
-                    onClick={() => setCurrentStep('topic')}
-                    className="flex-1 px-6 py-4 border-2 border-gray-300 rounded-xl hover:bg-gray-50 transition-all font-medium text-gray-700"
-                  >
-                    Back
-                  </button>
-                  <button
-                    onClick={createDebate}
-                    disabled={isLoading}
-                    className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all font-bold flex items-center justify-center gap-2"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Starting Debate...
-                      </>
-                    ) : (
-                      <>
-                        <MessageCircle className="w-4 h-4" />
-                        Start Debate
-                      </>
-                    )}
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Step 3: Debate Interface */}
-            {currentStep === 'debate' && (
-              <motion.div
-                key="debate"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="h-full flex flex-col"
-              >
-                {/* Debate Header */}
-                <div className="border-b border-gray-200 p-4 flex-shrink-0">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-bold text-gray-900 truncate">{debateRoom?.topic}</h4>
-                    <div className="text-sm text-gray-600 flex-shrink-0">
-                      Turn {debateRoom?.conversation_count || 0}/7
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2 text-sm">
-                    <div className="flex items-start gap-2">
-                      <User className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <span className="font-medium">You:</span>
-                        <span className="text-gray-600 ml-1">{debateRoom?.user_position}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Bot className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <span className="font-medium">AI:</span>
-                        <span className="text-gray-600 ml-1">{debateRoom?.ai_position}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Messages - Scrollable */}
-                <div className="flex-1 overflow-y-auto p-4">
-                  <div className="space-y-4">
-                    {messages.map((message, index) => (
-                      <motion.div
-                        key={message.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div className={`max-w-[80%] rounded-2xl p-4 ${
-                          message.sender === 'user'
-                            ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white'
-                            : 'bg-gray-100 text-gray-900'
-                        }`}>
-                          <div className="flex items-center gap-2 mb-2">
-                            {message.sender === 'user' ? (
-                              <User className="w-4 h-4" />
-                            ) : (
-                              <Bot className="w-4 h-4" />
-                            )}
-                            <span className="font-medium text-sm">
-                              {message.sender === 'user' ? 'You' : 'AI Debater'}
-                            </span>
-                            <span className="text-xs opacity-75">
-                              Turn {message.conversation_turn}
-                            </span>
-                          </div>
-                          <p className="leading-relaxed">{message.content}</p>
-                          <div className="text-xs opacity-75 mt-2">
-                            {message.character_count} characters
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                    <div ref={messagesEndRef} />
-                  </div>
-                </div>
-
-                {/* Message Input - Fixed */}
-                {debateRoom?.status === 'active' && debateRoom?.conversation_count < 7 && (
-                  <div className="border-t border-gray-200 p-4 flex-shrink-0">
-                    {error && (
-                      <div className="text-red-600 text-sm flex items-center gap-2 mb-3">
-                        <AlertCircle className="w-4 h-4" />
-                        {error}
-                      </div>
-                    )}
-                    
-                    <div className="space-y-3">
-                      <div className="relative">
-                        <textarea
-                          value={newMessage}
-                          onChange={handleMessageChange}
-                          placeholder="Present your argument..."
-                          className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none pr-16"
-                          rows="3"
-                          maxLength={maxCharacters}
-                        />
-                        <div className={`absolute bottom-3 right-3 text-xs font-medium ${
-                          characterCount > maxCharacters * 0.9 ? 'text-red-600' : 'text-gray-500'
-                        }`}>
-                          {characterCount}/{maxCharacters}
-                        </div>
-                      </div>
-                      
-                      <button
-                        onClick={sendMessage}
-                        disabled={!newMessage.trim() || sendingMessageRef.current}
-                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold flex items-center justify-center gap-2"
-                      >
-                        <Send className="w-4 h-4" />
-                        Send Argument
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            )}
-
-            {/* Step 4: Report */}
-            {currentStep === 'report' && report && (
-              <motion.div
-                key="report"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="p-6"
-              >
-                <div className="text-center mb-6">
-                  <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-                  <h4 className="text-2xl font-bold text-gray-900 mb-2">Debate Complete!</h4>
-                  <p className="text-gray-600">Here&apos;s your performance analysis</p>
-                </div>
-
-                {/* Winner Announcement */}
-                {report.winner && (
-                  <div className={`rounded-xl p-6 mb-6 text-center ${
-                    report.winner === 'user' 
-                      ? 'bg-green-50 border border-green-200' 
-                      : report.winner === 'ai'
-                      ? 'bg-red-50 border border-red-200'
-                      : 'bg-blue-50 border border-blue-200'
-                  }`}>
-                    <Award className={`w-12 h-12 mx-auto mb-3 ${
-                      report.winner === 'user' ? 'text-green-600' :
-                      report.winner === 'ai' ? 'text-red-600' : 'text-blue-600'
-                    }`} />
-                    <h5 className={`text-lg font-bold ${
-                      report.winner === 'user' ? 'text-green-900' :
-                      report.winner === 'ai' ? 'text-red-900' : 'text-blue-900'
-                    }`}>
-                      {report.winner === 'user' ? 'Congratulations! You Won!' :
-                       report.winner === 'ai' ? 'AI Won This Round' : 'It\'s a Tie!'}
-                    </h5>
-                  </div>
-                )}
-
-                <div className="space-y-6">
-                  {/* Overall Analysis */}
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
-                    <h5 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
-                      <BarChart3 className="w-5 h-5" />
-                      Overall Analysis
-                    </h5>
-                    <p className="text-blue-800 leading-relaxed">{report.overall_analysis}</p>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {/* Strengths */}
-                    <div className="bg-green-50 rounded-xl p-6 border border-green-200">
-                      <h5 className="text-lg font-bold text-green-900 mb-3 flex items-center gap-2">
-                        <ThumbsUp className="w-5 h-5" />
-                        Strengths
-                      </h5>
-                      <p className="text-green-800 leading-relaxed">{report.strengths}</p>
-                    </div>
-
-                    {/* Improvements */}
-                    <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
-                      <h5 className="text-lg font-bold text-orange-900 mb-3 flex items-center gap-2">
-                        <Lightbulb className="w-5 h-5" />
-                        Areas for Improvement
-                      </h5>
-                      <p className="text-orange-800 leading-relaxed">{report.improvements}</p>
-                    </div>
-                  </div>
-
-                  {/* Insights */}
-                  <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
-                    <h5 className="text-lg font-bold text-purple-900 mb-3 flex items-center gap-2">
-                      <Brain className="w-5 h-5" />
-                      Key Insights
-                    </h5>
-                    <p className="text-purple-800 leading-relaxed">{report.insights}</p>
-                  </div>
-
-                  {/* Scores */}
-                  <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-                    <h5 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5" />
-                      Performance Scores
-                    </h5>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {[
-                        { label: 'Argument Quality', score: report.argument_quality_score, icon: Brain },
-                        { label: 'Persuasiveness', score: report.persuasiveness_score, icon: Target },
-                        { label: 'Factual Accuracy', score: report.factual_accuracy_score, icon: CheckCircle },
-                        { label: 'Logic', score: report.logical_consistency_score, icon: Lightbulb }
-                      ].map((item, index) => (
-                        <div key={index} className="text-center">
-                          <item.icon className="w-6 h-6 text-slate-600 mx-auto mb-2" />
-                          <div className="text-2xl font-bold text-slate-900 mb-1">
-                            {item.score}/10
-                          </div>
-                          <div className="text-sm text-slate-600">{item.label}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={onClose}
-                  className="w-full mt-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-xl hover:shadow-lg transition-all font-bold"
-                >
-                  Close Debate
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </motion.div>
-    </div>
+          {/* Content */}
+          <div className="overflow-y-auto">
+            {step === "select" && renderSelectType()}
+            {step === "setup" && renderSetup()}
+            {step === "debate" && renderDebate()}
+            {step === "mcq" && renderMcq()}
+            {step === "report" && renderReport()}
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
   );
 };
 

@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
-import { IoIosCloseCircle } from "react-icons/io";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import Cookies from "js-cookie";
+import { Crown, MessageCircle, Plus, Sparkles } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { FaEllipsisH, FaShareAlt } from "react-icons/fa";
-import { ArrowLeft, ChevronLeft, ChevronRight, Home, Plus, Sparkles, MessageCircle, Crown } from "lucide-react";
+import { FiCopy } from "react-icons/fi";
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -17,12 +21,7 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
-import toast from "react-hot-toast";
-import { FiCopy } from "react-icons/fi";
-import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
 import PerspectiveNavigation from "../(innerpage)/news/_components/PerspectiveNavigation/PerspectiveNavigation";
-import { cn } from "@/lib/utils";
 import { trackAction } from "./(analytics)/shareUrlTracker";
 import AddViewpointModal from "./AddViewpointModal";
 import AIDebateModal from "./AIDebateModal"; // Import the AI Debate Modal
@@ -141,7 +140,10 @@ export default function NewsDetails2({ id, showNames }) {
 
   useEffect(() => {
     const updateViewImmediately = () => {
-      if (allArticles[currentArticleIndex]?.id && !allArticles[currentArticleIndex]?.user_created) {
+      if (
+        allArticles[currentArticleIndex]?.id &&
+        !allArticles[currentArticleIndex]?.user_created
+      ) {
         updateViews(
           allArticles[currentArticleIndex]?.id,
           allArticles[currentArticleIndex]?.viewpoint,
@@ -161,7 +163,10 @@ export default function NewsDetails2({ id, showNames }) {
 
   useEffect(() => {
     const handleBeforeUnload = () => {
-      if (allArticles[currentArticleIndex]?.id && !allArticles[currentArticleIndex]?.user_created) {
+      if (
+        allArticles[currentArticleIndex]?.id &&
+        !allArticles[currentArticleIndex]?.user_created
+      ) {
         updateViews(
           allArticles[currentArticleIndex]?.id,
           allArticles[currentArticleIndex]?.viewpoint,
@@ -174,7 +179,10 @@ export default function NewsDetails2({ id, showNames }) {
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      if (allArticles[currentArticleIndex]?.id && !allArticles[currentArticleIndex]?.user_created) {
+      if (
+        allArticles[currentArticleIndex]?.id &&
+        !allArticles[currentArticleIndex]?.user_created
+      ) {
         updateViews(
           allArticles[currentArticleIndex]?.id,
           allArticles[currentArticleIndex]?.viewpoint,
@@ -251,7 +259,8 @@ export default function NewsDetails2({ id, showNames }) {
           <div className="mb-4 flex justify-center">
             <div className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
               <Sparkles size={14} />
-              Elite Member - {userNewsCount} Custom Viewpoint{userNewsCount > 1 ? 's' : ''} Available
+              Elite Member - {userNewsCount} Custom Viewpoint
+              {userNewsCount > 1 ? "s" : ""} Available
             </div>
           </div>
         )}
@@ -278,11 +287,11 @@ export default function NewsDetails2({ id, showNames }) {
                   className={`px-4 py-2 border-[0.5px] border-slate-100 text-nowrap text-sm md:text-base rounded-md flex-shrink-0 mr-2 relative ${
                     index === currentArticleIndex
                       ? articleItem.user_created
-                        ? 'bg-purple-600 text-white shadow-lg'
-                        : 'bg-red-800 text-white shadow-lg'
+                        ? "bg-purple-600 text-white shadow-lg"
+                        : "bg-red-800 text-white shadow-lg"
                       : articleItem.user_created
-                        ? 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? "bg-purple-100 text-purple-700 hover:bg-purple-200"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -327,7 +336,7 @@ export default function NewsDetails2({ id, showNames }) {
               {article?.title}
             </h1>
             <p className="text-sm text-gray-500 mt-2">{article?.date}</p>
-            
+
             {/* Custom viewpoint indicator */}
             {article?.user_created && (
               <div className="mt-3 flex items-center gap-2">
@@ -335,7 +344,9 @@ export default function NewsDetails2({ id, showNames }) {
                   <Sparkles size={12} />
                   Custom Viewpoint
                 </div>
-                <span className="text-xs text-gray-500">Generated specifically for you</span>
+                <span className="text-xs text-gray-500">
+                  Generated specifically for you
+                </span>
               </div>
             )}
           </div>
@@ -373,7 +384,9 @@ export default function NewsDetails2({ id, showNames }) {
             )}
           </div>
 
-          <div className="text-xs text-slate-500">{formatDate(article?.created_at)}</div>
+          <div className="text-xs text-slate-500">
+            {formatDate(article?.created_at)}
+          </div>
 
           <div className="flex items-center space-x-8 w-fit my-6">
             {/* Share Icon */}
@@ -383,48 +396,28 @@ export default function NewsDetails2({ id, showNames }) {
                 <FacebookShareButton
                   url={`https://www.doutya.com/news/${id}`}
                   quote={article?.title}
-                  onClick={() =>
-                    trackAction(
-                      "share_facebook",
-                      article?.id
-                    )
-                  }
+                  onClick={() => trackAction("share_facebook", article?.id)}
                 >
                   <FacebookIcon size={32} round />
                 </FacebookShareButton>
                 <TwitterShareButton
                   url={`https://www.doutya.com/news/${id}`}
                   title={article?.title}
-                  onClick={() =>
-                    trackAction(
-                      "share_twitter",
-                      article?.id
-                    )
-                  }
+                  onClick={() => trackAction("share_twitter", article?.id)}
                 >
                   <TwitterIcon size={32} round />
                 </TwitterShareButton>
                 <WhatsappShareButton
                   url={`https://www.doutya.com/news/${id}`}
                   title={article?.title}
-                  onClick={() =>
-                    trackAction(
-                      "share_whatsapp",
-                      article?.id
-                    )
-                  }
+                  onClick={() => trackAction("share_whatsapp", article?.id)}
                 >
                   <WhatsappIcon size={32} round />
                 </WhatsappShareButton>
                 <TelegramShareButton
                   url={`https://www.doutya.com/news/${id}`}
                   title={article?.title}
-                  onClick={() =>
-                    trackAction(
-                      "share_telegram",
-                      article?.id
-                    )
-                  }
+                  onClick={() => trackAction("share_telegram", article?.id)}
                 >
                   <TelegramIcon size={32} round />
                 </TelegramShareButton>
@@ -441,7 +434,7 @@ export default function NewsDetails2({ id, showNames }) {
 
             {/* AI Debate Button (Elite Feature) */}
             {hasElitePlan && (
-              <div 
+              <div
                 onClick={() => setShowDebateModal(true)}
                 className="text-purple-600 cursor-pointer hover:text-purple-800 transition-colors flex items-center gap-2 group"
                 title="Start AI Debate - Elite Feature"

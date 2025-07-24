@@ -6,26 +6,20 @@ import {
   AI_DEBATE_ROOMS,
   AI_DEBATE_MESSAGES,
   AI_DEBATE_REPORTS,
+  MC_DEBATE_OPTIONS,
+  MC_DEBATE_RESPONSES,
 } from "@/utils/schema";
 import { db } from "@/utils";
 import { eq, and, asc } from "drizzle-orm";
 
-async function generateAIResponse(
-  topic,
-  userPosition,
-  aiPosition,
-  userMessage,
-  conversationHistory
-) {
+async function generateAIResponse(topic, userPosition, aiPosition, userMessage, conversationHistory) {
   const prompt = `You are in a formal debate about: "${topic}"
 
 Your position: ${aiPosition}
 Opponent's position: ${userPosition}
 
 Conversation history:
-${conversationHistory
-  .map((msg) => `${msg.sender.toUpperCase()}: ${msg.content}`)
-  .join("\n")}
+${conversationHistory.map((msg) => `${msg.sender.toUpperCase()}: ${msg.content}`).join("\n")}
 
 User just said: "${userMessage}"
 
@@ -119,20 +113,135 @@ async function generateDebateReport(debateRoom, messages) {
   } catch (error) {
     console.error("Error generating debate report:", error);
     return {
-      overall_analysis:
-        "You engaged in a thoughtful debate, presenting your arguments clearly and responding to counterpoints.",
-      strengths:
-        "You demonstrated good engagement with the topic and showed commitment to your position throughout the debate.",
-      improvements:
-        "Consider incorporating more specific examples and evidence to strengthen your arguments in future debates.",
-      insights:
-        "Your debate style shows potential. Continue practicing to develop even stronger analytical and persuasive skills.",
+      overall_analysis: "You engaged in a thoughtful debate, presenting your arguments clearly and responding to counterpoints.",
+      strengths: "You demonstrated good engagement with the topic and showed commitment to your position throughout the debate.",
+      improvements: "Consider incorporating more specific examples and evidence to strengthen your arguments in future debates.",
+      insights: "Your debate style shows potential. Continue practicing to develop even stronger analytical and persuasive skills.",
       argument_quality_score: 7,
       persuasiveness_score: 6,
       factual_accuracy_score: 7,
       logical_consistency_score: 7,
       winner: "tie",
     };
+  }
+}
+
+// Function to get the next real MCQ question from database
+async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
+  try {
+    // Get the selected option details
+    const selectedOption = await db
+      .select()
+      .from(MC_DEBATE_OPTIONS)
+      .where(eq(MC_DEBATE_OPTIONS.id, selectedOptionId))
+      .limit(1)
+      .execute();
+
+    if (!selectedOption.length) {
+      throw new Error("Selected option not found");
+    }
+
+    const option = selectedOption[0];
+
+    // Check if this is a terminal option (end of conversation)
+    if (option.is_terminal) {
+      return null; // No next question
+    }
+
+    // Get the next response that this option leads to
+    if (option.leads_to_response_id) {
+      const nextResponse = await db
+        .select()
+        .from(MC_DEBATE_RESPONSES)
+        .where(eq(MC_DEBATE_RESPONSES.id, option.leads_to_response_id))
+        .limit(1)
+        .execute();
+
+      if (nextResponse.length) {
+        const response = nextResponse[0];
+
+        // Get options for this next response
+        const nextOptions = await db
+          .select()
+          .from(MC_DEBATE_OPTIONS)
+          .where(eq(MC_DEBATE_OPTIONS.mc_response_id, response.id))
+          .execute();
+
+        return {
+          id: response.id,
+          question_text: `AI Response - Level ${response.level}`,
+          ai_message: response.ai_message,
+          ai_persona: response.ai_persona,
+          level: response.level,
+          options: nextOptions.map((opt, index) => ({
+            id: opt.id,
+            option_text: opt.option_text,
+            option_letter: opt.option_letter || String.fromCharCode(65 + index), // A, B, C...
+            option_position: opt.option_position,
+            leads_to_response_id: opt.leads_to_response_id,
+            is_terminal: opt.is_terminal
+          }))
+        };
+      }
+    } else {
+      // If no specific leads_to_response_id, find next level responses based on path logic
+      // Get the current response to find its children
+      const currentResponse = await db
+        .select()
+        .from(MC_DEBATE_RESPONSES)
+        .where(eq(MC_DEBATE_RESPONSES.id, option.mc_response_id))
+        .limit(1)
+        .execute();
+
+      if (currentResponse.length) {
+        const current = currentResponse[0];
+        
+        // Find responses at the next level that are children of current response
+        const nextLevelResponses = await db
+          .select()
+          .from(MC_DEBATE_RESPONSES)
+          .where(
+            and(
+              eq(MC_DEBATE_RESPONSES.debate_topic_id, current.debate_topic_id),
+              eq(MC_DEBATE_RESPONSES.level, currentLevel + 1),
+              eq(MC_DEBATE_RESPONSES.parent_response_id, current.id)
+            )
+          )
+          .limit(1)
+          .execute();
+
+        if (nextLevelResponses.length) {
+          const response = nextLevelResponses[0];
+
+          const nextOptions = await db
+            .select()
+            .from(MC_DEBATE_OPTIONS)
+            .where(eq(MC_DEBATE_OPTIONS.mc_response_id, response.id))
+            .execute();
+
+          return {
+            id: response.id,
+            question_text: `AI Response - Level ${response.level}`,
+            ai_message: response.ai_message,
+            ai_persona: response.ai_persona,
+            level: response.level,
+            options: nextOptions.map((opt, index) => ({
+              id: opt.id,
+              option_text: opt.option_text,
+              option_letter: opt.option_letter || String.fromCharCode(65 + index),
+              option_position: opt.option_position,
+              leads_to_response_id: opt.leads_to_response_id,
+              is_terminal: opt.is_terminal
+            }))
+          };
+        }
+      }
+    }
+
+    return null; // No next question found
+  } catch (error) {
+    console.error("Error fetching next MCQ question:", error);
+    return null;
   }
 }
 
@@ -144,178 +253,316 @@ export async function POST(request, { params }) {
 
   const userData = authResult.decoded_Data;
   const userId = userData.id;
-  const debateId = params.debateId;
-  const { content } = await request.json();
-
-  if (!content?.trim()) {
-    return NextResponse.json(
-      { error: "Message content is required." },
-      { status: 400 }
-    );
-  }
-
-  if (content.length > 500) {
-    return NextResponse.json(
-      { error: "Message must be 500 characters or less." },
-      { status: 400 }
-    );
-  }
+  
+  // FIX: Await params before accessing debateId
+  const { debateId } = await params;
+  
+  const { content, action, selectedOptionId } = await request.json();
 
   try {
     // Get debate room and verify ownership
     const debateRoom = await db
       .select()
       .from(AI_DEBATE_ROOMS)
-      .where(
-        and(
-          eq(AI_DEBATE_ROOMS.id, debateId),
-          eq(AI_DEBATE_ROOMS.user_id, userId)
-        )
-      )
+      .where(and(eq(AI_DEBATE_ROOMS.id, debateId), eq(AI_DEBATE_ROOMS.user_id, userId)))
       .limit(1)
       .execute();
 
     if (debateRoom.length === 0) {
-      return NextResponse.json(
-        { error: "Debate room not found." },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Debate room not found." }, { status: 404 });
     }
 
     const room = debateRoom[0];
 
     if (room.status !== "active") {
-      return NextResponse.json(
-        { error: "This debate has already been completed." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "This debate has already been completed." }, { status: 400 });
     }
 
-    if (room.conversation_count >= room.max_conversations) {
-      return NextResponse.json(
-        { error: "Maximum conversation limit reached for this debate." },
-        { status: 400 }
-      );
+    // Handle User vs AI debate messages
+    if (!action && content) {
+      return await handleUserVsAI(room, content, userId, debateId);
+    }
+    
+    // Handle AI vs AI next conversation
+    if (action === "show_next") {
+      return await handleAIvsAI(room, userId, debateId);
+    }
+    
+    // Handle MCQ answer submission
+    if (selectedOptionId) {
+      return await handleMCQ(room, selectedOptionId, userId, debateId);
     }
 
-    const newConversationTurn = room.conversation_count + 1;
+    return NextResponse.json({ error: "Invalid request parameters." }, { status: 400 });
+  } catch (error) {
+    console.error("Error processing debate message:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to process message",
+        details: process.env.NODE_ENV === "development" ? error.message : undefined,
+      },
+      { status: 500 }
+    );
+  }
+}
 
-    // Get conversation history
-    const conversationHistory = await db
+async function handleUserVsAI(room, content, userId, debateId) {
+  if (!content?.trim()) {
+    return NextResponse.json({ error: "Message content is required." }, { status: 400 });
+  }
+
+  if (content.length > 500) {
+    return NextResponse.json({ error: "Message must be 500 characters or less." }, { status: 400 });
+  }
+
+  if (room.conversation_count >= room.max_conversations) {
+    return NextResponse.json({ error: "Maximum conversation limit reached for this debate." }, { status: 400 });
+  }
+
+  const newConversationTurn = room.conversation_count + 1;
+
+  // Get conversation history
+  const conversationHistory = await db
+    .select()
+    .from(AI_DEBATE_MESSAGES)
+    .where(eq(AI_DEBATE_MESSAGES.debate_room_id, debateId))
+    .orderBy(asc(AI_DEBATE_MESSAGES.created_at))
+    .execute();
+
+  // Save user message
+  const userMessage = {
+    debate_room_id: debateId,
+    sender: "user",
+    content: content.trim(),
+    conversation_turn: newConversationTurn,
+  };
+
+  const userMessageResult = await db.insert(AI_DEBATE_MESSAGES).values(userMessage).execute();
+
+  // Generate AI response
+  const aiResponse = await generateAIResponse(
+    room.topic,
+    room.user_position,
+    room.ai_position,
+    content,
+    conversationHistory
+  );
+
+  const aiMessage = {
+    debate_room_id: debateId,
+    sender: "ai",
+    content: aiResponse,
+    conversation_turn: newConversationTurn,
+  };
+
+  const aiMessageResult = await db.insert(AI_DEBATE_MESSAGES).values(aiMessage).execute();
+
+  // Update conversation count
+  await db
+    .update(AI_DEBATE_ROOMS)
+    .set({ conversation_count: newConversationTurn })
+    .where(eq(AI_DEBATE_ROOMS.id, debateId))
+    .execute();
+
+  let debateCompleted = false;
+  let report = null;
+
+  // Check if debate is completed
+  if (newConversationTurn >= room.max_conversations) {
+    await db.update(AI_DEBATE_ROOMS).set({ status: "completed" }).where(eq(AI_DEBATE_ROOMS.id, debateId)).execute();
+
+    const allMessages = await db
       .select()
       .from(AI_DEBATE_MESSAGES)
       .where(eq(AI_DEBATE_MESSAGES.debate_room_id, debateId))
       .orderBy(asc(AI_DEBATE_MESSAGES.created_at))
       .execute();
 
-    // Save user message
-    const userMessage = {
+    const reportData = await generateDebateReport(room, allMessages);
+
+    // Create debate report object without choice_count for User vs AI
+    const debateReport = {
       debate_room_id: debateId,
-      sender: "user",
-      content: content.trim(),
-      character_count: content.trim().length,
-      conversation_turn: newConversationTurn,
+      user_id: userId,
+      debate_type: "user_vs_ai", // Add debate_type
+      ...reportData,
+      openai_response: JSON.stringify(reportData),
     };
 
-    const userMessageResult = await db
-      .insert(AI_DEBATE_MESSAGES)
-      .values(userMessage)
-      .execute();
+    await db.insert(AI_DEBATE_REPORTS).values(debateReport).execute();
 
-    // Generate AI response
-    const aiResponse = await generateAIResponse(
-      room.topic,
-      room.user_position,
-      room.ai_position,
-      content,
-      conversationHistory
-    );
+    debateCompleted = true;
+    report = reportData;
+  }
 
-    const aiMessage = {
-      debate_room_id: debateId,
-      sender: "ai",
-      content: aiResponse,
-      character_count: aiResponse.length,
-      conversation_turn: newConversationTurn,
+  return NextResponse.json(
+    {
+      success: true,
+      userMessage: {
+        id: userMessageResult[0].insertId,
+        ...userMessage,
+        created_at: new Date(),
+      },
+      aiResponse: {
+        id: aiMessageResult[0].insertId,
+        ...aiMessage,
+        created_at: new Date(),
+      },
+      debateCompleted,
+      report,
+      conversationTurn: newConversationTurn,
+      remainingTurns: room.max_conversations - newConversationTurn,
+    },
+    { status: 200 }
+  );
+}
+
+async function handleAIvsAI(room, userId, debateId) {
+  const newRound = room.conversation_count + 1;
+
+  // Update conversation count
+  await db
+    .update(AI_DEBATE_ROOMS)
+    .set({ conversation_count: newRound })
+    .where(eq(AI_DEBATE_ROOMS.id, debateId))
+    .execute();
+
+  let debateCompleted = false;
+  let report = null;
+
+  // Check if all conversations are shown
+  if (newRound >= room.max_conversations) {
+    await db.update(AI_DEBATE_ROOMS).set({ status: "completed" }).where(eq(AI_DEBATE_ROOMS.id, debateId)).execute();
+
+    // Generate completion report for AI vs AI
+    const reportData = {
+      overall_analysis: "You observed a structured debate between two AI perspectives, gaining insights into different approaches to argumentation.",
+      strengths: "You demonstrated patience and engagement by following the entire debate sequence.",
+      improvements: "Consider taking notes during future AI debates to better analyze the argumentation techniques used.",
+      insights: "Watching structured debates helps develop critical thinking skills. Notice how each side builds upon previous points.",
+      argument_quality_score: 8,
+      persuasiveness_score: 7,
+      factual_accuracy_score: 8,
+      logical_consistency_score: 8,
+      winner: "tie",
     };
 
-    const aiMessageResult = await db
-      .insert(AI_DEBATE_MESSAGES)
-      .values(aiMessage)
+    // Create debate report object without choice_count for AI vs AI
+    const debateReport = {
+      debate_room_id: debateId,
+      user_id: userId,
+      debate_type: "ai_vs_ai", // Add debate_type
+      ...reportData,
+      openai_response: JSON.stringify(reportData),
+    };
+
+    await db.insert(AI_DEBATE_REPORTS).values(debateReport).execute();
+
+    debateCompleted = true;
+    report = reportData;
+  }
+
+  return NextResponse.json(
+    {
+      success: true,
+      debateCompleted,
+      report,
+      conversationTurn: newRound,
+      remainingTurns: room.max_conversations - newRound,
+    },
+    { status: 200 }
+  );
+}
+
+async function handleMCQ(room, selectedOptionId, userId, debateId) {
+  const currentLevel = room.conversation_count + 1;
+
+  try {
+    // Get the selected option to understand the choice made
+    const selectedOption = await db
+      .select()
+      .from(MC_DEBATE_OPTIONS)
+      .where(eq(MC_DEBATE_OPTIONS.id, selectedOptionId))
+      .limit(1)
       .execute();
+
+    if (!selectedOption.length) {
+      throw new Error("Selected option not found");
+    }
+
+    const option = selectedOption[0];
+    
+    // Get the next question based on the selected option
+    const nextQuestion = await getRealNextMCQQuestion(selectedOptionId, currentLevel);
 
     // Update conversation count
     await db
       .update(AI_DEBATE_ROOMS)
-      .set({ conversation_count: newConversationTurn })
+      .set({ conversation_count: currentLevel })
       .where(eq(AI_DEBATE_ROOMS.id, debateId))
       .execute();
 
-    let debateCompleted = false;
+    let isCompleted = false;
     let report = null;
 
-    // Check if debate is completed
-    if (newConversationTurn >= room.max_conversations) {
-      // Mark debate as completed
+    // Check if this was a terminal option or we've reached max level
+    if (!nextQuestion || option.is_terminal || currentLevel >= 5) {
+      // Mark as completed
       await db
         .update(AI_DEBATE_ROOMS)
         .set({ status: "completed" })
         .where(eq(AI_DEBATE_ROOMS.id, debateId))
         .execute();
 
-      // Get all messages for report generation
-      const allMessages = await db
-        .select()
-        .from(AI_DEBATE_MESSAGES)
-        .where(eq(AI_DEBATE_MESSAGES.debate_room_id, debateId))
-        .orderBy(asc(AI_DEBATE_MESSAGES.created_at))
-        .execute();
+      // Generate completion report
+      const reportData = {
+        overall_analysis: "You navigated through a complex decision tree, making thoughtful choices at each step of the debate.",
+        strengths: "You demonstrated careful consideration of options and showed engagement with the different perspectives presented.",
+        improvements: "Consider spending more time analyzing the implications of each choice and how they build upon previous decisions.",
+        insights: "Decision tree exercises help develop systematic thinking and consequence evaluation skills. Each choice shapes the direction of the debate.",
+        argument_quality_score: 7,
+        persuasiveness_score: 6,
+        factual_accuracy_score: 7,
+        logical_consistency_score: 7,
+        choice_count: currentLevel,
+      };
 
-      // Generate report
-      const reportData = await generateDebateReport(room, allMessages);
-
+      // Create debate report
       const debateReport = {
         debate_room_id: debateId,
         user_id: userId,
+        debate_type: "mcq",
         ...reportData,
         openai_response: JSON.stringify(reportData),
       };
 
       await db.insert(AI_DEBATE_REPORTS).values(debateReport).execute();
 
-      debateCompleted = true;
+      isCompleted = true;
       report = reportData;
     }
 
     return NextResponse.json(
       {
         success: true,
-        userMessage: {
-          id: userMessageResult[0].insertId,
-          ...userMessage,
-          created_at: new Date(),
-        },
-        aiResponse: {
-          id: aiMessageResult[0].insertId,
-          ...aiMessage,
-          created_at: new Date(),
-        },
-        debateCompleted,
+        nextQuestion: nextQuestion ? {
+          ...nextQuestion,
+          level: nextQuestion.level,
+          ai_persona: nextQuestion.ai_persona
+        } : null,
+        isCompleted,
         report,
-        conversationTurn: newConversationTurn,
-        remainingTurns: room.max_conversations - newConversationTurn,
+        currentLevel: currentLevel,
+        remainingLevels: Math.max(0, 5 - currentLevel),
+        selectedChoice: {
+          option_text: option.option_text,
+          option_position: option.option_position
+        }
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error processing debate message:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to process message",
-        details:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
-      },
-      { status: 500 }
-    );
+    console.error("Error in handleMCQ:", error);
+    throw error;
   }
 }

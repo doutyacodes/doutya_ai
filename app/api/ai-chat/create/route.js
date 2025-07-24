@@ -76,14 +76,14 @@ export async function POST(request) {
       });
     } else {
       // Check if user has reached daily limit
-      if (usage[0].chats_created_today >= dailyLimit) {
-        return NextResponse.json(
-          { 
-            error: `Daily limit reached. ${userPlan === 'pro' ? 'Pro' : 'Elite'} members can create ${dailyLimit} chats per day.` 
-          },
-          { status: 429 }
-        );
-      }
+      // if (usage[0].chats_created_today >= dailyLimit) {
+      //   return NextResponse.json(
+      //     { 
+      //       error: `Daily limit reached. ${userPlan === 'pro' ? 'Pro' : 'Elite'} members can create ${dailyLimit} chats per day.` 
+      //     },
+      //     { status: 429 }
+      //   );
+      // }
 
       // Update usage count
       await db

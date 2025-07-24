@@ -1853,47 +1853,42 @@ export const AI_CHAT_USAGE = mysqlTable("ai_chat_usage", {
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
-export const AI_DEBATE_ROOMS = mysqlTable("ai_debate_rooms", {
-  id: int("id").primaryKey().autoincrement(),
-  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
-  topic: text("topic").notNull(),
-  user_position: text("user_position").notNull(), // User's chosen side
-  ai_position: text("ai_position").notNull(), // AI's assigned side
-  status: mysqlEnum("status", ["active", "completed", "cancelled"]).default("active"),
-  conversation_count: int("conversation_count").default(0),
-  max_conversations: int("max_conversations").default(7), // 7 user messages limit
-  news_id: int("news_id").references(() => ADULT_NEWS.id), // Optional: link to news article
-  created_at: timestamp("created_at").defaultNow(),
-  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
-});
 
-export const AI_DEBATE_MESSAGES = mysqlTable("ai_debate_messages", {
+
+
+// AI Debate Questions - MCQ questions
+export const AI_DEBATE_QUESTIONS = mysqlTable("ai_debate_questions", {
   id: int("id").primaryKey().autoincrement(),
   debate_room_id: int("debate_room_id").notNull().references(() => AI_DEBATE_ROOMS.id, { onDelete: "cascade" }),
-  sender: mysqlEnum("sender", ["user", "ai"]).notNull(),
-  content: text("content").notNull(),
-  character_count: int("character_count").notNull(),
-  conversation_turn: int("conversation_turn").notNull(),
+  question_index: int("question_index").notNull(), // 1, 2, 3, 4, 5
+  question_text: text("question_text").notNull(),
+  ai_answer: text("ai_answer").notNull(), // AI's answer to the question
   created_at: timestamp("created_at").defaultNow(),
 });
 
-export const AI_DEBATE_REPORTS = mysqlTable("ai_debate_reports", {
+// AI Debate MCQ Options - Multiple choice options for questions
+export const AI_DEBATE_MCQ_OPTIONS = mysqlTable("ai_debate_mcq_options", {
+  id: int("id").primaryKey().autoincrement(),
+  question_id: int("question_id").notNull().references(() => AI_DEBATE_QUESTIONS.id, { onDelete: "cascade" }),
+  option_text: text("option_text").notNull(), // Short sentence option
+  option_letter: varchar("option_letter", { length: 1 }).notNull(), // A, B, C, D
+  is_selected: boolean("is_selected").default(false),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+// AI Debate MCQ Responses - User responses to MCQ questions
+export const AI_DEBATE_MCQ_RESPONSES = mysqlTable("ai_debate_mcq_responses", {
   id: int("id").primaryKey().autoincrement(),
   debate_room_id: int("debate_room_id").notNull().references(() => AI_DEBATE_ROOMS.id, { onDelete: "cascade" }),
+  question_id: int("question_id").notNull().references(() => AI_DEBATE_QUESTIONS.id, { onDelete: "cascade" }),
   user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
-  overall_analysis: text("overall_analysis").notNull(),
-  strengths: text("strengths").notNull(),
-  improvements: text("improvements").notNull(),
-  insights: text("insights").notNull(),
-  argument_quality_score: int("argument_quality_score"), // 1-10
-  persuasiveness_score: int("persuasiveness_score"), // 1-10
-  factual_accuracy_score: int("factual_accuracy_score"), // 1-10
-  logical_consistency_score: int("logical_consistency_score"), // 1-10
-  winner: mysqlEnum("winner", ["user", "ai", "tie"]), // Who won the debate
-  openai_response: text("openai_response"), // Raw OpenAI response
+  selected_option_id: int("selected_option_id").notNull().references(() => AI_DEBATE_MCQ_OPTIONS.id),
   created_at: timestamp("created_at").defaultNow(),
 });
 
+
+
+// AI Debate Usage - Daily/monthly usage tracking
 export const AI_DEBATE_USAGE = mysqlTable("ai_debate_usage", {
   id: int("id").primaryKey().autoincrement(),
   user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
@@ -1902,4 +1897,188 @@ export const AI_DEBATE_USAGE = mysqlTable("ai_debate_usage", {
   last_reset_date: timestamp("last_reset_date").defaultNow(),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+}, (table) => ({
+  userIdUnique: uniqueIndex("ai_debate_usage_user_id_unique", [table.user_id]),
+}));
+
+
+
+    // Debate Topics Table - linked to news_group
+export const DEBATE_TOPICS = mysqlTable("debate_topics", {
+  id: int("id").primaryKey().autoincrement(),
+  news_group_id: int("news_group_id")
+    .notNull()
+    .references(() => ADULT_NEWS_GROUP.id, { onDelete: "cascade" }),
+  topic_title: varchar("topic_title", { length: 255 }).notNull(),
+  topic_description: text("topic_description").notNull(),
+  status: mysqlEnum("status", ["draft", "published", "archived"]).default("draft"),
+  created_by: int("created_by").references(() => ADMIN_DETAILS.id),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+// Debate Positions Table - 2 positions per topic
+export const DEBATE_POSITIONS = mysqlTable("debate_positions", {
+  id: int("id").primaryKey().autoincrement(),
+  debate_topic_id: int("debate_topic_id")
+    .notNull()
+    .references(() => DEBATE_TOPICS.id, { onDelete: "cascade" }),
+  position_type: mysqlEnum("position_type", ["for", "against"]).notNull(),
+  position_title: varchar("position_title", { length: 255 }).notNull(),
+  position_description: text("position_description").notNull(),
+  ai_persona: varchar("ai_persona", { length: 100 }).notNull(), // e.g., "Conservative Analyst", "Liberal Advocate"
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+// AI-to-AI Conversations Table
+export const AI_CONVERSATIONS = mysqlTable("ai_conversations", {
+  id: int("id").primaryKey().autoincrement(),
+  debate_topic_id: int("debate_topic_id")
+    .notNull()
+    .references(() => DEBATE_TOPICS.id, { onDelete: "cascade" }),
+  conversation_round: int("conversation_round").notNull(), // 1-5 for 5 conversations
+  position_for_id: int("position_for_id")
+    .notNull()
+    .references(() => DEBATE_POSITIONS.id),
+  position_against_id: int("position_against_id")
+    .notNull()
+    .references(() => DEBATE_POSITIONS.id),
+  for_message: text("for_message").notNull(),
+  against_message: text("against_message").notNull(),
+  for_ai_persona: varchar("for_ai_persona", { length: 100 }).notNull(),
+  against_ai_persona: varchar("against_ai_persona", { length: 100 }).notNull(),
+  is_approved: boolean("is_approved").default(false),
+  admin_notes: text("admin_notes").default(null),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+// Multiple Choice Debate Responses Table
+export const MC_DEBATE_RESPONSES = mysqlTable("mc_debate_responses", {
+  id: int("id").primaryKey().autoincrement(),
+  debate_topic_id: int("debate_topic_id")
+    .notNull()
+    .references(() => DEBATE_TOPICS.id, { onDelete: "cascade" }),
+  parent_response_id: int("parent_response_id")
+    .references(() => MC_DEBATE_RESPONSES.id), // For decision tree structure
+  level: int("level").notNull().default(1), // Tree depth level
+  ai_message: text("ai_message").notNull(),
+  ai_persona: varchar("ai_persona", { length: 100 }).notNull(),
+  response_context: text("response_context").default(null), // Context from previous choices
+  is_approved: boolean("is_approved").default(false),
+  admin_notes: text("admin_notes").default(null),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+// Multiple Choice Options Table
+export const MC_DEBATE_OPTIONS = mysqlTable("mc_debate_options", {
+  id: int("id").primaryKey().autoincrement(),
+  mc_response_id: int("mc_response_id")
+    .notNull()
+    .references(() => MC_DEBATE_RESPONSES.id, { onDelete: "cascade" }),
+  option_text: text("option_text").notNull(),
+  option_position: mysqlEnum("option_position", ["for", "against", "neutral"]).notNull(),
+  leads_to_response_id: int("leads_to_response_id")
+    .references(() => MC_DEBATE_RESPONSES.id), // Decision tree link
+  is_terminal: boolean("is_terminal").default(false), // End of conversation tree
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+// Debate Generation History Table
+export const DEBATE_GENERATION_HISTORY = mysqlTable("debate_generation_history", {
+  id: int("id").primaryKey().autoincrement(),
+  debate_topic_id: int("debate_topic_id")
+    .notNull()
+    .references(() => DEBATE_TOPICS.id, { onDelete: "cascade" }),
+  generation_type: mysqlEnum("generation_type", ["ai_conversation", "mc_debate"]).notNull(),
+  prompt_used: text("prompt_used").notNull(),
+  ai_response: text("ai_response").notNull(),
+  processing_status: mysqlEnum("processing_status", ["pending", "completed", "failed"]).default("pending"),
+  error_message: text("error_message").default(null),
+  created_by: int("created_by").references(() => ADMIN_DETAILS.id),
+  created_at: timestamp("created_at").defaultNow(),
+});
+export const USER_AI_DEBATE_PROGRESS = mysqlTable("user_ai_debate_progress", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  debate_topic_id: int("debate_topic_id").notNull().references(() => DEBATE_TOPICS.id),
+  current_conversation_round: int("current_conversation_round").default(1),
+  is_completed: boolean("is_completed").default(false),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const USER_MCQ_DEBATE_PROGRESS = mysqlTable("user_mcq_debate_progress", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  debate_topic_id: int("debate_topic_id").notNull().references(() => DEBATE_TOPICS.id),
+  mc_response_id: int("mc_response_id").notNull().references(() => MC_DEBATE_RESPONSES.id),
+  selected_option_id: int("selected_option_id").notNull().references(() => MC_DEBATE_OPTIONS.id),
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+export const USER_MCQ_SESSION_PROGRESS = mysqlTable("user_mcq_session_progress", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  debate_topic_id: int("debate_topic_id").notNull().references(() => DEBATE_TOPICS.id),
+  current_level: int("current_level").default(1),
+  current_path: varchar("current_path", { length: 50 }).default(""),
+  is_completed: boolean("is_completed").default(false),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+// Update existing AI_DEBATE_ROOMS to include debate_topic_id for pre-generated content
+export const AI_DEBATE_ROOMS = mysqlTable("ai_debate_rooms", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  debate_topic_id: int("debate_topic_id").references(() => DEBATE_TOPICS.id), // NEW: For pre-generated content
+  topic: text("topic").notNull(),
+  debate_type: mysqlEnum("debate_type", ["user_vs_ai", "ai_vs_ai", "mcq"]).notNull(),
+  user_position: text("user_position"),
+  ai_position: text("ai_position").notNull(),
+  ai_position_2: text("ai_position_2"), // For AI vs AI
+  status: mysqlEnum("status", ["active", "completed", "cancelled"]).default("active"),
+  conversation_count: int("conversation_count").default(0),
+  max_conversations: int("max_conversations").default(5),
+  current_question_index: int("current_question_index").default(0), // For MCQ
+  total_questions: int("total_questions").default(5), // For MCQ
+  news_id: int("news_id").references(() => ADULT_NEWS.id),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+
+export const AI_DEBATE_MESSAGES = mysqlTable("ai_debate_messages", {
+  id: int("id").primaryKey().autoincrement(),
+  debate_room_id: int("debate_room_id").notNull().references(() => AI_DEBATE_ROOMS.id, { onDelete: "cascade" }),
+  sender: mysqlEnum("sender", ["user", "ai", "ai_1", "ai_2"]).notNull(),
+  content: text("content").notNull(),
+  conversation_turn: int("conversation_turn").notNull(),
+  is_visible: boolean("is_visible").default(true), // NEW: For controlling message visibility
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+// Updated AI_DEBATE_REPORTS to include debate_type
+export const AI_DEBATE_REPORTS = mysqlTable("ai_debate_reports", {
+  id: int("id").primaryKey().autoincrement(),
+  debate_room_id: int("debate_room_id").notNull().references(() => AI_DEBATE_ROOMS.id, { onDelete: "cascade" }),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  debate_type: mysqlEnum("debate_type", ["user_vs_ai", "ai_vs_ai", "mcq"]).notNull(), // NEW
+  overall_analysis: text("overall_analysis").notNull(),
+  strengths: text("strengths").notNull(),
+  improvements: text("improvements").notNull(),
+  insights: text("insights").notNull(),
+  argument_quality_score: int("argument_quality_score"),
+  persuasiveness_score: int("persuasiveness_score"),
+  factual_accuracy_score: int("factual_accuracy_score"),
+  logical_consistency_score: int("logical_consistency_score"),
+  winner: mysqlEnum("winner", ["user", "ai", "ai_1", "ai_2", "tie"]),
+  mcq_score: int("mcq_score"), // NEW: For MCQ debates
+  choice_count: int("choice_count"), // NEW: For MCQ debates
+  openai_response: text("openai_response"),
+  created_at: timestamp("created_at").defaultNow(),
 });
