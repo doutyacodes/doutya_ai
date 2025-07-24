@@ -280,7 +280,7 @@ const AIDebateModal = ({ isOpen, onClose, newsId, newsTitle }) => {
     <div className="p-6">
       <div className="text-center mb-6">
         <h3 className="text-xl font-semibold text-gray-900 mb-2">Choose Debate Type</h3>
-        <p className="text-gray-600">Select how you'd like to engage with AI</p>
+        <p className="text-gray-600">Select how you&apos;d like to engage with AI</p>
       </div>
 
       <div className="space-y-4">
@@ -397,7 +397,7 @@ const AIDebateModal = ({ isOpen, onClose, newsId, newsTitle }) => {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-medium text-blue-900 mb-2">AI vs AI Debate</h4>
             <p className="text-sm text-blue-700">
-              Watch a pre-generated debate between two AI personas on "{newsTitle}". 
+              Watch a pre-generated debate between two AI personas on {`"${newsTitle}"`}. 
               You'll observe different perspectives and argumentation techniques.
             </p>
           </div>
@@ -407,7 +407,7 @@ const AIDebateModal = ({ isOpen, onClose, newsId, newsTitle }) => {
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
             <h4 className="font-medium text-green-900 mb-2">MCQ Challenge Mode</h4>
             <p className="text-sm text-green-700">
-              Navigate through an interactive debate about "{newsTitle}". 
+              Navigate through an interactive debate about {`"${newsTitle}"`}. 
               You'll make choices that shape the conversation and explore different viewpoints.
             </p>
           </div>
@@ -643,7 +643,7 @@ const AIDebateModal = ({ isOpen, onClose, newsId, newsTitle }) => {
         <h3 className="text-xl font-semibold text-gray-900 mb-2">
           Debate Report
         </h3>
-        <p className="text-gray-600">Here's your performance analysis</p>
+        <p className="text-gray-600">Here&apos;s your performance analysis</p>
       </div>
 
       {report && (
