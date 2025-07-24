@@ -1,10 +1,11 @@
+// Updated NewsComponent2.jsx - Remove AI Debate Modal and use navigation instead
 "use client";
 
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Cookies from "js-cookie";
-import { Crown, MessageCircle, Plus, Sparkles } from "lucide-react";
+import { Crown, MessageCircle, Plus, Sparkles, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -24,7 +25,6 @@ import {
 import PerspectiveNavigation from "../(innerpage)/news/_components/PerspectiveNavigation/PerspectiveNavigation";
 import { trackAction } from "./(analytics)/shareUrlTracker";
 import AddViewpointModal from "./AddViewpointModal";
-import AIDebateModal from "./AIDebateModal"; // Import the AI Debate Modal
 
 export default function NewsDetails2({ id, showNames }) {
   const [article, setArticle] = useState(null);
@@ -48,9 +48,6 @@ export default function NewsDetails2({ id, showNames }) {
   const [hasElitePlan, setHasElitePlan] = useState(false);
   const [newsGroupId, setNewsGroupId] = useState(null);
   const [showAddViewpointModal, setShowAddViewpointModal] = useState(false);
-
-  // AI Debate functionality
-  const [showDebateModal, setShowDebateModal] = useState(false);
 
   const fetchArticle = async () => {
     const token = localStorage.getItem("user_token");
@@ -246,6 +243,22 @@ export default function NewsDetails2({ id, showNames }) {
     setArticle(allArticles[index]);
   };
 
+  // Handle AI Debate navigation
+  const handleAIDebate = () => {
+    if (!hasElitePlan) {
+      toast.error('AI Debate feature is only available for Elite members');
+      return;
+    }
+
+    if (!newsGroupId) {
+      toast.error('This news article is not part of a debate-enabled group');
+      return;
+    }
+
+    // Navigate to the debate page for this news group
+    router.push(`/debates/${newsGroupId}`);
+  };
+
   const newsContent = () => {
     return (
       <div className="w-full p-4 md:p-6">
@@ -432,10 +445,10 @@ export default function NewsDetails2({ id, showNames }) {
               </div>
             </div>
 
-            {/* AI Debate Button (Elite Feature) */}
-            {hasElitePlan && (
+            {/* AI Debate Button (Elite Feature) - Now navigates to debate page */}
+            {hasElitePlan && newsGroupId && (
               <div
-                onClick={() => setShowDebateModal(true)}
+                onClick={handleAIDebate}
                 className="text-purple-600 cursor-pointer hover:text-purple-800 transition-colors flex items-center gap-2 group"
                 title="Start AI Debate - Elite Feature"
               >
@@ -444,6 +457,22 @@ export default function NewsDetails2({ id, showNames }) {
                   AI Debate
                 </span>
                 <Crown size={12} className="text-yellow-500" />
+                <ExternalLink size={12} className="opacity-60" />
+              </div>
+            )}
+
+            {/* Show message if user doesn't have access */}
+            {(!hasElitePlan || !newsGroupId) && (
+              <div className="text-gray-400 flex items-center gap-2" title={
+                !hasElitePlan 
+                  ? "AI Debate requires Elite membership" 
+                  : "This article is not part of a debate-enabled group"
+              }>
+                <MessageCircle size={16} />
+                <span className="text-sm font-medium hidden sm:inline">
+                  AI Debate
+                </span>
+                <Crown size={12} className="text-gray-400" />
               </div>
             )}
 
@@ -568,14 +597,6 @@ export default function NewsDetails2({ id, showNames }) {
           newsId={id}
           currentCount={userNewsCount}
           onSuccess={handleViewpointSuccess}
-        />
-
-        {/* AI Debate Modal */}
-        <AIDebateModal
-          isOpen={showDebateModal}
-          onClose={() => setShowDebateModal(false)}
-          newsId={id}
-          newsTitle={article?.title}
         />
 
         {/* Report Popup */}

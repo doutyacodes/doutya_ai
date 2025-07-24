@@ -12,8 +12,8 @@ export default function BottomNavigation() {
   function getActiveTabFromPath(path) {
     if (path === '/news' || path.startsWith('/news/')) {
       return '/news';
-    } else if (path === '/newsonmap' || path.startsWith('/newsonmap/')) {
-      return '/newsonmap';
+    } else if (path === '/debates' || path.startsWith('/debates/')) {
+      return '/debates';
     } else if (path === '/saved-folders' || path.startsWith('/saved-folders/')) {
       return '/saved-folders';
     } else if (path === '/trending' || path.startsWith('/trending/')) {
@@ -34,9 +34,9 @@ export default function BottomNavigation() {
       displayName: ['News', '']
     },
     {
-      name: 'News on Map',
-      path: '/newsonmap',
-      displayName: ['News on', 'Map']
+      name: 'Debates',
+      path: '/debates',
+      displayName: ['Debates', '']
     },
     {
       name: 'Saved News',
@@ -62,8 +62,8 @@ export default function BottomNavigation() {
       return pathname === '/news' || pathname.startsWith('/news/');
     }
     // For news-map tab
-    else if (tabPath === '/newsonmap') {
-      return pathname === '/newsonmap' || pathname.startsWith('/newsonmap/');
+    else if (tabPath === '/debates') {
+      return pathname === '/debates' || pathname.startsWith('/debates/');
     }
     // For saved news tab
     else if (tabPath === '/saved-folders') {

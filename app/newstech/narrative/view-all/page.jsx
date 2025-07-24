@@ -22,7 +22,7 @@ export default function NarrativesPage() {
   useEffect(() => {
     const fetchNarratives = async () => {
       try {
-        const token = localStorage.getItem('token');
+       const token = localStorage.getItem('user_token');
         if (!token) {
           router.push('/newstech/login');
           return;

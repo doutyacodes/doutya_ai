@@ -2082,3 +2082,28 @@ export const AI_DEBATE_REPORTS = mysqlTable("ai_debate_reports", {
   openai_response: text("openai_response"),
   created_at: timestamp("created_at").defaultNow(),
 });
+
+export const USER_DEBATE_PROGRESS = mysqlTable("user_debate_progress", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id")
+    .notNull()
+    .references(() => USER_DETAILS.id),
+  debate_topic_id: int("debate_topic_id")
+    .notNull()
+    .references(() => DEBATE_TOPICS.id),
+  debate_type: mysqlEnum("debate_type", ["ai_conversation", "decision_tree", "user_debate"]).notNull(),
+  completed: boolean("completed").default(false),
+  score: int("score").default(null), // Score out of 100 for user debates
+  progress_data: json("progress_data").default(null), // Store conversation history, paths taken, etc.
+  started_at: timestamp("started_at").defaultNow(),
+  completed_at: timestamp("completed_at").default(null),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+}, (table) => ({
+  // Unique constraint to prevent duplicate progress records
+  userDebateTypeUnique: uniqueIndex("user_debate_progress_unique", [
+    table.user_id,
+    table.debate_topic_id, 
+    table.debate_type
+  ]),
+}));

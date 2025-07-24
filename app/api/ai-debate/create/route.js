@@ -1,4 +1,4 @@
-// /api/ai-debate/create/route.js
+// /api/ai-debate/create/route.js - Updated to handle both newsId and groupId
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/jwtMiddleware";
 import axios from "axios";
@@ -11,6 +11,8 @@ import {
   MC_DEBATE_RESPONSES,
   MC_DEBATE_OPTIONS,
   AI_CONVERSATIONS,
+  ADULT_NEWS,
+  ADULT_NEWS_GROUP,
 } from "@/utils/schema";
 import { db } from "@/utils";
 import { eq, and } from "drizzle-orm";
@@ -53,19 +55,43 @@ Keep it under 300 characters and be persuasive but respectful.`;
   }
 }
 
+// Function to resolve news group ID from either newsId or groupId
+async function resolveNewsGroupId(newsId, groupId) {
+  if (groupId) {
+    // Direct group ID provided
+    return parseInt(groupId);
+  }
+  
+  if (newsId) {
+    // Get group ID from news ID
+    const newsArticle = await db
+      .select({ news_group_id: ADULT_NEWS.news_group_id })
+      .from(ADULT_NEWS)
+      .where(eq(ADULT_NEWS.id, parseInt(newsId)))
+      .limit(1)
+      .execute();
+    
+    if (newsArticle.length > 0) {
+      return newsArticle[0].news_group_id;
+    }
+  }
+  
+  throw new Error("Unable to determine news group ID");
+}
+
 // Function to get real AI vs AI conversations from database
-async function getRealAIvsAI(newsId) {
+async function getRealAIvsAI(newsGroupId) {
   try {
-    // Find the debate topic associated with this news
+    // Find the debate topic associated with this news group
     const debateTopics = await db
       .select()
       .from(DEBATE_TOPICS)
-      .where(eq(DEBATE_TOPICS.news_group_id, newsId))
+      .where(eq(DEBATE_TOPICS.news_group_id, newsGroupId))
       .limit(1)
       .execute();
 
     if (!debateTopics.length) {
-      throw new Error("No debate topic found for this news article");
+      throw new Error("No debate topic found for this news group");
     }
 
     const debateTopicId = debateTopics[0].id;
@@ -121,18 +147,18 @@ async function getRealAIvsAI(newsId) {
 }
 
 // Function to get real MCQ question from database
-async function getRealMCQQuestion(newsId, level = 1, parentResponseId = null) {
+async function getRealMCQQuestion(newsGroupId, level = 1, parentResponseId = null) {
   try {
-    // First, find the debate topic associated with this news
+    // First, find the debate topic associated with this news group
     const debateTopics = await db
       .select()
       .from(DEBATE_TOPICS)
-      .where(eq(DEBATE_TOPICS.news_group_id, newsId))
+      .where(eq(DEBATE_TOPICS.news_group_id, newsGroupId))
       .limit(1)
       .execute();
 
     if (!debateTopics.length) {
-      throw new Error("No debate topic found for this news article");
+      throw new Error("No debate topic found for this news group");
     }
 
     const debateTopicId = debateTopics[0].id;
@@ -292,7 +318,8 @@ export async function POST(request) {
     debateType = "user_vs_ai", 
     userPosition, 
     aiPosition, 
-    newsId 
+    newsId,
+    groupId // New parameter for direct group ID
   } = await request.json();
 
   if (!topic?.trim()) {
@@ -319,6 +346,9 @@ export async function POST(request) {
         { status: 403 }
       );
     }
+
+    // Resolve news group ID
+    const newsGroupId = await resolveNewsGroupId(newsId, groupId);
 
     // Check usage limits
     const dailyLimit = 5;
@@ -430,10 +460,10 @@ export async function POST(request) {
       const insertResult = await db.insert(AI_DEBATE_ROOMS).values(debateRoomData).execute();
       const debateRoomId = insertResult[0].insertId;
 
-      const realConversations = await getRealAIvsAI(newsId);
+      const realConversations = await getRealAIvsAI(newsGroupId);
       
       // Update max_conversations based on actual data
-      const maxRounds = Math.max(...realConversations.map(c => c.conversation_round), 0);
+      const maxRounds = Math.max(...realConversations.map(c => c.conversation_round), 1);
       await db
         .update(AI_DEBATE_ROOMS)
         .set({ max_conversations: maxRounds })
@@ -466,7 +496,7 @@ export async function POST(request) {
       const insertResult = await db.insert(AI_DEBATE_ROOMS).values(debateRoomData).execute();
       const debateRoomId = insertResult[0].insertId;
 
-      const realMCQQuestion = await getRealMCQQuestion(newsId, 1);
+      const realMCQQuestion = await getRealMCQQuestion(newsGroupId, 1);
 
       responseData.debate = {
         id: debateRoomId,

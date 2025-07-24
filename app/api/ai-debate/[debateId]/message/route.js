@@ -1,4 +1,4 @@
-// /api/ai-debate/[debateId]/message/route.js
+// /api/ai-debate/[debateId]/message/route.js - Fixed version
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/jwtMiddleware";
 import axios from "axios";
@@ -8,6 +8,7 @@ import {
   AI_DEBATE_REPORTS,
   MC_DEBATE_OPTIONS,
   MC_DEBATE_RESPONSES,
+  DEBATE_POSITIONS,
 } from "@/utils/schema";
 import { db } from "@/utils";
 import { eq, and, asc } from "drizzle-orm";
@@ -259,7 +260,7 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
 
     const formattedNextQuestion = {
       id: nextResponse.id,
-      question_text: `AI Response - Level ${nextResponse.level}`,
+      question_text: `AI Response - Round ${nextResponse.level}`,
       ai_message: nextResponse.ai_message,
       ai_persona: nextResponse.ai_persona,
       level: nextResponse.level,
@@ -291,7 +292,7 @@ export async function POST(request, { params }) {
   const userData = authResult.decoded_Data;
   const userId = userData.id;
   
-  // FIX: Await params before accessing debateId
+  // Await params before accessing debateId
   const { debateId } = await params;
   
   const { content, action, selectedOptionId } = await request.json();
@@ -421,7 +422,7 @@ async function handleUserVsAI(room, content, userId, debateId) {
     const debateReport = {
       debate_room_id: debateId,
       user_id: userId,
-      debate_type: "user_vs_ai", // Add debate_type
+      debate_type: "user_vs_ai",
       ...reportData,
       openai_response: JSON.stringify(reportData),
     };
@@ -469,17 +470,17 @@ async function handleAIvsAI(room, userId, debateId) {
   let debateCompleted = false;
   let report = null;
 
-  // FIXED: Check if all conversations are shown - should be > not >=
-  if (newRound > room.max_conversations) {
+  // Check if all conversations are shown - when we reach max_conversations
+  if (newRound >= room.max_conversations) {
     console.log("AI vs AI debate completed");
     await db.update(AI_DEBATE_ROOMS).set({ status: "completed" }).where(eq(AI_DEBATE_ROOMS.id, debateId)).execute();
 
     // Generate completion report for AI vs AI
     const reportData = {
-      overall_analysis: "You observed a structured debate between two AI perspectives, gaining insights into different approaches to argumentation.",
-      strengths: "You demonstrated patience and engagement by following the entire debate sequence.",
-      improvements: "Consider taking notes during future AI debates to better analyze the argumentation techniques used.",
-      insights: "Watching structured debates helps develop critical thinking skills. Notice how each side builds upon previous points.",
+      overall_analysis: "You observed a structured debate between two AI perspectives, gaining insights into different approaches to argumentation and critical thinking. The debate showcased how different viewpoints can be presented logically and persuasively.",
+      strengths: "You demonstrated patience and engagement by following the entire debate sequence, observing how arguments develop and counter-arguments are formed. Your attention to the complete discussion shows good analytical engagement.",
+      improvements: "Consider taking notes during future AI debates to better analyze the argumentation techniques, logical structures, and persuasion strategies used by each side. This will help you develop your own debate skills.",
+      insights: "Watching structured debates helps develop critical thinking skills. Notice how each side builds upon previous points, addresses counterarguments, and maintains logical consistency throughout the discussion. This observation can improve your own argumentation abilities.",
       argument_quality_score: 8,
       persuasiveness_score: 7,
       factual_accuracy_score: 8,
@@ -487,11 +488,11 @@ async function handleAIvsAI(room, userId, debateId) {
       winner: "tie",
     };
 
-    // Create debate report object without choice_count for AI vs AI
+    // Create debate report object for AI vs AI
     const debateReport = {
       debate_room_id: debateId,
       user_id: userId,
-      debate_type: "ai_vs_ai", // Add debate_type
+      debate_type: "ai_vs_ai",
       ...reportData,
       openai_response: JSON.stringify(reportData),
     };
@@ -548,8 +549,8 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
     let isCompleted = false;
     let report = null;
 
-    // FIXED: Check completion - should only complete if no next question OR terminal OR exceed max level
-    if (!nextQuestion || option.is_terminal || currentLevel > 5) {
+    // Check completion - should only complete if no next question OR terminal OR exceed max level
+    if (!nextQuestion || option.is_terminal || currentLevel >= 5) {
       console.log("MCQ debate completed - no next question or terminal or max level reached");
       
       // Mark as completed
@@ -561,10 +562,10 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
 
       // Generate completion report
       const reportData = {
-        overall_analysis: "You navigated through a complex decision tree, making thoughtful choices at each step of the debate.",
-        strengths: "You demonstrated careful consideration of options and showed engagement with the different perspectives presented.",
-        improvements: "Consider spending more time analyzing the implications of each choice and how they build upon previous decisions.",
-        insights: "Decision tree exercises help develop systematic thinking and consequence evaluation skills. Each choice shapes the direction of the debate.",
+        overall_analysis: "You navigated through a complex decision tree, making thoughtful choices at each step of the debate. Your selections demonstrate engagement with different perspectives and careful consideration of various viewpoints.",
+        strengths: "You demonstrated careful consideration of options and showed engagement with the different perspectives presented. Your choices reflect analytical thinking and willingness to explore complex topics through structured decision-making.",
+        improvements: "Consider spending more time analyzing the implications of each choice and how they build upon previous decisions. Think about how your choices might lead to different outcomes and conclusions in future scenarios.",
+        insights: "Decision tree exercises help develop systematic thinking and consequence evaluation skills. Each choice shapes the direction of the debate and demonstrates how different paths of reasoning can lead to varied conclusions and insights.",
         argument_quality_score: 7,
         persuasiveness_score: 6,
         factual_accuracy_score: 7,
