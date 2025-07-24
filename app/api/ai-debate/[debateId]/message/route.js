@@ -126,9 +126,11 @@ async function generateDebateReport(debateRoom, messages) {
   }
 }
 
-// Function to get the next real MCQ question from database
+// Enhanced function to get the next real MCQ question from database
 async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
   try {
+    console.log(`Getting next MCQ question for option ${selectedOptionId}, current level ${currentLevel}`);
+    
     // Get the selected option details
     const selectedOption = await db
       .select()
@@ -138,107 +140,142 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
       .execute();
 
     if (!selectedOption.length) {
+      console.log("Selected option not found");
       throw new Error("Selected option not found");
     }
 
     const option = selectedOption[0];
+    console.log("Selected option:", option);
 
     // Check if this is a terminal option (end of conversation)
     if (option.is_terminal) {
+      console.log("Option is terminal, ending conversation");
       return null; // No next question
     }
 
-    // Get the next response that this option leads to
+    let nextResponse = null;
+
+    // Primary path: Check if option has a direct link to next response
     if (option.leads_to_response_id) {
-      const nextResponse = await db
+      console.log(`Following leads_to_response_id: ${option.leads_to_response_id}`);
+      
+      const responses = await db
         .select()
         .from(MC_DEBATE_RESPONSES)
         .where(eq(MC_DEBATE_RESPONSES.id, option.leads_to_response_id))
         .limit(1)
         .execute();
 
-      if (nextResponse.length) {
-        const response = nextResponse[0];
-
-        // Get options for this next response
-        const nextOptions = await db
-          .select()
-          .from(MC_DEBATE_OPTIONS)
-          .where(eq(MC_DEBATE_OPTIONS.mc_response_id, response.id))
-          .execute();
-
-        return {
-          id: response.id,
-          question_text: `AI Response - Level ${response.level}`,
-          ai_message: response.ai_message,
-          ai_persona: response.ai_persona,
-          level: response.level,
-          options: nextOptions.map((opt, index) => ({
-            id: opt.id,
-            option_text: opt.option_text,
-            option_letter: opt.option_letter || String.fromCharCode(65 + index), // A, B, C...
-            option_position: opt.option_position,
-            leads_to_response_id: opt.leads_to_response_id,
-            is_terminal: opt.is_terminal
-          }))
-        };
+      if (responses.length) {
+        nextResponse = responses[0];
+        console.log("Found next response via leads_to_response_id:", nextResponse);
       }
-    } else {
-      // If no specific leads_to_response_id, find next level responses based on path logic
-      // Get the current response to find its children
-      const currentResponse = await db
+    }
+
+    // Fallback path: Look for child responses based on current response
+    if (!nextResponse) {
+      console.log("No leads_to_response_id, looking for child responses");
+      
+      // Get the current response this option belongs to
+      const currentResponses = await db
         .select()
         .from(MC_DEBATE_RESPONSES)
         .where(eq(MC_DEBATE_RESPONSES.id, option.mc_response_id))
         .limit(1)
         .execute();
 
-      if (currentResponse.length) {
-        const current = currentResponse[0];
+      if (currentResponses.length) {
+        const currentResponse = currentResponses[0];
+        console.log("Current response:", currentResponse);
         
-        // Find responses at the next level that are children of current response
+        // Look for child responses at the next level
+        const childResponses = await db
+          .select()
+          .from(MC_DEBATE_RESPONSES)
+          .where(
+            and(
+              eq(MC_DEBATE_RESPONSES.debate_topic_id, currentResponse.debate_topic_id),
+              eq(MC_DEBATE_RESPONSES.parent_response_id, currentResponse.id),
+              eq(MC_DEBATE_RESPONSES.level, currentLevel + 1)
+            )
+          )
+          .limit(1)
+          .execute();
+
+        if (childResponses.length) {
+          nextResponse = childResponses[0];
+          console.log("Found next response via child lookup:", nextResponse);
+        }
+      }
+    }
+
+    // Alternative fallback: Look for any response at the next level
+    if (!nextResponse) {
+      console.log("Looking for any response at next level");
+      
+      // Get current response to get debate_topic_id
+      const currentResponses = await db
+        .select()
+        .from(MC_DEBATE_RESPONSES)
+        .where(eq(MC_DEBATE_RESPONSES.id, option.mc_response_id))
+        .limit(1)
+        .execute();
+
+      if (currentResponses.length) {
+        const currentResponse = currentResponses[0];
+        
         const nextLevelResponses = await db
           .select()
           .from(MC_DEBATE_RESPONSES)
           .where(
             and(
-              eq(MC_DEBATE_RESPONSES.debate_topic_id, current.debate_topic_id),
-              eq(MC_DEBATE_RESPONSES.level, currentLevel + 1),
-              eq(MC_DEBATE_RESPONSES.parent_response_id, current.id)
+              eq(MC_DEBATE_RESPONSES.debate_topic_id, currentResponse.debate_topic_id),
+              eq(MC_DEBATE_RESPONSES.level, currentLevel + 1)
             )
           )
           .limit(1)
           .execute();
 
         if (nextLevelResponses.length) {
-          const response = nextLevelResponses[0];
-
-          const nextOptions = await db
-            .select()
-            .from(MC_DEBATE_OPTIONS)
-            .where(eq(MC_DEBATE_OPTIONS.mc_response_id, response.id))
-            .execute();
-
-          return {
-            id: response.id,
-            question_text: `AI Response - Level ${response.level}`,
-            ai_message: response.ai_message,
-            ai_persona: response.ai_persona,
-            level: response.level,
-            options: nextOptions.map((opt, index) => ({
-              id: opt.id,
-              option_text: opt.option_text,
-              option_letter: opt.option_letter || String.fromCharCode(65 + index),
-              option_position: opt.option_position,
-              leads_to_response_id: opt.leads_to_response_id,
-              is_terminal: opt.is_terminal
-            }))
-          };
+          nextResponse = nextLevelResponses[0];
+          console.log("Found next response at next level:", nextResponse);
         }
       }
     }
 
-    return null; // No next question found
+    if (!nextResponse) {
+      console.log("No next response found, ending conversation");
+      return null;
+    }
+
+    // Get options for the next response
+    const nextOptions = await db
+      .select()
+      .from(MC_DEBATE_OPTIONS)
+      .where(eq(MC_DEBATE_OPTIONS.mc_response_id, nextResponse.id))
+      .execute();
+
+    console.log(`Found ${nextOptions.length} options for next response`);
+
+    const formattedNextQuestion = {
+      id: nextResponse.id,
+      question_text: `AI Response - Level ${nextResponse.level}`,
+      ai_message: nextResponse.ai_message,
+      ai_persona: nextResponse.ai_persona,
+      level: nextResponse.level,
+      options: nextOptions.map((opt, index) => ({
+        id: opt.id,
+        option_text: opt.option_text,
+        option_letter: opt.option_letter || String.fromCharCode(65 + index), // A, B, C...
+        option_position: opt.option_position,
+        leads_to_response_id: opt.leads_to_response_id,
+        is_terminal: opt.is_terminal
+      }))
+    };
+
+    console.log("Returning formatted next question:", formattedNextQuestion);
+    return formattedNextQuestion;
+
   } catch (error) {
     console.error("Error fetching next MCQ question:", error);
     return null;
@@ -419,6 +456,8 @@ async function handleUserVsAI(room, content, userId, debateId) {
 
 async function handleAIvsAI(room, userId, debateId) {
   const newRound = room.conversation_count + 1;
+  
+  console.log(`AI vs AI: Current round ${room.conversation_count}, new round ${newRound}, max rounds ${room.max_conversations}`);
 
   // Update conversation count
   await db
@@ -430,8 +469,9 @@ async function handleAIvsAI(room, userId, debateId) {
   let debateCompleted = false;
   let report = null;
 
-  // Check if all conversations are shown
-  if (newRound >= room.max_conversations) {
+  // FIXED: Check if all conversations are shown - should be > not >=
+  if (newRound > room.max_conversations) {
+    console.log("AI vs AI debate completed");
     await db.update(AI_DEBATE_ROOMS).set({ status: "completed" }).where(eq(AI_DEBATE_ROOMS.id, debateId)).execute();
 
     // Generate completion report for AI vs AI
@@ -468,7 +508,7 @@ async function handleAIvsAI(room, userId, debateId) {
       debateCompleted,
       report,
       conversationTurn: newRound,
-      remainingTurns: room.max_conversations - newRound,
+      remainingTurns: Math.max(0, room.max_conversations - newRound),
     },
     { status: 200 }
   );
@@ -476,6 +516,8 @@ async function handleAIvsAI(room, userId, debateId) {
 
 async function handleMCQ(room, selectedOptionId, userId, debateId) {
   const currentLevel = room.conversation_count + 1;
+  
+  console.log(`MCQ: Current level ${room.conversation_count}, new level ${currentLevel}, selected option ${selectedOptionId}`);
 
   try {
     // Get the selected option to understand the choice made
@@ -491,6 +533,7 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
     }
 
     const option = selectedOption[0];
+    console.log("Selected option details:", option);
     
     // Get the next question based on the selected option
     const nextQuestion = await getRealNextMCQQuestion(selectedOptionId, currentLevel);
@@ -505,8 +548,10 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
     let isCompleted = false;
     let report = null;
 
-    // Check if this was a terminal option or we've reached max level
-    if (!nextQuestion || option.is_terminal || currentLevel >= 5) {
+    // FIXED: Check completion - should only complete if no next question OR terminal OR exceed max level
+    if (!nextQuestion || option.is_terminal || currentLevel > 5) {
+      console.log("MCQ debate completed - no next question or terminal or max level reached");
+      
       // Mark as completed
       await db
         .update(AI_DEBATE_ROOMS)
@@ -541,6 +586,8 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
       isCompleted = true;
       report = reportData;
     }
+
+    console.log(`MCQ result: isCompleted=${isCompleted}, nextQuestion exists=${!!nextQuestion}`);
 
     return NextResponse.json(
       {
