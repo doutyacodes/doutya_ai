@@ -300,7 +300,7 @@ const AIDebateModal = ({ isOpen, onClose, newsId, newsTitle }) => {
             whileTap={type.available ? { scale: 0.98 } : {}}
           >
             <div className="flex items-center gap-4">
-              <div className={`w-12 h-12 rounded-full bg-${type.color}-100 flex items-center justify-center ${!type.available ? 'opacity-50' : ''}`}>
+              <div className={`w-12 h-12 rounded-full bg-${type.color}-100 flex items-center justify-center ${!type.available ? 'opacity-50' : ' '}`}>
                 <type.icon className={`w-6 h-6 text-${type.color}-600`} />
               </div>
               <div className="text-left flex-1">
