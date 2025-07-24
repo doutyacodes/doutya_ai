@@ -719,7 +719,7 @@ const AIDebateModal = ({ isOpen, onClose, newsId, newsTitle }) => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ duration: 0.2 }}
-          className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
+          className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-scroll"
         >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b">
