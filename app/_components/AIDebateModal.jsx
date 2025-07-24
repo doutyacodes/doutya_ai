@@ -398,7 +398,7 @@ const AIDebateModal = ({ isOpen, onClose, newsId, newsTitle }) => {
             <h4 className="font-medium text-blue-900 mb-2">AI vs AI Debate</h4>
             <p className="text-sm text-blue-700">
               Watch a pre-generated debate between two AI personas on {`"${newsTitle}"`}. 
-              You'll observe different perspectives and argumentation techniques.
+              You&apos;ll observe different perspectives and argumentation techniques.
             </p>
           </div>
         )}
@@ -408,7 +408,7 @@ const AIDebateModal = ({ isOpen, onClose, newsId, newsTitle }) => {
             <h4 className="font-medium text-green-900 mb-2">MCQ Challenge Mode</h4>
             <p className="text-sm text-green-700">
               Navigate through an interactive debate about {`"${newsTitle}"`}. 
-              You'll make choices that shape the conversation and explore different viewpoints.
+              You&apos;ll make choices that shape the conversation and explore different viewpoints.
             </p>
           </div>
         )}
