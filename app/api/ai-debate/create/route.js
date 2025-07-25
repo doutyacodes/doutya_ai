@@ -1,4 +1,4 @@
-// /api/ai-debate/create/route.js - Updated with better error handling and connection management
+// /api/ai-debate/create/route.js - Updated without simulated fallbacks
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/jwtMiddleware";
 import axios from "axios";
@@ -15,7 +15,7 @@ import {
   ADULT_NEWS_GROUP,
 } from "@/utils/schema";
 import { db } from "@/utils";
-import { eq, and } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 
 async function generateOpeningStatement(topic, aiPosition, userPosition) {
   const prompt = `You are participating in a formal debate about: "${topic}"
@@ -85,254 +85,168 @@ async function resolveNewsGroupId(newsId, groupId) {
   }
 }
 
-// Function to get real AI vs AI conversations from database with better error handling
+// Function to get real AI vs AI conversations from database
 async function getRealAIvsAI(newsGroupId) {
-  try {
-    console.log(`Fetching AI vs AI conversations for news group: ${newsGroupId}`);
-    
-    // Find the debate topic associated with this news group
-    const debateTopics = await db
-      .select()
-      .from(DEBATE_TOPICS)
-      .where(eq(DEBATE_TOPICS.news_group_id, newsGroupId))
-      .limit(1)
-      .execute();
+  console.log(`Fetching AI vs AI conversations for news group: ${newsGroupId}`);
+  
+  // Find the debate topic associated with this news group
+  const debateTopics = await db
+    .select()
+    .from(DEBATE_TOPICS)
+    .where(eq(DEBATE_TOPICS.news_group_id, newsGroupId))
+    .limit(1)
+    .execute();
 
-    if (!debateTopics.length) {
-      console.log(`No debate topic found for news group: ${newsGroupId}`);
-      throw new Error("No debate topic found for this news group");
-    }
-
-    const debateTopicId = debateTopics[0].id;
-    console.log(`Found debate topic ID: ${debateTopicId}`);
-
-    // Get all AI conversations for this debate topic
-    const conversations = await db
-      .select()
-      .from(AI_CONVERSATIONS)
-      .where(eq(AI_CONVERSATIONS.debate_topic_id, debateTopicId))
-      .execute();
-
-    if (!conversations.length) {
-      console.log(`No AI conversations found for debate topic: ${debateTopicId}`);
-      throw new Error("No AI conversations found for this debate topic");
-    }
-
-    console.log(`Found ${conversations.length} AI conversations`);
-
-    // Transform the data to match your expected format
-    const formattedConversations = [];
-    
-    conversations.forEach(conv => {
-      // Add "for" message
-      formattedConversations.push({
-        id: `${conv.id}_for`,
-        sender: "ai_1",
-        content: conv.for_message,
-        conversation_round: conv.conversation_round,
-        ai_persona: conv.for_ai_persona
-      });
-      
-      // Add "against" message
-      formattedConversations.push({
-        id: `${conv.id}_against`,
-        sender: "ai_2",
-        content: conv.against_message,
-        conversation_round: conv.conversation_round,
-        ai_persona: conv.against_ai_persona
-      });
-    });
-
-    // Sort by conversation round and sender to maintain proper order
-    formattedConversations.sort((a, b) => {
-      if (a.conversation_round !== b.conversation_round) {
-        return a.conversation_round - b.conversation_round;
-      }
-      return a.sender.localeCompare(b.sender);
-    });
-
-    console.log(`Returning ${formattedConversations.length} formatted conversations`);
-    return formattedConversations;
-  } catch (error) {
-    console.error("Error fetching real AI vs AI conversations:", error);
-    // Fallback to simulated data if real data fails
-    console.log("Falling back to simulated AI vs AI data");
-    return generateSimulatedAIvsAI("this topic");
+  if (!debateTopics.length) {
+    console.log(`No debate topic found for news group: ${newsGroupId}`);
+    throw new Error("No debate topic found for this news group");
   }
+
+  const debateTopicId = debateTopics[0].id;
+  console.log(`Found debate topic ID: ${debateTopicId}`);
+
+  // Get all AI conversations for this debate topic
+  const conversations = await db
+    .select()
+    .from(AI_CONVERSATIONS)
+    .where(eq(AI_CONVERSATIONS.debate_topic_id, debateTopicId))
+    .execute();
+
+  if (!conversations.length) {
+    console.log(`No AI conversations found for debate topic: ${debateTopicId}`);
+    throw new Error("No AI conversations found for this debate topic");
+  }
+
+  console.log(`Found ${conversations.length} AI conversations`);
+
+  // Transform the data to match your expected format
+  const formattedConversations = [];
+  
+  conversations.forEach(conv => {
+    // Add "for" message
+    formattedConversations.push({
+      id: `${conv.id}_for`,
+      sender: "ai_1",
+      content: conv.for_message,
+      conversation_round: conv.conversation_round,
+      ai_persona: conv.for_ai_persona
+    });
+    
+    // Add "against" message
+    formattedConversations.push({
+      id: `${conv.id}_against`,
+      sender: "ai_2",
+      content: conv.against_message,
+      conversation_round: conv.conversation_round,
+      ai_persona: conv.against_ai_persona
+    });
+  });
+
+  // Sort by conversation round and sender to maintain proper order
+  formattedConversations.sort((a, b) => {
+    if (a.conversation_round !== b.conversation_round) {
+      return a.conversation_round - b.conversation_round;
+    }
+    return a.sender.localeCompare(b.sender);
+  });
+
+  console.log(`Returning ${formattedConversations.length} formatted conversations`);
+  return formattedConversations;
 }
 
 // Function to get real MCQ question from database with tree type support
 async function getRealMCQQuestion(newsGroupId, treeType, level = 1, parentResponseId = null) {
-  try {
-    console.log(`Getting real MCQ question for newsGroupId: ${newsGroupId}, treeType: ${treeType}, level: ${level}`);
-    
-    // First, find the debate topic associated with this news group
-    const debateTopics = await db
+  {console.log("data received",[newsGroupId, treeType, level , parentResponseId ])}
+  console.log(`Getting real MCQ question for newsGroupId: ${newsGroupId}, treeType: ${treeType}, level: ${level}`);
+  
+  // First, find the debate topic associated with this news group
+  const debateTopics = await db
+    .select()
+    .from(DEBATE_TOPICS)
+    .where(eq(DEBATE_TOPICS.news_group_id, newsGroupId))
+    .limit(1)
+    .execute();
+
+  if (!debateTopics.length) {
+    console.log(`No debate topic found for news group: ${newsGroupId}`);
+    throw new Error("No debate topic found for this news group");
+  }
+
+  const debateTopicId = debateTopics[0].id;
+  console.log(`Found debate topic ID: ${debateTopicId}`);
+
+  // Get the appropriate MCQ response based on level, tree type and parent
+  let mcqResponse;
+  
+  if (level === 1) {
+    // Get root level question for the specific tree type
+    mcqResponse = await db
       .select()
-      .from(DEBATE_TOPICS)
-      .where(eq(DEBATE_TOPICS.news_group_id, newsGroupId))
+      .from(MC_DEBATE_RESPONSES)
+      .where(
+        and(
+          eq(MC_DEBATE_RESPONSES.debate_topic_id, debateTopicId),
+          eq(MC_DEBATE_RESPONSES.level, 1),
+          isNull(MC_DEBATE_RESPONSES.parent_response_id),
+          eq(MC_DEBATE_RESPONSES.tree_type, treeType)
+        )
+      )
       .limit(1)
       .execute();
-
-    if (!debateTopics.length) {
-      console.log(`No debate topic found for news group: ${newsGroupId}`);
-      throw new Error("No debate topic found for this news group");
-    }
-
-    const debateTopicId = debateTopics[0].id;
-    console.log(`Found debate topic ID: ${debateTopicId}`);
-
-    // Get the appropriate MCQ response based on level, tree type and parent
-    let mcqResponse;
-    
-    if (level === 1) {
-      // Get root level question for the specific tree type
-      mcqResponse = await db
-        .select()
-        .from(MC_DEBATE_RESPONSES)
-        .where(
-          and(
-            eq(MC_DEBATE_RESPONSES.debate_topic_id, debateTopicId),
-            eq(MC_DEBATE_RESPONSES.level, 1),
-            eq(MC_DEBATE_RESPONSES.parent_response_id, null),
-            eq(MC_DEBATE_RESPONSES.tree_type, treeType)
-          )
-        )
-        .limit(1)
-        .execute();
-    } else {
-      // Get specific response by ID for subsequent levels
-      mcqResponse = await db
-        .select()
-        .from(MC_DEBATE_RESPONSES)
-        .where(
-          and(
-            eq(MC_DEBATE_RESPONSES.id, parentResponseId),
-            eq(MC_DEBATE_RESPONSES.tree_type, treeType)
-          )
-        )
-        .limit(1)
-        .execute();
-    }
-
-    if (!mcqResponse.length) {
-      console.log(`No MCQ question found for level ${level}, tree type ${treeType}`);
-      throw new Error(`No MCQ question found for level ${level} and tree type ${treeType}`);
-    }
-
-    const response = mcqResponse[0];
-
-    // Get the options for this response
-    const options = await db
+  } else {
+    // Get specific response by ID for subsequent levels
+    mcqResponse = await db
       .select()
-      .from(MC_DEBATE_OPTIONS)
-      .where(eq(MC_DEBATE_OPTIONS.mc_response_id, response.id))
+      .from(MC_DEBATE_RESPONSES)
+      .where(
+        and(
+          eq(MC_DEBATE_RESPONSES.id, parentResponseId),
+          eq(MC_DEBATE_RESPONSES.tree_type, treeType)
+        )
+      )
+      .limit(1)
       .execute();
-
-    console.log(`Found MCQ response with ${options.length} options for tree type ${treeType}`);
-
-    return {
-      id: response.id,
-      question_text: `AI Response - Level ${response.level}`,
-      ai_message: response.ai_message,
-      ai_persona: response.ai_persona,
-      level: response.level,
-      tree_type: response.tree_type,
-      debate_topic_id: debateTopicId,
-      options: options.map((option, index) => ({
-        id: option.id,
-        option_text: option.option_text,
-        option_letter: option.option_letter || String.fromCharCode(65 + index), // A, B, C...
-        option_position: option.option_position,
-        leads_to_response_id: option.leads_to_response_id,
-        is_terminal: option.is_terminal
-      }))
-    };
-  } catch (error) {
-    console.error("Error fetching real MCQ question:", error);
-    // Fallback to simulated data if real data fails
-    console.log("Falling back to simulated MCQ data");
-    return generateSimulatedMCQ("this topic");
   }
-}
+console.log("mcqResponse",mcqResponse)
+console.log("mcqResponse",parentResponseId)
+console.log("mcqResponse",treeType)
+  if (!mcqResponse.length) {
+    console.log(`No MCQ question found for level ${level}, tree type ${treeType}`);
+    throw new Error(`No MCQ question found for level ${level} and tree type ${treeType}`);
+  }
 
-// Simulated AI vs AI conversations for demo (fallback)
-function generateSimulatedAIvsAI(topic) {
-  return [
-    {
-      id: 1,
-      sender: "ai_1",
-      content: `I believe ${topic} presents significant opportunities that we should embrace thoughtfully.`,
-      conversation_round: 1,
-      ai_persona: "Progressive Analyst"
-    },
-    {
-      id: 2,
-      sender: "ai_2", 
-      content: `While I understand that perspective, we must consider the potential risks and unintended consequences.`,
-      conversation_round: 1,
-      ai_persona: "Conservative Analyst"
-    },
-    {
-      id: 3,
-      sender: "ai_1",
-      content: `The historical data shows that similar innovations have consistently led to positive outcomes when properly managed.`,
-      conversation_round: 2,
-      ai_persona: "Progressive Analyst"
-    },
-    {
-      id: 4,
-      sender: "ai_2",
-      content: `However, we cannot ignore the cases where rapid adoption led to significant societal disruption.`,
-      conversation_round: 2,
-      ai_persona: "Conservative Analyst"
-    },
-    {
-      id: 5,
-      sender: "ai_1",
-      content: `That's precisely why gradual implementation with proper safeguards is the optimal approach.`,
-      conversation_round: 3,
-      ai_persona: "Progressive Analyst"
-    },
-    {
-      id: 6,
-      sender: "ai_2",
-      content: `I agree that safeguards are crucial, but we must ensure they are robust before proceeding.`,
-      conversation_round: 3,
-      ai_persona: "Conservative Analyst"
-    }
-  ];
-}
+  const response = mcqResponse[0];
 
-// Simulated MCQ questions for demo (fallback)
-function generateSimulatedMCQ(topic) {
+  // Get the options for this response
+  const options = await db
+    .select()
+    .from(MC_DEBATE_OPTIONS)
+    .where(eq(MC_DEBATE_OPTIONS.mc_response_id, response.id))
+    .execute();
+
+  if (!options.length) {
+    console.log(`No options found for MCQ response ${response.id}`);
+    throw new Error(`No options found for this MCQ question`);
+  }
+
+  console.log(`Found MCQ response with ${options.length} options for tree type ${treeType}`);
+
   return {
-    id: 1,
-    question_text: `What is your primary concern regarding ${topic}?`,
-    ai_message: `From my analysis, ${topic} presents both opportunities and challenges that require careful consideration.`,
-    ai_persona: "Neutral Analyst",
-    level: 1,
-    tree_type: "ai_for",
-    options: [
-      {
-        id: 1,
-        option_text: "The economic implications are most important",
-        option_letter: "A",
-        option_position: "against"
-      },
-      {
-        id: 2,
-        option_text: "Social impacts should be our primary focus",
-        option_letter: "B", 
-        option_position: "against"
-      },
-      {
-        id: 3,
-        option_text: "Environmental considerations must come first",
-        option_letter: "C",
-        option_position: "against"
-      }
-    ]
+    id: response.id,
+    question_text: `AI Response - Level ${response.level}`,
+    ai_message: response.ai_message,
+    ai_persona: response.ai_persona,
+    level: response.level,
+    tree_type: response.tree_type,
+    debate_topic_id: debateTopicId,
+    options: options.map((option, index) => ({
+      id: option.id,
+      option_text: option.option_text,
+      option_letter: option.option_letter || String.fromCharCode(65 + index), // A, B, C...
+      option_position: option.option_position,
+      leads_to_response_id: option.leads_to_response_id,
+      is_terminal: option.is_terminal
+    }))
   };
 }
 
@@ -537,6 +451,8 @@ export async function POST(request) {
     } else if (debateType === "ai_vs_ai") {
       // Use real AI vs AI content from database
       try {
+        const realConversations = await getRealAIvsAI(newsGroupId);
+        
         const debateRoomData = {
           user_id: userId,
           topic: topic.trim(),
@@ -552,8 +468,6 @@ export async function POST(request) {
 
         const insertResult = await db.insert(AI_DEBATE_ROOMS).values(debateRoomData).execute();
         const debateRoomId = insertResult[0].insertId;
-
-        const realConversations = await getRealAIvsAI(newsGroupId);
         
         // Update max_conversations based on actual data
         const maxRounds = Math.max(...realConversations.map(c => c.conversation_round), 1);
@@ -573,8 +487,8 @@ export async function POST(request) {
       } catch (dbError) {
         console.error("Database error creating AI vs AI debate:", dbError);
         return NextResponse.json(
-          { error: "Failed to create AI vs AI debate. Database error." },
-          { status: 503 }
+          { error: "Failed to create AI vs AI debate. No debate content available for this topic." },
+          { status: 404 }
         );
       }
 
@@ -592,6 +506,9 @@ export async function POST(request) {
         const treeType = preferredTreeType || (selectedUserStance === 'for' ? 'ai_against' : 'ai_for');
         
         console.log(`MCQ Debug: selectedUserStance=${selectedUserStance}, determined treeType=${treeType}`);
+
+        // Get the first MCQ question from the appropriate tree
+        const realMCQQuestion = await getRealMCQQuestion(newsGroupId, treeType, 1);
 
         const debateRoomData = {
           user_id: userId,
@@ -611,9 +528,6 @@ export async function POST(request) {
         const insertResult = await db.insert(AI_DEBATE_ROOMS).values(debateRoomData).execute();
         const debateRoomId = insertResult[0].insertId;
 
-        // Get the first MCQ question from the appropriate tree
-        const realMCQQuestion = await getRealMCQQuestion(newsGroupId, treeType, 1);
-
         responseData.debate = {
           id: debateRoomId,
           ...debateRoomData, 
@@ -623,8 +537,8 @@ export async function POST(request) {
       } catch (dbError) {
         console.error("Database error creating MCQ debate:", dbError);
         return NextResponse.json(
-          { error: "Failed to create MCQ debate. Database error." },
-          { status: 503 }
+          { error: "Failed to create MCQ debate. No MCQ content available for this topic." },
+          { status: 404 }
         );
       }
     }
