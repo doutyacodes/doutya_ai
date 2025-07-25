@@ -460,7 +460,7 @@ const DebateChatPage = () => {
                 <p className={`text-sm ${
                   selectedUserStance === 'for' ? 'text-green-600' : 'text-red-600'
                 }`}>
-                  You're arguing {selectedUserStance === 'for' ? 'in favor of' : 'against'} the main position
+                  You&apos;re arguing {selectedUserStance === 'for' ? 'in favor of' : 'against'} the main position
                 </p>
               </div>
             </div>
@@ -552,7 +552,7 @@ const DebateChatPage = () => {
                 <p className="text-gray-600 text-sm sm:text-base mb-4">Watch two AI personas debate different perspectives on this topic</p>
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
                   <Play className="w-4 h-4" />
-                  <span>Click "Show Next Round" to begin</span>
+                  <span>Click {`"Show Next Round"`} to begin</span>
                 </div>
               </div>
             </div>
