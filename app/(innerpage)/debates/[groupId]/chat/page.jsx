@@ -137,7 +137,7 @@ const DebateChatPage = () => {
     }
   };
 
-  const createDebate = async () => {
+ const createDebate = async () => {
     if (debateType === "user_vs_ai") {
       if (!topic.trim() || !userPosition.trim() || !aiPosition.trim()) {
         setError("Please enter topic and both positions");
@@ -145,23 +145,35 @@ const DebateChatPage = () => {
       }
     }
 
+    if (debateType === "mcq" && !selectedUserStance) {
+      setError("Please select your stance for the MCQ debate");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
       const token = localStorage.getItem("user_token");
+      
+      // Fixed payload structure
       const payload = {
         topic: topic.trim(),
         debateType,
-        userPosition: userPosition.trim() || null,
-        aiPosition: aiPosition.trim() || null,
-        groupId: groupId,
+        groupId: groupId, // This matches your backend expectation
       };
 
-      // Add preferred tree type for MCQ
-      if (debateType === "mcq" && selectedUserStance) {
+      // Add fields based on debate type
+      if (debateType === "user_vs_ai") {
+        payload.userPosition = userPosition.trim();
+        payload.aiPosition = aiPosition.trim();
+      } else if (debateType === "mcq") {
+        // Add MCQ-specific fields
+        payload.selectedUserStance = selectedUserStance;
         payload.preferredTreeType = selectedUserStance === 'for' ? 'ai_against' : 'ai_for';
       }
+
+      console.log('Sending payload:', payload); // Debug log
 
       const response = await fetch("/api/ai-debate/create", {
         method: "POST",
@@ -173,6 +185,7 @@ const DebateChatPage = () => {
       });
 
       const data = await response.json();
+      console.log('Response data:', data); // Debug log
 
       if (response.ok) {
         setDebateRoom(data.debate);
@@ -475,10 +488,8 @@ const DebateChatPage = () => {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                <span className="font-semibold text-gray-900 text-sm sm:text-base">{currentQuestion.ai_persona}</span>
-                <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium self-start">
-                  AI Moderator
-                </span>
+                <span className="font-semibold text-gray-900 text-sm sm:text-base">Ai</span>
+                
               </div>
               <p className="text-gray-700 leading-relaxed text-sm sm:text-base">{currentQuestion.ai_message}</p>
             </div>
