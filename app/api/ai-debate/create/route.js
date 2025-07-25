@@ -1,4 +1,4 @@
-// /api/ai-debate/create/route.js - Updated to handle both newsId and groupId
+// /api/ai-debate/create/route.js - Updated to handle tree type selection
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/jwtMiddleware";
 import axios from "axios";
@@ -146,9 +146,11 @@ async function getRealAIvsAI(newsGroupId) {
   }
 }
 
-// Function to get real MCQ question from database
-async function getRealMCQQuestion(newsGroupId, level = 1, parentResponseId = null) {
+// Function to get real MCQ question from database with tree type support
+async function getRealMCQQuestion(newsGroupId, treeType, level = 1, parentResponseId = null) {
   try {
+    console.log(`Getting real MCQ question for newsGroupId: ${newsGroupId}, treeType: ${treeType}, level: ${level}`);
+    
     // First, find the debate topic associated with this news group
     const debateTopics = await db
       .select()
@@ -163,11 +165,11 @@ async function getRealMCQQuestion(newsGroupId, level = 1, parentResponseId = nul
 
     const debateTopicId = debateTopics[0].id;
 
-    // Get the appropriate MCQ response based on level and parent
+    // Get the appropriate MCQ response based on level, tree type and parent
     let mcqResponse;
     
     if (level === 1) {
-      // Get root level question
+      // Get root level question for the specific tree type
       mcqResponse = await db
         .select()
         .from(MC_DEBATE_RESPONSES)
@@ -175,7 +177,8 @@ async function getRealMCQQuestion(newsGroupId, level = 1, parentResponseId = nul
           and(
             eq(MC_DEBATE_RESPONSES.debate_topic_id, debateTopicId),
             eq(MC_DEBATE_RESPONSES.level, 1),
-            eq(MC_DEBATE_RESPONSES.parent_response_id, null)
+            eq(MC_DEBATE_RESPONSES.parent_response_id, null),
+            eq(MC_DEBATE_RESPONSES.tree_type, treeType)
           )
         )
         .limit(1)
@@ -185,13 +188,19 @@ async function getRealMCQQuestion(newsGroupId, level = 1, parentResponseId = nul
       mcqResponse = await db
         .select()
         .from(MC_DEBATE_RESPONSES)
-        .where(eq(MC_DEBATE_RESPONSES.id, parentResponseId))
+        .where(
+          and(
+            eq(MC_DEBATE_RESPONSES.id, parentResponseId),
+            eq(MC_DEBATE_RESPONSES.tree_type, treeType)
+          )
+        )
         .limit(1)
         .execute();
     }
 
     if (!mcqResponse.length) {
-      throw new Error(`No MCQ question found for level ${level}`);
+      console.log(`No MCQ question found for level ${level}, tree type ${treeType}`);
+      throw new Error(`No MCQ question found for level ${level} and tree type ${treeType}`);
     }
 
     const response = mcqResponse[0];
@@ -203,12 +212,15 @@ async function getRealMCQQuestion(newsGroupId, level = 1, parentResponseId = nul
       .where(eq(MC_DEBATE_OPTIONS.mc_response_id, response.id))
       .execute();
 
+    console.log(`Found MCQ response with ${options.length} options for tree type ${treeType}`);
+
     return {
       id: response.id,
       question_text: `AI Response - Level ${response.level}`,
       ai_message: response.ai_message,
       ai_persona: response.ai_persona,
       level: response.level,
+      tree_type: response.tree_type,
       debate_topic_id: debateTopicId,
       options: options.map((option, index) => ({
         id: option.id,
@@ -282,24 +294,25 @@ function generateSimulatedMCQ(topic) {
     ai_message: `From my analysis, ${topic} presents both opportunities and challenges that require careful consideration.`,
     ai_persona: "Neutral Analyst",
     level: 1,
+    tree_type: "ai_for",
     options: [
       {
         id: 1,
         option_text: "The economic implications are most important",
         option_letter: "A",
-        option_position: "economic"
+        option_position: "against"
       },
       {
         id: 2,
         option_text: "Social impacts should be our primary focus",
         option_letter: "B", 
-        option_position: "social"
+        option_position: "against"
       },
       {
         id: 3,
         option_text: "Environmental considerations must come first",
         option_letter: "C",
-        option_position: "environmental"
+        option_position: "against"
       }
     ]
   };
@@ -319,7 +332,9 @@ export async function POST(request) {
     userPosition, 
     aiPosition, 
     newsId,
-    groupId // New parameter for direct group ID
+    groupId, // Group ID parameter
+    selectedUserStance, // NEW: User's stance selection for MCQ ('for' or 'against')
+    preferredTreeType // NEW: Optional override for tree type
   } = await request.json();
 
   if (!topic?.trim()) {
@@ -479,24 +494,41 @@ export async function POST(request) {
       responseData.conversations = realConversations;
 
     } else if (debateType === "mcq") {
-      // Use real MCQ content from database
+      // Handle MCQ with tree type selection
+      if (!selectedUserStance) {
+        return NextResponse.json(
+          { error: "User stance selection is required for MCQ debates." },
+          { status: 400 }
+        );
+      }
+
+      // Determine tree type based on user's stance
+      // If user supports (for), they get the ai_against tree (AI argues against, user supports)
+      // If user opposes (against), they get the ai_for tree (AI argues for, user opposes)
+      const treeType = preferredTreeType || (selectedUserStance === 'for' ? 'ai_against' : 'ai_for');
+      
+      console.log(`MCQ Debug: selectedUserStance=${selectedUserStance}, determined treeType=${treeType}`);
+
       const debateRoomData = {
         user_id: userId,
         topic: topic.trim(),
         debate_type: "mcq",
-        user_position: "Participant", // Required field - set as participant
-        ai_position: "Decision Tree Guide", // Required field - descriptive name
+        user_position: selectedUserStance === 'for' ? 'Supporting Position' : 'Opposing Position',
+        ai_position: treeType === 'ai_for' ? 'Supporting Position' : 'Opposing Position',
         status: "active",
         conversation_count: 0,
         max_conversations: 5,
         total_questions: 5,
+        tree_type: treeType, // Store the tree type in the debate room
+        selected_user_stance: selectedUserStance, // Store user's original stance choice
         news_id: newsId || null,
       };
 
       const insertResult = await db.insert(AI_DEBATE_ROOMS).values(debateRoomData).execute();
       const debateRoomId = insertResult[0].insertId;
 
-      const realMCQQuestion = await getRealMCQQuestion(newsGroupId, 1);
+      // Get the first MCQ question from the appropriate tree
+      const realMCQQuestion = await getRealMCQQuestion(newsGroupId, treeType, 1);
 
       responseData.debate = {
         id: debateRoomId,

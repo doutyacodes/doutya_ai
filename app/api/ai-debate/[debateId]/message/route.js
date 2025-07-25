@@ -1,4 +1,4 @@
-// /api/ai-debate/[debateId]/message/route.js - Fixed version
+// /api/ai-debate/[debateId]/message/route.js - Updated with tree type support
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/jwtMiddleware";
 import axios from "axios";
@@ -127,10 +127,10 @@ async function generateDebateReport(debateRoom, messages) {
   }
 }
 
-// Enhanced function to get the next real MCQ question from database
-async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
+// Enhanced function to get the next real MCQ question from database with tree type support
+async function getRealNextMCQQuestion(selectedOptionId, currentLevel, treeType) {
   try {
-    console.log(`Getting next MCQ question for option ${selectedOptionId}, current level ${currentLevel}`);
+    console.log(`Getting next MCQ question for option ${selectedOptionId}, level ${currentLevel}, tree type ${treeType}`);
     
     // Get the selected option details
     const selectedOption = await db
@@ -163,7 +163,12 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
       const responses = await db
         .select()
         .from(MC_DEBATE_RESPONSES)
-        .where(eq(MC_DEBATE_RESPONSES.id, option.leads_to_response_id))
+        .where(
+          and(
+            eq(MC_DEBATE_RESPONSES.id, option.leads_to_response_id),
+            eq(MC_DEBATE_RESPONSES.tree_type, treeType) // Ensure we stay in the same tree
+          )
+        )
         .limit(1)
         .execute();
 
@@ -173,7 +178,7 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
       }
     }
 
-    // Fallback path: Look for child responses based on current response
+    // Fallback path: Look for child responses based on current response and tree type
     if (!nextResponse) {
       console.log("No leads_to_response_id, looking for child responses");
       
@@ -181,7 +186,12 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
       const currentResponses = await db
         .select()
         .from(MC_DEBATE_RESPONSES)
-        .where(eq(MC_DEBATE_RESPONSES.id, option.mc_response_id))
+        .where(
+          and(
+            eq(MC_DEBATE_RESPONSES.id, option.mc_response_id),
+            eq(MC_DEBATE_RESPONSES.tree_type, treeType)
+          )
+        )
         .limit(1)
         .execute();
 
@@ -189,7 +199,7 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
         const currentResponse = currentResponses[0];
         console.log("Current response:", currentResponse);
         
-        // Look for child responses at the next level
+        // Look for child responses at the next level within the same tree
         const childResponses = await db
           .select()
           .from(MC_DEBATE_RESPONSES)
@@ -197,7 +207,8 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
             and(
               eq(MC_DEBATE_RESPONSES.debate_topic_id, currentResponse.debate_topic_id),
               eq(MC_DEBATE_RESPONSES.parent_response_id, currentResponse.id),
-              eq(MC_DEBATE_RESPONSES.level, currentLevel + 1)
+              eq(MC_DEBATE_RESPONSES.level, currentLevel + 1),
+              eq(MC_DEBATE_RESPONSES.tree_type, treeType)
             )
           )
           .limit(1)
@@ -210,9 +221,9 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
       }
     }
 
-    // Alternative fallback: Look for any response at the next level
+    // Alternative fallback: Look for any response at the next level within the same tree
     if (!nextResponse) {
-      console.log("Looking for any response at next level");
+      console.log("Looking for any response at next level in same tree");
       
       // Get current response to get debate_topic_id
       const currentResponses = await db
@@ -231,7 +242,8 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
           .where(
             and(
               eq(MC_DEBATE_RESPONSES.debate_topic_id, currentResponse.debate_topic_id),
-              eq(MC_DEBATE_RESPONSES.level, currentLevel + 1)
+              eq(MC_DEBATE_RESPONSES.level, currentLevel + 1),
+              eq(MC_DEBATE_RESPONSES.tree_type, treeType)
             )
           )
           .limit(1)
@@ -264,6 +276,7 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel) {
       ai_message: nextResponse.ai_message,
       ai_persona: nextResponse.ai_persona,
       level: nextResponse.level,
+      tree_type: nextResponse.tree_type,
       options: nextOptions.map((opt, index) => ({
         id: opt.id,
         option_text: opt.option_text,
@@ -519,6 +532,7 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
   const currentLevel = room.conversation_count + 1;
   
   console.log(`MCQ: Current level ${room.conversation_count}, new level ${currentLevel}, selected option ${selectedOptionId}`);
+  console.log(`MCQ: Room tree_type = ${room.tree_type}, selected_user_stance = ${room.selected_user_stance}`);
 
   try {
     // Get the selected option to understand the choice made
@@ -536,8 +550,11 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
     const option = selectedOption[0];
     console.log("Selected option details:", option);
     
-    // Get the next question based on the selected option
-    const nextQuestion = await getRealNextMCQQuestion(selectedOptionId, currentLevel);
+    // Get the tree type from the room (this was set during creation)
+    const treeType = room.tree_type || 'ai_for'; // Default fallback
+    
+    // Get the next question based on the selected option and tree type
+    const nextQuestion = await getRealNextMCQQuestion(selectedOptionId, currentLevel, treeType);
 
     // Update conversation count
     await db
@@ -560,17 +577,22 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
         .where(eq(AI_DEBATE_ROOMS.id, debateId))
         .execute();
 
-      // Generate completion report
+      // Generate completion report with user stance information
+      const userStanceText = room.selected_user_stance === 'for' ? 'supporting' : 'opposing';
+      const aiPositionText = treeType === 'ai_for' ? 'supporting' : 'opposing';
+      
       const reportData = {
-        overall_analysis: "You navigated through a complex decision tree, making thoughtful choices at each step of the debate. Your selections demonstrate engagement with different perspectives and careful consideration of various viewpoints.",
-        strengths: "You demonstrated careful consideration of options and showed engagement with the different perspectives presented. Your choices reflect analytical thinking and willingness to explore complex topics through structured decision-making.",
-        improvements: "Consider spending more time analyzing the implications of each choice and how they build upon previous decisions. Think about how your choices might lead to different outcomes and conclusions in future scenarios.",
-        insights: "Decision tree exercises help develop systematic thinking and consequence evaluation skills. Each choice shapes the direction of the debate and demonstrates how different paths of reasoning can lead to varied conclusions and insights.",
+        overall_analysis: `You navigated through a complex decision tree, making thoughtful choices at each step of the debate. Your selections demonstrate engagement with different perspectives while consistently ${userStanceText} the main position against AI arguments ${aiPositionText} it.`,
+        strengths: `You maintained a consistent ${userStanceText} stance throughout the decision tree while carefully considering each response option. Your choices reflect analytical thinking and willingness to explore nuanced aspects of the topic through structured decision-making.`,
+        improvements: "Consider spending more time analyzing the implications of each choice and how they build upon previous decisions. Think about how your choices might lead to different outcomes and conclusions in future scenarios, and explore alternative reasoning paths.",
+        insights: `Decision tree exercises help develop systematic thinking and consequence evaluation skills. By consistently ${userStanceText} the position, you practiced defending a viewpoint while navigating AI counter-arguments, which strengthens your ability to maintain logical consistency in debates.`,
         argument_quality_score: 7,
         persuasiveness_score: 6,
         factual_accuracy_score: 7,
-        logical_consistency_score: 7,
+        logical_consistency_score: 8,
         choice_count: currentLevel,
+        user_stance: userStanceText,
+        tree_type: treeType,
       };
 
       // Create debate report
@@ -596,7 +618,8 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
         nextQuestion: nextQuestion ? {
           ...nextQuestion,
           level: nextQuestion.level,
-          ai_persona: nextQuestion.ai_persona
+          ai_persona: nextQuestion.ai_persona,
+          tree_type: nextQuestion.tree_type
         } : null,
         isCompleted,
         report,
@@ -605,7 +628,9 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
         selectedChoice: {
           option_text: option.option_text,
           option_position: option.option_position
-        }
+        },
+        treeType: treeType,
+        userStance: room.selected_user_stance
       },
       { status: 200 }
     );

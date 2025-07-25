@@ -1954,7 +1954,7 @@ export const AI_CONVERSATIONS = mysqlTable("ai_conversations", {
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
-// Multiple Choice Debate Responses Table
+// Updated MC_DEBATE_RESPONSES table in schema.js
 export const MC_DEBATE_RESPONSES = mysqlTable("mc_debate_responses", {
   id: int("id").primaryKey().autoincrement(),
   debate_topic_id: int("debate_topic_id")
@@ -1966,6 +1966,7 @@ export const MC_DEBATE_RESPONSES = mysqlTable("mc_debate_responses", {
   ai_message: text("ai_message").notNull(),
   ai_persona: varchar("ai_persona", { length: 100 }).notNull(),
   response_context: text("response_context").default(null), // Context from previous choices
+  tree_type: mysqlEnum("tree_type", ["ai_for", "ai_against"]).notNull().default("ai_for"), // NEW FIELD
   is_approved: boolean("is_approved").default(false),
   admin_notes: text("admin_notes").default(null),
   created_at: timestamp("created_at").defaultNow(),
@@ -2035,7 +2036,7 @@ export const USER_MCQ_SESSION_PROGRESS = mysqlTable("user_mcq_session_progress",
 export const AI_DEBATE_ROOMS = mysqlTable("ai_debate_rooms", {
   id: int("id").primaryKey().autoincrement(),
   user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
-  debate_topic_id: int("debate_topic_id").references(() => DEBATE_TOPICS.id), // NEW: For pre-generated content
+  debate_topic_id: int("debate_topic_id").references(() => DEBATE_TOPICS.id), // For pre-generated content
   topic: text("topic").notNull(),
   debate_type: mysqlEnum("debate_type", ["user_vs_ai", "ai_vs_ai", "mcq"]).notNull(),
   user_position: text("user_position"),
@@ -2046,6 +2047,8 @@ export const AI_DEBATE_ROOMS = mysqlTable("ai_debate_rooms", {
   max_conversations: int("max_conversations").default(5),
   current_question_index: int("current_question_index").default(0), // For MCQ
   total_questions: int("total_questions").default(5), // For MCQ
+  tree_type: mysqlEnum("tree_type", ["ai_for", "ai_against"]).default(null), // NEW: For MCQ tree selection
+  selected_user_stance: mysqlEnum("selected_user_stance", ["for", "against"]).default(null), // NEW: User's original stance choice
   news_id: int("news_id").references(() => ADULT_NEWS.id),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
