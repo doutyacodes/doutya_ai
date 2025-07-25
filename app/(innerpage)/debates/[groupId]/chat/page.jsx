@@ -878,7 +878,7 @@ const DebateChatPage = () => {
       </div>
 
       {/* Main Content - Takes remaining height */}
-      <div className="flex-1 py-3 sm:py-4 md:py-6 lg:py-8 min-h-0">
+      <div className="flex-1 py-3 sm:py-4 md:py-6 lg:py-8 min-h-0 pb-16">
         <AnimatePresence mode="wait">
           {step === 'setup' && (
             <motion.div

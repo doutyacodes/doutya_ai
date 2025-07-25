@@ -9,7 +9,17 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function POST(req) {
   try {
-    const { name, username, password, mobile, examTypeId } = await req.json();
+    // Extract plan field along with other fields
+    const { name, username, password, mobile, examTypeId, plan } = await req.json();
+
+    // Validate plan field
+    const validPlans = ["starter", "pro", "elite"];
+    if (!plan || !validPlans.includes(plan)) {
+      return NextResponse.json(
+        { message: "Invalid plan selected. Please choose a valid plan." },
+        { status: 400 }
+      );
+    }
 
     const existingUser = await db
       .select()
@@ -43,27 +53,30 @@ export async function POST(req) {
         );
       }
     }
+    
     // Hash the password
     const hashedPassword = await hash(password, 10);
 
-    // Create new user
-  const newUser = await db
-    .insert(USER_DETAILS)
-    .values({
-      name,
-      username,
-      password: hashedPassword,
-      mobile,
-      exam_type_id: examTypeId,
-      is_active: true,
-    })
-    .execute();
+    // Create new user with plan included
+    const newUser = await db
+      .insert(USER_DETAILS)
+      .values({
+        name,
+        username,
+        password: hashedPassword,
+        mobile,
+        exam_type_id: examTypeId,
+        plan: plan, // Include the plan field
+        is_active: true,
+      })
+      .execute();
 
-    // Fetch the newly created user
+    // Fetch the newly created user with plan info
     const createdUser = await db
       .select({
         id: USER_DETAILS.id,
         username: USER_DETAILS.username,
+        plan: USER_DETAILS.plan,
       })
       .from(USER_DETAILS)
       .where(eq(USER_DETAILS.username, username))
@@ -72,8 +85,10 @@ export async function POST(req) {
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: createdUser[0].id,
+      { 
+        id: createdUser[0].id,
         username: createdUser[0].username,
+        plan: createdUser[0].plan,
       },
       JWT_SECRET
     );
@@ -82,6 +97,11 @@ export async function POST(req) {
       {
         token,
         message: "Account created successfully",
+        user: {
+          id: createdUser[0].id,
+          username: createdUser[0].username,
+          plan: createdUser[0].plan,
+        }
       },
       { status: 201 }
     );
