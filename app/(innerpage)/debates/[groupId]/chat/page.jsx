@@ -587,7 +587,7 @@ const DebateChatPage = () => {
                       : "text-red-600"
                   }`}
                 >
-                  You're arguing{" "}
+                  You&apos;re arguing{" "}
                   {selectedUserStance === "for" ? "in favor of" : "against"} the
                   main position
                 </p>
@@ -759,7 +759,7 @@ const DebateChatPage = () => {
                   Debate Complete!
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  You've successfully navigated through all decision points.
+                  You&apos;ve successfully navigated through all decision points.
                 </p>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
