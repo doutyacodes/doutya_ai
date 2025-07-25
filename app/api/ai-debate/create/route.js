@@ -1,4 +1,4 @@
-// /api/ai-debate/create/route.js - Updated to handle tree type selection
+// /api/ai-debate/create/route.js - Updated with better error handling and connection management
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/jwtMiddleware";
 import axios from "axios";
@@ -45,6 +45,7 @@ Keep it under 300 characters and be persuasive but respectful.`;
           Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
           "Content-Type": "application/json",
         },
+        timeout: 30000, // 30 second timeout
       }
     );
 
@@ -57,31 +58,38 @@ Keep it under 300 characters and be persuasive but respectful.`;
 
 // Function to resolve news group ID from either newsId or groupId
 async function resolveNewsGroupId(newsId, groupId) {
-  if (groupId) {
-    // Direct group ID provided
-    return parseInt(groupId);
-  }
-  
-  if (newsId) {
-    // Get group ID from news ID
-    const newsArticle = await db
-      .select({ news_group_id: ADULT_NEWS.news_group_id })
-      .from(ADULT_NEWS)
-      .where(eq(ADULT_NEWS.id, parseInt(newsId)))
-      .limit(1)
-      .execute();
-    
-    if (newsArticle.length > 0) {
-      return newsArticle[0].news_group_id;
+  try {
+    if (groupId) {
+      // Direct group ID provided
+      return parseInt(groupId);
     }
+    
+    if (newsId) {
+      // Get group ID from news ID
+      const newsArticle = await db
+        .select({ news_group_id: ADULT_NEWS.news_group_id })
+        .from(ADULT_NEWS)
+        .where(eq(ADULT_NEWS.id, parseInt(newsId)))
+        .limit(1)
+        .execute();
+      
+      if (newsArticle.length > 0) {
+        return newsArticle[0].news_group_id;
+      }
+    }
+    
+    throw new Error("Unable to determine news group ID");
+  } catch (error) {
+    console.error("Error resolving news group ID:", error);
+    throw new Error("Failed to resolve news group ID");
   }
-  
-  throw new Error("Unable to determine news group ID");
 }
 
-// Function to get real AI vs AI conversations from database
+// Function to get real AI vs AI conversations from database with better error handling
 async function getRealAIvsAI(newsGroupId) {
   try {
+    console.log(`Fetching AI vs AI conversations for news group: ${newsGroupId}`);
+    
     // Find the debate topic associated with this news group
     const debateTopics = await db
       .select()
@@ -91,10 +99,12 @@ async function getRealAIvsAI(newsGroupId) {
       .execute();
 
     if (!debateTopics.length) {
+      console.log(`No debate topic found for news group: ${newsGroupId}`);
       throw new Error("No debate topic found for this news group");
     }
 
     const debateTopicId = debateTopics[0].id;
+    console.log(`Found debate topic ID: ${debateTopicId}`);
 
     // Get all AI conversations for this debate topic
     const conversations = await db
@@ -104,8 +114,11 @@ async function getRealAIvsAI(newsGroupId) {
       .execute();
 
     if (!conversations.length) {
+      console.log(`No AI conversations found for debate topic: ${debateTopicId}`);
       throw new Error("No AI conversations found for this debate topic");
     }
+
+    console.log(`Found ${conversations.length} AI conversations`);
 
     // Transform the data to match your expected format
     const formattedConversations = [];
@@ -138,10 +151,12 @@ async function getRealAIvsAI(newsGroupId) {
       return a.sender.localeCompare(b.sender);
     });
 
+    console.log(`Returning ${formattedConversations.length} formatted conversations`);
     return formattedConversations;
   } catch (error) {
     console.error("Error fetching real AI vs AI conversations:", error);
     // Fallback to simulated data if real data fails
+    console.log("Falling back to simulated AI vs AI data");
     return generateSimulatedAIvsAI("this topic");
   }
 }
@@ -160,10 +175,12 @@ async function getRealMCQQuestion(newsGroupId, treeType, level = 1, parentRespon
       .execute();
 
     if (!debateTopics.length) {
+      console.log(`No debate topic found for news group: ${newsGroupId}`);
       throw new Error("No debate topic found for this news group");
     }
 
     const debateTopicId = debateTopics[0].id;
+    console.log(`Found debate topic ID: ${debateTopicId}`);
 
     // Get the appropriate MCQ response based on level, tree type and parent
     let mcqResponse;
@@ -234,6 +251,7 @@ async function getRealMCQQuestion(newsGroupId, treeType, level = 1, parentRespon
   } catch (error) {
     console.error("Error fetching real MCQ question:", error);
     // Fallback to simulated data if real data fails
+    console.log("Falling back to simulated MCQ data");
     return generateSimulatedMCQ("this topic");
   }
 }
@@ -319,23 +337,46 @@ function generateSimulatedMCQ(topic) {
 }
 
 export async function POST(request) {
-  const authResult = await authenticate(request);
-  if (!authResult.authenticated) {
-    return authResult.response;
+  let authResult;
+  
+  try {
+    // Authenticate user
+    authResult = await authenticate(request);
+    if (!authResult.authenticated) {
+      return authResult.response;
+    }
+  } catch (error) {
+    console.error("Authentication error:", error);
+    return NextResponse.json(
+      { error: "Authentication failed" },
+      { status: 401 }
+    );
   }
 
   const userData = authResult.decoded_Data;
   const userId = userData.id;
+  
+  let requestData;
+  try {
+    requestData = await request.json();
+  } catch (error) {
+    console.error("Error parsing request body:", error);
+    return NextResponse.json(
+      { error: "Invalid request body" },
+      { status: 400 }
+    );
+  }
+
   const { 
     topic, 
     debateType = "user_vs_ai", 
     userPosition, 
     aiPosition, 
     newsId,
-    groupId, // Group ID parameter
-    selectedUserStance, // NEW: User's stance selection for MCQ ('for' or 'against')
-    preferredTreeType // NEW: Optional override for tree type
-  } = await request.json();
+    groupId,
+    selectedUserStance,
+    preferredTreeType
+  } = requestData;
 
   if (!topic?.trim()) {
     return NextResponse.json(
@@ -345,13 +386,24 @@ export async function POST(request) {
   }
 
   try {
+    console.log(`Creating ${debateType} debate for user ${userId}`);
+    
     // Check user plan - only Elite users can access debates
-    const userInfo = await db
-      .select({ plan: USER_DETAILS.plan })
-      .from(USER_DETAILS)
-      .where(eq(USER_DETAILS.id, userId))
-      .limit(1)
-      .execute();
+    let userInfo;
+    try {
+      userInfo = await db
+        .select({ plan: USER_DETAILS.plan })
+        .from(USER_DETAILS)
+        .where(eq(USER_DETAILS.id, userId))
+        .limit(1)
+        .execute();
+    } catch (dbError) {
+      console.error("Database error checking user plan:", dbError);
+      return NextResponse.json(
+        { error: "Database connection error. Please try again." },
+        { status: 503 }
+      );
+    }
 
     const userPlan = userInfo[0]?.plan || "starter";
 
@@ -363,49 +415,66 @@ export async function POST(request) {
     }
 
     // Resolve news group ID
-    const newsGroupId = await resolveNewsGroupId(newsId, groupId);
+    let newsGroupId;
+    try {
+      newsGroupId = await resolveNewsGroupId(newsId, groupId);
+      console.log(`Resolved news group ID: ${newsGroupId}`);
+    } catch (error) {
+      console.error("Error resolving news group ID:", error);
+      return NextResponse.json(
+        { error: "Invalid news group or article reference" },
+        { status: 400 }
+      );
+    }
 
-    // Check usage limits
+    // Check and update usage limits
     const dailyLimit = 5;
     const now = new Date();
 
-    let usage = await db
-      .select()
-      .from(AI_DEBATE_USAGE)
-      .where(eq(AI_DEBATE_USAGE.user_id, userId))
-      .limit(1)
-      .execute();
-
-    if (usage.length === 0) {
-      await db.insert(AI_DEBATE_USAGE).values({
-        user_id: userId,
-        debates_created_today: 1,
-        debates_created_this_month: 1,
-        last_reset_date: now,
-      });
-    } else {
-      const lastResetDate = new Date(usage[0].last_reset_date);
-      const isToday = lastResetDate.getFullYear() === now.getFullYear() &&
-                     lastResetDate.getMonth() === now.getMonth() &&
-                     lastResetDate.getDate() === now.getDate();
-
-      // Uncomment this to enforce daily limits
-      // if (isToday && usage[0].debates_created_today >= dailyLimit) {
-      //   return NextResponse.json(
-      //     { error: `Daily limit reached. Elite members can create ${dailyLimit} debates per day.` },
-      //     { status: 429 }
-      //   );
-      // }
-
-      await db
-        .update(AI_DEBATE_USAGE)
-        .set({
-          debates_created_today: isToday ? usage[0].debates_created_today + 1 : 1,
-          debates_created_this_month: isToday ? (usage[0].debates_created_this_month || 0) + 1 : 1,
-          last_reset_date: now,
-        })
-        .where(eq(AI_DEBATE_USAGE.id, usage[0].id))
+    let usage;
+    try {
+      usage = await db
+        .select()
+        .from(AI_DEBATE_USAGE)
+        .where(eq(AI_DEBATE_USAGE.user_id, userId))
+        .limit(1)
         .execute();
+
+      if (usage.length === 0) {
+        await db.insert(AI_DEBATE_USAGE).values({
+          user_id: userId,
+          debates_created_today: 1,
+          debates_created_this_month: 1,
+          last_reset_date: now,
+        });
+      } else {
+        const lastResetDate = new Date(usage[0].last_reset_date);
+        const isToday = lastResetDate.getFullYear() === now.getFullYear() &&
+                       lastResetDate.getMonth() === now.getMonth() &&
+                       lastResetDate.getDate() === now.getDate();
+
+        // Uncomment this to enforce daily limits
+        // if (isToday && usage[0].debates_created_today >= dailyLimit) {
+        //   return NextResponse.json(
+        //     { error: `Daily limit reached. Elite members can create ${dailyLimit} debates per day.` },
+        //     { status: 429 }
+        //   );
+        // }
+
+        await db
+          .update(AI_DEBATE_USAGE)
+          .set({
+            debates_created_today: isToday ? usage[0].debates_created_today + 1 : 1,
+            debates_created_this_month: isToday ? (usage[0].debates_created_this_month || 0) + 1 : 1,
+            last_reset_date: now,
+          })
+          .where(eq(AI_DEBATE_USAGE.id, usage[0].id))
+          .execute();
+      }
+    } catch (dbError) {
+      console.error("Database error checking usage limits:", dbError);
+      // Don't fail the request for usage tracking errors
+      console.log("Continuing without usage tracking due to DB error");
     }
 
     let responseData = {
@@ -422,76 +491,92 @@ export async function POST(request) {
         );
       }
 
-      const debateRoomData = {
-        user_id: userId,
-        topic: topic.trim(),
-        debate_type: "user_vs_ai",
-        user_position: userPosition.trim(),
-        ai_position: aiPosition.trim(),
-        status: "active",
-        conversation_count: 0,
-        max_conversations: 7,
-        news_id: newsId || null,
-      };
+      try {
+        const debateRoomData = {
+          user_id: userId,
+          topic: topic.trim(),
+          debate_type: "user_vs_ai",
+          user_position: userPosition.trim(),
+          ai_position: aiPosition.trim(),
+          status: "active",
+          conversation_count: 0,
+          max_conversations: 7,
+          news_id: newsId || null,
+        };
 
-      const insertResult = await db.insert(AI_DEBATE_ROOMS).values(debateRoomData).execute();
-      const debateRoomId = insertResult[0].insertId;
+        const insertResult = await db.insert(AI_DEBATE_ROOMS).values(debateRoomData).execute();
+        const debateRoomId = insertResult[0].insertId;
 
-      // Generate AI's opening statement
-      const openingStatement = await generateOpeningStatement(topic, aiPosition, userPosition);
+        // Generate AI's opening statement
+        const openingStatement = await generateOpeningStatement(topic, aiPosition, userPosition);
 
-      // Save AI's opening message
-      const aiOpeningMessage = {
-        debate_room_id: debateRoomId,
-        sender: "ai",
-        content: openingStatement,
-        conversation_turn: 0,
-      };
+        // Save AI's opening message
+        const aiOpeningMessage = {
+          debate_room_id: debateRoomId,
+          sender: "ai",
+          content: openingStatement,
+          conversation_turn: 0,
+        };
 
-      await db.insert(AI_DEBATE_MESSAGES).values(aiOpeningMessage).execute();
+        await db.insert(AI_DEBATE_MESSAGES).values(aiOpeningMessage).execute();
 
-      responseData.debate = {
-        id: debateRoomId,
-        ...debateRoomData,
-        created_at: new Date(),
-      };
-      responseData.messages = [{ ...aiOpeningMessage, id: "opening", created_at: new Date() }];
+        responseData.debate = {
+          id: debateRoomId,
+          ...debateRoomData,
+          created_at: new Date(),
+        };
+        responseData.messages = [{ ...aiOpeningMessage, id: "opening", created_at: new Date() }];
+      } catch (dbError) {
+        console.error("Database error creating user vs AI debate:", dbError);
+        return NextResponse.json(
+          { error: "Failed to create debate room. Database error." },
+          { status: 503 }
+        );
+      }
 
     } else if (debateType === "ai_vs_ai") {
       // Use real AI vs AI content from database
-      const debateRoomData = {
-        user_id: userId,
-        topic: topic.trim(),
-        debate_type: "ai_vs_ai",
-        user_position: "Observer", // Required field - set as observer
-        ai_position: "Progressive stance", // Required field
-        ai_position_2: "Conservative stance", // Optional but good to have
-        status: "active",
-        conversation_count: 0,
-        max_conversations: 3, // This will be updated based on actual data
-        news_id: newsId || null,
-      };
+      try {
+        const debateRoomData = {
+          user_id: userId,
+          topic: topic.trim(),
+          debate_type: "ai_vs_ai",
+          user_position: "Observer",
+          ai_position: "Progressive stance",
+          ai_position_2: "Conservative stance",
+          status: "active",
+          conversation_count: 0,
+          max_conversations: 3,
+          news_id: newsId || null,
+        };
 
-      const insertResult = await db.insert(AI_DEBATE_ROOMS).values(debateRoomData).execute();
-      const debateRoomId = insertResult[0].insertId;
+        const insertResult = await db.insert(AI_DEBATE_ROOMS).values(debateRoomData).execute();
+        const debateRoomId = insertResult[0].insertId;
 
-      const realConversations = await getRealAIvsAI(newsGroupId);
-      
-      // Update max_conversations based on actual data
-      const maxRounds = Math.max(...realConversations.map(c => c.conversation_round), 1);
-      await db
-        .update(AI_DEBATE_ROOMS)
-        .set({ max_conversations: maxRounds })
-        .where(eq(AI_DEBATE_ROOMS.id, debateRoomId))
-        .execute();
+        const realConversations = await getRealAIvsAI(newsGroupId);
+        
+        // Update max_conversations based on actual data
+        const maxRounds = Math.max(...realConversations.map(c => c.conversation_round), 1);
+        await db
+          .update(AI_DEBATE_ROOMS)
+          .set({ max_conversations: maxRounds })
+          .where(eq(AI_DEBATE_ROOMS.id, debateRoomId))
+          .execute();
 
-      responseData.debate = {
-        id: debateRoomId,
-        ...debateRoomData,
-        max_conversations: maxRounds,
-        created_at: new Date(),
-      };
-      responseData.conversations = realConversations;
+        responseData.debate = {
+          id: debateRoomId,
+          ...debateRoomData,
+          max_conversations: maxRounds,
+          created_at: new Date(),
+        };
+        responseData.conversations = realConversations;
+      } catch (dbError) {
+        console.error("Database error creating AI vs AI debate:", dbError);
+        return NextResponse.json(
+          { error: "Failed to create AI vs AI debate. Database error." },
+          { status: 503 }
+        );
+      }
 
     } else if (debateType === "mcq") {
       // Handle MCQ with tree type selection
@@ -502,45 +587,65 @@ export async function POST(request) {
         );
       }
 
-      // Determine tree type based on user's stance
-      // If user supports (for), they get the ai_against tree (AI argues against, user supports)
-      // If user opposes (against), they get the ai_for tree (AI argues for, user opposes)
-      const treeType = preferredTreeType || (selectedUserStance === 'for' ? 'ai_against' : 'ai_for');
-      
-      console.log(`MCQ Debug: selectedUserStance=${selectedUserStance}, determined treeType=${treeType}`);
+      try {
+        // Determine tree type based on user's stance
+        const treeType = preferredTreeType || (selectedUserStance === 'for' ? 'ai_against' : 'ai_for');
+        
+        console.log(`MCQ Debug: selectedUserStance=${selectedUserStance}, determined treeType=${treeType}`);
 
-      const debateRoomData = {
-        user_id: userId,
-        topic: topic.trim(),
-        debate_type: "mcq",
-        user_position: selectedUserStance === 'for' ? 'Supporting Position' : 'Opposing Position',
-        ai_position: treeType === 'ai_for' ? 'Supporting Position' : 'Opposing Position',
-        status: "active",
-        conversation_count: 0,
-        max_conversations: 5,
-        total_questions: 5,
-        tree_type: treeType, // Store the tree type in the debate room
-        selected_user_stance: selectedUserStance, // Store user's original stance choice
-        news_id: newsId || null,
-      };
+        const debateRoomData = {
+          user_id: userId,
+          topic: topic.trim(),
+          debate_type: "mcq",
+          user_position: selectedUserStance === 'for' ? 'Supporting Position' : 'Opposing Position',
+          ai_position: treeType === 'ai_for' ? 'Supporting Position' : 'Opposing Position',
+          status: "active",
+          conversation_count: 0,
+          max_conversations: 5,
+          total_questions: 5,
+          tree_type: treeType,
+          selected_user_stance: selectedUserStance,
+          news_id: newsId || null,
+        };
 
-      const insertResult = await db.insert(AI_DEBATE_ROOMS).values(debateRoomData).execute();
-      const debateRoomId = insertResult[0].insertId;
+        const insertResult = await db.insert(AI_DEBATE_ROOMS).values(debateRoomData).execute();
+        const debateRoomId = insertResult[0].insertId;
 
-      // Get the first MCQ question from the appropriate tree
-      const realMCQQuestion = await getRealMCQQuestion(newsGroupId, treeType, 1);
+        // Get the first MCQ question from the appropriate tree
+        const realMCQQuestion = await getRealMCQQuestion(newsGroupId, treeType, 1);
 
-      responseData.debate = {
-        id: debateRoomId,
-        ...debateRoomData, 
-        created_at: new Date(),
-      };
-      responseData.currentQuestion = realMCQQuestion;
+        responseData.debate = {
+          id: debateRoomId,
+          ...debateRoomData, 
+          created_at: new Date(),
+        };
+        responseData.currentQuestion = realMCQQuestion;
+      } catch (dbError) {
+        console.error("Database error creating MCQ debate:", dbError);
+        return NextResponse.json(
+          { error: "Failed to create MCQ debate. Database error." },
+          { status: 503 }
+        );
+      }
     }
 
+    console.log(`Successfully created ${debateType} debate with ID: ${responseData.debate?.id}`);
     return NextResponse.json(responseData, { status: 201 });
+    
   } catch (error) {
-    console.error("Error creating AI debates:", error);
+    console.error("Unexpected error creating AI debates:", error);
+    
+    // Determine if this is a database connection error
+    if (error.code === 'ER_CON_COUNT_ERROR' || error.code === 'ECONNREFUSED' || error.errno === 1040) {
+      return NextResponse.json(
+        { 
+          error: "Database connection error. Please try again in a moment.",
+          details: process.env.NODE_ENV === "development" ? "Too many database connections" : undefined
+        },
+        { status: 503 }
+      );
+    }
+    
     return NextResponse.json(
       {
         error: "Failed to create debate room",
