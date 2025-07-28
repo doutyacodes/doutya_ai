@@ -363,7 +363,7 @@ const UserDebateChatPage = () => {
                       <h3 className="text-xl font-bold text-green-900">Debate Completed!</h3>
                     </div>
                     <p className="text-green-700 mb-4">
-                      You've completed all {progress?.max} conversation turns. Check out your performance report below!
+                      You&apos;ve completed all {progress?.max} conversation turns. Check out your performance report below!
                     </p>
                     <button
                       onClick={() => setShowReport(false)}

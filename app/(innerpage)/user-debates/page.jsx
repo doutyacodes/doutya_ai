@@ -95,7 +95,7 @@ const NewDebateModal = ({ isOpen, onClose, onSubmit, loading }) => {
               maxLength={255}
               disabled={loading}
             />
-            <p className="text-xs text-gray-500 mt-2">Choose a topic you're passionate about debating</p>
+            <p className="text-xs text-gray-500 mt-2">Choose a topic you&apos;re passionate about debating</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -112,7 +112,7 @@ const NewDebateModal = ({ isOpen, onClose, onSubmit, loading }) => {
                 maxLength={255}
                 disabled={loading}
               />
-              <p className="text-xs text-gray-500 mt-2">The position you'll argue for</p>
+              <p className="text-xs text-gray-500 mt-2">The position you&apos;ll argue for</p>
             </div>
 
             <div>
@@ -139,7 +139,7 @@ const NewDebateModal = ({ isOpen, onClose, onSubmit, loading }) => {
               <div>
                 <h4 className="font-semibold text-blue-900 mb-2">How Custom Debates Work</h4>
                 <ul className="text-blue-800 text-sm space-y-1">
-                  <li>• You'll have 5 conversation turns to present your arguments</li>
+                  <li>• You&apos;ll have 5 conversation turns to present your arguments</li>
                   <li>• AI will counter each of your points with intelligent responses</li>
                   <li>• Get a detailed performance report at the end</li>
                   <li>• Practice critical thinking and argumentation skills</li>
@@ -532,7 +532,7 @@ const UserDebatesPage = () => {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">No Custom Debates Yet</h3>
               <p className="text-gray-600 text-lg mb-8">
-                Create your first custom debate to start engaging with AI on topics you're passionate about!
+                Create your first custom debate to start engaging with AI on topics you&apos;re passionate about!
               </p>
               <motion.button
                 whileHover={{ scale: 1.05 }}
