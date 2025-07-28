@@ -2110,3 +2110,59 @@ export const USER_DEBATE_PROGRESS = mysqlTable("user_debate_progress", {
     table.debate_type
   ]),
 }));
+
+// User Custom Debates - Main debate table
+export const USER_CUSTOM_DEBATES = mysqlTable("user_custom_debates", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  title: varchar("title", { length: 255 }).notNull(), // Debate topic
+  user_position_title: varchar("user_position_title", { length: 255 }).notNull(), // User's position
+  ai_position_title: varchar("ai_position_title", { length: 255 }).notNull(), // AI's opposing position
+  status: mysqlEnum("status", ["active", "completed", "cancelled"]).default("active"),
+  conversation_count: int("conversation_count").default(0), // Current number of conversation turns
+  max_conversations: int("max_conversations").default(5), // Maximum turns (5 user + 5 AI = 10 total)
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+  completed_at: timestamp("completed_at").default(null),
+});
+
+// User Custom Debate Messages - All messages in debates
+export const USER_CUSTOM_DEBATE_MESSAGES = mysqlTable("user_custom_debate_messages", {
+  id: int("id").primaryKey().autoincrement(),
+  debate_id: int("debate_id").notNull().references(() => USER_CUSTOM_DEBATES.id, { onDelete: "cascade" }),
+  sender: mysqlEnum("sender", ["user", "ai"]).notNull(),
+  content: text("content").notNull(),
+  conversation_turn: int("conversation_turn").notNull(), // 1, 2, 3, 4, 5
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+// User Custom Debate Reports - Performance analysis after completion
+export const USER_CUSTOM_DEBATE_REPORTS = mysqlTable("user_custom_debate_reports", {
+  id: int("id").primaryKey().autoincrement(),
+  debate_id: int("debate_id").notNull().references(() => USER_CUSTOM_DEBATES.id, { onDelete: "cascade" }),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  overall_analysis: text("overall_analysis").notNull(),
+  strengths: text("strengths").notNull(),
+  improvements: text("improvements").notNull(),
+  insights: text("insights").notNull(),
+  argument_quality_score: int("argument_quality_score"), // 1-10
+  persuasiveness_score: int("persuasiveness_score"), // 1-10
+  factual_accuracy_score: int("factual_accuracy_score"), // 1-10
+  logical_consistency_score: int("logical_consistency_score"), // 1-10
+  winner: mysqlEnum("winner", ["user", "ai", "tie"]),
+  openai_response: text("openai_response"), // Raw OpenAI response for debugging
+  created_at: timestamp("created_at").defaultNow(),
+});
+
+// User Custom Debate Usage - Track daily/monthly limits
+export const USER_CUSTOM_DEBATE_USAGE = mysqlTable("user_custom_debate_usage", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id),
+  debates_created_today: int("debates_created_today").default(0),
+  debates_created_this_month: int("debates_created_this_month").default(0),
+  last_reset_date: timestamp("last_reset_date").defaultNow(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+}, (table) => ({
+  userIdUnique: uniqueIndex("user_custom_debate_usage_user_id_unique", [table.user_id]),
+}));

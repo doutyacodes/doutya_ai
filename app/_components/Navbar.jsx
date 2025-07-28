@@ -214,6 +214,18 @@ const Navbar = () => {
                     <p className="text-xs text-gray-500 truncate">Join AI-powered discussions</p>
                   </div>
                 </button>
+                <button
+                  onClick={() => handlePlanNavigation('/user-debates')}
+                  className="group flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-violet-50 hover:text-purple-800 transition-all duration-300 w-full text-left rounded-xl sm:rounded-2xl min-h-[44px]"
+                >
+                  <div className="p-1.5 sm:p-2 bg-purple-100 rounded-lg sm:rounded-xl group-hover:bg-purple-200 transition-colors duration-300 flex-shrink-0">
+                    <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 text-purple-600" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="font-semibold text-sm sm:text-base">Custom Debates</span>
+                    <p className="text-xs text-gray-500 truncate">Join AI-powered discussions</p>
+                  </div>
+                </button>
 
                 <div className="border-t border-gray-100 my-2 mx-2 sm:mx-4"></div>
                 
