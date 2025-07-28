@@ -39,7 +39,7 @@ export default function BottomNavigation() {
       displayName: ['Debates', '']
     },
     {
-      name: 'Saved News',
+      name: 'Saved',
       path: '/saved-folders',
       displayName: ['Saved', 'News']
     },
@@ -65,7 +65,7 @@ export default function BottomNavigation() {
     else if (tabPath === '/debates') {
       return pathname === '/debates' || pathname.startsWith('/debates/');
     }
-    // For saved news tab
+    // For Saved tab
     else if (tabPath === '/saved-folders') {
       return pathname === '/saved-folders' || pathname.startsWith('/saved-folders/');
     }
