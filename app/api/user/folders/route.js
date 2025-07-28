@@ -1,11 +1,11 @@
-// /api/user/folders/route.js
+// /api/user/folders/route.js - Updated with counts
 import { NextResponse } from 'next/server';
-import { USER_FOLDERS } from '@/utils/schema';
-import { eq, and, like, desc } from 'drizzle-orm';
+import { USER_FOLDERS, SAVED_NEWS, SAVED_DEBATES } from '@/utils/schema';
+import { eq, and, like, desc, count } from 'drizzle-orm';
 import { authenticate } from '@/lib/jwtMiddleware';
 import { db } from '@/utils';
 
-// GET - Fetch user folders (with optional search)
+// GET - Fetch user folders with counts (with optional search)
 export async function GET(req) {
   // Authenticate user
   const authResult = await authenticate(req);
@@ -21,7 +21,12 @@ export async function GET(req) {
     const search = searchParams.get('search');
     
     let query = db
-      .select()
+      .select({
+        id: USER_FOLDERS.id,
+        name: USER_FOLDERS.name,
+        created_at: USER_FOLDERS.created_at,
+        updated_at: USER_FOLDERS.updated_at,
+      })
       .from(USER_FOLDERS)
       .where(eq(USER_FOLDERS.user_id, userId));
     
@@ -37,8 +42,36 @@ export async function GET(req) {
     
     const folders = await query.orderBy(desc(USER_FOLDERS.created_at));
     
+    // Get counts for each folder
+    const foldersWithCounts = await Promise.all(
+      folders.map(async (folder) => {
+        // Get news count
+        const newsCount = await db
+          .select({ count: count(SAVED_NEWS.id) })
+          .from(SAVED_NEWS)
+          .where(eq(SAVED_NEWS.user_folder_id, folder.id))
+          .limit(1);
+
+        // Get debates count
+        const debatesCount = await db
+          .select({ count: count(SAVED_DEBATES.id) })
+          .from(SAVED_DEBATES)
+          .where(eq(SAVED_DEBATES.user_folder_id, folder.id))
+          .limit(1);
+
+        return {
+          ...folder,
+          counts: {
+            news: newsCount[0]?.count || 0,
+            debates: debatesCount[0]?.count || 0,
+            total: (newsCount[0]?.count || 0) + (debatesCount[0]?.count || 0)
+          }
+        };
+      })
+    );
+    
     return NextResponse.json(
-      { folders },
+      { folders: foldersWithCounts },
       { status: 200 }
     );
   } catch (error) {
@@ -95,14 +128,24 @@ export async function POST(req) {
       })
       .execute();
 
-    // Get last inserted folder (optional, based on insertResult.insertId)
+    // Get last inserted folder with counts
     const [newFolder] = await db
       .select()
       .from(USER_FOLDERS)
       .where(eq(USER_FOLDERS.id, insertResult[0].insertId));
 
+    // Add counts (will be 0 for new folder)
+    const folderWithCounts = {
+      ...newFolder,
+      counts: {
+        news: 0,
+        debates: 0,
+        total: 0
+      }
+    };
+
     return NextResponse.json(
-      { folder: newFolder, message: "Folder created successfully" },
+      { folder: folderWithCounts, message: "Folder created successfully" },
       { status: 201 }
     );
     
@@ -152,7 +195,7 @@ export async function DELETE(req) {
       );
     }
     
-    // Delete folder (this will cascade delete saved news due to foreign key)
+    // Delete folder (this will cascade delete saved news and debates due to foreign key)
     await db
       .delete(USER_FOLDERS)
       .where(eq(USER_FOLDERS.id, parseInt(folderId)));

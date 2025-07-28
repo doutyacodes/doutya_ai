@@ -1,4 +1,4 @@
-// app/user-debates/page.jsx
+// app/user-debates/page.jsx - Updated with Save Functionality
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -18,9 +18,13 @@ import {
   Calendar,
   FileText,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  Bookmark,
+  BookmarkCheck,
+  MoreHorizontal
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import SaveDebateModal from '@/components/SaveDebateModal'; // Import the SaveDebateModal
 
 // New Debate Modal Component
 const NewDebateModal = ({ isOpen, onClose, onSubmit, loading }) => {
@@ -191,6 +195,11 @@ const UserDebatesPage = () => {
   const [userPlan, setUserPlan] = useState(null);
   const [showNewDebateModal, setShowNewDebateModal] = useState(false);
   const [creatingDebate, setCreatingDebate] = useState(false);
+  
+  // Save debate modal states
+  const [showSaveDebateModal, setShowSaveDebateModal] = useState(false);
+  const [selectedDebateForSave, setSelectedDebateForSave] = useState(null);
+  const [showDropdowns, setShowDropdowns] = useState({});
 
   useEffect(() => {
     fetchUserPlan();
@@ -200,15 +209,15 @@ const UserDebatesPage = () => {
   const fetchUserPlan = async () => {
     try {
       const token = localStorage.getItem("user_token");
-      const response = await fetch("/api/users/plan", {
+      const response = await fetch("/api/user/plan2", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       const data = await response.json();
-      if (response.ok && data.success) {
-        setUserPlan(data.data);
+      if (response.ok) {
+        setUserPlan(data);
       }
     } catch (error) {
       console.error("Error fetching user plan:", error);
@@ -272,11 +281,24 @@ const UserDebatesPage = () => {
   };
 
   const handleNewDebateClick = () => {
-    if (userPlan?.plan !== 'elite') {
+    if (userPlan?.current_plan !== 'elite') {
       toast.error("Custom Debates are only available for Elite members");
       return;
     }
     setShowNewDebateModal(true);
+  };
+
+  const handleSaveDebate = (debate) => {
+    setSelectedDebateForSave(debate);
+    setShowSaveDebateModal(true);
+    setShowDropdowns({});
+  };
+
+  const toggleDropdown = (debateId) => {
+    setShowDropdowns(prev => ({
+      ...prev,
+      [debateId]: !prev[debateId]
+    }));
   };
 
   const formatDate = (dateString) => {
@@ -402,12 +424,12 @@ const UserDebatesPage = () => {
               whileTap={{ scale: 0.95 }}
               onClick={handleNewDebateClick}
               className={`px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-3 mx-auto ${
-                userPlan?.plan === 'elite'
+                userPlan?.current_plan === 'elite'
                   ? 'bg-gradient-to-r from-emerald-500 to-blue-600 text-white'
                   : 'bg-white/20 backdrop-blur-sm text-white/80 border border-white/30'
               }`}
             >
-              {userPlan?.plan === 'elite' ? (
+              {userPlan?.current_plan === 'elite' ? (
                 <>
                   <Plus className="w-6 h-6" />
                   Create New Debate
@@ -440,13 +462,12 @@ const UserDebatesPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 + index * 0.1 }}
                 whileHover={{ y: -5, scale: 1.02 }}
-                onClick={() => handleDebateClick(debate)}
-                className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-blue-200 cursor-pointer group"
+                className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-blue-200 group relative"
               >
                 {/* Header */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-100">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
+                    <div className="flex-1 cursor-pointer" onClick={() => handleDebateClick(debate)}>
                       <h3 className="font-bold text-gray-900 text-lg mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                         {debate.title}
                       </h3>
@@ -459,6 +480,44 @@ const UserDebatesPage = () => {
                           {formatDate(debate.created_at)}
                         </span>
                       </div>
+                    </div>
+                    
+                    {/* More Options Button */}
+                    <div className="relative">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleDropdown(debate.id);
+                        }}
+                        className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                      >
+                        <MoreHorizontal className="w-4 h-4 text-gray-400" />
+                      </button>
+                      
+                      {/* Dropdown Menu */}
+                      {showDropdowns[debate.id] && (
+                        <>
+                          {/* Backdrop */}
+                          <div
+                            className="fixed inset-0 z-40"
+                            onClick={() => setShowDropdowns({})}
+                          ></div>
+                          
+                          {/* Dropdown Content */}
+                          <div className="absolute right-0 top-full mt-1 bg-white border shadow-lg rounded-lg py-2 z-50 min-w-[160px]">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSaveDebate(debate);
+                              }}
+                              className="flex items-center space-x-3 w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-800 transition-colors"
+                            >
+                              <Bookmark size={14} />
+                              <span className="text-sm font-medium">Save to Folder</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -482,7 +541,7 @@ const UserDebatesPage = () => {
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
+                <div className="p-6 cursor-pointer" onClick={() => handleDebateClick(debate)}>
                   {/* Positions */}
                   <div className="space-y-3 mb-6">
                     <div className="bg-green-50 border border-green-200 p-3 rounded-xl">
@@ -539,13 +598,13 @@ const UserDebatesPage = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={handleNewDebateClick}
                 className={`px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-3 mx-auto ${
-                  userPlan?.plan === 'elite'
+                  userPlan?.current_plan === 'elite'
                     ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white'
                     : 'bg-gradient-to-r from-gray-400 to-gray-500 text-white cursor-not-allowed'
                 }`}
-                disabled={userPlan?.plan !== 'elite'}
+                disabled={userPlan?.current_plan !== 'elite'}
               >
-                {userPlan?.plan === 'elite' ? (
+                {userPlan?.current_plan === 'elite' ? (
                   <>
                     <Plus className="w-6 h-6" />
                     Create Your First Debate
@@ -570,6 +629,21 @@ const UserDebatesPage = () => {
             onClose={() => setShowNewDebateModal(false)}
             onSubmit={handleCreateDebate}
             loading={creatingDebate}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Save Debate Modal */}
+      <AnimatePresence>
+        {showSaveDebateModal && selectedDebateForSave && (
+          <SaveDebateModal
+            isOpen={showSaveDebateModal}
+            onClose={() => {
+              setShowSaveDebateModal(false);
+              setSelectedDebateForSave(null);
+            }}
+            debateId={selectedDebateForSave.id}
+            debateTitle={selectedDebateForSave.title}
           />
         )}
       </AnimatePresence>

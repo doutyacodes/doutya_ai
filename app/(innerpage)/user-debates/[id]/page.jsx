@@ -1,4 +1,4 @@
-// app/user-debates/[id]/page.jsx
+// app/user-debates/[id]/page.jsx - Updated with Save Functionality
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -19,9 +19,12 @@ import {
   Sparkles,
   RotateCcw,
   Trophy,
-  BookOpen
+  BookOpen,
+  Bookmark,
+  MoreHorizontal
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import SaveDebateModal from '@/components/SaveDebateModal'; // Import the SaveDebateModal
 
 const UserDebateChatPage = () => {
   const router = useRouter();
@@ -38,6 +41,10 @@ const UserDebateChatPage = () => {
   const [sending, setSending] = useState(false);
   const [userMessage, setUserMessage] = useState('');
   const [showReport, setShowReport] = useState(false);
+  
+  // Save debate modal states
+  const [showSaveDebateModal, setShowSaveDebateModal] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
 
   useEffect(() => {
     if (debateId) {
@@ -140,6 +147,11 @@ const UserDebateChatPage = () => {
     }
   };
 
+  const handleSaveDebate = () => {
+    setShowSaveDebateModal(true);
+    setShowMoreMenu(false);
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -196,6 +208,38 @@ const UserDebateChatPage = () => {
                   <span>{progress.current}/{progress.max} turns</span>
                 </div>
               )}
+              
+              {/* More Options Menu */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowMoreMenu(!showMoreMenu)}
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                </button>
+                
+                {showMoreMenu && (
+                  <>
+                    {/* Backdrop */}
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setShowMoreMenu(false)}
+                    ></div>
+                    
+                    {/* Dropdown Menu */}
+                    <div className="absolute right-0 top-full mt-2 bg-white border shadow-lg rounded-lg py-2 z-50 min-w-[180px]">
+                      <button
+                        onClick={handleSaveDebate}
+                        className="flex items-center space-x-3 w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-800 transition-colors"
+                      >
+                        <Bookmark size={16} />
+                        <span className="text-sm font-medium">Save to Folder</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+              
               <div className={`px-3 py-1 rounded-full text-sm font-medium ${
                 debate?.status === 'completed' 
                   ? 'bg-green-100 text-green-800' 
@@ -521,6 +565,18 @@ const UserDebateChatPage = () => {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Save Debate Modal */}
+      <AnimatePresence>
+        {showSaveDebateModal && debate && (
+          <SaveDebateModal
+            isOpen={showSaveDebateModal}
+            onClose={() => setShowSaveDebateModal(false)}
+            debateId={debate.id}
+            debateTitle={debate.title}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

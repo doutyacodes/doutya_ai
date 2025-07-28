@@ -1,3 +1,4 @@
+// components/SaveDebateModal.jsx
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -10,8 +11,10 @@ import {
   FaSearch,
   FaStar,
   FaTimes,
+  FaComments,
 } from "react-icons/fa";
-const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
+
+const SaveDebateModal = ({ isOpen, onClose, debateId, debateTitle }) => {
   const [folders, setFolders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,34 +25,39 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
   const [notes, setNotes] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  
   // Plan-related state
   const [userPlan, setUserPlan] = useState(null);
   const [currentSavedCount, setCurrentSavedCount] = useState(0);
   const [planLoading, setPlanLoading] = useState(true);
   const router = useRouter();
-  // Plan limits configuration
+  
+  // Plan limits configuration (including debates in the count)
   const PLAN_LIMITS = {
     starter: { max: 25, canAddNotes: false, displayName: "Standard" },
     pro: { max: 75, canAddNotes: true, displayName: "Pro" },
     elite: { max: "unlimited", canAddNotes: true, displayName: "Elite" },
   };
-  // Fetch user plan and current saved articles count
+
+  // Fetch user plan and current saved items count
   useEffect(() => {
     if (isOpen) {
       fetchUserPlanAndStats();
     }
   }, [isOpen]);
+
   const fetchUserPlanAndStats = async () => {
     setPlanLoading(true);
     try {
       const token = localStorage.getItem("user_token");
       if (!token) {
-        setErrorMessage("Please login to save articles");
+        setErrorMessage("Please login to save debates");
         setPlanLoading(false);
         return;
       }
+
       // Fetch user plan
-      const planResponse = await fetch("/api/user/plan", {
+      const planResponse = await fetch("/api/user/plan2", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -61,7 +69,7 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
         setUserPlan(planData);
       }
 
-      // Fetch folders and count saved articles
+      // Fetch folders and count saved items (both news and debates)
       await fetchFoldersAndCount();
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -70,10 +78,12 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
       setPlanLoading(false);
     }
   };
+
   const fetchFoldersAndCount = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("user_token");
+      
       // Fetch folders
       const foldersResponse = await fetch("/api/user/folders", {
         headers: {
@@ -87,28 +97,45 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
         setFolders(foldersData.folders || []);
       }
 
-      // Fetch saved articles count
-      const countResponse = await fetch("/api/user/saved-news/count", {
+      // Fetch saved news count
+      const newsCountResponse = await fetch("/api/user/saved-news/count", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
 
-      if (countResponse.ok) {
-        const countData = await countResponse.json();
-        setCurrentSavedCount(countData.count || 0);
+      // Fetch saved debates count
+      const debatesCountResponse = await fetch("/api/user/saved-debates/count", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      let totalCount = 0;
+      if (newsCountResponse.ok) {
+        const newsData = await newsCountResponse.json();
+        totalCount += newsData.count || 0;
       }
+      if (debatesCountResponse.ok) {
+        const debatesData = await debatesCountResponse.json();
+        totalCount += debatesData.count || 0;
+      }
+
+      setCurrentSavedCount(totalCount);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
   };
+
   const createFolder = async () => {
     if (!newFolderName.trim()) return;
     setLoading(true);
     setErrorMessage("");
+    
     try {
       const response = await fetch("/api/user/folders", {
         method: "POST",
@@ -136,21 +163,24 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
       setLoading(false);
     }
   };
-  const saveNewsToFolder = async () => {
+
+  const saveDebateToFolder = async () => {
     if (!selectedFolder) return;
+    
     // Check if user has reached their plan limit
-    if (userPlan && !canSaveMoreArticles()) {
+    if (userPlan && !canSaveMoreItems()) {
       const planLimit = PLAN_LIMITS[userPlan.current_plan];
       setErrorMessage(
-        `You've reached your ${planLimit.displayName} plan limit of ${planLimit.max} saved articles. Upgrade for more storage!`
+        `You've reached your ${planLimit.displayName} plan limit of ${planLimit.max} saved items. Upgrade for more storage!`
       );
       return;
     }
 
     setLoading(true);
     setErrorMessage("");
+    
     try {
-      const response = await fetch("/api/user/save-news", {
+      const response = await fetch("/api/user/save-debate", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("user_token")}`,
@@ -158,7 +188,7 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
         },
         body: JSON.stringify({
           folderId: selectedFolder.id,
-          newsId: newsId,
+          debateId: debateId,
           note: canAddNotes() ? notes.trim() || null : null,
         }),
       });
@@ -166,48 +196,54 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success("Article saved successfully!");
+        toast.success("Debate saved successfully!");
         onClose();
       } else {
-        setErrorMessage(data.message || "Error saving news");
+        setErrorMessage(data.message || "Error saving debate");
       }
     } catch (error) {
-      console.error("Error saving news:", error);
-      setErrorMessage("Error saving news");
+      console.error("Error saving debate:", error);
+      setErrorMessage("Error saving debate");
     } finally {
       setLoading(false);
     }
   };
+
   // Helper functions for plan checks
   const canAddNotes = () => {
     if (!userPlan) return false;
     return PLAN_LIMITS[userPlan.current_plan]?.canAddNotes || false;
   };
-  const canSaveMoreArticles = () => {
+
+  const canSaveMoreItems = () => {
     if (!userPlan) return false;
     const limit = PLAN_LIMITS[userPlan.current_plan]?.max;
     return limit === "unlimited" || currentSavedCount < limit;
   };
-  const getRemainingArticles = () => {
+
+  const getRemainingItems = () => {
     if (!userPlan) return 0;
     const limit = PLAN_LIMITS[userPlan.current_plan]?.max;
     if (limit === "unlimited") return "unlimited";
     return Math.max(0, limit - currentSavedCount);
   };
+
   const filteredFolders = folders.filter((folder) =>
     folder.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   const handleFolderSelect = (folder) => {
-    if (!canSaveMoreArticles()) {
+    if (!canSaveMoreItems()) {
       const planLimit = PLAN_LIMITS[userPlan.current_plan];
       setErrorMessage(
-        `You've reached your ${planLimit.displayName} plan limit of ${planLimit.max} saved articles. Upgrade for more storage!`
+        `You've reached your ${planLimit.displayName} plan limit of ${planLimit.max} saved items. Upgrade for more storage!`
       );
       return;
     }
     setSelectedFolder(folder);
     setConfirmSave(true);
   };
+
   const resetModal = () => {
     setSearchTerm("");
     setShowCreateFolder(false);
@@ -218,12 +254,14 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
     setErrorMessage("");
     setSuccessMessage("");
   };
+
   const handleClose = () => {
     resetModal();
     onClose();
   };
+
   const PlanUpgradePrompt = () => {
-    if (!userPlan || canSaveMoreArticles()) return null;
+    if (!userPlan || canSaveMoreItems()) return null;
     return (
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 mb-4">
         <div className="flex items-center space-x-3">
@@ -233,8 +271,7 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
           <div className="flex-1">
             <h4 className="font-semibold text-purple-900">Upgrade Your Plan</h4>
             <p className="text-sm text-purple-700">
-              You&apos;ve reached your limit. Upgrade to save more articles and
-              unlock premium features!
+              You&apos;ve reached your limit. Upgrade to save more content and unlock premium features!
             </p>
           </div>
         </div>
@@ -249,9 +286,10 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
       </div>
     );
   };
+
   const PlanStatus = () => {
     if (!userPlan) return null;
-    const remaining = getRemainingArticles();
+    const remaining = getRemainingItems();
     const planConfig = PLAN_LIMITS[userPlan.current_plan];
 
     return (
@@ -298,13 +336,18 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
       </div>
     );
   };
+
   if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-scroll pb-10">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden my-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h3 className="text-lg font-semibold text-gray-900">Save News</h3>
+          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <FaComments className="text-blue-600" size={18} />
+            Save Debate
+          </h3>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -312,6 +355,7 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
             <FaTimes size={18} />
           </button>
         </div>
+
         {/* Loading State */}
         {planLoading && (
           <div className="p-4">
@@ -349,11 +393,14 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
 
             {!confirmSave ? (
               <>
-                {/* News Title */}
-                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">Saving:</p>
+                {/* Debate Title */}
+                <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-sm text-blue-600 mb-1 flex items-center gap-2">
+                    <FaComments size={14} />
+                    Saving Debate:
+                  </p>
                   <p className="text-sm font-medium text-gray-900 line-clamp-2">
-                    {newsTitle}
+                    {debateTitle}
                   </p>
                 </div>
 
@@ -362,10 +409,10 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
                   {!showCreateFolder ? (
                     <button
                       onClick={() => setShowCreateFolder(true)}
-                      disabled={!canSaveMoreArticles()}
+                      disabled={!canSaveMoreItems()}
                       className={`flex items-center space-x-2 w-full p-3 border-2 border-dashed rounded-lg transition-colors ${
-                        canSaveMoreArticles()
-                          ? "border-red-300 text-red-700 hover:border-red-400 hover:bg-red-50"
+                        canSaveMoreItems()
+                          ? "border-blue-300 text-blue-700 hover:border-blue-400 hover:bg-blue-50"
                           : "border-gray-300 text-gray-400 cursor-not-allowed"
                       }`}
                     >
@@ -375,20 +422,20 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
                       </span>
                     </button>
                   ) : (
-                    <div className="border-2 border-red-300 rounded-lg p-3">
+                    <div className="border-2 border-blue-300 rounded-lg p-3">
                       <input
                         type="text"
                         placeholder="Enter folder name..."
                         value={newFolderName}
                         onChange={(e) => setNewFolderName(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent mb-2"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-2"
                         autoFocus
                       />
                       <div className="flex space-x-2">
                         <button
                           onClick={createFolder}
                           disabled={!newFolderName.trim() || loading}
-                          className="flex-1 bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="flex-1 bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                           Create
                         </button>
@@ -420,7 +467,7 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
                         placeholder="Search folders..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -430,7 +477,7 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
                 <div className="max-h-64 overflow-y-auto">
                   {loading ? (
                     <div className="text-center py-8 text-gray-500">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-700 mx-auto mb-2"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700 mx-auto mb-2"></div>
                       Loading folders...
                     </div>
                   ) : filteredFolders.length > 0 ? (
@@ -439,15 +486,15 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
                         <button
                           key={folder.id}
                           onClick={() => handleFolderSelect(folder)}
-                          disabled={!canSaveMoreArticles()}
+                          disabled={!canSaveMoreItems()}
                           className={`flex items-center space-x-3 w-full p-3 text-left border rounded-lg transition-colors group ${
-                            canSaveMoreArticles()
-                              ? "border-gray-200 hover:border-red-300 hover:bg-red-50"
+                            canSaveMoreItems()
+                              ? "border-gray-200 hover:border-blue-300 hover:bg-blue-50"
                               : "border-gray-200 opacity-50 cursor-not-allowed"
                           }`}
                         >
                           <FaFolder
-                            className="text-red-600 group-hover:text-red-700"
+                            className="text-blue-600 group-hover:text-blue-700"
                             size={16}
                           />
                           <div className="flex-1">
@@ -459,7 +506,7 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
                               {new Date(folder.created_at).toLocaleDateString()}
                             </p>
                           </div>
-                          {!canSaveMoreArticles() && (
+                          {!canSaveMoreItems() && (
                             <FaLock className="text-gray-400" size={12} />
                           )}
                         </button>
@@ -484,14 +531,14 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
               /* Confirmation Screen */
               <div className="text-center">
                 <div className="mb-4">
-                  <FaFolder size={48} className="mx-auto text-red-600 mb-3" />
+                  <FaComments size={48} className="mx-auto text-blue-600 mb-3" />
                   <h4 className="text-lg font-semibold text-gray-900 mb-2">
                     Confirm Save
                   </h4>
                   <p className="text-sm text-gray-600 mb-2">
-                    Save this news to:
+                    Save this debate to:
                   </p>
-                  <p className="text-base font-semibold text-red-700 mb-4">
+                  <p className="text-base font-semibold text-blue-700 mb-4">
                     {selectedFolder?.name}
                   </p>
 
@@ -502,11 +549,11 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
                         Add a note (optional)
                       </label>
                       <textarea
-                        placeholder="Write your thoughts about this news..."
+                        placeholder="Write your thoughts about this debate..."
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         rows={3}
-                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none text-sm"
+                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
                         maxLength={500}
                       />
                       <p className="text-xs text-gray-500 mt-1 text-right">
@@ -536,9 +583,9 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
                     Back
                   </button>
                   <button
-                    onClick={saveNewsToFolder}
-                    disabled={loading || !canSaveMoreArticles()}
-                    className="flex-1 bg-red-700 text-white px-4 py-2 rounded-md font-medium hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    onClick={saveDebateToFolder}
+                    disabled={loading || !canSaveMoreItems()}
+                    className="flex-1 bg-blue-700 text-white px-4 py-2 rounded-md font-medium hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     {loading ? "Saving..." : "Save"}
                   </button>
@@ -555,10 +602,10 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
               onClick={() => {
                 router.push("/saved-folders");
               }}
-              className="flex items-center space-x-2 text-red-700 hover:text-red-800 transition-colors text-sm font-medium"
+              className="flex items-center space-x-2 text-blue-700 hover:text-blue-800 transition-colors text-sm font-medium"
             >
               <FaExternalLinkAlt size={12} />
-              <span>View My Saved News</span>
+              <span>View My Saved Content</span>
             </button>
           </div>
         )}
@@ -566,4 +613,5 @@ const SaveNewsModal = ({ isOpen, onClose, newsId, newsTitle }) => {
     </div>
   );
 };
-export default SaveNewsModal;
+
+export default SaveDebateModal;

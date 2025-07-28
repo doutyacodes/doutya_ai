@@ -2,14 +2,14 @@ import { FileText, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const NotesModal = ({ isOpen, onClose, savedItem, onUpdateNote }) => {
-  const [note, setNote] = useState('');
+  const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (isOpen && savedItem) {
-      setNote(savedItem.note || '');
-      setError('');
+      setNote(savedItem.note || "");
+      setError("");
     }
   }, [isOpen, savedItem]);
 
@@ -17,14 +17,14 @@ const NotesModal = ({ isOpen, onClose, savedItem, onUpdateNote }) => {
     if (!savedItem) return;
 
     setLoading(true);
-    setError('');
-    
+    setError("");
+
     try {
       const response = await fetch(`/api/user/save-news/${savedItem.id}/note`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('user_token')}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("user_token")}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ note: note.trim() || null }),
       });
@@ -35,18 +35,18 @@ const NotesModal = ({ isOpen, onClose, savedItem, onUpdateNote }) => {
         onUpdateNote(savedItem.id, note.trim());
         onClose();
       } else {
-        setError(data.message || 'Failed to update note');
+        setError(data.message || "Failed to update note");
       }
     } catch (err) {
-      setError('Network error occurred');
+      setError("Network error occurred");
     } finally {
       setLoading(false);
     }
   };
 
   const handleClose = () => {
-    setNote(savedItem?.note || '');
-    setError('');
+    setNote(savedItem?.note || "");
+    setError("");
     onClose();
   };
 
@@ -89,7 +89,11 @@ const NotesModal = ({ isOpen, onClose, savedItem, onUpdateNote }) => {
               Your Notes
             </label>
             <textarea
-              placeholder={note ? "Edit your notes..." : "Add your thoughts about this news..."}
+              placeholder={
+                note
+                  ? "Edit your notes..."
+                  : "Add your thoughts about this news..."
+              }
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={6}
@@ -122,7 +126,7 @@ const NotesModal = ({ isOpen, onClose, savedItem, onUpdateNote }) => {
             disabled={loading}
             className="flex-1 bg-red-700 text-white px-4 py-2 rounded-md font-medium hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {loading ? 'Saving...' : 'Save Note'}
+            {loading ? "Saving..." : "Save Note"}
           </button>
         </div>
       </div>

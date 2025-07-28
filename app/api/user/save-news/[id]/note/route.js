@@ -1,3 +1,4 @@
+// /api/user/save-news/[id]/note/route.js
 import { authenticate } from "@/lib/jwtMiddleware";
 import { db } from "@/utils";
 import { SAVED_NEWS, USER_FOLDERS } from "@/utils/schema";
@@ -14,7 +15,7 @@ export async function PUT(req, { params }) {
   
   const userData = authResult.decoded_Data;
   const userId = userData.id;
-  const savedNewsId = params.id;
+  const savedNewsId = await params.id;
   
   try {
     const { note } = await req.json();

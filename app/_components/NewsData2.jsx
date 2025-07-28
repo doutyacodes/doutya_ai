@@ -1,34 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import moment from "moment";
-import Image from "next/image";
-import { FaBookmark, FaEllipsisH, FaFlag, FaShareAlt, FaStar } from "react-icons/fa";
-import {
-  FacebookShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-  TelegramShareButton,
-  FacebookIcon,
-  TwitterIcon,
-  WhatsappIcon,
-  TelegramIcon,
-} from "react-share";
-import GlobalApi from "../api/_services/GlobalApi";
-import toast from "react-hot-toast";
-import { cn } from "@/lib/utils";
-import { FiCopy } from "react-icons/fi";
-import { useRouter } from "next/navigation";
 import { useChildren } from "@/context/CreateContext";
-import { useMediaQuery } from "react-responsive";
-import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
 import { DateTime } from "luxon";
 import Head from "next/head";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { FaEllipsisH, FaFlag, FaShareAlt, FaStar } from "react-icons/fa";
+import { FiCopy } from "react-icons/fi";
 import { GrFormView } from "react-icons/gr";
+import { useMediaQuery } from "react-responsive";
+import {
+  FacebookIcon,
+  FacebookShareButton,
+  TelegramIcon,
+  TelegramShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+} from "react-share";
 import { useSwipeable } from "react-swipeable"; // Add this import at the top
-import Cookies from 'js-cookie';
+import GlobalApi from "../api/_services/GlobalApi";
 import { trackAction } from "./(analytics)/shareUrlTracker";
 import SaveNewsModal from "./SaveNewsModal";
-
 
 const viewpointColors2 = {
   0: { bg: "bg-[#2A1721]", text: "text-[#2A1721]" },
@@ -97,11 +93,12 @@ const NewsData2 = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSaveNewsModal, setShowSaveNewsModal] = useState(false);
 
-   // Get color variants for viewpoint based on index
-   const getViewpointColor = (index, type = 'bg') => {
-      const colorSet = viewpointColors[index % Object.keys(viewpointColors).length];
-      return type === 'bg' ? colorSet.bg : colorSet.text;
-    };
+  // Get color variants for viewpoint based on index
+  const getViewpointColor = (index, type = "bg") => {
+    const colorSet =
+      viewpointColors[index % Object.keys(viewpointColors).length];
+    return type === "bg" ? colorSet.bg : colorSet.text;
+  };
 
   // Set truncate length based on screen size
   const descriptionLength = isBelowMd ? 250 : 300; // Use 100 below `md`, otherwise 200
@@ -134,7 +131,6 @@ const NewsData2 = ({
     setShowDropdown(false);
   };
 
-
   const categoriesList = (data) => {
     if (!data) return null; // Handle cases where data is null or undefined
     const categoryNames = data;
@@ -159,7 +155,7 @@ const NewsData2 = ({
       .writeText(shareUrl)
       .then(() => {
         toast.success("Link copied to clipboard!"); // Optional success toast
-        trackAction('copy_link', article.id); // Call tracking function
+        trackAction("copy_link", article.id); // Call tracking function
       })
       .catch((err) => {
         // toast.error('Failed to copy link.'); // Optional error toast
@@ -182,8 +178,12 @@ const NewsData2 = ({
   };
 
   const handlers = useSwipeable({
-    onSwipedLeft: () => setCurrentIndex((prevIndex) => (prevIndex + 1) % allArticles.length), // Go to next article
-    onSwipedRight: () => setCurrentIndex((prevIndex) => (prevIndex - 1 + allArticles.length) % allArticles.length), // Go to previous article
+    onSwipedLeft: () =>
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % allArticles.length), // Go to next article
+    onSwipedRight: () =>
+      setCurrentIndex(
+        (prevIndex) => (prevIndex - 1 + allArticles.length) % allArticles.length
+      ), // Go to previous article
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
   });
@@ -227,7 +227,7 @@ const NewsData2 = ({
       `}</style>
 
       <div
-      {...handlers} 
+        {...handlers}
         //   whileTap={{ scale: 0.95 }}
         className={cn(
           "bg-[#f5f5f5] shadow-md cursor-pointer overflow-hidden rounded-lg hover:shadow-lg transition-shadow flex flex-col p-1 ",
@@ -243,7 +243,7 @@ const NewsData2 = ({
         <p className="text-[10px] md:text-xs text-black text-nowrap font-medium bg-opacity-80 py-2 rounded-md">
           <span className="flex gap-[3px] items-center overflow-x-auto w-full">
             <span className="font-bold"> Perspectives of </span>:{" "}
-            {article.viewpoints.split(',').reverse().join(', ')}
+            {article.viewpoints.split(",").reverse().join(", ")}
           </span>
         </p>
         <div
@@ -252,12 +252,16 @@ const NewsData2 = ({
             !size ? "h-48" : "h-48 md:h-80  md:w-2/4"
           )}
         >
-
-          {article.media_type === 'video' ? (
-            <video 
+          {article.media_type === "video" ? (
+            <video
               src={`https://wowfy.in/testusr/images/${article.image_url}`}
-              poster={`https://wowfy.in/testusr/images/${article.image_url.replace('.mp4', '.jpg')}`}
-              className={cn("w-full h-full object-cover max-md:rounded-md cursor-pointer")}
+              poster={`https://wowfy.in/testusr/images/${article.image_url.replace(
+                ".mp4",
+                ".jpg"
+              )}`}
+              className={cn(
+                "w-full h-full object-cover max-md:rounded-md cursor-pointer"
+              )}
               controls
               controlsList="nodownload noplaybackrate nofullscreen"
               disablePictureInPicture
@@ -267,9 +271,9 @@ const NewsData2 = ({
               onClick={() => {
                 router.push(`/news/${article.id}`);
               }}
-            >           
-            Your browser does not support the video tag.
-          </video>
+            >
+              Your browser does not support the video tag.
+            </video>
           ) : (
             <Image
               src={`https://wowfy.in/testusr/images/${article.image_url}`}
@@ -286,12 +290,15 @@ const NewsData2 = ({
             />
           )}
           {/* Viewpoint label above image - with background color */}
-          <span className={cn(
-            "absolute top-2 left-2 text-white text-xs flex items-center font-medium px-2 py-1 rounded-md",
-            getViewpointColor(currentIndex, 'bg')  + " bg-opacity-90"
-          )}>
+          <span
+            className={cn(
+              "absolute top-2 left-2 text-white text-xs flex items-center font-medium px-2 py-1 rounded-md",
+              getViewpointColor(currentIndex, "bg") + " bg-opacity-90"
+            )}
+          >
             <GrFormView size={18} />
-            {allArticles[currentIndex]?.viewpoint || article.viewpoint} Perspective
+            {allArticles[currentIndex]?.viewpoint || article.viewpoint}{" "}
+            Perspective
           </span>
 
           <span className="absolute bottom-2 left-2 flex gap-[3px] items-center ">
@@ -318,22 +325,28 @@ const NewsData2 = ({
               initial={{ opacity: 0, x: 100 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -100 }}
-              transition={{ 
+              transition={{
                 duration: 0.5,
                 type: "spring",
                 stiffness: 100,
-                damping: 15
+                damping: 15,
               }}
               className="scrollable-container"
             >
-              <span className={cn(
-                "text-xs flex items-center font-semibold",
-                getViewpointColor(currentIndex, 'text')
-              )}>
-                <GrFormView size={18} className={getViewpointColor(currentIndex, 'text')} />
-                {allArticles[currentIndex]?.viewpoint || article.viewpoint} Perspective
+              <span
+                className={cn(
+                  "text-xs flex items-center font-semibold",
+                  getViewpointColor(currentIndex, "text")
+                )}
+              >
+                <GrFormView
+                  size={18}
+                  className={getViewpointColor(currentIndex, "text")}
+                />
+                {allArticles[currentIndex]?.viewpoint || article.viewpoint}{" "}
+                Perspective
               </span>
-              
+
               <h3
                 onClick={() => {
                   router.push(`/news/${article.id}`);
@@ -366,8 +379,8 @@ const NewsData2 = ({
               <div className="flex items-center space-x-5">
                 {/* Save News Icon */}
                 <div className="text-gray-500 cursor-pointer hover:text-yellow-500 transition-colors">
-                  <FaStar 
-                    size={16} 
+                  <FaStar
+                    size={16}
                     onClick={handleSaveNews}
                     className="hover:fill-yellow-500"
                     title="Save News"
@@ -379,16 +392,32 @@ const NewsData2 = ({
                   <FaShareAlt size={16} />
                   {/* Share Options */}
                   <div className="hidden group-hover:flex gap-2 absolute -top-10 right-0 bg-white border shadow-lg rounded-md p-2 z-50">
-                    <FacebookShareButton url={shareUrl} quote={title} onClick={() => trackAction('share_facebook', article.id)}>
+                    <FacebookShareButton
+                      url={shareUrl}
+                      quote={title}
+                      onClick={() => trackAction("share_facebook", article.id)}
+                    >
                       <FacebookIcon size={32} round />
                     </FacebookShareButton>
-                    <TwitterShareButton url={shareUrl} title={title} onClick={() => trackAction('share_twitter', article.id)}>
+                    <TwitterShareButton
+                      url={shareUrl}
+                      title={title}
+                      onClick={() => trackAction("share_twitter", article.id)}
+                    >
                       <TwitterIcon size={32} round />
                     </TwitterShareButton>
-                    <WhatsappShareButton url={shareUrl} title={title} onClick={() => trackAction('share_whatsapp', article.id)}>
+                    <WhatsappShareButton
+                      url={shareUrl}
+                      title={title}
+                      onClick={() => trackAction("share_whatsapp", article.id)}
+                    >
                       <WhatsappIcon size={32} round />
                     </WhatsappShareButton>
-                    <TelegramShareButton url={shareUrl} title={title} onClick={() => trackAction('share_telegram', article.id)}>
+                    <TelegramShareButton
+                      url={shareUrl}
+                      title={title}
+                      onClick={() => trackAction("share_telegram", article.id)}
+                    >
                       <TelegramIcon size={32} round />
                     </TelegramShareButton>
                     <button
@@ -410,16 +439,16 @@ const NewsData2 = ({
                   >
                     <FaEllipsisH size={16} />
                   </div>
-                  
+
                   {/* Dropdown Menu */}
                   {showDropdown && (
                     <>
                       {/* Backdrop */}
-                      <div 
-                        className="fixed inset-0 z-40" 
+                      <div
+                        className="fixed inset-0 z-40"
                         onClick={() => setShowDropdown(false)}
                       ></div>
-                      
+
                       {/* Dropdown Content */}
                       <div className="absolute right-0 bottom-5 bg-white border shadow-lg rounded-lg py-2 z-50 min-w-[160px] max-w-[200px] sm:max-w-none">
                         <button
@@ -450,7 +479,7 @@ const NewsData2 = ({
           </div>
         </div>
 
-         {/* Save News Modal */}
+        {/* Save News Modal */}
         <SaveNewsModal
           isOpen={showSaveNewsModal}
           onClose={() => setShowSaveNewsModal(false)}
@@ -523,7 +552,6 @@ const NewsData2 = ({
             </div>
           )}
         </AnimatePresence>
-
       </div>
     </>
   );

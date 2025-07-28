@@ -2166,3 +2166,24 @@ export const USER_CUSTOM_DEBATE_USAGE = mysqlTable("user_custom_debate_usage", {
 }, (table) => ({
   userIdUnique: uniqueIndex("user_custom_debate_usage_user_id_unique", [table.user_id]),
 }));
+
+// Add this to your schema.js file
+
+export const SAVED_DEBATES = mysqlTable("saved_debates", {
+  id: int("id").primaryKey().autoincrement(),
+  user_folder_id: int("user_folder_id")
+    .notNull()
+    .references(() => USER_FOLDERS.id, { onDelete: "cascade" }),
+  debate_id: int("debate_id")
+    .notNull()
+    .references(() => USER_CUSTOM_DEBATES.id, { onDelete: "cascade" }),
+  note: text("note"), // Optional note about the debate
+  exam_type_id: int("exam_type_id").references(() => EXAM_TYPES.id),
+  saved_at: timestamp("saved_at").defaultNow(),
+}, (table) => ({
+  // Unique constraint to prevent saving the same debate to the same folder twice
+  uniqueDebateFolderSave: uniqueIndex("unique_debate_folder_save", [
+    table.user_folder_id,
+    table.debate_id
+  ]),
+}));
