@@ -368,7 +368,7 @@ const { icon: Icon, color } = featuresShowcase[currentFeature];
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              From AI-powered debates to multi-perspective analysis, we've built the most comprehensive exam preparation platform in India.
+              From AI-powered debates to multi-perspective analysis, we&apos;ve built the most comprehensive exam preparation platform in India.
             </p>
           </div>
 
@@ -507,7 +507,7 @@ const { icon: Icon, color } = featuresShowcase[currentFeature];
                   ))}
                 </div>
 
-                <p className="text-gray-700 leading-relaxed">"{testimonial.content}"</p>
+                <p className="text-gray-700 leading-relaxed">{`"{testimonial.content}"`}</p>
               </motion.div>
             ))}
           </div>
@@ -605,7 +605,7 @@ const { icon: Icon, color } = featuresShowcase[currentFeature];
               </span>
             </h2>
             <p className="text-xl text-gray-300 mb-10 leading-relaxed">
-              Join thousands of successful aspirants who've already started their journey with India&apos;s most comprehensive current affairs platform.
+              Join thousands of successful aspirants who&apos;ve already started their journey with India&apos;s most comprehensive current affairs platform.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

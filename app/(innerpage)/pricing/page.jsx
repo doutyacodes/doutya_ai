@@ -765,7 +765,7 @@ const EnhancedPricingPage = () => {
                   </div>
 
                   <p className="text-gray-700 leading-relaxed">
-                    "{testimonial.content}"
+                   {`"{testimonial.content}"`}
                   </p>
                 </div>
               ))}
