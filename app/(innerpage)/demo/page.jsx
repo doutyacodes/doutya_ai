@@ -20,7 +20,7 @@ import {
   Star,
   Target,
   TrendingUp,
-  Users
+  Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -38,23 +38,29 @@ const DemoPage = () => {
   const basePerspectives = [
     {
       viewpoint: "Environmental Activist",
-      title: "Climate Summit Breakthrough: Historic Carbon Reduction Targets Set Global Standard",
+      title:
+        "Climate Summit Breakthrough: Historic Carbon Reduction Targets Set Global Standard",
       color: "from-emerald-500 to-green-600",
       textColor: "text-emerald-600",
       bgColor: "bg-emerald-50",
-      description: "Environmental groups worldwide are celebrating what they're calling the most significant climate agreement in decades. The summit's comprehensive framework includes binding emission reduction targets of 45% by 2030, unprecedented funding for renewable energy infrastructure, and strict accountability mechanisms for participating nations.\n\nKey achievements include the establishment of a $500 billion Global Climate Fund, mandatory carbon pricing across G20 nations, and innovative carbon capture technology sharing agreements. Environmental scientists emphasize that these measures could limit global warming to 1.5°C if implemented effectively.\n\nDr. Sarah Chen, lead climate researcher at MIT, states: 'This agreement represents the political will we've been waiting for. The binding nature of these commitments, combined with robust verification systems, gives us genuine hope for meaningful climate action.'\n\nThe agreement also includes provisions for protecting biodiversity hotspots, transitioning away from fossil fuel subsidies, and supporting climate adaptation in vulnerable communities. Critics argue the timeline is still too conservative, but most environmental advocates view this as a crucial step forward in the global fight against climate change.",
-      image: "https://images.pexels.com/photos/159888/pexels-photo-159888.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop",
+      description:
+        "Environmental groups worldwide are celebrating what they're calling the most significant climate agreement in decades. The summit's comprehensive framework includes binding emission reduction targets of 45% by 2030, unprecedented funding for renewable energy infrastructure, and strict accountability mechanisms for participating nations.\n\nKey achievements include the establishment of a $500 billion Global Climate Fund, mandatory carbon pricing across G20 nations, and innovative carbon capture technology sharing agreements. Environmental scientists emphasize that these measures could limit global warming to 1.5°C if implemented effectively.\n\nDr. Sarah Chen, lead climate researcher at MIT, states: 'This agreement represents the political will we've been waiting for. The binding nature of these commitments, combined with robust verification systems, gives us genuine hope for meaningful climate action.'\n\nThe agreement also includes provisions for protecting biodiversity hotspots, transitioning away from fossil fuel subsidies, and supporting climate adaptation in vulnerable communities. Critics argue the timeline is still too conservative, but most environmental advocates view this as a crucial step forward in the global fight against climate change.",
+      image:
+        "https://images.pexels.com/photos/159888/pexels-photo-159888.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop",
       tag: "Environment",
       isTest: false,
     },
     {
       viewpoint: "Economic Policy Expert",
-      title: "Climate Summit Agreement: Economic Implications and Market Transformation Opportunities",
+      title:
+        "Climate Summit Agreement: Economic Implications and Market Transformation Opportunities",
       color: "from-blue-500 to-indigo-600",
       textColor: "text-blue-600",
       bgColor: "bg-blue-50",
-      description: "Economic analysts are examining the far-reaching implications of the climate summit agreement, with early assessments suggesting a fundamental shift in global economic priorities. The agreement's $500 billion commitment represents the largest coordinated economic intervention since the post-2008 financial recovery packages.\n\nMarket responses have been notably positive, with renewable energy stocks surging 15% globally and green technology firms experiencing unprecedented investment interest. The mandatory carbon pricing mechanism is expected to generate an estimated $2 trillion annually, creating new revenue streams for governments while incentivizing clean technology adoption.\n\nJP Morgan's chief economist, Michael Rodriguez, notes: 'This agreement essentially creates the world's largest new market overnight. The carbon pricing framework will drive innovation, create millions of jobs in emerging sectors, and potentially add 2-3% to global GDP growth over the next decade.'\n\nTraditional energy sectors face significant challenges, with coal and oil companies already announcing major restructuring plans. However, economists emphasize that the transition period includes substantial support for worker retraining and regional economic development, potentially making this the most managed economic transformation in modern history.",
-      image: "https://images.pexels.com/photos/159888/pexels-photo-159888.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop",
+      description:
+        "Economic analysts are examining the far-reaching implications of the climate summit agreement, with early assessments suggesting a fundamental shift in global economic priorities. The agreement's $500 billion commitment represents the largest coordinated economic intervention since the post-2008 financial recovery packages.\n\nMarket responses have been notably positive, with renewable energy stocks surging 15% globally and green technology firms experiencing unprecedented investment interest. The mandatory carbon pricing mechanism is expected to generate an estimated $2 trillion annually, creating new revenue streams for governments while incentivizing clean technology adoption.\n\nJP Morgan's chief economist, Michael Rodriguez, notes: 'This agreement essentially creates the world's largest new market overnight. The carbon pricing framework will drive innovation, create millions of jobs in emerging sectors, and potentially add 2-3% to global GDP growth over the next decade.'\n\nTraditional energy sectors face significant challenges, with coal and oil companies already announcing major restructuring plans. However, economists emphasize that the transition period includes substantial support for worker retraining and regional economic development, potentially making this the most managed economic transformation in modern history.",
+      image:
+        "https://images.pexels.com/photos/159888/pexels-photo-159888.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop",
       tag: "Economics",
       isTest: false,
     },
@@ -65,7 +71,7 @@ const DemoPage = () => {
   // Auto-advance perspectives
   useEffect(() => {
     if (!isAutoPlaying) return;
-    
+
     const interval = setInterval(() => {
       setCurrentPerspective((prev) => (prev + 1) % allPerspectives.length);
     }, 8000);
@@ -107,7 +113,9 @@ const DemoPage = () => {
 
   const handleGenerateClick = () => {
     if (generatedCount >= 2) {
-      toast.error("Demo limit reached! You can generate maximum 2 test perspectives.");
+      toast.error(
+        "Demo limit reached! You can generate maximum 2 test perspectives."
+      );
       return;
     }
     setShowViewpointModal(true);
@@ -137,7 +145,8 @@ const DemoPage = () => {
         },
         body: JSON.stringify({
           baseTitle: "Climate Summit Reaches Historic Agreement",
-          baseDescription: "World leaders have reached a comprehensive climate agreement with binding emission reduction targets and significant funding commitments.",
+          baseDescription:
+            "World leaders have reached a comprehensive climate agreement with binding emission reduction targets and significant funding commitments.",
           customViewpoint: customViewpoint.trim(),
         }),
       });
@@ -154,7 +163,7 @@ const DemoPage = () => {
 
         const textColors = [
           "text-purple-600",
-          "text-orange-600", 
+          "text-orange-600",
           "text-teal-600",
           "text-pink-600",
         ];
@@ -164,7 +173,8 @@ const DemoPage = () => {
           color: colors[generatedCount % colors.length],
           textColor: textColors[generatedCount % textColors.length],
           bgColor: "bg-purple-50",
-          image: "https://images.pexels.com/photos/159888/pexels-photo-159888.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop",
+          image:
+            "https://images.pexels.com/photos/159888/pexels-photo-159888.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop",
           tag: "AI Generated",
           isTest: true,
         };
@@ -217,7 +227,7 @@ const DemoPage = () => {
           className="absolute inset-0 bg-black/50 backdrop-blur-sm"
           onClick={handleModalClose}
         />
-        
+
         <div className="absolute inset-0 flex items-center justify-center p-4">
           <div
             className="bg-white rounded-2xl p-6 w-full max-w-md mx-auto shadow-2xl transform transition-all duration-300"
@@ -231,7 +241,9 @@ const DemoPage = () => {
                 Generate Demo Perspective
               </h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                This will generate a demo viewpoint related to the person, organization, or entity you specify. Our AI will create a unique perspective on the climate summit story.
+                This will generate a demo viewpoint related to the person,
+                organization, or entity you specify. Our AI will create a unique
+                perspective on the climate summit story.
               </p>
             </div>
 
@@ -258,7 +270,8 @@ const DemoPage = () => {
                 <div className="flex items-start">
                   <Info className="w-4 h-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
                   <p className="text-xs text-blue-700">
-                    <strong>Demo Limit:</strong> You can generate {2 - generatedCount} more perspective
+                    <strong>Demo Limit:</strong> You can generate{" "}
+                    {2 - generatedCount} more perspective
                     {2 - generatedCount !== 1 ? "s" : ""}
                     {generatedCount > 0 && ` (${generatedCount}/2 used)`}
                   </p>
@@ -311,12 +324,16 @@ const DemoPage = () => {
               <ArrowLeft className="w-5 h-5" />
               <span className="font-medium">Back to Home</span>
             </button>
-            
+
             <div className="flex items-center gap-3">
               <Eye className="w-6 h-6 text-blue-600" />
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Interactive Demo</h1>
-                <p className="text-sm text-gray-500">Multi-Perspective Analysis</p>
+                <h1 className="text-xl font-bold text-gray-900">
+                  Interactive Demo
+                </h1>
+                <p className="text-sm text-gray-500">
+                  Multi-Perspective Analysis
+                </p>
               </div>
             </div>
 
@@ -341,7 +358,7 @@ const DemoPage = () => {
             <Brain className="w-4 h-4 mr-2" />
             Live Interactive Demo
           </div>
-          
+
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             <span className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
               See How One Story Looks from
@@ -351,9 +368,11 @@ const DemoPage = () => {
               Multiple Perspectives
             </span>
           </h1>
-          
+
           <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-8">
-            Experience Doutya's flagship feature: multi-perspective analysis. The same climate summit story, seen through different expert viewpoints.
+            Experience Doutya&apos;s flagship feature: multi-perspective
+            analysis. The same climate summit story, seen through different
+            expert viewpoints.
           </p>
 
           {/* Demo Stats */}
@@ -381,8 +400,12 @@ const DemoPage = () => {
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-200">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-2xl font-bold text-gray-900">Climate Summit Story</h3>
-                <p className="text-gray-600 mt-1">Experience multi-perspective analysis in action</p>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  Climate Summit Story
+                </h3>
+                <p className="text-gray-600 mt-1">
+                  Experience multi-perspective analysis in action
+                </p>
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -409,20 +432,33 @@ const DemoPage = () => {
               <motion.div
                 className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full"
                 initial={{ width: 0 }}
-                animate={{ width: `${((currentPerspective + 1) / allPerspectives.length) * 100}%` }}
+                animate={{
+                  width: `${
+                    ((currentPerspective + 1) / allPerspectives.length) * 100
+                  }%`,
+                }}
                 transition={{ duration: 0.5 }}
               />
             </div>
             <div className="flex justify-between text-sm text-gray-500 mt-2">
-              <span>Perspective {currentPerspective + 1} of {allPerspectives.length}</span>
-              <span>{Math.round(((currentPerspective + 1) / allPerspectives.length) * 100)}% Complete</span>
+              <span>
+                Perspective {currentPerspective + 1} of {allPerspectives.length}
+              </span>
+              <span>
+                {Math.round(
+                  ((currentPerspective + 1) / allPerspectives.length) * 100
+                )}
+                % Complete
+              </span>
             </div>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8 p-8">
             {/* Perspective Selector */}
             <div className="lg:col-span-1">
-              <h4 className="font-bold text-gray-900 mb-4">Choose Perspective</h4>
+              <h4 className="font-bold text-gray-900 mb-4">
+                Choose Perspective
+              </h4>
               <div className="space-y-3">
                 {allPerspectives.map((perspective, index) => (
                   <motion.button
@@ -433,7 +469,9 @@ const DemoPage = () => {
                         ? `bg-gradient-to-r ${perspective.color} text-white shadow-lg transform scale-105`
                         : "bg-gray-50 hover:bg-gray-100 text-gray-700"
                     }`}
-                    whileHover={currentPerspective === index ? {} : { scale: 1.02 }}
+                    whileHover={
+                      currentPerspective === index ? {} : { scale: 1.02 }
+                    }
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -462,14 +500,22 @@ const DemoPage = () => {
                   whileHover={generatedCount < 2 ? { scale: 1.02 } : {}}
                   whileTap={generatedCount < 2 ? { scale: 0.98 } : {}}
                 >
-                  <div className={`flex items-center ${generatedCount >= 2 ? "text-gray-400" : "text-purple-600"}`}>
+                  <div
+                    className={`flex items-center ${
+                      generatedCount >= 2 ? "text-gray-400" : "text-purple-600"
+                    }`}
+                  >
                     <Plus className="w-5 h-5 mr-3" />
                     <div className="text-left">
                       <span className="font-medium block">
-                        {generatedCount >= 2 ? "Demo Limit Reached" : "Generate Custom View"}
+                        {generatedCount >= 2
+                          ? "Demo Limit Reached"
+                          : "Generate Custom View"}
                       </span>
                       <span className="text-xs opacity-75">
-                        {generatedCount >= 2 ? "(2/2 used)" : `(${generatedCount}/2 used)`}
+                        {generatedCount >= 2
+                          ? "(2/2 used)"
+                          : `(${generatedCount}/2 used)`}
                       </span>
                     </div>
                   </div>
@@ -539,11 +585,15 @@ const DemoPage = () => {
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
                         <div className="flex items-center">
                           <Clock className="w-4 h-4 mr-1" />
-                          {allPerspectives[currentPerspective].isTest ? "3 min read" : "5 min read"}
+                          {allPerspectives[currentPerspective].isTest
+                            ? "3 min read"
+                            : "5 min read"}
                         </div>
                         <div className="flex items-center">
                           <Heart className="w-4 h-4 mr-1" />
-                          {allPerspectives[currentPerspective].isTest ? "42" : "1.2k"}
+                          {allPerspectives[currentPerspective].isTest
+                            ? "42"
+                            : "1.2k"}
                         </div>
                         <div className="flex items-center">
                           <TrendingUp className="w-4 h-4 mr-1" />
@@ -591,9 +641,12 @@ const DemoPage = () => {
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Eye className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Multiple Viewpoints</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
+              Multiple Viewpoints
+            </h3>
             <p className="text-gray-600 leading-relaxed">
-              Every story analyzed from Environmental, Economic, Political, and Social perspectives for complete understanding.
+              Every story analyzed from Environmental, Economic, Political, and
+              Social perspectives for complete understanding.
             </p>
           </motion.div>
 
@@ -607,9 +660,12 @@ const DemoPage = () => {
             <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Brain className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">AI-Generated Views</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
+              AI-Generated Views
+            </h3>
             <p className="text-gray-600 leading-relaxed">
-              Generate custom perspectives from any viewpoint using our advanced AI analysis engine.
+              Generate custom perspectives from any viewpoint using our advanced
+              AI analysis engine.
             </p>
           </motion.div>
 
@@ -623,9 +679,12 @@ const DemoPage = () => {
             <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <Target className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Exam-Focused</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
+              Exam-Focused
+            </h3>
             <p className="text-gray-600 leading-relaxed">
-              Every analysis is crafted specifically for competitive exam preparation and interview readiness.
+              Every analysis is crafted specifically for competitive exam
+              preparation and interview readiness.
             </p>
           </motion.div>
         </div>
@@ -642,9 +701,10 @@ const DemoPage = () => {
               Ready to Experience the Full Platform?
             </h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              This is just one feature. Discover AI debates, smart discussions, exam-specific trending, and much more.
+              This is just one feature. Discover AI debates, smart discussions,
+              exam-specific trending, and much more.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={handleGetStarted}
