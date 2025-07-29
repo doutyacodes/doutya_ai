@@ -290,7 +290,7 @@ const DoutyaLanding = () => {
                 className="inline-flex items-center px-4 py-2 bg-white border border-red-200 rounded-full text-red-600 text-sm font-medium mb-8 shadow-sm"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
-                India's #1 Multi-Perspective News Platform
+                India&apos;s #1 Multi-Perspective News Platform
               </motion.div>
               
               <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-8 leading-tight">
@@ -509,7 +509,7 @@ const DoutyaLanding = () => {
                     </div>
                   </div>
                 </div>
-                <p className="text-gray-600 leading-relaxed italic mb-4">"{testimonial.content}"</p>
+                <p className="text-gray-600 leading-relaxed italic mb-4">{`"${testimonial.content}"`}</p>
                 <div className="inline-flex items-center px-3 py-1 bg-red-50 text-red-600 text-sm font-medium rounded-full">
                   <Award className="w-4 h-4 mr-1" />
                   {testimonial.exam}
@@ -638,7 +638,7 @@ const DoutyaLanding = () => {
                 <span className="text-3xl font-bold">Doutya</span>
               </div>
               <p className="text-gray-400 mb-8 max-w-md leading-relaxed">
-                India's premier multi-perspective news platform designed for competitive exam aspirants. 
+                India&apos;s premier multi-perspective news platform designed for competitive exam aspirants. 
                 Master current affairs through diverse viewpoints and AI-powered practice.
               </p>
               <div className="flex space-x-4">
