@@ -14,11 +14,11 @@ const pathname = usePathname();
 
   useEffect(() => {
     // Hide bottom nav on home page ("/"), show on all other pages
-    setShowBottomNav(pathname !== "/" && pathname !=="/pricing");
+    setShowBottomNav(pathname !== "/" && pathname !=="/pricing"&& pathname !=="/demo");
   }, [pathname]);
 
   return (
-    <ProtectedRoute allowedRoutes={["/","/pricing","/our-story","/our-features","/about-us", "/contact-us", "/newsonmap", "/landing"]}>
+    <ProtectedRoute allowedRoutes={["/","/pricing","/our-story","/demo","/our-features","/about-us", "/contact-us", "/newsonmap", "/landing"]}>
       <ChildrenProvider>
         <div className="relative min-h-screen flex bg-white">
           {/* <SideBar /> */}
