@@ -35,12 +35,18 @@ import {
   Check,
   MousePointer,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const ModernDoutyaLanding = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { scrollYProgress } = useScroll();
 
+  const router = useRouter();
+
+  const handleClick = (routeName) => {
+    router.push(`/${routeName}`);
+  };
   // Smooth scroll progress with spring animation
   const smoothScrollProgress = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -107,19 +113,19 @@ const ModernDoutyaLanding = () => {
 
   const stats = [
     {
-      number: "100K+",
-      label: "Daily Articles",
+      number: "100+",
+      label: "Articles",
       icon: Newspaper,
       color: "text-blue-600",
     },
     {
-      number: "30+",
+      number: "5+",
       label: "Exam Categories",
       icon: GraduationCap,
       color: "text-purple-600",
     },
     {
-      number: "2M+",
+      number: "200+",
       label: "Perspectives",
       icon: Eye,
       color: "text-green-600",
@@ -151,7 +157,7 @@ const ModernDoutyaLanding = () => {
       content:
         "The exam-specific trending feature kept me ahead of the curve. I could see exactly what topics other SSC aspirants were focusing on.",
       avatar:
-        "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
       rating: 5,
       verified: true,
     },
@@ -360,13 +366,12 @@ const ModernDoutyaLanding = () => {
                     className="w-full h-full object-contain"
                   />
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse" />
               </div>
             </motion.div>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
-              {["Features", "Pricing", "Success Stories", "About"].map(
+              {["Features", "Pricing", "Success Stories",].map(
                 (item, index) => (
                   <motion.a
                     key={item}
@@ -400,26 +405,17 @@ const ModernDoutyaLanding = () => {
               <motion.button
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="text-gray-700 hover:text-red-600 font-medium transition-all duration-300 px-4 py-2 rounded-xl hover:bg-gray-50"
-              >
-                Sign In
-              </motion.button>
-              <motion.button
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1, duration: 0.6 }}
                 whileHover={{
                   scale: 1.05,
                   boxShadow: "0 20px 40px -10px rgba(239, 68, 68, 0.3)",
                   y: -2,
                 }}
+                onClick={() => handleClick("auth/login")}
                 whileTap={{ scale: 0.95 }}
                 className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-300 shadow-lg shadow-red-500/25"
               >
-                Start Free Trial
+                Start Exploring
               </motion.button>
             </div>
 
@@ -446,7 +442,7 @@ const ModernDoutyaLanding = () => {
               className="md:hidden bg-white/95 backdrop-blur-xl border-t border-gray-100/50"
             >
               <div className="px-4 py-6 space-y-4">
-                {["Features", "Pricing", "Success Stories", "About"].map(
+                {["Features", "Pricing", "Success Stories"].map(
                   (item, index) => (
                     <motion.a
                       key={item}
@@ -476,11 +472,14 @@ const ModernDoutyaLanding = () => {
                 </motion.a>
 
                 <div className="flex flex-col space-y-3 pt-4 border-t border-gray-100">
-                  <button className="text-left text-gray-700 hover:text-red-600 font-medium py-3 px-4 rounded-xl hover:bg-gray-50 transition-all duration-300">
+                  {/* <button className="text-left text-gray-700 hover:text-red-600 font-medium py-3 px-4 rounded-xl hover:bg-gray-50 transition-all duration-300">
                     Sign In
-                  </button>
-                  <button className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold text-left shadow-lg">
-                    Start Free Trial
+                  </button> */}
+                  <button
+                    onClick={() => handleClick("auth/login")}
+                    className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold text-left shadow-lg"
+                  >
+                    Start Exploring
                   </button>
                 </div>
               </div>
@@ -519,12 +518,6 @@ const ModernDoutyaLanding = () => {
                   <span className="bg-gradient-to-r from-red-600 via-red-700 to-red-800 bg-clip-text text-transparent">
                     Current Affairs
                   </span>
-                  <motion.div
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
-                    className="absolute -bottom-2 left-0 right-0 h-2 bg-gradient-to-r from-red-400 to-red-600 rounded-full opacity-30"
-                  />
                 </span>
                 <br />
                 Through AI Intelligence
@@ -547,17 +540,19 @@ const ModernDoutyaLanding = () => {
                   boxShadow: "0 25px 50px -12px rgba(239, 68, 68, 0.4)",
                   y: -3,
                 }}
+                onClick={() => handleClick("auth/login")}
                 whileTap={{ scale: 0.95 }}
                 className="group bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:from-red-700 hover:to-red-800 transition-all duration-300 shadow-xl shadow-red-500/25 flex items-center relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                Start Free Trial
+                Start Exploring
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
               </motion.button>
 
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => handleClick("demo")}
                 className="group bg-white border-2 border-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-semibold text-lg hover:border-red-300 hover:text-red-600 hover:shadow-xl transition-all duration-300 flex items-center backdrop-blur-sm"
               >
                 <Play className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
@@ -680,13 +675,13 @@ const ModernDoutyaLanding = () => {
                   <p className="text-gray-600 leading-relaxed mb-6 text-lg">
                     {feature.description}
                   </p>
-                  <motion.button
+                  {/* <motion.button
                     whileHover={{ x: 5 }}
                     className="inline-flex items-center text-red-600 font-semibold hover:text-red-700 transition-colors group-hover:text-red-700"
                   >
                     Explore Feature
                     <ChevronRight className="ml-1 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                  </motion.button>
+                  </motion.button> */}
                 </div>
               </motion.div>
             ))}
@@ -840,7 +835,7 @@ const ModernDoutyaLanding = () => {
                   </div>
 
                   <blockquote className="text-gray-700 leading-relaxed italic mb-6 text-lg group-hover:text-gray-900 transition-colors duration-300">
-                   {` "${testimonial.content}"`}
+                    {` "${testimonial.content}"`}
                   </blockquote>
 
                   <div className="flex items-center justify-between">
@@ -902,13 +897,13 @@ const ModernDoutyaLanding = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.2, duration: 0.8 }}
                 whileHover={{ y: -12, scale: 1.03 }}
-                className={`bg-gradient-to-br ${plan.gradient} p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-700 border-2 ${plan.borderColor} relative overflow-hidden group`}
+                className={`bg-gradient-to-br ${plan.gradient} p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-700 border-2 ${plan.borderColor} relative overflow-visible group`}
               >
                 {plan.popular && (
                   <motion.div
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10"
+                    className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-[9999]"
                   >
                     <div className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
                       Most Popular
@@ -1039,33 +1034,25 @@ const ModernDoutyaLanding = () => {
                   boxShadow: "0 25px 50px -12px rgba(255, 255, 255, 0.25)",
                   y: -3,
                 }}
+                onClick={() => handleClick("auth/login")}
                 whileTap={{ scale: 0.95 }}
                 className="group bg-white text-red-600 px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-gray-50 transition-all duration-300 shadow-xl flex items-center relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-red-600/0 via-red-600/10 to-red-600/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                Start Free Trial
+                Start Exploring
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
               </motion.button>
 
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => handleClick("demo")}
                 className="group border-2 border-white/30 text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:border-white hover:bg-white/10 transition-all duration-300 flex items-center backdrop-blur-sm"
               >
                 <BookOpen className="mr-2 w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
-                Explore Features
+                Watch Demo
               </motion.button>
             </div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.8, duration: 0.8 }}
-              className="mt-12 text-white/80 text-sm"
-            >
-              ✨ No credit card required • 7-day free trial • Cancel anytime
-            </motion.div>
           </motion.div>
         </div>
       </section>
