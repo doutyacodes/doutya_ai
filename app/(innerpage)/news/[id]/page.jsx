@@ -252,16 +252,16 @@ export default async function NewsSection({ params }) {
 export const revalidate = 3600; // Revalidate pages every hour
 
 // Generate static paths for popular articles
-export async function generateStaticParams() {
-  try {
-    const response = await GlobalApi.fetchPopularNews();
-    const popularNews = response.data.newsData || [];
+// export async function generateStaticParams() {
+//   try {
+//     const response = await GlobalApi.fetchPopularNews();
+//     const popularNews = response.data.newsData || [];
     
-    return popularNews.map((news) => ({
-      id: news.id.toString(),
-    }));
-  } catch (error) {
-    console.error("Error generating static paths:", error);
-    return [];
-  }
-}
+//     return popularNews.map((news) => ({
+//       id: news.id.toString(),
+//     }));
+//   } catch (error) {
+//     console.error("Error generating static paths:", error);
+//     return [];
+//   }
+// }
