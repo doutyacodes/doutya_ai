@@ -1,6 +1,8 @@
-import { AlertCircle, Info } from "lucide-react";
+import {
+    motion
+} from "framer-motion";
+import { AlertCircle, CheckCircle, Info, X } from "lucide-react";
 import React from "react";
-
 const ToastComponent = ({ message, type, onClose }) => (
   <motion.div
     initial={{ opacity: 0, y: -50, scale: 0.9 }}
