@@ -272,7 +272,6 @@ const ModernDoutyaLanding = () => {
       features: [
         "Everything in Pro",
         "Custom AI Debates",
-        "Personal AI Coach",
         "Advanced Analytics",
       ],
       gradient: "from-red-50 via-red-100 to-red-200",
