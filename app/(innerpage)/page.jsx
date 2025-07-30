@@ -371,21 +371,19 @@ const ModernDoutyaLanding = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
-              {["Features", "Pricing", "Success Stories",].map(
-                (item, index) => (
-                  <motion.a
-                    key={item}
-                    href={`#${item.toLowerCase().replace(" ", "-")}`}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.6 }}
-                    className="relative text-gray-600 hover:text-red-600 transition-all duration-300 font-medium group py-2"
-                  >
-                    {item}
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-red-600 to-red-700 transition-all duration-300 group-hover:w-full rounded-full" />
-                  </motion.a>
-                )
-              )}
+              {["Features", "Pricing", "Success Stories"].map((item, index) => (
+                <motion.a
+                  key={item}
+                  href={`#${item.toLowerCase().replace(" ", "-")}`}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.6 }}
+                  className="relative text-gray-600 hover:text-red-600 transition-all duration-300 font-medium group py-2"
+                >
+                  {item}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-red-600 to-red-700 transition-all duration-300 group-hover:w-full rounded-full" />
+                </motion.a>
+              ))}
 
               {/* Demo link */}
               <motion.a
@@ -690,7 +688,7 @@ const ModernDoutyaLanding = () => {
       </section>
 
       {/* Core Features Grid */}
-      <section className="py-24 bg-gradient-to-b from-gray-50/50 to-white">
+      <section className="py-24 bg-white relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -699,13 +697,15 @@ const ModernDoutyaLanding = () => {
             transition={{ duration: 0.8 }}
             className="text-center mb-20"
           >
-            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Comprehensive Success Toolkit
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Every tool you need to excel in competitive exams, powered by
-              cutting-edge AI technology
-            </p>
+            <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+                Comprehensive Success Toolkit
+              </h2>
+              <p className="text-lg text-gray-600">
+                Every tool you need to excel in competitive exams, powered by
+                cutting-edge AI technology
+              </p>
+            </div>
           </motion.div>
 
           <motion.div
