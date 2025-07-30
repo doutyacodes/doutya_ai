@@ -1,5 +1,6 @@
-"use client";
-import React, { useState, useEffect, useRef } from "react";
+"use client"
+
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -21,115 +22,313 @@ import {
   Target,
   TrendingUp,
   Users,
+  Globe,
+  Shield,
+  Zap,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+
+// Toast component moved outside to prevent re-creation
+const Toast = React.memo(({ message, type, onClose }) => (
+  <motion.div
+    initial={{ opacity: 0, y: -50, scale: 0.9 }}
+    animate={{ opacity: 1, y: 0, scale: 1 }}
+    exit={{ opacity: 0, y: -50, scale: 0.9 }}
+    className={`fixed top-4 right-4 z-[10000] px-6 py-4 rounded-xl shadow-lg border flex items-center gap-3 min-w-[300px] ${
+      type === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
+      type === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
+      'bg-blue-50 border-blue-200 text-blue-800'
+    }`}
+  >
+    {type === 'success' ? <CheckCircle className="w-5 h-5" /> :
+     type === 'error' ? <AlertCircle className="w-5 h-5" /> :
+     <Info className="w-5 h-5" />}
+    <span className="font-medium">{message}</span>
+    <button
+      onClick={onClose}
+      className="ml-auto p-1 hover:bg-black/10 rounded"
+    >
+      <X className="w-4 h-4" />
+    </button>
+  </motion.div>
+));
+
+// Modal component moved outside and memoized to prevent re-creation
+const CustomViewpointModal = React.memo(({ 
+  showModal, 
+  customViewpoint, 
+  onViewpointChange, 
+  onClose, 
+  onGenerate, 
+  isGenerating, 
+  generatedCount 
+}) => {
+  const inputRef = useRef(null);
+
+  // Focus input when modal opens
+  useEffect(() => {
+    if (showModal && inputRef.current) {
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showModal]);
+
+  if (!showModal) return null;
+
+  return (
+    <div className="fixed inset-0 z-[9999] transition-all duration-300">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      <div className="absolute inset-0 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          className="bg-white rounded-3xl p-8 w-full max-w-lg mx-auto shadow-2xl transform transition-all duration-300 border border-gray-100"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="text-center mb-8">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+              className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg"
+            >
+              <Sparkles className="w-10 h-10 text-white" />
+            </motion.div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              Generate Demo Perspective
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              Create a unique AI-generated viewpoint on the climate summit story. 
+              Our advanced AI will analyze the topic from your specified perspective.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                Enter your viewpoint:
+              </label>
+              <input
+                ref={inputRef}
+                type="text"
+                value={customViewpoint}
+                onChange={onViewpointChange}
+                placeholder="e.g., Small Business Owner, Student Leader, Tech Entrepreneur..."
+                className="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all duration-300 bg-gray-50 focus:bg-white"
+                maxLength={50}
+                disabled={isGenerating}
+                autoComplete="off"
+              />
+              <div className="flex justify-between items-center mt-2">
+                <p className="text-xs text-gray-500">
+                  {customViewpoint.length}/50 characters
+                </p>
+                {customViewpoint.trim() && (
+                  <div className="text-xs text-green-600 flex items-center">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-1" />
+                    Ready to generate
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-2xl p-4">
+              <div className="flex items-start">
+                <Info className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" />
+                <div>
+                  <p className="text-sm text-red-800 font-medium mb-1">
+                    Demo Limitation
+                  </p>
+                  <p className="text-xs text-red-700">
+                    You can generate {2 - generatedCount} more perspective
+                    {2 - generatedCount !== 1 ? "s" : ""}
+                    {generatedCount > 0 && ` (${generatedCount}/2 used)`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex space-x-4 mt-8">
+            <button
+              onClick={onClose}
+              disabled={isGenerating}
+              className="flex-1 px-6 py-4 bg-gray-100 text-gray-700 rounded-2xl font-semibold hover:bg-gray-200 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cancel
+            </button>
+            <motion.button
+              onClick={onGenerate}
+              disabled={isGenerating || !customViewpoint.trim()}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex-1 px-6 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-2xl font-semibold hover:from-red-700 hover:to-red-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center shadow-lg"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Brain className="w-5 h-5 mr-2" />
+                  Generate Perspective
+                </>
+              )}
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+});
 
 const DemoPage = () => {
-  const router = useRouter();
   const [currentPerspective, setCurrentPerspective] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [showViewpointModal, setShowViewpointModal] = useState(false);
   const [customViewpoint, setCustomViewpoint] = useState("");
   const [generatedCount, setGeneratedCount] = useState(0);
   const [isGeneratingTest, setIsGeneratingTest] = useState(false);
+  const [toast, setToast] = useState(null);
+  const intervalRef = useRef(null);
+  const timeoutRef = useRef(null);
 
-  // Base perspectives
-  const basePerspectives = [
+  // Toast helper - memoized to prevent re-creation
+  const showToast = useCallback((message, type = 'info') => {
+    setToast({ message, type, id: Date.now() });
+    
+    // Clear existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    // Set new timeout
+    timeoutRef.current = setTimeout(() => setToast(null), 5000);
+  }, []);
+
+  // Base perspectives - moved to state to prevent re-creation
+  const basePerspectives = useMemo(() => [
     {
       viewpoint: "Environmental Activist",
-      title:
-        "Climate Summit Breakthrough: Historic Carbon Reduction Targets Set Global Standard",
-      color: "from-emerald-500 to-green-600",
-      textColor: "text-emerald-600",
-      bgColor: "bg-emerald-50",
+      title: "Climate Summit Breakthrough: Historic Carbon Reduction Targets Set Global Standard",
+      color: "from-red-500 to-red-600",
+      textColor: "text-red-600",
+      bgColor: "bg-red-50",
       description:
         "Environmental groups worldwide are celebrating what they're calling the most significant climate agreement in decades. The summit's comprehensive framework includes binding emission reduction targets of 45% by 2030, unprecedented funding for renewable energy infrastructure, and strict accountability mechanisms for participating nations.\n\nKey achievements include the establishment of a $500 billion Global Climate Fund, mandatory carbon pricing across G20 nations, and innovative carbon capture technology sharing agreements. Environmental scientists emphasize that these measures could limit global warming to 1.5°C if implemented effectively.\n\nDr. Sarah Chen, lead climate researcher at MIT, states: 'This agreement represents the political will we've been waiting for. The binding nature of these commitments, combined with robust verification systems, gives us genuine hope for meaningful climate action.'\n\nThe agreement also includes provisions for protecting biodiversity hotspots, transitioning away from fossil fuel subsidies, and supporting climate adaptation in vulnerable communities. Critics argue the timeline is still too conservative, but most environmental advocates view this as a crucial step forward in the global fight against climate change.",
-      image:
-        "https://images.pexels.com/photos/159888/pexels-photo-159888.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop",
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop",
       tag: "Environment",
       isTest: false,
     },
     {
       viewpoint: "Economic Policy Expert",
-      title:
-        "Climate Summit Agreement: Economic Implications and Market Transformation Opportunities",
-      color: "from-blue-500 to-indigo-600",
-      textColor: "text-blue-600",
-      bgColor: "bg-blue-50",
+      title: "Climate Summit Agreement: Economic Implications and Market Transformation Opportunities",
+      color: "from-red-400 to-red-500",
+      textColor: "text-red-500",
+      bgColor: "bg-red-50",
       description:
         "Economic analysts are examining the far-reaching implications of the climate summit agreement, with early assessments suggesting a fundamental shift in global economic priorities. The agreement's $500 billion commitment represents the largest coordinated economic intervention since the post-2008 financial recovery packages.\n\nMarket responses have been notably positive, with renewable energy stocks surging 15% globally and green technology firms experiencing unprecedented investment interest. The mandatory carbon pricing mechanism is expected to generate an estimated $2 trillion annually, creating new revenue streams for governments while incentivizing clean technology adoption.\n\nJP Morgan's chief economist, Michael Rodriguez, notes: 'This agreement essentially creates the world's largest new market overnight. The carbon pricing framework will drive innovation, create millions of jobs in emerging sectors, and potentially add 2-3% to global GDP growth over the next decade.'\n\nTraditional energy sectors face significant challenges, with coal and oil companies already announcing major restructuring plans. However, economists emphasize that the transition period includes substantial support for worker retraining and regional economic development, potentially making this the most managed economic transformation in modern history.",
-      image:
-        "https://images.pexels.com/photos/159888/pexels-photo-159888.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop",
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop",
       tag: "Economics",
       isTest: false,
     },
-  ];
+  ], []);
 
   const [allPerspectives, setAllPerspectives] = useState(basePerspectives);
 
-  // Auto-advance perspectives
-  useEffect(() => {
-    if (!isAutoPlaying) return;
+  // Stable handlers using useCallback
+  const handleModalClose = useCallback(() => {
+    if (isGeneratingTest) return;
+    setShowViewpointModal(false);
+    setCustomViewpoint("");
+  }, [isGeneratingTest]);
 
-    const interval = setInterval(() => {
+  const handleBackToHome = useCallback(() => {
+    console.log("Navigate to home");
+  }, []);
+
+  const handleGetStarted = useCallback(() => {
+    console.log("Navigate to news page");
+  }, []);
+
+  // Input change handler - stable reference
+  const handleViewpointChange = useCallback((e) => {
+    setCustomViewpoint(e.target.value);
+  }, []);
+
+  // Auto-advance perspectives with proper cleanup
+  useEffect(() => {
+    if (!isAutoPlaying || allPerspectives.length <= 1) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
+
+    intervalRef.current = setInterval(() => {
       setCurrentPerspective((prev) => (prev + 1) % allPerspectives.length);
     }, 8000);
 
-    return () => clearInterval(interval);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [isAutoPlaying, allPerspectives.length]);
 
-  // Load generated count from sessionStorage
-  useEffect(() => {
-    const storedCount = sessionStorage.getItem("doutya_generated_count");
-    if (storedCount) {
-      setGeneratedCount(parseInt(storedCount, 10));
-    }
-  }, []);
-
-  // Handle modal and body scroll
+  // Handle modal and body scroll - prevent re-runs
   useEffect(() => {
     if (showViewpointModal) {
       document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = "unset";
-      };
+    } else {
+      document.body.style.overflow = "unset";
     }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
   }, [showViewpointModal]);
 
-  // Escape key handler
+  // Escape key handler - only when modal is open
   useEffect(() => {
+    if (!showViewpointModal) return;
+
     const handleEscape = (event) => {
-      if (event.key === "Escape" && showViewpointModal && !isGeneratingTest) {
+      if (event.key === "Escape" && !isGeneratingTest) {
         handleModalClose();
       }
     };
 
-    if (showViewpointModal) {
-      document.addEventListener("keydown", handleEscape);
-      return () => document.removeEventListener("keydown", handleEscape);
-    }
-  }, [showViewpointModal, isGeneratingTest]);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [showViewpointModal, isGeneratingTest, handleModalClose]);
 
-  const handleGenerateClick = () => {
+  const handleGenerateClick = useCallback(() => {
     if (generatedCount >= 2) {
-      toast.error(
-        "Demo limit reached! You can generate maximum 2 test perspectives."
-      );
+      showToast("Demo limit reached! You can generate maximum 2 test perspectives.", 'error');
       return;
     }
     setShowViewpointModal(true);
-  };
+  }, [generatedCount, showToast]);
 
-  const handleModalClose = () => {
-    if (isGeneratingTest) return;
-    setShowViewpointModal(false);
-    setCustomViewpoint("");
-  };
-
-  const generateTestPerspective = async () => {
-    if (!customViewpoint.trim()) {
-      toast.error("Please enter a viewpoint");
+  const generateTestPerspective = useCallback(async () => {
+    const trimmedViewpoint = customViewpoint.trim();
+    if (!trimmedViewpoint) {
+      showToast("Please enter a viewpoint", 'error');
       return;
     }
 
@@ -138,407 +337,361 @@ const DemoPage = () => {
     setIsGeneratingTest(true);
 
     try {
-      const response = await fetch("/api/test-perspective", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          baseTitle: "Climate Summit Reaches Historic Agreement",
-          baseDescription:
-            "World leaders have reached a comprehensive climate agreement with binding emission reduction targets and significant funding commitments.",
-          customViewpoint: customViewpoint.trim(),
-        }),
-      });
+      // Simulate API call for demo
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      const data = await response.json();
+      const colors = [
+        "from-red-600 to-red-700",
+        "from-red-500 to-red-600",
+        "from-red-400 to-red-500",
+        "from-red-700 to-red-800",
+      ];
 
-      if (response.ok) {
-        const colors = [
-          "from-purple-500 to-violet-600",
-          "from-orange-500 to-red-600",
-          "from-teal-500 to-cyan-600",
-          "from-pink-500 to-rose-600",
-        ];
+      const textColors = [
+        "text-red-700",
+        "text-red-600",
+        "text-red-500",
+        "text-red-800",
+      ];
 
-        const textColors = [
-          "text-purple-600",
-          "text-orange-600",
-          "text-teal-600",
-          "text-pink-600",
-        ];
+      const newTestPerspective = {
+        viewpoint: trimmedViewpoint,
+        title: `Climate Summit Analysis: A ${trimmedViewpoint} Perspective on Global Climate Action`,
+        color: colors[generatedCount % colors.length],
+        textColor: textColors[generatedCount % textColors.length],
+        bgColor: "bg-red-50",
+        description: `From the perspective of a ${trimmedViewpoint}, the recent climate summit represents a pivotal moment that demands careful analysis. The comprehensive agreement reached by world leaders presents both unprecedented opportunities and significant challenges that will reshape our approach to environmental action.\n\nThe binding emission reduction targets of 45% by 2030 create a framework that directly impacts our community and stakeholders. The $500 billion Global Climate Fund allocation demonstrates the scale of commitment required to address climate change effectively, while the mandatory carbon pricing mechanism across G20 nations will fundamentally alter economic calculations.\n\nAs a ${trimmedViewpoint}, we recognize that this agreement's success depends on practical implementation and sustained political will. The provisions for biodiversity protection, fossil fuel subsidy transitions, and climate adaptation support show a holistic approach to environmental challenges.\n\nMoving forward, our role involves advocating for transparent accountability mechanisms, ensuring equitable resource distribution, and maintaining focus on evidence-based policy implementation. The climate crisis demands collaboration across all sectors, and this agreement provides the foundation for meaningful progress toward a sustainable future.`,
+        image: "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=600&h=400&fit=crop",
+        tag: "AI Generated",
+        isTest: true,
+      };
 
-        const newTestPerspective = {
-          ...data.perspective,
-          color: colors[generatedCount % colors.length],
-          textColor: textColors[generatedCount % textColors.length],
-          bgColor: "bg-purple-50",
-          image:
-            "https://images.pexels.com/photos/159888/pexels-photo-159888.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop",
-          tag: "AI Generated",
-          isTest: true,
-        };
+      setAllPerspectives((prev) => [...prev, newTestPerspective]);
+      setCurrentPerspective(allPerspectives.length);
 
-        setAllPerspectives((prev) => [...prev, newTestPerspective]);
-        setCurrentPerspective(allPerspectives.length);
+      const newCount = generatedCount + 1;
+      setGeneratedCount(newCount);
 
-        const newCount = generatedCount + 1;
-        setGeneratedCount(newCount);
-        sessionStorage.setItem("doutya_generated_count", newCount.toString());
+      setShowViewpointModal(false);
+      setCustomViewpoint("");
 
-        setShowViewpointModal(false);
-        setCustomViewpoint("");
-
-        toast.success(`Test perspective generated! (${newCount}/2)`);
-      } else {
-        toast.error(data.error || "Failed to generate perspective");
-      }
+      showToast(`Test perspective generated! (${newCount}/2)`, 'success');
     } catch (error) {
       console.error("Error generating test perspective:", error);
-      toast.error("Failed to generate test perspective");
+      showToast("Failed to generate test perspective", 'error');
     } finally {
       setIsGeneratingTest(false);
     }
-  };
+  }, [customViewpoint, isGeneratingTest, generatedCount, allPerspectives.length, showToast]);
 
-  const removeTestPerspectives = () => {
+  const removeTestPerspectives = useCallback(() => {
     setAllPerspectives(basePerspectives);
     setCurrentPerspective(0);
     setGeneratedCount(0);
-    sessionStorage.removeItem("doutya_generated_count");
-    toast.info("Test perspectives cleared!");
-  };
+    showToast("Test perspectives cleared!", 'info');
+  }, [basePerspectives, showToast]);
 
-  const handleBackToHome = () => {
-    router.push("/");
-  };
-
-  const handleGetStarted = () => {
-    router.push("/news");
-  };
-
-  // Custom Modal Component
-  const CustomViewpointModal = () => {
-    if (!showViewpointModal) return null;
-
-    return (
-      <div className="fixed inset-0 z-[9999] transition-all duration-300">
-        <div
-          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-          onClick={handleModalClose}
-        />
-
-        <div className="absolute inset-0 flex items-center justify-center p-4">
-          <div
-            className="bg-white rounded-2xl p-6 w-full max-w-md mx-auto shadow-2xl transform transition-all duration-300"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Generate Demo Perspective
-              </h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                This will generate a demo viewpoint related to the person,
-                organization, or entity you specify. Our AI will create a unique
-                perspective on the climate summit story.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Enter your viewpoint:
-                </label>
-                <input
-                  type="text"
-                  value={customViewpoint}
-                  onChange={(e) => setCustomViewpoint(e.target.value)}
-                  placeholder="e.g., Small Business Owner, Student Leader, Tech Entrepreneur..."
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-colors"
-                  maxLength={50}
-                  disabled={isGeneratingTest}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  {customViewpoint.length}/50 characters
-                </p>
-              </div>
-
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <div className="flex items-start">
-                  <Info className="w-4 h-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
-                  <p className="text-xs text-blue-700">
-                    <strong>Demo Limit:</strong> You can generate{" "}
-                    {2 - generatedCount} more perspective
-                    {2 - generatedCount !== 1 ? "s" : ""}
-                    {generatedCount > 0 && ` (${generatedCount}/2 used)`}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex space-x-3 mt-6">
-              <button
-                onClick={handleModalClose}
-                disabled={isGeneratingTest}
-                className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={generateTestPerspective}
-                disabled={isGeneratingTest || !customViewpoint.trim()}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-xl font-medium hover:from-purple-600 hover:to-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center"
-              >
-                {isGeneratingTest ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    Generating...
-                  </>
-                ) : (
-                  "Generate"
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  // Clean up timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      {/* Custom Modal */}
-      <CustomViewpointModal />
+    <div className="min-h-screen bg-gradient-to-br from-red-50/50 via-white to-red-100/30">
+      {/* Toast notifications */}
+      <AnimatePresence>
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{ 
+            y: [-10, 10, -10],
+            rotate: [0, 5, 0]
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-red-400/10 to-red-500/10 rounded-full blur-xl"
+        />
+        <motion.div
+          animate={{ 
+            y: [10, -10, 10],
+            rotate: [0, -5, 0]
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          className="absolute top-40 right-20 w-48 h-48 bg-gradient-to-br from-red-300/10 to-red-600/10 rounded-full blur-xl"
+        />
+      </div>
+
+      {/* Custom Modal - using the memoized component */}
+      <AnimatePresence>
+        {showViewpointModal && (
+          <CustomViewpointModal
+            showModal={showViewpointModal}
+            customViewpoint={customViewpoint}
+            onViewpointChange={handleViewpointChange}
+            onClose={handleModalClose}
+            onGenerate={generateTestPerspective}
+            isGenerating={isGeneratingTest}
+            generatedCount={generatedCount}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white/80 backdrop-blur-xl shadow-sm border-b border-gray-100/50 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
-            <button
+            <motion.button
               onClick={handleBackToHome}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+              whileHover={{ x: -5 }}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-all duration-300 bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-xl"
             >
               <ArrowLeft className="w-5 h-5" />
               <span className="font-medium">Back to Home</span>
-            </button>
+            </motion.button>
 
-            <div className="flex items-center gap-3">
-              <Eye className="w-6 h-6 text-blue-600" />
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <Eye className="w-6 h-6 text-white" />
+              </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">
-                  Interactive Demo
-                </h1>
-                <p className="text-sm text-gray-500">
-                  Multi-Perspective Analysis
-                </p>
+                <h1 className="text-xl font-bold text-gray-900">Interactive Demo</h1>
+                <p className="text-sm text-gray-500">Multi-Perspective Analysis</p>
               </div>
             </div>
 
-            <button
+            <motion.button
               onClick={handleGetStarted}
-              className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 shadow-lg"
             >
               Get Started
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>
 
       {/* Demo Introduction */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 text-center">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 text-center relative">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 text-blue-700 rounded-full text-sm font-semibold mb-6">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring" }}
+            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-50 to-red-100 border border-red-200/50 text-red-700 rounded-full text-sm font-semibold mb-8 shadow-sm"
+          >
             <Brain className="w-4 h-4 mr-2" />
             Live Interactive Demo
-          </div>
+            <Sparkles className="w-4 h-4 ml-2" />
+          </motion.div>
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+          <h1 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">
             <span className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-              See How One Story Looks from
+              Experience News Through
             </span>
             <br />
-            <span className="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
-              Multiple Perspectives
+            <span className="bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
+              Multiple Expert Lenses
             </span>
           </h1>
 
-          <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-8">
-            Experience Doutya&apos;s flagship feature: multi-perspective
-            analysis. The same climate summit story, seen through different
-            expert viewpoints.
+          <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-12">
+            Discover Doutya&apos;s revolutionary multi-perspective analysis. See how the same 
+            climate summit story transforms when viewed through different expert viewpoints.
           </p>
 
-          {/* Demo Stats */}
-          <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-500 mb-12">
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              Real AI Analysis
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-              Generate Custom Views
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-              Interactive Experience
-            </div>
+          {/* Enhanced Demo Stats */}
+          <div className="flex flex-wrap justify-center gap-8 text-sm mb-16">
+            {[
+              { icon: Shield, label: "Real AI Analysis", color: "text-green-600" },
+              { icon: Brain, label: "Custom Perspectives", color: "text-red-600" },
+              { icon: Zap, label: "Interactive Demo", color: "text-blue-600" }
+            ].map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 + index * 0.1 }}
+                className="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full border border-gray-200/50"
+              >
+                <div className={`w-2 h-2 ${stat.color.replace('text-', 'bg-')} rounded-full`} />
+                <stat.icon className={`w-4 h-4 ${stat.color}`} />
+                <span className="font-medium text-gray-700">{stat.label}</span>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       </div>
 
       {/* Main Demo Interface */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
-        <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
-          {/* Demo Header */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b border-gray-200">
-            <div className="flex items-center justify-between mb-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-20">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-100/50 overflow-hidden"
+        >
+          {/* Enhanced Demo Header */}
+          <div className="bg-gradient-to-r from-red-50 to-red-100 p-8 border-b border-red-200/50">
+            <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-2xl font-bold text-gray-900">
-                  Climate Summit Story
+                <h3 className="text-3xl font-bold text-gray-900 mb-2">
+                  Climate Summit Analysis
                 </h3>
-                <p className="text-gray-600 mt-1">
-                  Experience multi-perspective analysis in action
+                <p className="text-gray-600 text-lg">
+                  Interactive multi-perspective demonstration
                 </p>
               </div>
-              <div className="flex items-center space-x-2">
-                <button
+              <div className="flex items-center space-x-3">
+                <motion.button
                   onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-                  className="p-3 hover:bg-white/50 rounded-xl transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="p-3 bg-white/60 backdrop-blur-sm hover:bg-white/80 rounded-xl transition-all duration-300 border border-white/50"
                 >
                   {isAutoPlaying ? (
                     <Pause className="w-5 h-5 text-gray-600" />
                   ) : (
                     <Play className="w-5 h-5 text-gray-600" />
                   )}
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   onClick={() => setCurrentPerspective(0)}
-                  className="p-3 hover:bg-white/50 rounded-xl transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="p-3 bg-white/60 backdrop-blur-sm hover:bg-white/80 rounded-xl transition-all duration-300 border border-white/50"
                 >
                   <RotateCcw className="w-5 h-5 text-gray-600" />
-                </button>
+                </motion.button>
               </div>
             </div>
 
-            {/* Progress Indicator */}
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <motion.div
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full"
-                initial={{ width: 0 }}
-                animate={{
-                  width: `${
-                    ((currentPerspective + 1) / allPerspectives.length) * 100
-                  }%`,
-                }}
-                transition={{ duration: 0.5 }}
-              />
-            </div>
-            <div className="flex justify-between text-sm text-gray-500 mt-2">
-              <span>
-                Perspective {currentPerspective + 1} of {allPerspectives.length}
-              </span>
-              <span>
-                {Math.round(
-                  ((currentPerspective + 1) / allPerspectives.length) * 100
-                )}
-                % Complete
-              </span>
+            {/* Enhanced Progress Indicator */}
+            <div className="space-y-3">
+              <div className="w-full bg-white/50 rounded-full h-3 shadow-inner">
+                <motion.div
+                  className="bg-gradient-to-r from-red-500 to-red-600 h-3 rounded-full shadow-lg"
+                  initial={{ width: 0 }}
+                  animate={{
+                    width: `${((currentPerspective + 1) / allPerspectives.length) * 100}%`,
+                  }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                />
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600 font-medium">
+                  Perspective {currentPerspective + 1} of {allPerspectives.length}
+                </span>
+                <span className="text-red-600 font-semibold">
+                  {Math.round(((currentPerspective + 1) / allPerspectives.length) * 100)}% Complete
+                </span>
+              </div>
             </div>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8 p-8">
-            {/* Perspective Selector */}
+            {/* Enhanced Perspective Selector */}
             <div className="lg:col-span-1">
-              <h4 className="font-bold text-gray-900 mb-4">
-                Choose Perspective
-              </h4>
-              <div className="space-y-3">
+              <h4 className="font-bold text-gray-900 mb-6 text-lg">Choose Perspective</h4>
+              <div className="space-y-4">
                 {allPerspectives.map((perspective, index) => (
                   <motion.button
                     key={index}
                     onClick={() => setCurrentPerspective(index)}
-                    className={`w-full p-4 rounded-xl text-left transition-all duration-300 ${
+                    className={`w-full p-5 rounded-2xl text-left transition-all duration-500 ${
                       currentPerspective === index
-                        ? `bg-gradient-to-r ${perspective.color} text-white shadow-lg transform scale-105`
-                        : "bg-gray-50 hover:bg-gray-100 text-gray-700"
+                        ? `bg-gradient-to-r ${perspective.color} text-white shadow-xl transform scale-105`
+                        : "bg-gray-50/70 backdrop-blur-sm hover:bg-white hover:shadow-lg text-gray-700 border border-gray-200/50"
                     }`}
-                    whileHover={
-                      currentPerspective === index ? {} : { scale: 1.02 }
-                    }
+                    whileHover={currentPerspective === index ? {} : { scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold opacity-90">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs font-bold opacity-90 px-2 py-1 bg-white/20 rounded-full">
                         {perspective.tag}
                       </span>
                       {perspective.isTest && (
-                        <span className="px-2 py-0.5 bg-white/20 rounded-full text-xs">
+                        <span className="px-2 py-1 bg-white/20 rounded-full text-xs font-semibold flex items-center">
+                          <Sparkles className="w-3 h-3 mr-1" />
                           AI
                         </span>
                       )}
                     </div>
-                    <div className="font-bold">{perspective.viewpoint}</div>
+                    <div className="font-bold text-lg">{perspective.viewpoint}</div>
                   </motion.button>
                 ))}
 
-                {/* Generate Custom Perspective */}
+                {/* Enhanced Generate Custom Perspective */}
                 <motion.button
                   onClick={handleGenerateClick}
                   disabled={generatedCount >= 2}
-                  className={`w-full p-4 rounded-xl text-left border-2 border-dashed transition-all duration-300 flex items-center justify-center ${
+                  className={`w-full p-5 rounded-2xl text-left border-2 border-dashed transition-all duration-500 flex items-center justify-between ${
                     generatedCount >= 2
-                      ? "border-gray-300 text-gray-400 cursor-not-allowed"
-                      : "border-purple-300 hover:border-purple-400 hover:bg-purple-50"
+                      ? "border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50/30"
+                      : "border-red-300 hover:border-red-400 hover:bg-red-50 bg-white/60 backdrop-blur-sm"
                   }`}
-                  whileHover={generatedCount < 2 ? { scale: 1.02 } : {}}
+                  whileHover={generatedCount < 2 ? { scale: 1.02, y: -2 } : {}}
                   whileTap={generatedCount < 2 ? { scale: 0.98 } : {}}
                 >
-                  <div
-                    className={`flex items-center ${
-                      generatedCount >= 2 ? "text-gray-400" : "text-purple-600"
-                    }`}
-                  >
-                    <Plus className="w-5 h-5 mr-3" />
+                  <div className={`flex items-center ${generatedCount >= 2 ? "text-gray-400" : "text-red-600"}`}>
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-4 ${
+                      generatedCount >= 2 ? "bg-gray-200" : "bg-red-100"
+                    }`}>
+                      <Plus className="w-6 h-6" />
+                    </div>
                     <div className="text-left">
-                      <span className="font-medium block">
-                        {generatedCount >= 2
-                          ? "Demo Limit Reached"
-                          : "Generate Custom View"}
+                      <span className="font-semibold block text-lg">
+                        {generatedCount >= 2 ? "Demo Limit Reached" : "Generate Custom View"}
                       </span>
-                      <span className="text-xs opacity-75">
-                        {generatedCount >= 2
-                          ? "(2/2 used)"
-                          : `(${generatedCount}/2 used)`}
+                      <span className="text-sm opacity-75">
+                        {generatedCount >= 2 ? "(2/2 used)" : `(${generatedCount}/2 used)`}
                       </span>
                     </div>
                   </div>
                 </motion.button>
 
-                {/* Clear Test Perspectives */}
+                {/* Enhanced Clear Test Perspectives */}
                 {allPerspectives.length > 2 && (
                   <motion.button
                     onClick={removeTestPerspectives}
-                    className="w-full p-4 rounded-xl text-left border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-300 flex items-center justify-center"
-                    whileHover={{ scale: 1.02 }}
+                    className="w-full p-5 rounded-2xl text-left border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-300 flex items-center justify-between bg-white/60 backdrop-blur-sm"
+                    whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className="flex items-center text-red-600">
-                      <X className="w-5 h-5 mr-3" />
-                      <span className="font-medium">Clear AI Perspectives</span>
+                      <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mr-4">
+                        <X className="w-6 h-6" />
+                      </div>
+                      <div className="text-left">
+                        <span className="font-semibold block text-lg">Clear AI Perspectives</span>
+                        <span className="text-sm opacity-75">Reset to original views</span>
+                      </div>
                     </div>
                   </motion.button>
                 )}
               </div>
             </div>
 
-            {/* Article Display */}
+            {/* Enhanced Article Display */}
             <div className="lg:col-span-2">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -546,182 +699,211 @@ const DemoPage = () => {
                   initial={{ opacity: 0, y: 20, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
                   className="space-y-6"
                 >
-                  {/* Article Image */}
-                  <div className="relative aspect-[2/1] rounded-2xl overflow-hidden">
+                  {/* Enhanced Article Image */}
+                  <div className="relative aspect-[2/1] rounded-3xl overflow-hidden shadow-xl">
                     <img
                       src={allPerspectives[currentPerspective].image}
                       alt={allPerspectives[currentPerspective].viewpoint}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                    <div
-                      className={`absolute top-4 left-4 px-4 py-2 bg-gradient-to-r ${allPerspectives[currentPerspective].color} text-white rounded-full font-bold flex items-center`}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className={`absolute top-6 left-6 px-5 py-3 bg-gradient-to-r ${allPerspectives[currentPerspective].color} text-white rounded-2xl font-bold flex items-center shadow-lg backdrop-blur-sm`}
                     >
-                      <Eye className="w-4 h-4 mr-2" />
+                      <Eye className="w-5 h-5 mr-2" />
                       {allPerspectives[currentPerspective].viewpoint} View
                       {allPerspectives[currentPerspective].isTest && (
                         <Sparkles className="w-4 h-4 ml-2" />
                       )}
-                    </div>
+                    </motion.div>
                   </div>
 
-                  <div className="space-y-4">
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+                  <div className="space-y-6">
+                    <motion.h2
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.4 }}
+                      className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight"
+                    >
                       {allPerspectives[currentPerspective].title}
-                    </h2>
+                    </motion.h2>
 
-                    {/* Article Content */}
-                    <div className="max-h-64 overflow-y-auto pr-2">
-                      <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                    {/* Enhanced Article Content */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                      className="max-h-72 overflow-y-auto pr-4 bg-gradient-to-b from-gray-50/50 to-white rounded-2xl p-6 border border-gray-100"
+                    >
+                      <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-line">
                         {allPerspectives[currentPerspective].description}
                       </p>
-                    </div>
+                    </motion.div>
 
-                    {/* Article Meta */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <div className="flex items-center">
-                          <Clock className="w-4 h-4 mr-1" />
-                          {allPerspectives[currentPerspective].isTest
-                            ? "3 min read"
-                            : "5 min read"}
+                    {/* Enhanced Article Meta */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                      className="flex items-center justify-between pt-6 border-t border-gray-200"
+                    >
+                      <div className="flex items-center space-x-6 text-sm text-gray-500">
+                        <div className="flex items-center bg-gray-50 px-3 py-2 rounded-xl">
+                          <Clock className="w-4 h-4 mr-2" />
+                          {allPerspectives[currentPerspective].isTest ? "3 min read" : "5 min read"}
                         </div>
-                        <div className="flex items-center">
-                          <Heart className="w-4 h-4 mr-1" />
-                          {allPerspectives[currentPerspective].isTest
-                            ? "42"
-                            : "1.2k"}
+                        <div className="flex items-center bg-gray-50 px-3 py-2 rounded-xl">
+                          <Heart className="w-4 h-4 mr-2" />
+                          {allPerspectives[currentPerspective].isTest ? "42" : "1.2k"}
                         </div>
-                        <div className="flex items-center">
-                          <TrendingUp className="w-4 h-4 mr-1" />
+                        <div className="flex items-center bg-gray-50 px-3 py-2 rounded-xl">
+                          <TrendingUp className="w-4 h-4 mr-2" />
                           Trending
                         </div>
                       </div>
-                      <button className="text-red-600 font-semibold hover:text-red-700 flex items-center text-sm">
+                      <motion.button
+                        whileHover={{ x: 5 }}
+                        className="text-red-600 font-semibold hover:text-red-700 flex items-center text-sm bg-red-50 px-4 py-2 rounded-xl transition-all duration-300"
+                      >
                         Read Full Article
                         <ChevronRight className="w-4 h-4 ml-1" />
-                      </button>
-                    </div>
+                      </motion.button>
+                    </motion.div>
                   </div>
                 </motion.div>
               </AnimatePresence>
             </div>
           </div>
 
-          {/* Navigation Dots */}
-          <div className="flex justify-center space-x-2 pb-8">
+          {/* Enhanced Navigation Dots */}
+          <div className="flex justify-center space-x-3 pb-8">
             {allPerspectives.map((perspective, index) => (
               <motion.button
                 key={index}
                 onClick={() => setCurrentPerspective(index)}
                 className={`h-3 rounded-full transition-all duration-300 ${
                   currentPerspective === index
-                    ? perspective.isTest
-                      ? "bg-purple-600 w-8"
-                      : "bg-red-600 w-8"
+                    ? "bg-red-600 w-8 shadow-lg"
                     : "bg-gray-300 w-3 hover:bg-gray-400"
                 }`}
                 whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
               />
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        {/* Demo Features */}
-        <div className="mt-16 grid md:grid-cols-3 gap-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center"
-          >
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Eye className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
-              Multiple Viewpoints
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              Every story analyzed from Environmental, Economic, Political, and
-              Social perspectives for complete understanding.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center"
-          >
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Brain className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
-              AI-Generated Views
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              Generate custom perspectives from any viewpoint using our advanced
-              AI analysis engine.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center"
-          >
-            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Target className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
-              Exam-Focused
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              Every analysis is crafted specifically for competitive exam
-              preparation and interview readiness.
-            </p>
-          </motion.div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="mt-16 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-12 text-white"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Ready to Experience the Full Platform?
-            </h2>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              This is just one feature. Discover AI debates, smart discussions,
-              exam-specific trending, and much more.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={handleGetStarted}
-                className="bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 rounded-2xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center"
+        {/* Enhanced Demo Features */}
+        <div className="mt-20 grid md:grid-cols-3 gap-8">
+          {[
+            {
+              icon: Eye,
+              title: "Multiple Expert Viewpoints",
+              description: "Every story analyzed through Environmental, Economic, Political, and Social expert frameworks for comprehensive understanding.",
+              gradient: "from-red-500 to-red-600",
+              delay: 0
+            },
+            {
+              icon: Brain,
+              title: "AI-Powered Custom Analysis",
+              description: "Generate unique perspectives from any viewpoint using our advanced AI analysis engine trained on expert knowledge.",
+              gradient: "from-red-400 to-red-500",
+              delay: 0.1
+            },
+            {
+              icon: Target,
+              title: "Exam-Focused Insights",
+              description: "Every analysis crafted specifically for competitive exam preparation, interview readiness, and academic excellence.",
+              gradient: "from-red-600 to-red-700",
+              delay: 0.2
+            }
+          ].map((feature, index) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: feature.delay, duration: 0.6 }}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-gray-100/50 text-center group relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-red-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                className={`w-20 h-20 bg-gradient-to-br ${feature.gradient} rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300`}
               >
-                Start Your Journey
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </button>
-              <button
-                onClick={handleBackToHome}
-                className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white/20 transition-all"
-              >
-                Learn More Features
-              </button>
-            </div>
-          </motion.div>
+                <feature.icon className="w-10 h-10 text-white" />
+              </motion.div>
+              
+              <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-red-600 transition-colors duration-300">
+                {feature.title}
+              </h3>
+              <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+            </motion.div>
+          ))}
         </div>
+
+        {/* Enhanced CTA Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-20 text-center"
+        >
+          <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-red-900 rounded-3xl p-12 text-white relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-red-600/10 to-red-400/5" />
+            
+            <div className="relative">
+              <motion.div
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, type: "spring" }}
+                className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm font-semibold mb-8"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                This is Just the Beginning
+              </motion.div>
+              
+              <h2 className="text-3xl md:text-5xl font-bold mb-6">
+                Ready for the Complete Experience?
+              </h2>
+              <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+                Multi-perspective analysis is just one feature. Discover AI debates, intelligent discussions, 
+                exam-specific trending insights, and comprehensive preparation tools.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <motion.button
+                  onClick={handleGetStarted}
+                  whileHover={{ scale: 1.05, y: -3 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 rounded-2xl text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center"
+                >
+                  <Target className="w-5 h-5 mr-2" />
+                  Start Your Journey
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </motion.button>
+                <motion.button
+                  onClick={handleBackToHome}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white/20 transition-all duration-300 flex items-center justify-center"
+                >
+                  <Globe className="w-5 h-5 mr-2" />
+                  Explore All Features
+                </motion.button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
