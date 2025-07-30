@@ -840,7 +840,7 @@ const ModernDoutyaLanding = () => {
                   </div>
 
                   <blockquote className="text-gray-700 leading-relaxed italic mb-6 text-lg group-hover:text-gray-900 transition-colors duration-300">
-                    "{testimonial.content}"
+                   {` "${testimonial.content}"`}
                   </blockquote>
 
                   <div className="flex items-center justify-between">
