@@ -719,7 +719,7 @@ const DemoPage = () => {
               Ready to explore more perspectives?
             </h3>
             <p className="text-gray-600 mb-6 text-sm sm:text-base">
-              Experience unlimited viewpoints on real-time news with Doutya's full platform.
+              Experience unlimited viewpoints on real-time news with Doutya&apos;s full platform.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
               <motion.button
