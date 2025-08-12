@@ -39,7 +39,6 @@ const DemoPage = () => {
 
   const router = useRouter()
 
-
   // Toast helper - memoized to prevent re-creation
   const showToast = useCallback((message, type = "info") => {
     setToast({ message, type, id: Date.now() });
@@ -98,11 +97,11 @@ const DemoPage = () => {
   }, [isGeneratingTest]);
 
   const handleBackToHome = useCallback(() => {
-    console.log("Navigate to home");
+    router.push("/");
   }, []);
 
   const handleGetStarted = useCallback(() => {
-    console.log("Navigate to news page");
+    router.push("/auth/login");
   }, []);
 
   // Input change handler - stable reference
@@ -308,20 +307,24 @@ const DemoPage = () => {
         )}
       </AnimatePresence>
 
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-xl shadow-sm border-b border-gray-100/50 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+      {/* Header - Improved mobile layout */}
+      <div className="bg-white/90 backdrop-blur-xl shadow-lg border-b border-gray-100/50 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div
               onClick={() => router.push("/")}
-              className="flex items-center gap-4"
+              className="flex items-center gap-3 cursor-pointer"
             >
-              <div className="w-24 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-red-500/25 p-1">
+              <div className="w-20 h-10 sm:w-24 sm:h-12 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-red-500/25 p-1">
                 <img
                   src="/images/logo.png"
                   alt="Doutya Logo"
                   className="w-full h-full object-contain"
                 />
+              </div>
+              <div className="hidden sm:block">
+                <div className="text-lg font-bold text-gray-900">Doutya</div>
+                <div className="text-xs text-gray-500">Live Demo</div>
               </div>
             </div>
 
@@ -329,7 +332,7 @@ const DemoPage = () => {
               onClick={handleGetStarted}
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 shadow-lg"
+              className="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 shadow-lg text-sm sm:text-base"
             >
               Get Started
             </motion.button>
@@ -337,8 +340,8 @@ const DemoPage = () => {
         </div>
       </div>
 
-      {/* Demo Introduction */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 text-center relative">
+      {/* Demo Introduction - Better mobile spacing */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-16 text-center relative">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -348,14 +351,14 @@ const DemoPage = () => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring" }}
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-50 to-red-100 border border-red-200/50 text-red-700 rounded-full text-sm font-semibold mb-8 shadow-sm"
+            className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-red-50 to-red-100 border border-red-200/50 text-red-700 rounded-full text-xs sm:text-sm font-semibold mb-6 sm:mb-8 shadow-sm"
           >
-            <Brain className="w-4 h-4 mr-2" />
+            <Brain className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
             Live Interactive Demo
-            <Sparkles className="w-4 h-4 ml-2" />
+            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
           </motion.div>
 
-          <h1 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6 sm:mb-8 leading-tight px-2">
             <span className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
               Experience News Through
             </span>
@@ -365,14 +368,14 @@ const DemoPage = () => {
             </span>
           </h1>
 
-          <p className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-12">
+          <p className="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
             Discover Doutya&apos;s revolutionary multi-perspective analysis. See
             how the same climate summit story transforms when viewed through
             different expert viewpoints.
           </p>
 
-          {/* Enhanced Demo Stats */}
-          <div className="flex flex-wrap justify-center gap-8 text-sm mb-16">
+          {/* Enhanced Demo Stats - Better mobile layout */}
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-8 text-sm mb-8 sm:mb-16">
             {[
               {
                 icon: Shield,
@@ -391,7 +394,7 @@ const DemoPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 + index * 0.1 }}
-                className="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full border border-gray-200/50"
+                className="flex items-center gap-2 bg-white/70 backdrop-blur-sm px-3 py-2 sm:px-4 sm:py-2 rounded-full border border-gray-200/50 shadow-sm"
               >
                 <div
                   className={`w-2 h-2 ${stat.color.replace(
@@ -399,191 +402,95 @@ const DemoPage = () => {
                     "bg-"
                   )} rounded-full`}
                 />
-                <stat.icon className={`w-4 h-4 ${stat.color}`} />
-                <span className="font-medium text-gray-700">{stat.label}</span>
+                <stat.icon className={`w-3 h-3 sm:w-4 sm:h-4 ${stat.color}`} />
+                <span className="font-medium text-gray-700 text-xs sm:text-sm">{stat.label}</span>
               </motion.div>
             ))}
           </div>
         </motion.div>
       </div>
 
-      {/* Main Demo Interface */}
-      <div className="container max-w-7xl mx-auto px-4 sm:px-6 pb-20">
+      {/* Main Demo Interface - Mobile-first design */}
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 pb-8 sm:pb-20">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-100/50 overflow-hidden"
+          className="bg-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-100/50 overflow-hidden"
         >
-          {/* Header */}
+          {/* Header with improved mobile layout */}
           <div className="bg-gradient-to-r from-red-50 to-red-100 p-4 sm:p-6 md:p-8 border-b border-red-200/50">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-              <div>
-                <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                  Climate Summit Analysis
-                </h3>
-                <p className="text-gray-600 text-base sm:text-lg">
-                  Interactive multi-perspective demonstration
-                </p>
+            <div className="flex flex-col space-y-4 sm:space-y-6">
+              {/* Title and controls */}
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div className="text-center sm:text-left">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                    Climate Summit Analysis
+                  </h3>
+                  <p className="text-gray-600 text-sm sm:text-base md:text-lg">
+                    Interactive multi-perspective demonstration
+                  </p>
+                </div>
+                
+                {/* Control buttons - better mobile layout */}
+                <div className="flex justify-center sm:justify-end gap-2 sm:gap-3">
+                  <motion.button
+                    onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-2.5 sm:p-3 bg-white/70 backdrop-blur-sm hover:bg-white/90 rounded-xl transition-all duration-300 border border-white/50 shadow-sm"
+                  >
+                    {isAutoPlaying ? (
+                      <Pause className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                    ) : (
+                      <Play className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                    )}
+                  </motion.button>
+                  <motion.button
+                    onClick={() => setCurrentPerspective(0)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-2.5 sm:p-3 bg-white/70 backdrop-blur-sm hover:bg-white/90 rounded-xl transition-all duration-300 border border-white/50 shadow-sm"
+                  >
+                    <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                  </motion.button>
+                </div>
               </div>
-              <div className="flex flex-wrap gap-3 sm:flex-nowrap">
-                <motion.button
-                  onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="p-3 bg-white/60 backdrop-blur-sm hover:bg-white/80 rounded-xl transition-all duration-300 border border-white/50"
-                >
-                  {isAutoPlaying ? (
-                    <Pause className="w-5 h-5 text-gray-600" />
-                  ) : (
-                    <Play className="w-5 h-5 text-gray-600" />
-                  )}
-                </motion.button>
-                <motion.button
-                  onClick={() => setCurrentPerspective(0)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="p-3 bg-white/60 backdrop-blur-sm hover:bg-white/80 rounded-xl transition-all duration-300 border border-white/50"
-                >
-                  <RotateCcw className="w-5 h-5 text-gray-600" />
-                </motion.button>
-              </div>
-            </div>
 
-            {/* Progress Indicator */}
-            <div className="space-y-3">
-              <div className="w-full bg-white/50 rounded-full h-3 shadow-inner">
-                <motion.div
-                  className="bg-gradient-to-r from-red-500 to-red-600 h-3 rounded-full shadow-lg"
-                  initial={{ width: 0 }}
-                  animate={{
-                    width: `${
+              {/* Progress Indicator - improved mobile visibility */}
+              <div className="space-y-3">
+                <div className="w-full bg-white/60 rounded-full h-2.5 sm:h-3 shadow-inner">
+                  <motion.div
+                    className="bg-gradient-to-r from-red-500 to-red-600 h-2.5 sm:h-3 rounded-full shadow-lg"
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: `${
+                        ((currentPerspective + 1) / allPerspectives.length) * 100
+                      }%`,
+                    }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs sm:text-sm">
+                  <span className="text-gray-600 font-medium">
+                    Perspective {currentPerspective + 1} of{" "}
+                    {allPerspectives.length}
+                  </span>
+                  <span className="text-red-600 font-semibold">
+                    {Math.round(
                       ((currentPerspective + 1) / allPerspectives.length) * 100
-                    }%`,
-                  }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                />
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600 font-medium">
-                  Perspective {currentPerspective + 1} of{" "}
-                  {allPerspectives.length}
-                </span>
-                <span className="text-red-600 font-semibold">
-                  {Math.round(
-                    ((currentPerspective + 1) / allPerspectives.length) * 100
-                  )}
-                  % Complete
-                </span>
+                    )}
+                    % Complete
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 p-4 sm:p-6 md:p-8">
-            {/* Perspective Selector */}
-            <div className="lg:col-span-1">
-              <h4 className="font-bold text-gray-900 mb-6 text-lg">
-                Choose Perspective
-              </h4>
-              <div className="space-y-3 sm:space-y-4">
-                {allPerspectives.map((perspective, index) => (
-                  <motion.button
-                    key={index}
-                    onClick={() => setCurrentPerspective(index)}
-                    className={`w-full p-4 sm:p-5 rounded-2xl text-left transition-all duration-500 ${
-                      currentPerspective === index
-                        ? `bg-gradient-to-r ${perspective.color} text-white shadow-xl transform scale-105`
-                        : "bg-gray-50/70 backdrop-blur-sm hover:bg-white hover:shadow-lg text-gray-700 border border-gray-200/50"
-                    }`}
-                    whileHover={
-                      currentPerspective === index ? {} : { scale: 1.02, y: -2 }
-                    }
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center justify-between mb-2 sm:mb-3">
-                      <span className="text-xs font-bold opacity-90 px-2 py-1 bg-white/20 rounded-full">
-                        {perspective.tag}
-                      </span>
-                      {perspective.isTest && (
-                        <span className="px-2 py-1 bg-white/20 rounded-full text-xs font-semibold flex items-center">
-                          <Sparkles className="w-3 h-3 mr-1" />
-                          AI
-                        </span>
-                      )}
-                    </div>
-                    <div className="font-bold text-base sm:text-lg">
-                      {perspective.viewpoint}
-                    </div>
-                  </motion.button>
-                ))}
-
-                {/* Generate Button */}
-                <motion.button
-                  onClick={handleGenerateClick}
-                  disabled={generatedCount >= 2}
-                  className={`w-full p-4 sm:p-5 rounded-2xl text-left border-2 border-dashed transition-all duration-500 flex items-center justify-between ${
-                    generatedCount >= 2
-                      ? "border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50/30"
-                      : "border-red-300 hover:border-red-400 hover:bg-red-50 bg-white/60 backdrop-blur-sm"
-                  }`}
-                  whileHover={generatedCount < 2 ? { scale: 1.02, y: -2 } : {}}
-                  whileTap={generatedCount < 2 ? { scale: 0.98 } : {}}
-                >
-                  <div
-                    className={`flex items-center ${
-                      generatedCount >= 2 ? "text-gray-400" : "text-red-600"
-                    }`}
-                  >
-                    <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center mr-4 ${
-                        generatedCount >= 2 ? "bg-gray-200" : "bg-red-100"
-                      }`}
-                    >
-                      <Plus className="w-6 h-6" />
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold block text-base sm:text-lg">
-                        {generatedCount >= 2
-                          ? "Demo Limit Reached"
-                          : "Generate Custom View"}
-                      </span>
-                      <span className="text-sm opacity-75">
-                        {generatedCount >= 2
-                          ? "(2/2 used)"
-                          : `(${generatedCount}/2 used)`}
-                      </span>
-                    </div>
-                  </div>
-                </motion.button>
-
-                {/* Clear Test */}
-                {allPerspectives.length > 2 && (
-                  <motion.button
-                    onClick={removeTestPerspectives}
-                    className="w-full p-4 sm:p-5 rounded-2xl text-left border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-300 flex items-center justify-between bg-white/60 backdrop-blur-sm"
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center text-red-600">
-                      <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mr-4">
-                        <X className="w-6 h-6" />
-                      </div>
-                      <div className="text-left">
-                        <span className="font-semibold block text-base sm:text-lg">
-                          Clear AI Perspectives
-                        </span>
-                        <span className="text-sm opacity-75">
-                          Reset to original views
-                        </span>
-                      </div>
-                    </div>
-                  </motion.button>
-                )}
-              </div>
-            </div>
-
-            {/* Article Section */}
-            <div className="lg:col-span-2 space-y-6">
+          {/* Content Area - Stacked layout for mobile */}
+          <div className="flex flex-col lg:flex-row">
+            {/* Article Section - First on mobile for better UX */}
+            <div className="lg:order-2 flex-1 p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentPerspective}
@@ -591,9 +498,10 @@ const DemoPage = () => {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -20, scale: 0.95 }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="space-y-6"
+                  className="space-y-4 sm:space-y-6"
                 >
-                  <div className="relative aspect-[2/1] rounded-2xl overflow-hidden shadow-xl">
+                  {/* Image with better mobile aspect ratio */}
+                  <div className="relative aspect-[16/10] sm:aspect-[2/1] rounded-xl sm:rounded-2xl overflow-hidden shadow-xl">
                     <img
                       src={allPerspectives[currentPerspective].image}
                       alt={allPerspectives[currentPerspective].viewpoint}
@@ -604,88 +512,235 @@ const DemoPage = () => {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.3 }}
-                      className={`absolute top-4 sm:top-6 left-4 sm:left-6 px-4 sm:px-5 py-2 sm:py-3 bg-gradient-to-r ${allPerspectives[currentPerspective].color} text-white rounded-2xl font-bold flex items-center shadow-lg backdrop-blur-sm`}
+                      className={`absolute top-3 sm:top-4 md:top-6 left-3 sm:left-4 md:left-6 px-3 sm:px-4 md:px-5 py-2 sm:py-2 md:py-3 bg-gradient-to-r ${allPerspectives[currentPerspective].color} text-white rounded-xl sm:rounded-2xl font-bold flex items-center shadow-lg backdrop-blur-sm text-xs sm:text-sm`}
                     >
-                      <Eye className="w-5 h-5 mr-2" />
-                      {allPerspectives[currentPerspective].viewpoint} View
+                      <Eye className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 mr-2" />
+                      <span className="hidden sm:inline">{allPerspectives[currentPerspective].viewpoint} View</span>
+                      <span className="sm:hidden">{allPerspectives[currentPerspective].viewpoint}</span>
                       {allPerspectives[currentPerspective].isTest && (
-                        <Sparkles className="w-4 h-4 ml-2" />
+                        <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
                       )}
                     </motion.div>
                   </div>
 
+                  {/* Title with better mobile typography */}
                   <motion.h2
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
-                    className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-tight"
+                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight"
                   >
                     {allPerspectives[currentPerspective].title}
                   </motion.h2>
 
+                  {/* Article content with improved mobile reading */}
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
-                    className="max-h-[50vh] sm:max-h-72 overflow-y-auto pr-3 sm:pr-4 bg-gradient-to-b from-gray-50/50 to-white rounded-2xl p-4 sm:p-6 border border-gray-100"
+                    className="max-h-[40vh] sm:max-h-[50vh] lg:max-h-72 overflow-y-auto pr-2 sm:pr-3 md:pr-4 bg-gradient-to-b from-gray-50/50 to-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-100"
                   >
-                    <p className="text-gray-700 leading-relaxed text-base sm:text-lg whitespace-pre-line">
+                    <p className="text-gray-700 leading-relaxed text-sm sm:text-base lg:text-lg whitespace-pre-line">
                       {allPerspectives[currentPerspective].description}
                     </p>
                   </motion.div>
 
+                  {/* Article metadata - responsive layout */}
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.6 }}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 sm:pt-6 border-t border-gray-200"
+                    className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between pt-4 sm:pt-6 border-t border-gray-200"
                   >
-                    <div className="flex flex-wrap gap-2 sm:gap-4 text-sm text-gray-500">
-                      <div className="flex items-center bg-gray-50 px-3 py-2 rounded-xl">
-                        <Clock className="w-4 h-4 mr-2" />
+                    <div className="flex flex-wrap gap-2 text-xs sm:text-sm text-gray-500">
+                      <div className="flex items-center bg-gray-50 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl">
+                        <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         {allPerspectives[currentPerspective].isTest
                           ? "3 min read"
                           : "5 min read"}
                       </div>
-                      <div className="flex items-center bg-gray-50 px-3 py-2 rounded-xl">
-                        <Heart className="w-4 h-4 mr-2" />
+                      <div className="flex items-center bg-gray-50 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl">
+                        <Heart className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         {allPerspectives[currentPerspective].isTest
                           ? "42"
                           : "1.2k"}
                       </div>
-                      <div className="flex items-center bg-gray-50 px-3 py-2 rounded-xl">
-                        <TrendingUp className="w-4 h-4 mr-2" />
+                      <div className="flex items-center bg-gray-50 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl">
+                        <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         Trending
                       </div>
                     </div>
                     <motion.button
                       whileHover={{ x: 5 }}
-                      className="text-red-600 font-semibold hover:text-red-700 flex items-center text-sm bg-red-50 px-4 py-2 rounded-xl transition-all duration-300"
+                      className="text-red-600 font-semibold hover:text-red-700 flex items-center text-xs sm:text-sm bg-red-50 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl transition-all duration-300 self-start sm:self-auto"
                     >
                       Read Full Article
-                      <ChevronRight className="w-4 h-4 ml-1" />
+                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
                     </motion.button>
                   </motion.div>
                 </motion.div>
               </AnimatePresence>
             </div>
+
+            {/* Perspective Selector - Second on mobile, collapsible design */}
+            <div className="lg:order-1 w-full lg:w-80 xl:w-96 border-t lg:border-t-0 lg:border-r border-gray-200/50 bg-gray-50/30">
+              <div className="p-4 sm:p-6">
+                <h4 className="font-bold text-gray-900 mb-4 sm:mb-6 text-base sm:text-lg flex items-center">
+                  <Brain className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-red-600" />
+                  Choose Perspective
+                </h4>
+                
+                <div className="space-y-3">
+                  {allPerspectives.map((perspective, index) => (
+                    <motion.button
+                      key={index}
+                      onClick={() => setCurrentPerspective(index)}
+                      className={`w-full p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl text-left transition-all duration-500 ${
+                        currentPerspective === index
+                          ? `bg-gradient-to-r ${perspective.color} text-white shadow-xl transform scale-105`
+                          : "bg-white/80 backdrop-blur-sm hover:bg-white hover:shadow-lg text-gray-700 border border-gray-200/50"
+                      }`}
+                      whileHover={
+                        currentPerspective === index ? {} : { scale: 1.02, y: -2 }
+                      }
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex items-center justify-between mb-2 sm:mb-3">
+                        <span className="text-xs font-bold opacity-90 px-2 py-1 bg-white/20 rounded-full">
+                          {perspective.tag}
+                        </span>
+                        {perspective.isTest && (
+                          <span className="px-2 py-1 bg-white/20 rounded-full text-xs font-semibold flex items-center">
+                            <Sparkles className="w-3 h-3 mr-1" />
+                            AI
+                          </span>
+                        )}
+                      </div>
+                      <div className="font-bold text-sm sm:text-base md:text-lg">
+                        {perspective.viewpoint}
+                      </div>
+                    </motion.button>
+                  ))}
+
+                  {/* Generate Button - Improved mobile design */}
+                  <motion.button
+                    onClick={handleGenerateClick}
+                    disabled={generatedCount >= 2}
+                    className={`w-full p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl text-left border-2 border-dashed transition-all duration-500 flex items-center justify-between ${
+                      generatedCount >= 2
+                        ? "border-gray-300 text-gray-400 cursor-not-allowed bg-gray-50/30"
+                        : "border-red-300 hover:border-red-400 hover:bg-red-50 bg-white/80 backdrop-blur-sm hover:shadow-lg"
+                    }`}
+                    whileHover={generatedCount < 2 ? { scale: 1.02, y: -2 } : {}}
+                    whileTap={generatedCount < 2 ? { scale: 0.98 } : {}}
+                  >
+                    <div
+                      className={`flex items-center ${
+                        generatedCount >= 2 ? "text-gray-400" : "text-red-600"
+                      }`}
+                    >
+                      <div
+                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mr-3 sm:mr-4 ${
+                          generatedCount >= 2 ? "bg-gray-200" : "bg-red-100"
+                        }`}
+                      >
+                        <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
+                      </div>
+                      <div className="text-left">
+                        <span className="font-semibold block text-sm sm:text-base md:text-lg">
+                          {generatedCount >= 2
+                            ? "Demo Limit Reached"
+                            : "Generate Custom View"}
+                        </span>
+                        <span className="text-xs sm:text-sm opacity-75">
+                          {generatedCount >= 2
+                            ? "(2/2 used)"
+                            : `(${generatedCount}/2 used)`}
+                        </span>
+                      </div>
+                    </div>
+                  </motion.button>
+
+                  {/* Clear Test - Improved mobile design */}
+                  {allPerspectives.length > 2 && (
+                    <motion.button
+                      onClick={removeTestPerspectives}
+                      className="w-full p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl text-left border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-300 flex items-center justify-between bg-white/80 backdrop-blur-sm hover:shadow-lg"
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex items-center text-red-600">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-xl flex items-center justify-center mr-3 sm:mr-4">
+                          <X className="w-5 h-5 sm:w-6 sm:h-6" />
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold block text-sm sm:text-base md:text-lg">
+                            Clear AI Perspectives
+                          </span>
+                          <span className="text-xs sm:text-sm opacity-75">
+                            Reset to original views
+                          </span>
+                        </div>
+                      </div>
+                    </motion.button>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Navigation Dots */}
-          <div className="flex justify-center space-x-3 pb-8">
+          {/* Navigation Dots - Better mobile positioning */}
+          <div className="flex justify-center space-x-2 sm:space-x-3 py-4 sm:py-6 md:py-8 bg-gray-50/30 border-t border-gray-200/50">
             {allPerspectives.map((_, index) => (
               <motion.button
                 key={index}
                 onClick={() => setCurrentPerspective(index)}
-                className={`h-3 rounded-full transition-all duration-300 ${
+                className={`h-2.5 sm:h-3 rounded-full transition-all duration-300 ${
                   currentPerspective === index
-                    ? "bg-red-600 w-8 shadow-lg"
-                    : "bg-gray-300 w-3 hover:bg-gray-400"
+                    ? "bg-red-600 w-6 sm:w-8 shadow-lg"
+                    : "bg-gray-300 w-2.5 sm:w-3 hover:bg-gray-400"
                 }`}
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
               />
             ))}
+          </div>
+        </motion.div>
+
+        {/* Mobile-specific CTA section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 0.6 }}
+          className="mt-8 sm:mt-12 text-center"
+        >
+          <div className="bg-gradient-to-r from-red-50 to-red-100 rounded-2xl p-6 sm:p-8 border border-red-200/50">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
+              Ready to explore more perspectives?
+            </h3>
+            <p className="text-gray-600 mb-6 text-sm sm:text-base">
+              Experience unlimited viewpoints on real-time news with Doutya's full platform.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+              <motion.button
+                onClick={handleGetStarted}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 shadow-lg flex items-center justify-center"
+              >
+                <Target className="w-4 h-4 mr-2" />
+                Start Free Trial
+              </motion.button>
+              <motion.button
+                onClick={() => router.push("/")}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full sm:w-auto text-red-600 font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-xl border border-red-200 hover:bg-red-50 transition-all duration-300 flex items-center justify-center"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Home
+              </motion.button>
+            </div>
           </div>
         </motion.div>
       </div>
