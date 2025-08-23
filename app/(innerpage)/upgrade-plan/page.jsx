@@ -282,9 +282,9 @@ const UpgradePlanPage = () => {
             const verifyData = await verifyResponse.json();
 
             if (verifyResponse.ok) {
-              if (verifyData.token) {
-                localStorage.setItem('user_token', verifyData.token);
-              }
+              // if (verifyData.token) {
+              //   localStorage.setItem('user_token', verifyData.token);
+              // }
               
               toast.success(verifyData.message);
               
