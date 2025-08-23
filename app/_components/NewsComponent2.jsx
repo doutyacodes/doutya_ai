@@ -372,7 +372,7 @@ export default function NewsDetails2({ id, showNames }) {
                       </div>
                       <div>
                         <p className="text-sm text-yellow-800 font-medium">
-                          Unfortunately, we couldn't find any relevancy in this topic. But here is the data:
+                          Unfortunately, we couldn&apos;t find any relevancy in this topic. But here is the data:
                         </p>
                         <p className="text-xs text-yellow-700 mt-1">
                           {article.relevance_reason}
