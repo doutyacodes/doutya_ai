@@ -243,13 +243,14 @@ export default function Signup() {
               
               toast.success(verifyData.message);
               
+              // Use window.location instead of router to avoid logout issues
               setTimeout(() => {
                 const redirectPath = sessionStorage.getItem("temp_redirect");
                 if (redirectPath) {
                   sessionStorage.removeItem("temp_redirect");
-                  router.replace(redirectPath);
+                  window.location.href = redirectPath;
                 } else {
-                  router.replace("/news");
+                  window.location.href = "/news";
                 }
               }, 2000);
             } else {
@@ -291,7 +292,7 @@ export default function Signup() {
   };
 
   const skipPayment = () => {
-    toast.success("You can upgrade your plan anytime from settings!");
+    toast.success("You can complete payment anytime from your account!");
     const redirectPath = sessionStorage.getItem("temp_redirect");
     if (redirectPath) {
       sessionStorage.removeItem("temp_redirect");
@@ -332,20 +333,9 @@ export default function Signup() {
         localStorage.setItem('user_token', response.data.token);
         setRegisteredUser(response.data.user);
         
-        // If user selected a paid plan, proceed to payment
-        if (selectedPlan.id !== 'starter') {
-          toast.success("Account created! Complete your payment to activate your plan.");
-          setCurrentStep(4); // Payment step
-        } else {
-          toast.success("Account created successfully!");
-          const redirectPath = sessionStorage.getItem("temp_redirect");
-          if (redirectPath) {
-            sessionStorage.removeItem("temp_redirect");
-            router.replace(redirectPath);
-          } else {
-            router.replace("/news");
-          }
-        }
+        // All plans require payment now, including starter
+        toast.success("Account created! Complete your payment to activate your plan.");
+        setCurrentStep(4); // Payment step
       }
     } catch (error) {
       console.log(error);
@@ -709,7 +699,7 @@ export default function Signup() {
               className="w-full py-3 px-4 rounded-md font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center gap-2"
             >
               <ArrowRight className="w-4 h-4" />
-              Skip for Now (Use Starter Plan)
+              Pay Later (Login to Complete)
             </button>
           </div>
 

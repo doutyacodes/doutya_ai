@@ -288,8 +288,9 @@ const UpgradePlanPage = () => {
               
               toast.success(verifyData.message);
               
+              // Use window.location instead of router to avoid logout issues
               setTimeout(() => {
-                router.push('/trending');
+                window.location.href = '/trending';
               }, 2000);
             } else {
               throw new Error(verifyData.error || 'Payment verification failed');
