@@ -122,6 +122,8 @@ export async function POST(req) {
           created_at: result.user_news.created_at,
           updated_at: result.user_news.updated_at,
           user_created: true,
+          is_relevant: result.user_news.is_relevant,
+          relevance_reason: result.user_news.relevance_reason,
         }));
 
         userNewsCount = customNewsArticles.length;

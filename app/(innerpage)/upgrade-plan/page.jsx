@@ -34,6 +34,7 @@ const UpgradePlanPage = () => {
   const [upgrading, setUpgrading] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [hoveredPlan, setHoveredPlan] = useState(null);
+  const [billingCycle, setBillingCycle] = useState('monthly');
 
   const plans = [
     {
@@ -200,43 +201,130 @@ const UpgradePlanPage = () => {
     }
   };
 
-  const handleUpgrade = async () => {
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePayment = async () => {
     if (!selectedPlan || selectedPlan === currentPlan) {
       toast.error('Please select a different plan');
       return;
     }
 
+    // Only allow upgrades, no downgrades
+    if (isDowngrade(selectedPlan)) {
+      toast.error('Downgrades are not allowed. Please wait for your current subscription to expire.');
+      return;
+    }
+
     setUpgrading(true);
+
     try {
       const token = localStorage.getItem('user_token');
-      const response = await fetch('/api/user/upgrade-plan', {
+      
+      // Create payment order
+      const orderResponse = await fetch('/api/payments/create-order', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ plan: selectedPlan }),
+        body: JSON.stringify({ 
+          plan: selectedPlan,
+          billingCycle: billingCycle 
+        }),
       });
 
-      const data = await response.json();
+      const orderData = await orderResponse.json();
 
-      if (response.ok) {
-        if (data.token) {
-          localStorage.setItem('user_token', data.token);
-        }
-        
-        toast.success(`Successfully ${getUpgradeAction()} to ${plans.find(p => p.id === selectedPlan)?.name} plan!`);
-        
-        setTimeout(() => {
-          router.push('/trending');
-        }, 1500);
-      } else {
-        toast.error(data.message || 'Failed to update plan');
+      if (!orderResponse.ok) {
+        throw new Error(orderData.error || 'Failed to create order');
       }
+
+      // Load Razorpay script
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        throw new Error('Failed to load payment gateway');
+      }
+
+      // Configure Razorpay options
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_R6W8uNyG4waGLz',
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: 'Doutya',
+        description: `${orderData.planDetails.name} Plan - ${billingCycle}`,
+        order_id: orderData.order.id,
+        handler: async (response) => {
+          try {
+            // Verify payment
+            const verifyResponse = await fetch('/api/payments/verify', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                plan: selectedPlan,
+                billingCycle: billingCycle,
+              }),
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyResponse.ok) {
+              if (verifyData.token) {
+                localStorage.setItem('user_token', verifyData.token);
+              }
+              
+              toast.success(verifyData.message);
+              
+              setTimeout(() => {
+                router.push('/trending');
+              }, 2000);
+            } else {
+              throw new Error(verifyData.error || 'Payment verification failed');
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            toast.error('Payment verification failed. Please contact support.');
+          }
+        },
+        prefill: {
+          name: userInfo?.name || userInfo?.first_name || '',
+          email: userInfo?.email || '',
+          contact: userInfo?.phone || '',
+        },
+        notes: {
+          plan: selectedPlan,
+          billing_cycle: billingCycle,
+        },
+        theme: {
+          color: '#DC2626',
+        },
+        modal: {
+          ondismiss: () => {
+            setUpgrading(false);
+            toast.error('Payment cancelled');
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
     } catch (error) {
-      console.error('Error upgrading plan:', error);
-      toast.error('Failed to update plan. Please try again.');
-    } finally {
+      console.error('Payment error:', error);
+      toast.error(error.message || 'Payment failed. Please try again.');
       setUpgrading(false);
     }
   };
@@ -400,7 +488,37 @@ const UpgradePlanPage = () => {
         >
           <div className="text-center mb-6 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">Available Plans</h2>
-            <p className="text-base sm:text-lg text-gray-600 px-4">Choose the plan that best fits your preparation needs</p>
+            <p className="text-base sm:text-lg text-gray-600 px-4 mb-6">Choose the plan that best fits your preparation needs</p>
+            
+            {/* Billing Cycle Toggle */}
+            <div className="flex justify-center mb-8">
+              <div className="relative bg-gray-100 rounded-full p-1 shadow-inner">
+                <div className={`absolute top-1 bottom-1 bg-white rounded-full shadow-sm transition-all duration-300 ${
+                  billingCycle === 'monthly' ? 'left-1 right-1/2' : 'left-1/2 right-1'
+                }`}></div>
+                <div className="relative flex">
+                  <button
+                    onClick={() => setBillingCycle('monthly')}
+                    className={`px-6 py-2 text-sm font-medium transition-colors duration-300 rounded-full ${
+                      billingCycle === 'monthly' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    Monthly
+                  </button>
+                  <button
+                    onClick={() => setBillingCycle('yearly')}
+                    className={`px-6 py-2 text-sm font-medium transition-colors duration-300 rounded-full flex items-center gap-1 ${
+                      billingCycle === 'yearly' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    Yearly
+                    <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">
+                      Save 17%
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
@@ -412,8 +530,14 @@ const UpgradePlanPage = () => {
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 onHoverStart={() => setHoveredPlan(plan.id)}
                 onHoverEnd={() => setHoveredPlan(null)}
-                onClick={() => plan.id !== currentPlan && setSelectedPlan(plan.id)}
-                className={`relative group cursor-pointer ${plan.id === currentPlan ? 'cursor-default' : ''}`}
+                onClick={() => plan.id !== currentPlan && !isDowngrade(plan.id) && setSelectedPlan(plan.id)}
+                className={`relative group ${
+                  plan.id === currentPlan 
+                    ? 'cursor-default' 
+                    : isDowngrade(plan.id) 
+                    ? 'cursor-not-allowed opacity-60' 
+                    : 'cursor-pointer'
+                }`}
               >
                 {/* Card Container */}
                 <div className={`relative bg-white/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-xl border transition-all duration-500 overflow-hidden ${
@@ -465,9 +589,9 @@ const UpgradePlanPage = () => {
                           </div>
                         )}
                         {isDowngrade(plan.id) && (
-                          <div className="bg-orange-500 text-white px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
-                            <span className="hidden sm:inline">Downgrade</span>
-                            <span className="sm:hidden">Down</span>
+                          <div className="bg-gray-400 text-white px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
+                            <span className="hidden sm:inline">Not Available</span>
+                            <span className="sm:hidden">N/A</span>
                           </div>
                         )}
                         {selectedPlan === plan.id && (
@@ -497,8 +621,17 @@ const UpgradePlanPage = () => {
                       </div>
 
                       <div className="mt-4 sm:mt-6">
-                        <span className="text-2xl sm:text-4xl font-bold text-gray-900">₹{plan.price}</span>
-                        <span className="text-sm sm:text-base text-gray-600 ml-1 sm:ml-2">/month</span>
+                        <span className="text-2xl sm:text-4xl font-bold text-gray-900">
+                          ₹{billingCycle === 'yearly' ? plan.yearlyPrice : plan.price}
+                        </span>
+                        <span className="text-sm sm:text-base text-gray-600 ml-1 sm:ml-2">
+                          /{billingCycle === 'yearly' ? 'year' : 'month'}
+                        </span>
+                        {billingCycle === 'yearly' && (
+                          <div className="text-xs text-green-600 mt-1">
+                            Save ₹{((plan.price * 12) - plan.yearlyPrice).toFixed(2)} annually
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -530,14 +663,19 @@ const UpgradePlanPage = () => {
                           Your Current Plan
                         </div>
                       </div>
+                    ) : isDowngrade(plan.id) ? (
+                      <div className="text-center">
+                        <div className="text-xs sm:text-sm font-semibold mb-2 px-2 text-gray-500">
+                          Wait for current plan to expire
+                        </div>
+                        <div className="w-full py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base bg-gray-200 text-gray-500 cursor-not-allowed">
+                          Not Available
+                        </div>
+                      </div>
                     ) : (
                       <div className="text-center">
-                        <div className={`text-xs sm:text-sm font-semibold mb-2 px-2 ${
-                          isUpgrade(plan.id) ? 'text-blue-600' : 
-                          isDowngrade(plan.id) ? 'text-orange-600' : 'text-gray-600'
-                        }`}>
-                          {isUpgrade(plan.id) ? 'Upgrade to unlock more features' : 
-                           isDowngrade(plan.id) ? 'Downgrade to this plan' : 'Switch to this plan'}
+                        <div className="text-xs sm:text-sm font-semibold mb-2 px-2 text-blue-600">
+                          Upgrade to unlock more features
                         </div>
                         
                         <motion.div
@@ -562,7 +700,7 @@ const UpgradePlanPage = () => {
 
         {/* Plan Change Confirmation - Fixed Bottom */}
         <AnimatePresence>
-          {selectedPlan && selectedPlan !== currentPlan && (
+          {selectedPlan && selectedPlan !== currentPlan && !isDowngrade(selectedPlan) && (
             <motion.div
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
@@ -579,17 +717,15 @@ const UpgradePlanPage = () => {
                       <div className="text-center">
                         <div className="text-xs sm:text-sm text-gray-600 mb-1">From</div>
                         <div className="font-semibold text-gray-900 text-sm sm:text-base">{currentPlanDetails?.name}</div>
-                        <div className="text-xs sm:text-sm text-gray-500">₹{currentPlanDetails?.price}/mo</div>
+                        <div className="text-xs sm:text-sm text-gray-500">
+                          ₹{billingCycle === 'yearly' ? currentPlanDetails?.yearlyPrice : currentPlanDetails?.price}/{billingCycle === 'yearly' ? 'yr' : 'mo'}
+                        </div>
                       </div>
                       
                       <div className="flex items-center gap-2 sm:gap-3">
                         <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" />
-                        <div className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
-                          isUpgrade(selectedPlan) 
-                            ? 'bg-blue-100 text-blue-700' 
-                            : 'bg-orange-100 text-orange-700'
-                        }`}>
-                          {isUpgrade(selectedPlan) ? 'Upgrade' : 'Downgrade'}
+                        <div className="bg-blue-100 text-blue-700 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
+                          Upgrade
                         </div>
                         <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 text-gray-400" />
                       </div>
@@ -597,7 +733,19 @@ const UpgradePlanPage = () => {
                       <div className="text-center">
                         <div className="text-xs sm:text-sm text-gray-600 mb-1">To</div>
                         <div className="font-semibold text-gray-900 text-sm sm:text-base">{plans.find(p => p.id === selectedPlan)?.name}</div>
-                        <div className="text-xs sm:text-sm text-gray-500">₹{plans.find(p => p.id === selectedPlan)?.price}/mo</div>
+                        <div className="text-xs sm:text-sm text-gray-500">
+                          ₹{billingCycle === 'yearly' ? plans.find(p => p.id === selectedPlan)?.yearlyPrice : plans.find(p => p.id === selectedPlan)?.price}/{billingCycle === 'yearly' ? 'yr' : 'mo'}
+                        </div>
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="text-xs sm:text-sm text-gray-600 mb-1">Billing</div>
+                        <div className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs font-semibold">
+                          {billingCycle}
+                          {billingCycle === 'yearly' && (
+                            <span className="text-green-600 ml-1">Save 17%</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     
@@ -611,14 +759,12 @@ const UpgradePlanPage = () => {
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={handleUpgrade}
+                        onClick={handlePayment}
                         disabled={upgrading}
                         className={`flex-1 lg:flex-none px-4 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base ${
                           upgrading
                             ? 'bg-gray-400 cursor-not-allowed text-white'
-                            : isUpgrade(selectedPlan)
-                            ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl'
-                            : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl'
+                            : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl'
                         }`}
                       >
                         {upgrading ? (
@@ -629,19 +775,9 @@ const UpgradePlanPage = () => {
                           </>
                         ) : (
                           <>
-                            {isUpgrade(selectedPlan) ? (
-                              <>
-                                <Rocket className="w-4 h-4 sm:w-5 sm:h-5" />
-                                <span className="hidden sm:inline">Upgrade Now</span>
-                                <span className="sm:hidden">Upgrade</span>
-                              </>
-                            ) : (
-                              <>
-                                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
-                                <span className="hidden sm:inline">Change Plan</span>
-                                <span className="sm:hidden">Change</span>
-                              </>
-                            )}
+                            <Rocket className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <span className="hidden sm:inline">Pay & Upgrade</span>
+                            <span className="sm:hidden">Pay Now</span>
                           </>
                         )}
                       </motion.button>

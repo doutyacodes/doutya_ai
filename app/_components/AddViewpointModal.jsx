@@ -54,7 +54,7 @@ const AddViewpointModal = ({
       if (response.ok) {
         toast.success("Custom viewpoint created successfully!");
         setViewpoint("");
-        onSuccess(); // Refresh the parent component
+        onSuccess(data.relevance); // Pass relevance data to parent
         onClose();
       } else {
         throw new Error(data.error || "Failed to create viewpoint");

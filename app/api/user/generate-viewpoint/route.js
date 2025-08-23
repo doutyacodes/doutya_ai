@@ -117,7 +117,52 @@ export async function POST(request) {
     const promptData = promptHistory[0];
     const { original_title, original_description } = promptData;
 
-    // Create OpenAI prompt for single viewpoint
+    // First, check relevance of viewpoint to the news content
+    const relevancePrompt = `
+      Analyze if the following viewpoint is relevant to the given news content:
+      
+      News Title: "${original_title}"
+      News Description: "${original_description}"
+      Requested Viewpoint: "${viewpoint.trim()}"
+      
+      Check if the viewpoint has ANY reasonable connection to the news topic, themes, or could provide a meaningful perspective on the subject matter. Be somewhat generous in determining relevance - if there's any logical way the viewpoint could relate to or comment on the news, consider it relevant.
+      
+      Respond with only a JSON object:
+      {
+        "is_relevant": true/false,
+        "reason": "Brief explanation of why it is or isn't relevant"
+      }
+    `;
+
+    // Check relevance first
+    const relevanceResponse = await axios.post(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: relevancePrompt }],
+        max_tokens: 200,
+        temperature: 0.3,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    let relevanceText = relevanceResponse.data.choices[0].message.content.trim();
+    relevanceText = relevanceText.replace(/```json|```/g, "").trim();
+    
+    let relevanceData;
+    try {
+      relevanceData = JSON.parse(relevanceText);
+    } catch (parseError) {
+      // If parsing fails, assume it's relevant to avoid blocking user
+      relevanceData = { is_relevant: true, reason: "Could not determine relevance" };
+    }
+
+    // Create OpenAI prompt for single viewpoint (always generate content regardless of relevance)
     const prompt = `
       Based on the following news:
       Title: "${original_title}"
@@ -212,6 +257,8 @@ export async function POST(request) {
       news_group_id: newsGroupId,
       user_id: userId,
       show_date: new Date(),
+      is_relevant: relevanceData.is_relevant,
+      relevance_reason: relevanceData.reason,
     };
 
     const insertResult = await db
@@ -229,6 +276,10 @@ export async function POST(request) {
           id: userNewsId,
           ...userNewsData,
           user_created: true
+        },
+        relevance: {
+          is_relevant: relevanceData.is_relevant,
+          reason: relevanceData.reason
         }
       },
       { status: 200 }

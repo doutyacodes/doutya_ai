@@ -352,14 +352,35 @@ export default function NewsDetails2({ id, showNames }) {
 
             {/* Custom viewpoint indicator */}
             {article?.user_created && (
-              <div className="mt-3 flex items-center gap-2">
-                <div className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium flex items-center gap-1">
-                  <Sparkles size={12} />
-                  Custom Viewpoint
+              <div className="mt-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium flex items-center gap-1">
+                    <Sparkles size={12} />
+                    Custom Viewpoint
+                  </div>
+                  <span className="text-xs text-gray-500">
+                    Generated specifically for you
+                  </span>
                 </div>
-                <span className="text-xs text-gray-500">
-                  Generated specifically for you
-                </span>
+                
+                {/* Relevance Warning for the current custom viewpoint */}
+                {article?.user_created && article?.is_relevant === false && (
+                  <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <div className="text-yellow-600 flex-shrink-0 mt-0.5">
+                        ⚠️
+                      </div>
+                      <div>
+                        <p className="text-sm text-yellow-800 font-medium">
+                          Unfortunately, we couldn't find any relevancy in this topic. But here is the data:
+                        </p>
+                        <p className="text-xs text-yellow-700 mt-1">
+                          {article.relevance_reason}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

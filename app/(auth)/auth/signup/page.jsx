@@ -72,6 +72,9 @@ export default function Signup() {
   const [examTypes, setExamTypes] = useState([]);
   const [loadingExamTypes, setLoadingExamTypes] = useState(true);
   const [filteredExamTypes, setFilteredExamTypes] = useState([]);
+  const [billingCycle, setBillingCycle] = useState('monthly');
+  const [registeredUser, setRegisteredUser] = useState(null);
+  const [processingPayment, setProcessingPayment] = useState(false);
 
   const plans = [
     {
@@ -164,6 +167,140 @@ export default function Signup() {
     fetchExamTypes();
   }, []);
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePayment = async () => {
+    setProcessingPayment(true);
+
+    try {
+      const token = localStorage.getItem('user_token');
+      
+      // Create payment order
+      const orderResponse = await fetch('/api/payments/create-order', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          plan: selectedPlan.id,
+          billingCycle: billingCycle 
+        }),
+      });
+
+      const orderData = await orderResponse.json();
+
+      if (!orderResponse.ok) {
+        throw new Error(orderData.error || 'Failed to create order');
+      }
+
+      // Load Razorpay script
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        throw new Error('Failed to load payment gateway');
+      }
+
+      // Configure Razorpay options
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_R6W8uNyG4waGLz',
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: 'Doutya',
+        description: `${orderData.planDetails.name} Plan - ${billingCycle}`,
+        order_id: orderData.order.id,
+        handler: async (response) => {
+          try {
+            // Verify payment
+            const verifyResponse = await fetch('/api/payments/verify', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                plan: selectedPlan.id,
+                billingCycle: billingCycle,
+              }),
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyResponse.ok) {
+              if (verifyData.token) {
+                localStorage.setItem('user_token', verifyData.token);
+              }
+              
+              toast.success(verifyData.message);
+              
+              setTimeout(() => {
+                const redirectPath = sessionStorage.getItem("temp_redirect");
+                if (redirectPath) {
+                  sessionStorage.removeItem("temp_redirect");
+                  router.replace(redirectPath);
+                } else {
+                  router.replace("/news");
+                }
+              }, 2000);
+            } else {
+              throw new Error(verifyData.error || 'Payment verification failed');
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            toast.error('Payment verification failed. Please contact support.');
+          }
+        },
+        prefill: {
+          name: registeredUser?.name || '',
+          email: registeredUser?.email || '',
+          contact: registeredUser?.mobile || '',
+        },
+        notes: {
+          plan: selectedPlan.id,
+          billing_cycle: billingCycle,
+        },
+        theme: {
+          color: '#DC2626',
+        },
+        modal: {
+          ondismiss: () => {
+            setProcessingPayment(false);
+            toast.error('Payment cancelled');
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error(error.message || 'Payment failed. Please try again.');
+      setProcessingPayment(false);
+    }
+  };
+
+  const skipPayment = () => {
+    toast.success("You can upgrade your plan anytime from settings!");
+    const redirectPath = sessionStorage.getItem("temp_redirect");
+    if (redirectPath) {
+      sessionStorage.removeItem("temp_redirect");
+      router.replace(redirectPath);
+    } else {
+      router.replace("/news");
+    }
+  };
+
   const SignupUser = async (data) => {
     const response = await fetch(`/api/auth/signup`, {
       method: 'POST',
@@ -193,13 +330,21 @@ export default function Signup() {
       const response = await SignupUser(signupData);
       if (response.data.token) {
         localStorage.setItem('user_token', response.data.token);
-        toast.success("Account created successfully!");
-        const redirectPath = sessionStorage.getItem("temp_redirect");
-        if (redirectPath) {
-          sessionStorage.removeItem("temp_redirect");
-          router.replace(redirectPath);
+        setRegisteredUser(response.data.user);
+        
+        // If user selected a paid plan, proceed to payment
+        if (selectedPlan.id !== 'starter') {
+          toast.success("Account created! Complete your payment to activate your plan.");
+          setCurrentStep(4); // Payment step
         } else {
-          router.replace("/news");
+          toast.success("Account created successfully!");
+          const redirectPath = sessionStorage.getItem("temp_redirect");
+          if (redirectPath) {
+            sessionStorage.removeItem("temp_redirect");
+            router.replace(redirectPath);
+          } else {
+            router.replace("/news");
+          }
         }
       }
     } catch (error) {
@@ -344,6 +489,38 @@ export default function Signup() {
         </div>
         
         <div className="p-6 pt-4">
+          {/* Billing Cycle Toggle */}
+          <div className="flex justify-center mb-8">
+            <div className="relative bg-gray-100 rounded-full p-1 shadow-inner">
+              <div className={`absolute top-1 bottom-1 bg-white rounded-full shadow-sm transition-all duration-300 ${
+                billingCycle === 'monthly' ? 'left-1 right-1/2' : 'left-1/2 right-1'
+              }`}></div>
+              <div className="relative flex">
+                <button
+                  type="button"
+                  onClick={() => setBillingCycle('monthly')}
+                  className={`px-6 py-2 text-sm font-medium transition-colors duration-300 rounded-full ${
+                    billingCycle === 'monthly' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBillingCycle('yearly')}
+                  className={`px-6 py-2 text-sm font-medium transition-colors duration-300 rounded-full flex items-center gap-1 ${
+                    billingCycle === 'yearly' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Yearly
+                  <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">
+                    Save 17%
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {plans.map((plan) => (
               <div
@@ -389,9 +566,14 @@ export default function Signup() {
 
                   <div className="mb-4">
                     <span className="text-3xl font-bold text-gray-900">
-                      ₹{plan.price}
+                      ₹{billingCycle === 'yearly' ? plan.yearlyPrice : plan.price}
                     </span>
-                    <span className="text-gray-600 ml-2">/month</span>
+                    <span className="text-gray-600 ml-2">/{billingCycle === 'yearly' ? 'year' : 'month'}</span>
+                    {billingCycle === 'yearly' && (
+                      <div className="text-xs text-green-600 mt-1">
+                        Save ₹{((plan.price * 12) - plan.yearlyPrice).toFixed(2)} annually
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -423,7 +605,9 @@ export default function Signup() {
                 <div>
                   <p className="text-sm text-gray-600">Selected Plan:</p>
                   <p className="font-semibold text-red-800 text-lg">{selectedPlan.name}</p>
-                  <p className="text-sm text-gray-600">₹{selectedPlan.price}/month</p>
+                  <p className="text-sm text-gray-600">
+                    ₹{billingCycle === 'yearly' ? selectedPlan.yearlyPrice : selectedPlan.price}/{billingCycle === 'yearly' ? 'year' : 'month'}
+                  </p>
                 </div>
                 <CheckCircle className="h-6 w-6 text-red-800" />
               </div>
@@ -441,6 +625,98 @@ export default function Signup() {
           >
             Continue to Registration
           </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderPaymentStep = () => (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-red-50 via-white to-red-50 p-5">
+      <Toaster position="top-center" reverseOrder={false} />
+      
+      <div className="w-full max-w-lg bg-white rounded-lg shadow-lg overflow-hidden border border-red-100">
+        <div className="bg-red-800 p-6">
+          <div className="text-center">
+            <div className="inline-block p-3 rounded-full bg-white/10 mb-3">
+              <Crown className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-white">Complete Your Payment</h1>
+            <p className="text-red-100 mt-1">
+              Welcome {registeredUser?.name}! Activate your {selectedPlan?.name} plan
+            </p>
+          </div>
+        </div>
+
+        <div className="p-6">
+          {/* Plan Summary */}
+          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-gray-900">{selectedPlan?.name} Plan</h3>
+              <div className={`w-10 h-10 bg-gradient-to-br ${selectedPlan?.color} rounded-lg flex items-center justify-center`}>
+                <selectedPlan.icon className="w-5 h-5 text-white" />
+              </div>
+            </div>
+            
+            <div className="space-y-2 text-sm text-gray-600">
+              <div className="flex justify-between">
+                <span>Billing Cycle:</span>
+                <span className="font-medium capitalize">{billingCycle}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Amount:</span>
+                <span className="font-bold text-lg text-gray-900">
+                  ₹{billingCycle === 'yearly' ? selectedPlan?.yearlyPrice : selectedPlan?.price}
+                </span>
+              </div>
+              {billingCycle === 'yearly' && (
+                <div className="flex justify-between text-green-600">
+                  <span>Annual Savings:</span>
+                  <span className="font-medium">
+                    ₹{((selectedPlan?.price * 12) - selectedPlan?.yearlyPrice).toFixed(2)}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Payment Actions */}
+          <div className="space-y-4">
+            <button
+              onClick={handlePayment}
+              disabled={processingPayment}
+              className={`w-full py-3 px-4 rounded-md font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                processingPayment
+                  ? 'bg-gray-400 cursor-not-allowed text-white'
+                  : 'bg-red-800 hover:bg-red-900 text-white'
+              }`}
+            >
+              {processingPayment ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Processing Payment...
+                </>
+              ) : (
+                <>
+                  <Crown className="w-5 h-5" />
+                  Pay ₹{billingCycle === 'yearly' ? selectedPlan?.yearlyPrice : selectedPlan?.price} & Activate Plan
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={skipPayment}
+              disabled={processingPayment}
+              className="w-full py-3 px-4 rounded-md font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center gap-2"
+            >
+              <ArrowRight className="w-4 h-4" />
+              Skip for Now (Use Starter Plan)
+            </button>
+          </div>
+
+          <div className="mt-6 text-center text-xs text-gray-500">
+            <p>Your account has been created successfully.</p>
+            <p>You can upgrade your plan anytime from your settings.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -602,6 +878,7 @@ export default function Signup() {
       {currentStep === 1 && renderExamTypeSelection()}
       {currentStep === 2 && renderPlanSelection()}
       {currentStep === 3 && renderUserDetailsForm()}
+      {currentStep === 4 && renderPaymentStep()}
     </>
   );
 }

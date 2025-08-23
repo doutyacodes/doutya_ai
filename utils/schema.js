@@ -1778,6 +1778,8 @@ export const USER_NEWS = mysqlTable("user_news", {
   news_group_id: int("news_group_id").notNull(),
   user_id: int("user_id").notNull(),
   show_date: datetime("show_date").notNull(),
+  is_relevant: boolean("is_relevant").default(true),
+  relevance_reason: text("relevance_reason"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
@@ -2187,3 +2189,58 @@ export const SAVED_DEBATES = mysqlTable("saved_debates", {
     table.debate_id
   ]),
 }));
+
+// Subscription and Payment related tables
+export const SUBSCRIPTION_PLANS = mysqlTable("subscription_plans", {
+  id: int("id").primaryKey().autoincrement(),
+  plan_id: varchar("plan_id", { length: 100 }).notNull().unique(),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  monthly_price: decimal("monthly_price", { precision: 10, scale: 2 }).notNull(),
+  yearly_price: decimal("yearly_price", { precision: 10, scale: 2 }).notNull(),
+  currency: varchar("currency", { length: 3 }).default("INR"),
+  features: json("features"),
+  limitations: json("limitations"),
+  razorpay_monthly_plan_id: varchar("razorpay_monthly_plan_id", { length: 255 }),
+  razorpay_yearly_plan_id: varchar("razorpay_yearly_plan_id", { length: 255 }),
+  is_active: boolean("is_active").default(true),
+  sort_order: int("sort_order").default(0),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const SUBSCRIPTIONS = mysqlTable("subscriptions", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id, { onDelete: "cascade" }),
+  plan_type: varchar("plan_type", { length: 50 }).notNull(), // 'starter', 'pro', 'elite'
+  status: varchar("status", { length: 50 }).default("pending"), // 'active', 'cancelled', 'expired', 'pending'
+  start_date: datetime("start_date").notNull(),
+  end_date: datetime("end_date").notNull(),
+  razorpay_subscription_id: varchar("razorpay_subscription_id", { length: 255 }).unique(),
+  razorpay_plan_id: varchar("razorpay_plan_id", { length: 255 }),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  currency: varchar("currency", { length: 3 }).default("INR"),
+  billing_cycle: varchar("billing_cycle", { length: 50 }).default("monthly"), // 'monthly', 'yearly'
+  auto_renew: boolean("auto_renew").default(true),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
+
+export const PAYMENT_TRANSACTIONS = mysqlTable("payment_transactions", {
+  id: int("id").primaryKey().autoincrement(),
+  user_id: int("user_id").notNull().references(() => USER_DETAILS.id, { onDelete: "cascade" }),
+  subscription_id: int("subscription_id").references(() => SUBSCRIPTIONS.id, { onDelete: "set null" }),
+  razorpay_order_id: varchar("razorpay_order_id", { length: 255 }),
+  razorpay_payment_id: varchar("razorpay_payment_id", { length: 255 }).unique(),
+  razorpay_signature: varchar("razorpay_signature", { length: 512 }),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  currency: varchar("currency", { length: 3 }).default("INR"),
+  status: varchar("status", { length: 50 }).default("created"), // 'created', 'paid', 'failed', 'cancelled', 'refunded'
+  payment_method: varchar("payment_method", { length: 100 }),
+  payment_gateway: varchar("payment_gateway", { length: 50 }).default("razorpay"),
+  transaction_date: datetime("transaction_date"),
+  failure_reason: text("failure_reason"),
+  metadata: json("metadata"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow(),
+});
