@@ -522,7 +522,7 @@ const UpgradePlanPage = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 mt-6">
             {plans.map((plan, index) => (
               <motion.div
                 key={plan.id}
@@ -541,7 +541,7 @@ const UpgradePlanPage = () => {
                 }`}
               >
                 {/* Card Container */}
-                <div className={`relative bg-white/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-xl border transition-all duration-500 overflow-hidden ${
+                <div className={`relative bg-white/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-xl border transition-all duration-500 overflow-visible ${
                   plan.id === currentPlan
                     ? "border-green-300/50 ring-2 sm:ring-4 ring-green-100/50"
                     : plan.popular
@@ -561,20 +561,20 @@ const UpgradePlanPage = () => {
                   <div className="absolute bottom-0 left-0 w-16 h-16 sm:w-32 sm:h-32 bg-gradient-to-tr from-white/10 to-transparent rounded-full translate-y-8 -translate-x-8 sm:translate-y-16 sm:-translate-x-16"></div>
 
                   {/* Top Labels */}
-                  <div className="relative p-4 sm:p-8">
+                  <div className="relative p-4 sm:p-8 pt-8 sm:pt-10">
                     {plan.id === currentPlan && (
-                      <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
-                        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold flex items-center shadow-lg">
-                          <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                      <div className="absolute -top-2 sm:-top-3 left-1/2 transform -translate-x-1/2 z-10">
+                        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs font-bold flex items-center shadow-lg whitespace-nowrap">
+                          <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                           Current Plan
                         </div>
                       </div>
                     )}
                     
                     {plan.popular && plan.id !== currentPlan && (
-                      <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
-                        <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold flex items-center shadow-lg">
-                          <Star className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                      <div className="absolute -top-2 sm:-top-3 left-1/2 transform -translate-x-1/2 z-10">
+                        <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs font-bold flex items-center shadow-lg whitespace-nowrap">
+                          <Star className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                           Most Popular
                         </div>
                       </div>
