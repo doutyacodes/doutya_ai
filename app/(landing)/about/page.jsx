@@ -157,8 +157,8 @@ const AboutPage = () => {
           <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-8 rounded-2xl shadow-xl">
             <Quote className="w-8 h-8 text-red-400 mb-4" />
             <blockquote className="text-xl font-medium mb-4">
-              "Information is power. Our mission is to democratize that power by making 
-              comprehensive, unbiased news analysis accessible to everyone, everywhere."
+              {`"Information is power. Our mission is to democratize that power by making 
+              comprehensive, unbiased news analysis accessible to everyone, everywhere."`}
             </blockquote>
             <cite className="text-gray-300">- Doutya Team</cite>
           </div>

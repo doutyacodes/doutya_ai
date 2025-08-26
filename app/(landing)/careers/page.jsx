@@ -1,262 +1,271 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Briefcase, 
-  MapPin, 
-  Clock, 
-  Users, 
-  Heart,
-  Zap,
-  Brain,
-  Code,
-  PenTool,
-  BarChart3,
-  Shield,
-  Globe,
+import { AnimatePresence, motion } from "framer-motion";
+import {
   ArrowRight,
-  Search,
-  Filter,
-  CheckCircle,
-  Star,
-  Award,
-  Coffee,
-  Home,
-  Laptop,
-  DollarSign,
-  Calendar,
-  MessageSquare,
-  Target,
-  Lightbulb,
-  Rocket,
-  TrendingUp,
   ArrowUpRight,
+  Award,
+  Brain,
+  Briefcase,
+  CheckCircle,
+  Clock,
+  Coffee,
+  DollarSign,
+  Globe,
+  Heart,
+  Home,
+  Lightbulb,
+  MapPin,
+  MessageSquare,
+  MousePointer,
+  Search,
   Sparkles,
-  MousePointer
-} from 'lucide-react';
+  Star,
+  Target,
+  TrendingUp,
+  Users,
+  Zap
+} from "lucide-react";
+import { useState } from "react";
 
 const CareersPage = () => {
-  const [selectedDepartment, setSelectedDepartment] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeJob, setActiveJob] = useState(null);
 
   const departments = [
-    { id: 'all', name: 'All Positions', count: 12 },
-    { id: 'engineering', name: 'Engineering', count: 5 },
-    { id: 'product', name: 'Product', count: 2 },
-    { id: 'design', name: 'Design', count: 2 },
-    { id: 'editorial', name: 'Editorial', count: 2 },
-    { id: 'marketing', name: 'Marketing', count: 1 }
+    { id: "all", name: "All Positions", count: 12 },
+    { id: "engineering", name: "Engineering", count: 5 },
+    { id: "product", name: "Product", count: 2 },
+    { id: "design", name: "Design", count: 2 },
+    { id: "editorial", name: "Editorial", count: 2 },
+    { id: "marketing", name: "Marketing", count: 1 },
   ];
 
   const benefits = [
     {
       icon: Heart,
-      title: 'Health & Wellness',
-      description: 'Comprehensive health insurance, mental health support, and wellness programs',
-      gradient: 'from-red-500 to-red-600'
+      title: "Health & Wellness",
+      description:
+        "Comprehensive health insurance, mental health support, and wellness programs",
+      gradient: "from-red-500 to-red-600",
     },
     {
       icon: Home,
-      title: 'Flexible Work',
-      description: 'Remote-first culture with flexible hours and unlimited PTO',
-      gradient: 'from-red-400 to-red-500'
+      title: "Flexible Work",
+      description: "Remote-first culture with flexible hours and unlimited PTO",
+      gradient: "from-red-400 to-red-500",
     },
     {
       icon: DollarSign,
-      title: 'Competitive Pay',
-      description: 'Top-tier salaries, equity participation, and performance bonuses',
-      gradient: 'from-red-600 to-red-700'
+      title: "Competitive Pay",
+      description:
+        "Top-tier salaries, equity participation, and performance bonuses",
+      gradient: "from-red-600 to-red-700",
     },
     {
       icon: Brain,
-      title: 'Learning & Growth',
-      description: 'Annual learning budget, conference attendance, and skill development',
-      gradient: 'from-red-500 to-red-600'
+      title: "Learning & Growth",
+      description:
+        "Annual learning budget, conference attendance, and skill development",
+      gradient: "from-red-500 to-red-600",
     },
     {
       icon: Coffee,
-      title: 'Great Perks',
-      description: 'Free meals, gym membership, tech stipend, and team retreats',
-      gradient: 'from-red-400 to-red-600'
+      title: "Great Perks",
+      description:
+        "Free meals, gym membership, tech stipend, and team retreats",
+      gradient: "from-red-400 to-red-600",
     },
     {
       icon: Users,
-      title: 'Amazing Team',
-      description: 'Work with world-class talent in a collaborative, inclusive environment',
-      gradient: 'from-red-600 to-red-700'
-    }
+      title: "Amazing Team",
+      description:
+        "Work with world-class talent in a collaborative, inclusive environment",
+      gradient: "from-red-600 to-red-700",
+    },
   ];
 
   const jobOpenings = [
     {
       id: 1,
-      title: 'Senior AI Engineer',
-      department: 'engineering',
-      location: 'Remote / Bengaluru',
-      type: 'Full-time',
-      experience: '5+ years',
-      salary: '₹25-35L',
-      description: 'Lead the development of our AI-powered news analysis engine using cutting-edge ML techniques.',
+      title: "Senior AI Engineer",
+      department: "engineering",
+      location: "Remote / Bengaluru",
+      type: "Full-time",
+      experience: "5+ years",
+      salary: "₹25-35L",
+      description:
+        "Lead the development of our AI-powered news analysis engine using cutting-edge ML techniques.",
       requirements: [
-        'Master\'s in CS/ML or equivalent experience',
-        'Experience with NLP, transformer models, and LLMs',
-        'Proficiency in Python, TensorFlow/PyTorch',
-        'Strong understanding of distributed systems'
+        "Master's in CS/ML or equivalent experience",
+        "Experience with NLP, transformer models, and LLMs",
+        "Proficiency in Python, TensorFlow/PyTorch",
+        "Strong understanding of distributed systems",
       ],
       responsibilities: [
-        'Design and implement AI models for news analysis',
-        'Optimize model performance and accuracy',
-        'Collaborate with product team on ML features',
-        'Mentor junior engineers and establish best practices'
+        "Design and implement AI models for news analysis",
+        "Optimize model performance and accuracy",
+        "Collaborate with product team on ML features",
+        "Mentor junior engineers and establish best practices",
       ],
-      featured: true
+      featured: true,
     },
     {
       id: 2,
-      title: 'Full Stack Developer',
-      department: 'engineering',
-      location: 'Remote / Bengaluru',
-      type: 'Full-time',
-      experience: '3+ years',
-      salary: '₹15-25L',
-      description: 'Build and maintain our web platform using modern technologies and frameworks.',
+      title: "Full Stack Developer",
+      department: "engineering",
+      location: "Remote / Bengaluru",
+      type: "Full-time",
+      experience: "3+ years",
+      salary: "₹15-25L",
+      description:
+        "Build and maintain our web platform using modern technologies and frameworks.",
       requirements: [
-        'Experience with React, Node.js, and TypeScript',
-        'Knowledge of databases (MySQL, MongoDB)',
-        'Familiarity with cloud platforms (AWS, GCP)',
-        'Understanding of API design and microservices'
+        "Experience with React, Node.js, and TypeScript",
+        "Knowledge of databases (MySQL, MongoDB)",
+        "Familiarity with cloud platforms (AWS, GCP)",
+        "Understanding of API design and microservices",
       ],
       responsibilities: [
-        'Develop user-facing features and APIs',
-        'Optimize application performance',
-        'Collaborate with design and product teams',
-        'Write tests and maintain code quality'
+        "Develop user-facing features and APIs",
+        "Optimize application performance",
+        "Collaborate with design and product teams",
+        "Write tests and maintain code quality",
       ],
-      featured: false
+      featured: false,
     },
     {
       id: 3,
-      title: 'Product Manager',
-      department: 'product',
-      location: 'Hybrid / Bengaluru',
-      type: 'Full-time',
-      experience: '4+ years',
-      salary: '₹20-30L',
-      description: 'Drive product strategy and roadmap for our AI-powered news platform.',
+      title: "Product Manager",
+      department: "product",
+      location: "Hybrid / Bengaluru",
+      type: "Full-time",
+      experience: "4+ years",
+      salary: "₹20-30L",
+      description:
+        "Drive product strategy and roadmap for our AI-powered news platform.",
       requirements: [
-        'Experience in product management for tech products',
-        'Understanding of AI/ML technologies',
-        'Strong analytical and communication skills',
-        'Experience with agile development processes'
+        "Experience in product management for tech products",
+        "Understanding of AI/ML technologies",
+        "Strong analytical and communication skills",
+        "Experience with agile development processes",
       ],
       responsibilities: [
-        'Define product vision and strategy',
-        'Work with engineering on feature development',
-        'Analyze user feedback and metrics',
-        'Lead cross-functional product initiatives'
+        "Define product vision and strategy",
+        "Work with engineering on feature development",
+        "Analyze user feedback and metrics",
+        "Lead cross-functional product initiatives",
       ],
-      featured: true
+      featured: true,
     },
     {
       id: 4,
-      title: 'UX Designer',
-      department: 'design',
-      location: 'Remote / Bengaluru',
-      type: 'Full-time',
-      experience: '3+ years',
-      salary: '₹12-20L',
-      description: 'Create intuitive and engaging user experiences for our news platform.',
+      title: "UX Designer",
+      department: "design",
+      location: "Remote / Bengaluru",
+      type: "Full-time",
+      experience: "3+ years",
+      salary: "₹12-20L",
+      description:
+        "Create intuitive and engaging user experiences for our news platform.",
       requirements: [
-        'Portfolio demonstrating UX design skills',
-        'Proficiency in Figma, Sketch, or similar tools',
-        'Understanding of user research methods',
-        'Experience with responsive web design'
+        "Portfolio demonstrating UX design skills",
+        "Proficiency in Figma, Sketch, or similar tools",
+        "Understanding of user research methods",
+        "Experience with responsive web design",
       ],
       responsibilities: [
-        'Design user interfaces and interactions',
-        'Conduct user research and usability testing',
-        'Create design systems and guidelines',
-        'Collaborate with product and engineering teams'
+        "Design user interfaces and interactions",
+        "Conduct user research and usability testing",
+        "Create design systems and guidelines",
+        "Collaborate with product and engineering teams",
       ],
-      featured: false
+      featured: false,
     },
     {
       id: 5,
-      title: 'Senior Journalist',
-      department: 'editorial',
-      location: 'Hybrid / Bengaluru',
-      type: 'Full-time',
-      experience: '7+ years',
-      salary: '₹18-25L',
-      description: 'Lead editorial content strategy and oversee news analysis quality.',
+      title: "Senior Journalist",
+      department: "editorial",
+      location: "Hybrid / Bengaluru",
+      type: "Full-time",
+      experience: "7+ years",
+      salary: "₹18-25L",
+      description:
+        "Lead editorial content strategy and oversee news analysis quality.",
       requirements: [
-        'Journalism degree and extensive reporting experience',
-        'Knowledge of media ethics and fact-checking',
-        'Experience with digital content management',
-        'Strong writing and editing skills'
+        "Journalism degree and extensive reporting experience",
+        "Knowledge of media ethics and fact-checking",
+        "Experience with digital content management",
+        "Strong writing and editing skills",
       ],
       responsibilities: [
-        'Develop editorial guidelines and standards',
-        'Review and approve news analysis content',
-        'Train AI models on journalistic principles',
-        'Collaborate with product team on content features'
+        "Develop editorial guidelines and standards",
+        "Review and approve news analysis content",
+        "Train AI models on journalistic principles",
+        "Collaborate with product team on content features",
       ],
-      featured: false
+      featured: false,
     },
     {
       id: 6,
-      title: 'DevOps Engineer',
-      department: 'engineering',
-      location: 'Remote / Bengaluru',
-      type: 'Full-time',
-      experience: '4+ years',
-      salary: '₹18-28L',
-      description: 'Build and maintain scalable infrastructure for our AI-powered platform.',
+      title: "DevOps Engineer",
+      department: "engineering",
+      location: "Remote / Bengaluru",
+      type: "Full-time",
+      experience: "4+ years",
+      salary: "₹18-28L",
+      description:
+        "Build and maintain scalable infrastructure for our AI-powered platform.",
       requirements: [
-        'Experience with cloud platforms (AWS, GCP, Azure)',
-        'Proficiency in containerization (Docker, Kubernetes)',
-        'Knowledge of CI/CD pipelines and automation',
-        'Understanding of monitoring and logging systems'
+        "Experience with cloud platforms (AWS, GCP, Azure)",
+        "Proficiency in containerization (Docker, Kubernetes)",
+        "Knowledge of CI/CD pipelines and automation",
+        "Understanding of monitoring and logging systems",
       ],
       responsibilities: [
-        'Design and maintain cloud infrastructure',
-        'Implement CI/CD pipelines',
-        'Monitor system performance and reliability',
-        'Collaborate with engineering teams on deployments'
+        "Design and maintain cloud infrastructure",
+        "Implement CI/CD pipelines",
+        "Monitor system performance and reliability",
+        "Collaborate with engineering teams on deployments",
       ],
-      featured: false
-    }
+      featured: false,
+    },
   ];
 
   const companyValues = [
     {
       icon: Target,
-      title: 'Mission-Driven',
-      description: 'We\'re passionate about democratizing access to unbiased news and information.'
+      title: "Mission-Driven",
+      description:
+        "We're passionate about democratizing access to unbiased news and information.",
     },
     {
       icon: Lightbulb,
-      title: 'Innovation First',
-      description: 'We embrace new technologies and approaches to solve complex problems.'
+      title: "Innovation First",
+      description:
+        "We embrace new technologies and approaches to solve complex problems.",
     },
     {
       icon: Users,
-      title: 'Collaborative',
-      description: 'We believe diverse perspectives make us stronger and more creative.'
+      title: "Collaborative",
+      description:
+        "We believe diverse perspectives make us stronger and more creative.",
     },
     {
       icon: TrendingUp,
-      title: 'Growth Mindset',
-      description: 'We\'re committed to continuous learning and personal development.'
-    }
+      title: "Growth Mindset",
+      description:
+        "We're committed to continuous learning and personal development.",
+    },
   ];
 
-  const filteredJobs = jobOpenings.filter(job => {
-    const matchesDepartment = selectedDepartment === 'all' || job.department === selectedDepartment;
-    const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         job.description.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredJobs = jobOpenings.filter((job) => {
+    const matchesDepartment =
+      selectedDepartment === "all" || job.department === selectedDepartment;
+    const matchesSearch =
+      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesDepartment && matchesSearch;
   });
 
@@ -312,7 +321,7 @@ const CareersPage = () => {
               Join Our Team
               <ArrowUpRight className="w-4 h-4 ml-2" />
             </motion.div>
-            
+
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-700 to-red-800">
                 Shape the Future
@@ -320,10 +329,11 @@ const CareersPage = () => {
               <br />
               <span className="text-gray-900">of Journalism</span>
             </h1>
-            
+
             <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
-              Join a team of passionate innovators building AI-powered tools that democratize 
-              access to unbiased news and information worldwide.
+              Join a team of passionate innovators building AI-powered tools
+              that democratize access to unbiased news and information
+              worldwide.
             </p>
 
             <motion.div
@@ -332,8 +342,12 @@ const CareersPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <motion.button 
-                onClick={() => document.getElementById('openings')?.scrollIntoView({ behavior: 'smooth' })}
+              <motion.button
+                onClick={() =>
+                  document
+                    .getElementById("openings")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
                 whileHover={{
                   scale: 1.05,
                   boxShadow: "0 25px 50px -12px rgba(239, 68, 68, 0.4)",
@@ -359,10 +373,10 @@ const CareersPage = () => {
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {[
-                { number: '50+', label: 'Team Members', icon: Users },
-                { number: '15+', label: 'Countries', icon: Globe },
-                { number: '100%', label: 'Remote-Friendly', icon: Home },
-                { number: '4.9/5', label: 'Glassdoor Rating', icon: Star }
+                { number: "50+", label: "Team Members", icon: Users },
+                { number: "15+", label: "Countries", icon: Globe },
+                { number: "100%", label: "Remote-Friendly", icon: Home },
+                { number: "4.9/5", label: "Glassdoor Rating", icon: Star },
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -377,7 +391,9 @@ const CareersPage = () => {
                   >
                     <stat.icon className="w-8 h-8 text-white" />
                   </motion.div>
-                  <div className="text-2xl md:text-3xl font-bold text-gray-900 group-hover:text-red-600 transition-colors">{stat.number}</div>
+                  <div className="text-2xl md:text-3xl font-bold text-gray-900 group-hover:text-red-600 transition-colors">
+                    {stat.number}
+                  </div>
                   <div className="text-sm text-gray-600">{stat.label}</div>
                 </motion.div>
               ))}
@@ -409,7 +425,8 @@ const CareersPage = () => {
               Our Values Guide Everything
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              The principles that shape our culture and drive us toward our mission
+              The principles that shape our culture and drive us toward our
+              mission
             </p>
           </motion.div>
 
@@ -430,8 +447,12 @@ const CareersPage = () => {
                 >
                   <value.icon className="w-8 h-8 text-white" />
                 </motion.div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-red-600 transition-colors">{value.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{value.description}</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-red-600 transition-colors">
+                  {value.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {value.description}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -461,7 +482,8 @@ const CareersPage = () => {
               Exceptional Benefits & Perks
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We invest in our team&apos;s success with comprehensive benefits that support your growth
+              We invest in our team&apos;s success with comprehensive benefits
+              that support your growth
             </p>
           </motion.div>
 
@@ -482,8 +504,12 @@ const CareersPage = () => {
                 >
                   <benefit.icon className="w-8 h-8 text-white" />
                 </motion.div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-red-600 transition-colors">{benefit.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-red-600 transition-colors">
+                  {benefit.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {benefit.description}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -513,12 +539,13 @@ const CareersPage = () => {
               Find Your Dream Role
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Explore exciting opportunities to make an impact in the future of journalism
+              Explore exciting opportunities to make an impact in the future of
+              journalism
             </p>
           </motion.div>
 
           {/* Filters */}
-          <motion.div 
+          <motion.div
             className="flex flex-col lg:flex-row gap-6 mb-16"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -546,8 +573,8 @@ const CareersPage = () => {
                   whileTap={{ scale: 0.95 }}
                   className={`px-6 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 ${
                     selectedDepartment === dept.id
-                      ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-500/25'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? "bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-500/25"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
                   {dept.name} ({dept.count})
@@ -568,7 +595,9 @@ const CareersPage = () => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ delay: index * 0.1 }}
                   className={`group bg-white rounded-3xl border-2 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-500 overflow-hidden ${
-                    job.featured ? 'border-red-200 bg-gradient-to-r from-red-50/50 to-transparent' : 'border-gray-200'
+                    job.featured
+                      ? "border-red-200 bg-gradient-to-r from-red-50/50 to-transparent"
+                      : "border-gray-200"
                   }`}
                 >
                   <div className="p-8">
@@ -579,7 +608,7 @@ const CareersPage = () => {
                             {job.title}
                           </h3>
                           {job.featured && (
-                            <motion.span 
+                            <motion.span
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
                               className="px-4 py-2 bg-gradient-to-r from-red-100 to-red-200 text-red-700 text-xs font-semibold rounded-full flex items-center shadow-sm"
@@ -589,7 +618,7 @@ const CareersPage = () => {
                             </motion.span>
                           )}
                         </div>
-                        
+
                         <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-4">
                           <span className="flex items-center font-medium">
                             <Briefcase className="w-4 h-4 mr-2 text-red-500" />
@@ -612,23 +641,28 @@ const CareersPage = () => {
                             {job.salary}
                           </span>
                         </div>
-                        
-                        <p className="text-gray-600 leading-relaxed">{job.description}</p>
+
+                        <p className="text-gray-600 leading-relaxed">
+                          {job.description}
+                        </p>
                       </div>
 
                       <div className="flex gap-4 mt-6 lg:mt-0">
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          onClick={() => setActiveJob(activeJob === job.id ? null : job.id)}
+                          onClick={() =>
+                            setActiveJob(activeJob === job.id ? null : job.id)
+                          }
                           className="px-6 py-3 border-2 border-gray-200 text-gray-700 rounded-2xl hover:border-red-300 hover:text-red-600 transition-all duration-300 font-semibold"
                         >
                           View Details
                         </motion.button>
-                        <motion.button 
-                          whileHover={{ 
+                        <motion.button
+                          whileHover={{
                             scale: 1.05,
-                            boxShadow: "0 10px 30px -5px rgba(239, 68, 68, 0.3)"
+                            boxShadow:
+                              "0 10px 30px -5px rgba(239, 68, 68, 0.3)",
                           }}
                           whileTap={{ scale: 0.95 }}
                           className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-2xl hover:from-red-700 hover:to-red-800 transition-all duration-300 font-semibold shadow-lg shadow-red-500/25 flex items-center group relative overflow-hidden"
@@ -645,7 +679,7 @@ const CareersPage = () => {
                       {activeJob === job.id && (
                         <motion.div
                           initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
+                          animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.3 }}
                           className="border-t border-gray-200 pt-8 mt-8"
@@ -658,8 +692,8 @@ const CareersPage = () => {
                               </h4>
                               <ul className="space-y-3">
                                 {job.requirements.map((req, idx) => (
-                                  <motion.li 
-                                    key={idx} 
+                                  <motion.li
+                                    key={idx}
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: idx * 0.1 }}
@@ -671,7 +705,7 @@ const CareersPage = () => {
                                 ))}
                               </ul>
                             </div>
-                            
+
                             <div>
                               <h4 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
                                 <ArrowRight className="w-5 h-5 mr-2 text-red-500" />
@@ -679,7 +713,7 @@ const CareersPage = () => {
                               </h4>
                               <ul className="space-y-3">
                                 {job.responsibilities.map((resp, idx) => (
-                                  <motion.li 
+                                  <motion.li
                                     key={idx}
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
@@ -687,18 +721,21 @@ const CareersPage = () => {
                                     className="flex items-start"
                                   >
                                     <ArrowRight className="w-4 h-4 text-red-500 mt-1 mr-3 flex-shrink-0" />
-                                    <span className="text-gray-600">{resp}</span>
+                                    <span className="text-gray-600">
+                                      {resp}
+                                    </span>
                                   </motion.li>
                                 ))}
                               </ul>
                             </div>
                           </div>
-                          
+
                           <div className="mt-10 pt-8 border-t border-gray-200 flex justify-end">
-                            <motion.button 
-                              whileHover={{ 
+                            <motion.button
+                              whileHover={{
                                 scale: 1.05,
-                                boxShadow: "0 15px 35px -5px rgba(239, 68, 68, 0.4)"
+                                boxShadow:
+                                  "0 15px 35px -5px rgba(239, 68, 68, 0.4)",
                               }}
                               whileTap={{ scale: 0.95 }}
                               className="px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-2xl hover:from-red-700 hover:to-red-800 transition-all duration-300 font-semibold shadow-xl shadow-red-500/25 flex items-center group relative overflow-hidden"
@@ -718,7 +755,7 @@ const CareersPage = () => {
           </div>
 
           {filteredJobs.length === 0 && (
-            <motion.div 
+            <motion.div
               className="text-center py-16"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -726,8 +763,12 @@ const CareersPage = () => {
               <div className="w-24 h-24 bg-gradient-to-r from-red-600 to-red-700 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <Briefcase className="w-12 h-12 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">No positions found</h3>
-              <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                No positions found
+              </h3>
+              <p className="text-gray-600">
+                Try adjusting your search or filter criteria
+              </p>
             </motion.div>
           )}
         </div>
@@ -778,15 +819,16 @@ const CareersPage = () => {
               className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm font-semibold mb-8"
             >
               <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
-              Don't See Your Dream Role?
+              Don&apos;t See Your Dream Role?
             </motion.div>
 
             <h2 className="text-4xl md:text-6xl font-bold mb-6">
               We&apos;re Always Growing
             </h2>
             <p className="text-xl mb-12 max-w-3xl mx-auto opacity-90 leading-relaxed">
-              Passionate about journalism and technology? We'd love to hear from you. 
-              Send us your resume and let&apos;s explore how you can contribute to our mission.
+              Passionate about journalism and technology? We&apos;d love to hear
+              from you. Send us your resume and let&apos;s explore how you can
+              contribute to our mission.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
