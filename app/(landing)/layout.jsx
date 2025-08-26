@@ -63,7 +63,7 @@ const Navbar = () => {
           >
             <Link href="/" className="flex items-center space-x-3">
               <div className="relative">
-                <div className="w-28 h-14 rounded-2xl flex items-center justify-center p-1">
+                <div className="w-44 h-20 rounded-2xl flex items-center justify-center p-1">
                   <img
                     src="/images/logo.png"
                     alt="Doutya Logo"
