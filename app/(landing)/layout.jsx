@@ -63,7 +63,7 @@ const Navbar = () => {
           >
             <Link href="/" className="flex items-center space-x-3">
               <div className="relative">
-                <div className="w-24 h-12 rounded-2xl flex items-center justify-center  p-1">
+                <div className="w-28 h-14 rounded-2xl flex items-center justify-center p-1">
                   <img
                     src="/images/logo.png"
                     alt="Doutya Logo"
@@ -103,7 +103,7 @@ const Navbar = () => {
             >
               <Link
                 href="/auth/signup"
-                className="relative px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold overflow-hidden group shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300"
+                className="relative px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold overflow-hidden group shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300 flex items-center"
               >
                 <span className="relative z-10 flex items-center">
                   Get Started
