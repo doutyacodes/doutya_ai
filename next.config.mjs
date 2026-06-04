@@ -4,6 +4,7 @@ const withNextIntl = createNextIntlPlugin("./app/i18n/request.js");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ["ssh2-sftp-client", "ssh2", "basic-ftp"],
   // reactStrictMode: false,
   images: {
     remotePatterns: [
