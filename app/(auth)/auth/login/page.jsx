@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import GlobalApi from "@/app/api/_services/GlobalApi";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useEffect } from "react";
 import { LockIcon, UserIcon } from "lucide-react";
 import {
   Form,
@@ -35,6 +36,13 @@ export function Login() {
   });
 
   const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem('user_token');
+    if (token) {
+      router.replace('/news');
+    }
+  }, [router]);
 
   const onSubmit = async (data) => {
     try {

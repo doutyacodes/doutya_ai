@@ -5,12 +5,12 @@ import { db } from "@/utils";
 import { PAYMENT_TRANSACTIONS, SUBSCRIPTIONS, SUBSCRIPTION_PLANS } from "@/utils/schema";
 import { eq } from "drizzle-orm";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
-
 export async function POST(request) {
+  const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID?.trim(),
+    key_secret: process.env.RAZORPAY_KEY_SECRET?.trim(),
+  });
+
   const authResult = await authenticate(request);
   if (!authResult.authenticated) {
     return authResult.response;

@@ -66,6 +66,13 @@ export default function Signup() {
 
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('user_token');
+    if (token) {
+      router.replace('/news');
+    }
+  }, [router]);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedExamType, setSelectedExamType] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);

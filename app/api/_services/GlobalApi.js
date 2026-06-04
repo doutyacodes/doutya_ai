@@ -280,15 +280,16 @@ const fetchNewsHome = async (token,data) => {
   }
 };
 
-const fetchOneNews = async (data) => {
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') return '';
+  return process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+};
 
-    return axios.post(`https://www.doutya.com/api/fetchNews/news`, data);
- 
+const fetchOneNews = async (data) => {
+    return axios.post(`${getBaseUrl()}/api/fetchNews/news`, data);
 };
 const fetchOneNews2 = async (data) => {
-
-    return axios.post(`https://www.doutya.com/api/adult/fetchNews/news2`, data);
- 
+    return axios.post(`${getBaseUrl()}/api/adult/fetchNews/news2`, data);
 };
 
 const ReportNews = async (data) => {
