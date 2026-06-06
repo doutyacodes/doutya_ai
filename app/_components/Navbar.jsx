@@ -463,7 +463,7 @@ const Navbar = () => {
   return (
     <>
       <nav className={cn(
-        "w-full bg-gradient-to-r from-white via-white to-blue-50/30 backdrop-blur-sm sticky top-0 z-[9997] border-b border-red-800/20 shadow-lg shadow-red-800/5",
+        "w-full bg-gradient-to-r from-white via-white to-blue-50/30 backdrop-blur-sm sticky top-0 z-40 border-b border-red-800/20 shadow-lg shadow-red-800/5",
         "min-h-[60px] sm:min-h-[64px] md:min-h-[72px]"
       )}>
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
