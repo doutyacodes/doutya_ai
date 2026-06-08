@@ -37,9 +37,9 @@ Be persuasive, logical, and engaging while staying true to your assigned stance.
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 120,
+        max_completion_tokens: 120,
         temperature: 0.8,
       },
       {
@@ -94,9 +94,9 @@ async function generateDebateReport(debateRoom, messages) {
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 1200,
+        max_completion_tokens: 1200,
         temperature: 0.7,
       },
       {
@@ -131,7 +131,7 @@ async function generateDebateReport(debateRoom, messages) {
 async function getRealNextMCQQuestion(selectedOptionId, currentLevel, treeType) {
   try {
     console.log(`Getting next MCQ question for option ${selectedOptionId}, level ${currentLevel}, tree type ${treeType}`);
-    
+
     // Get the selected option details
     const selectedOption = await db
       .select()
@@ -159,7 +159,7 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel, treeType) 
     // Primary path: Check if option has a direct link to next response
     if (option.leads_to_response_id) {
       console.log(`Following leads_to_response_id: ${option.leads_to_response_id}`);
-      
+
       const responses = await db
         .select()
         .from(MC_DEBATE_RESPONSES)
@@ -181,7 +181,7 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel, treeType) 
     // Fallback path: Look for child responses based on current response and tree type
     if (!nextResponse) {
       console.log("No leads_to_response_id, looking for child responses");
-      
+
       // Get the current response this option belongs to
       const currentResponses = await db
         .select()
@@ -198,7 +198,7 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel, treeType) 
       if (currentResponses.length) {
         const currentResponse = currentResponses[0];
         console.log("Current response:", currentResponse);
-        
+
         // Look for child responses at the next level within the same tree
         const childResponses = await db
           .select()
@@ -224,7 +224,7 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel, treeType) 
     // Alternative fallback: Look for any response at the next level within the same tree
     if (!nextResponse) {
       console.log("Looking for any response at next level in same tree");
-      
+
       // Get current response to get debate_topic_id
       const currentResponses = await db
         .select()
@@ -235,7 +235,7 @@ async function getRealNextMCQQuestion(selectedOptionId, currentLevel, treeType) 
 
       if (currentResponses.length) {
         const currentResponse = currentResponses[0];
-        
+
         const nextLevelResponses = await db
           .select()
           .from(MC_DEBATE_RESPONSES)
@@ -304,10 +304,10 @@ export async function POST(request, { params }) {
 
   const userData = authResult.decoded_Data;
   const userId = userData.id;
-  
+
   // Await params before accessing debateId
   const { debateId } = await params;
-  
+
   const { content, action, selectedOptionId } = await request.json();
 
   try {
@@ -333,12 +333,12 @@ export async function POST(request, { params }) {
     if (!action && content) {
       return await handleUserVsAI(room, content, userId, debateId);
     }
-    
+
     // Handle AI vs AI next conversation
     if (action === "show_next") {
       return await handleAIvsAI(room, userId, debateId);
     }
-    
+
     // Handle MCQ answer submission
     if (selectedOptionId) {
       return await handleMCQ(room, selectedOptionId, userId, debateId);
@@ -470,7 +470,7 @@ async function handleUserVsAI(room, content, userId, debateId) {
 
 async function handleAIvsAI(room, userId, debateId) {
   const newRound = room.conversation_count + 1;
-  
+
   console.log(`AI vs AI: Current round ${room.conversation_count}, new round ${newRound}, max rounds ${room.max_conversations}`);
 
   // Update conversation count
@@ -530,7 +530,7 @@ async function handleAIvsAI(room, userId, debateId) {
 
 async function handleMCQ(room, selectedOptionId, userId, debateId) {
   const currentLevel = room.conversation_count + 1;
-  
+
   console.log(`MCQ: Current level ${room.conversation_count}, new level ${currentLevel}, selected option ${selectedOptionId}`);
   console.log(`MCQ: Room tree_type = ${room.tree_type}, selected_user_stance = ${room.selected_user_stance}`);
 
@@ -549,10 +549,10 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
 
     const option = selectedOption[0];
     console.log("Selected option details:", option);
-    
+
     // Get the tree type from the room (this was set during creation)
     const treeType = room.tree_type || 'ai_for'; // Default fallback
-    
+
     // Get the next question based on the selected option and tree type
     const nextQuestion = await getRealNextMCQQuestion(selectedOptionId, currentLevel, treeType);
 
@@ -569,7 +569,7 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
     // Check completion - should only complete if no next question OR terminal OR exceed max level
     if (!nextQuestion || option.is_terminal || currentLevel >= 5) {
       console.log("MCQ debate completed - no next question or terminal or max level reached");
-      
+
       // Mark as completed
       await db
         .update(AI_DEBATE_ROOMS)
@@ -580,7 +580,7 @@ async function handleMCQ(room, selectedOptionId, userId, debateId) {
       // Generate completion report with user stance information
       const userStanceText = room.selected_user_stance === 'for' ? 'supporting' : 'opposing';
       const aiPositionText = treeType === 'ai_for' ? 'supporting' : 'opposing';
-      
+
       const reportData = {
         overall_analysis: `You navigated through a complex decision tree, making thoughtful choices at each step of the debate. Your selections demonstrate engagement with different perspectives while consistently ${userStanceText} the main position against AI arguments ${aiPositionText} it.`,
         strengths: `You maintained a consistent ${userStanceText} stance throughout the decision tree while carefully considering each response option. Your choices reflect analytical thinking and willingness to explore nuanced aspects of the topic through structured decision-making.`,

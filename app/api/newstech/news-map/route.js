@@ -23,23 +23,23 @@ export async function GET(req) {
   try {
     // Fetch all news items with their associated categories
     const news = await db
-    .select({
-      id: MAP_NEWS.id,
-      title: MAP_NEWS.title,
-      image_url: MAP_NEWS.image_url,
-      article_url: MAP_NEWS.article_url,
-      article_text: MAP_NEWS.summary,
-      source_name: MAP_NEWS.source_name,
-      latitude: MAP_NEWS.latitude,
-      longitude: MAP_NEWS.longitude,
-      category_id: MAP_NEWS.category_id,
-      created_at: MAP_NEWS.created_at,
-      category_name: MAP_NEWS_CATEGORIES.name,
-    })
-    .from(MAP_NEWS)
-    .leftJoin(MAP_NEWS_CATEGORIES, eq(MAP_NEWS.category_id, MAP_NEWS_CATEGORIES.id))
-    .where(eq(MAP_NEWS.created_by, adminId))
-    .orderBy(desc(MAP_NEWS.created_at));
+      .select({
+        id: MAP_NEWS.id,
+        title: MAP_NEWS.title,
+        image_url: MAP_NEWS.image_url,
+        article_url: MAP_NEWS.article_url,
+        article_text: MAP_NEWS.summary,
+        source_name: MAP_NEWS.source_name,
+        latitude: MAP_NEWS.latitude,
+        longitude: MAP_NEWS.longitude,
+        category_id: MAP_NEWS.category_id,
+        created_at: MAP_NEWS.created_at,
+        category_name: MAP_NEWS_CATEGORIES.name,
+      })
+      .from(MAP_NEWS)
+      .leftJoin(MAP_NEWS_CATEGORIES, eq(MAP_NEWS.category_id, MAP_NEWS_CATEGORIES.id))
+      .where(eq(MAP_NEWS.created_by, adminId))
+      .orderBy(desc(MAP_NEWS.created_at));
 
     // Send the news items as a JSON response
     return NextResponse.json(
@@ -135,9 +135,9 @@ async function generateSummaryWithOpenAI(articleText) {
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 2500,
+        max_completion_tokens: 2500,
       },
       {
         headers: {
@@ -154,7 +154,7 @@ async function generateSummaryWithOpenAI(articleText) {
     let summary = response.data.choices[0].message.content.trim();
     summary = summary.replace(/```json|```/g, "").trim();
     console.log("Generated summary:", summary);
-    
+
     return summary;
   } catch (error) {
     console.error("Error generating summary:", error);

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/jwtMiddleware";
 import axios from "axios";
-import { 
-  PROMPT_HISTORY, 
-  USER_NEWS, 
-  USER_DETAILS, 
+import {
+  PROMPT_HISTORY,
+  USER_NEWS,
+  USER_DETAILS,
   ADULT_NEWS
 } from "@/utils/schema";
 import { db } from "@/utils";
@@ -138,9 +138,9 @@ export async function POST(request) {
     const relevanceResponse = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: relevancePrompt }],
-        max_tokens: 200,
+        max_completion_tokens: 200,
         temperature: 0.3,
       },
       {
@@ -153,7 +153,7 @@ export async function POST(request) {
 
     let relevanceText = relevanceResponse.data.choices[0].message.content.trim();
     relevanceText = relevanceText.replace(/```json|```/g, "").trim();
-    
+
     let relevanceData;
     try {
       relevanceData = JSON.parse(relevanceText);
@@ -192,9 +192,9 @@ export async function POST(request) {
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 1500,
+        max_completion_tokens: 1500,
         temperature: 0.7,
       },
       {
@@ -230,10 +230,10 @@ export async function POST(request) {
     }
 
     // Get the first category ID from the original prompt history
-    const categoryIds = Array.isArray(promptData.category_ids) 
-      ? promptData.category_ids 
+    const categoryIds = Array.isArray(promptData.category_ids)
+      ? promptData.category_ids
       : JSON.parse(promptData.category_ids || '[]');
-    
+
     const firstCategoryId = categoryIds[0] || 1; // Default category if none found
 
     // Get image URL from existing news in the group
@@ -287,7 +287,7 @@ export async function POST(request) {
 
   } catch (error) {
     console.error("Error generating custom viewpoint:", error);
-    
+
     // Handle specific OpenAI API errors
     if (error.response?.status === 429) {
       return NextResponse.json(
@@ -295,7 +295,7 @@ export async function POST(request) {
         { status: 429 }
       );
     }
-    
+
     if (error.response?.status === 401) {
       return NextResponse.json(
         { error: "AI service configuration error. Please contact support." },
@@ -304,9 +304,9 @@ export async function POST(request) {
     }
 
     return NextResponse.json(
-      { 
-        error: "Failed to generate custom viewpoint", 
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined 
+      {
+        error: "Failed to generate custom viewpoint",
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
       },
       { status: 500 }
     );

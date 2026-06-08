@@ -2,8 +2,8 @@
 import { NextResponse } from "next/server";
 import { authenticate } from "@/lib/jwtMiddleware";
 import axios from "axios";
-import { 
-  AI_CHAT_ROOMS, 
+import {
+  AI_CHAT_ROOMS,
   AI_CHAT_MESSAGES,
   AI_CHAT_REPORTS,
   AI_PERSONALITIES,
@@ -28,7 +28,7 @@ const AI_PERSONALITY_PROMPTS = {
     Respond in 2-3 sentences maximum. Always maintain your scholarly, evidence-focused perspective.`
   },
   2: { // Advocate
-    name: "Advocate", 
+    name: "Advocate",
     systemPrompt: `You are Advocate, a passionate social justice AI focused on ethical implications and human rights. Your personality traits:
     - Always consider the impact on vulnerable and marginalized communities
     - Use persuasive, emotionally resonant language
@@ -70,14 +70,14 @@ const AI_PERSONALITY_PROMPTS = {
 
 async function generateAIResponseWithOpenAI(topic, userMessage, aiPersonalityId, conversationHistory) {
   const personality = AI_PERSONALITY_PROMPTS[aiPersonalityId];
-  
+
   if (!personality) {
     throw new Error(`AI personality ${aiPersonalityId} not found`);
   }
 
   // Build conversation context
   const contextMessages = [];
-  
+
   // Add system prompt
   contextMessages.push({
     role: "system",
@@ -89,7 +89,7 @@ async function generateAIResponseWithOpenAI(topic, userMessage, aiPersonalityId,
   recentHistory.forEach(msg => {
     if (msg.sender === 'user') {
       contextMessages.push({
-        role: "user", 
+        role: "user",
         content: msg.content
       });
     } else if (msg.ai_personality_id === aiPersonalityId) {
@@ -110,9 +110,9 @@ async function generateAIResponseWithOpenAI(topic, userMessage, aiPersonalityId,
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: contextMessages,
-        max_tokens: 150, // Keep responses concise
+        max_completion_tokens: 150, // Keep responses concise
         temperature: 0.8, // Allow for personality variation
         presence_penalty: 0.1, // Encourage diverse responses
       },
@@ -127,15 +127,15 @@ async function generateAIResponseWithOpenAI(topic, userMessage, aiPersonalityId,
     return response.data.choices[0].message.content.trim();
   } catch (error) {
     console.error(`Error generating AI response for personality ${aiPersonalityId}:`, error);
-    
+
     // Fallback to simple contextual response if OpenAI fails
     const fallbacks = {
       1: `From an analytical perspective on "${topic}", I'd need to examine the available evidence before drawing conclusions about your point.`,
-      2: `This aspect of "${topic}" raises important questions about fairness and impact on communities that we must address.`, 
+      2: `This aspect of "${topic}" raises important questions about fairness and impact on communities that we must address.`,
       3: `I'm curious about the assumptions underlying your view on "${topic}". What evidence supports this position?`,
       4: `Your perspective on "${topic}" opens up fascinating possibilities for how we might reimagine this entire domain.`
     };
-    
+
     return fallbacks[aiPersonalityId] || "That's an interesting perspective worth exploring further.";
   }
 }
@@ -143,7 +143,7 @@ async function generateAIResponseWithOpenAI(topic, userMessage, aiPersonalityId,
 async function generateChatReport(chatRoom, messages) {
   const userMessages = messages.filter(m => m.sender === 'user');
   const aiMessages = messages.filter(m => m.sender === 'ai');
-  
+
   const prompt = `
     Analyze this debate conversation and provide a comprehensive report:
     
@@ -172,9 +172,9 @@ async function generateChatReport(chatRoom, messages) {
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 1000,
+        max_completion_tokens: 1000,
         temperature: 0.7,
       },
       {
@@ -187,7 +187,7 @@ async function generateChatReport(chatRoom, messages) {
 
     let responseText = response.data.choices[0].message.content.trim();
     responseText = responseText.replace(/```json|```/g, "").trim();
-    
+
     return JSON.parse(responseText);
   } catch (error) {
     console.error("Error generating chat report:", error);
@@ -288,12 +288,12 @@ export async function POST(request, { params }) {
     for (const aiId of aiPersonalities) {
       try {
         const aiResponse = await generateAIResponseWithOpenAI(
-          room.topic, 
-          content, 
-          aiId, 
+          room.topic,
+          content,
+          aiId,
           conversationHistory
         );
-        
+
         const aiMessage = {
           chat_room_id: chatId,
           sender: 'ai',
@@ -315,10 +315,10 @@ export async function POST(request, { params }) {
 
         // Add small delay between AI responses to seem more natural
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
       } catch (error) {
         console.error(`Error generating response for AI ${aiId}:`, error);
-        
+
         // Add fallback response if OpenAI fails for this personality
         const fallbackMessage = {
           chat_room_id: chatId,
@@ -370,7 +370,7 @@ export async function POST(request, { params }) {
 
       // Generate report using OpenAI
       const reportData = await generateChatReport(room, allMessages);
-      
+
       const chatReport = {
         chat_room_id: chatId,
         user_id: userId,
@@ -401,7 +401,7 @@ export async function POST(request, { params }) {
 
   } catch (error) {
     console.error("Error processing message:", error);
-    
+
     // Handle specific OpenAI API errors
     if (error.response?.status === 429) {
       return NextResponse.json(
@@ -409,7 +409,7 @@ export async function POST(request, { params }) {
         { status: 429 }
       );
     }
-    
+
     if (error.response?.status === 401) {
       return NextResponse.json(
         { error: "AI service configuration error. Please contact support." },
@@ -418,9 +418,9 @@ export async function POST(request, { params }) {
     }
 
     return NextResponse.json(
-      { 
-        error: "Failed to process message", 
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined 
+      {
+        error: "Failed to process message",
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
       },
       { status: 500 }
     );

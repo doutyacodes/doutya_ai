@@ -70,7 +70,7 @@ export async function POST(request) {
       .replace('{ARTICLE}', article);
 
     console.log("prompt", prompt);
-    
+
     // Call OpenAI API with retry logic
     let responseText = '';
     let parsedData = null;
@@ -79,20 +79,20 @@ export async function POST(request) {
 
     while (attempts < maxAttempts && !parsedData) {
       attempts++;
-      
+
       try {
         const response = await axios.post(
           "https://api.openai.com/v1/chat/completions",
           {
-            model: "gpt-4o-mini",
+            model: "gpt-5.4-mini",
             messages: [
-              { 
-                role: "system", 
-                content: "You are a professional media analyst. Always return complete, valid JSON responses. Never truncate your response." 
+              {
+                role: "system",
+                content: "You are a professional media analyst. Always return complete, valid JSON responses. Never truncate your response."
               },
               { role: "user", content: prompt }
             ],
-            max_tokens: 6000, // Increased token limit
+            max_completion_tokens: 6000, // Increased token limit
             temperature: 0.2, // Lower temperature for more consistent responses
           },
           {
@@ -105,13 +105,13 @@ export async function POST(request) {
         );
 
         responseText = response.data.choices[0].message.content.trim();
-        
+
         // More aggressive cleanup
         responseText = responseText
           .replace(/```json|```/g, "")
           .replace(/^[^{]*({.*})[^}]*$/s, '$1') // Extract only the JSON object
           .trim();
-        
+
         console.log(`AI Response (Attempt ${attempts}):`, responseText.substring(0, 200) + "...");
 
         // Validate it's proper JSON before parsing
@@ -122,18 +122,18 @@ export async function POST(request) {
         // Check if response seems complete (has closing brace)
         const openBraces = (responseText.match(/{/g) || []).length;
         const closeBraces = (responseText.match(/}/g) || []).length;
-        
+
         if (openBraces !== closeBraces) {
           throw new Error('Incomplete JSON response - mismatched braces');
         }
 
         // Try to parse
         parsedData = JSON.parse(responseText);
-        
+
         // Validate required fields are present
         const requiredFields = ['politicalLeaning', 'overallSentiment', 'readabilityScore'];
         const missingFields = requiredFields.filter(field => !parsedData[field]);
-        
+
         if (missingFields.length > 0) {
           throw new Error(`Incomplete response - missing fields: ${missingFields.join(', ')}`);
         }
@@ -144,17 +144,17 @@ export async function POST(request) {
       } catch (parseError) {
         console.error(`Parse Error on attempt ${attempts}:`, parseError.message);
         console.error("Raw Response:", responseText);
-        
+
         if (attempts >= maxAttempts) {
           return NextResponse.json(
-            { 
+            {
               error: 'Failed to get valid analysis after multiple attempts. Please try again.',
-              details: parseError.message 
+              details: parseError.message
             },
             { status: 500 }
           );
         }
-        
+
         // Wait before retry
         await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
       }
@@ -211,7 +211,7 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Analysis Error:', error);
-    
+
     // Handle specific error types
     if (error.response?.status === 429) {
       return NextResponse.json(
@@ -219,7 +219,7 @@ export async function POST(request) {
         { status: 429 }
       );
     }
-    
+
     if (error.response?.status === 401) {
       return NextResponse.json(
         { error: 'Invalid API key configuration' },

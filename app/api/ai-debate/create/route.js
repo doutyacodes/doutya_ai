@@ -35,9 +35,9 @@ Keep it under 300 characters and be persuasive but respectful.`;
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 100,
+        max_completion_tokens: 100,
         temperature: 0.8,
       },
       {
@@ -63,7 +63,7 @@ async function resolveNewsGroupId(newsId, groupId) {
       // Direct group ID provided
       return parseInt(groupId);
     }
-    
+
     if (newsId) {
       // Get group ID from news ID
       const newsArticle = await db
@@ -72,12 +72,12 @@ async function resolveNewsGroupId(newsId, groupId) {
         .where(eq(ADULT_NEWS.id, parseInt(newsId)))
         .limit(1)
         .execute();
-      
+
       if (newsArticle.length > 0) {
         return newsArticle[0].news_group_id;
       }
     }
-    
+
     throw new Error("Unable to determine news group ID");
   } catch (error) {
     console.error("Error resolving news group ID:", error);
@@ -88,7 +88,7 @@ async function resolveNewsGroupId(newsId, groupId) {
 // Function to get real AI vs AI conversations from database
 async function getRealAIvsAI(newsGroupId) {
   console.log(`Fetching AI vs AI conversations for news group: ${newsGroupId}`);
-  
+
   // Find the debate topic associated with this news group
   const debateTopics = await db
     .select()
@@ -121,7 +121,7 @@ async function getRealAIvsAI(newsGroupId) {
 
   // Transform the data to match your expected format
   const formattedConversations = [];
-  
+
   conversations.forEach(conv => {
     // Add "for" message
     formattedConversations.push({
@@ -131,7 +131,7 @@ async function getRealAIvsAI(newsGroupId) {
       conversation_round: conv.conversation_round,
       ai_persona: conv.for_ai_persona
     });
-    
+
     // Add "against" message
     formattedConversations.push({
       id: `${conv.id}_against`,
@@ -156,9 +156,9 @@ async function getRealAIvsAI(newsGroupId) {
 
 // Function to get real MCQ question from database with tree type support
 async function getRealMCQQuestion(newsGroupId, treeType, level = 1, parentResponseId = null) {
-  {console.log("data received",[newsGroupId, treeType, level , parentResponseId ])}
+  { console.log("data received", [newsGroupId, treeType, level, parentResponseId]) }
   console.log(`Getting real MCQ question for newsGroupId: ${newsGroupId}, treeType: ${treeType}, level: ${level}`);
-  
+
   // First, find the debate topic associated with this news group
   const debateTopics = await db
     .select()
@@ -177,7 +177,7 @@ async function getRealMCQQuestion(newsGroupId, treeType, level = 1, parentRespon
 
   // Get the appropriate MCQ response based on level, tree type and parent
   let mcqResponse;
-  
+
   if (level === 1) {
     // Get root level question for the specific tree type
     mcqResponse = await db
@@ -207,9 +207,9 @@ async function getRealMCQQuestion(newsGroupId, treeType, level = 1, parentRespon
       .limit(1)
       .execute();
   }
-console.log("mcqResponse",mcqResponse)
-console.log("mcqResponse",parentResponseId)
-console.log("mcqResponse",treeType)
+  console.log("mcqResponse", mcqResponse)
+  console.log("mcqResponse", parentResponseId)
+  console.log("mcqResponse", treeType)
   if (!mcqResponse.length) {
     console.log(`No MCQ question found for level ${level}, tree type ${treeType}`);
     throw new Error(`No MCQ question found for level ${level} and tree type ${treeType}`);
@@ -252,7 +252,7 @@ console.log("mcqResponse",treeType)
 
 export async function POST(request) {
   let authResult;
-  
+
   try {
     // Authenticate user
     authResult = await authenticate(request);
@@ -269,7 +269,7 @@ export async function POST(request) {
 
   const userData = authResult.decoded_Data;
   const userId = userData.id;
-  
+
   let requestData;
   try {
     requestData = await request.json();
@@ -281,11 +281,11 @@ export async function POST(request) {
     );
   }
 
-  const { 
-    topic, 
-    debateType = "user_vs_ai", 
-    userPosition, 
-    aiPosition, 
+  const {
+    topic,
+    debateType = "user_vs_ai",
+    userPosition,
+    aiPosition,
     newsId,
     groupId,
     selectedUserStance,
@@ -301,7 +301,7 @@ export async function POST(request) {
 
   try {
     console.log(`Creating ${debateType} debate for user ${userId}`);
-    
+
     // Check user plan - only Elite users can access debates
     let userInfo;
     try {
@@ -364,8 +364,8 @@ export async function POST(request) {
       } else {
         const lastResetDate = new Date(usage[0].last_reset_date);
         const isToday = lastResetDate.getFullYear() === now.getFullYear() &&
-                       lastResetDate.getMonth() === now.getMonth() &&
-                       lastResetDate.getDate() === now.getDate();
+          lastResetDate.getMonth() === now.getMonth() &&
+          lastResetDate.getDate() === now.getDate();
 
         // Uncomment this to enforce daily limits
         // if (isToday && usage[0].debates_created_today >= dailyLimit) {
@@ -452,7 +452,7 @@ export async function POST(request) {
       // Use real AI vs AI content from database
       try {
         const realConversations = await getRealAIvsAI(newsGroupId);
-        
+
         const debateRoomData = {
           user_id: userId,
           topic: topic.trim(),
@@ -468,7 +468,7 @@ export async function POST(request) {
 
         const insertResult = await db.insert(AI_DEBATE_ROOMS).values(debateRoomData).execute();
         const debateRoomId = insertResult[0].insertId;
-        
+
         // Update max_conversations based on actual data
         const maxRounds = Math.max(...realConversations.map(c => c.conversation_round), 1);
         await db
@@ -504,7 +504,7 @@ export async function POST(request) {
       try {
         // Determine tree type based on user's stance
         const treeType = preferredTreeType || (selectedUserStance === 'for' ? 'ai_against' : 'ai_for');
-        
+
         console.log(`MCQ Debug: selectedUserStance=${selectedUserStance}, determined treeType=${treeType}`);
 
         // Get the first MCQ question from the appropriate tree
@@ -530,7 +530,7 @@ export async function POST(request) {
 
         responseData.debate = {
           id: debateRoomId,
-          ...debateRoomData, 
+          ...debateRoomData,
           created_at: new Date(),
         };
         responseData.currentQuestion = realMCQQuestion;
@@ -545,21 +545,21 @@ export async function POST(request) {
 
     console.log(`Successfully created ${debateType} debate with ID: ${responseData.debate?.id}`);
     return NextResponse.json(responseData, { status: 201 });
-    
+
   } catch (error) {
     console.error("Unexpected error creating AI debates:", error);
-    
+
     // Determine if this is a database connection error
     if (error.code === 'ER_CON_COUNT_ERROR' || error.code === 'ECONNREFUSED' || error.errno === 1040) {
       return NextResponse.json(
-        { 
+        {
           error: "Database connection error. Please try again in a moment.",
           details: process.env.NODE_ENV === "development" ? "Too many database connections" : undefined
         },
         { status: 503 }
       );
     }
-    
+
     return NextResponse.json(
       {
         error: "Failed to create debate room",

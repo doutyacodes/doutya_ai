@@ -35,9 +35,9 @@ Be persuasive, logical, and engaging while staying true to your assigned stance.
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 120,
+        max_completion_tokens: 120,
         temperature: 0.8,
       },
       {
@@ -93,9 +93,9 @@ async function generateDebateReport(debate, messages) {
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 1200,
+        max_completion_tokens: 1200,
         temperature: 0.7,
       },
       {
@@ -135,7 +135,7 @@ export async function GET(request, { params }) {
 
   const userData = authResult.decoded_Data;
   const userId = userData.id;
-  
+
   const { id } = await params;
 
   try {
@@ -219,7 +219,7 @@ export async function POST(request, { params }) {
 
   const userData = authResult.decoded_Data;
   const userId = userData.id;
-  
+
   const { id } = await params;
   const { content } = await request.json();
 
@@ -245,7 +245,7 @@ export async function POST(request, { params }) {
     }
 
     const debateData = debate[0];
-    
+
     console.log(`POST to debate ${id} - Current state:`, {
       conversation_count: debateData.conversation_count,
       max_conversations: debateData.max_conversations,
@@ -258,8 +258,8 @@ export async function POST(request, { params }) {
 
     // Check if user has reached max conversations (complete rounds)
     if (debateData.conversation_count >= debateData.max_conversations) {
-      return NextResponse.json({ 
-        error: `Maximum conversation limit reached. You have completed ${debateData.conversation_count}/${debateData.max_conversations} rounds.` 
+      return NextResponse.json({
+        error: `Maximum conversation limit reached. You have completed ${debateData.conversation_count}/${debateData.max_conversations} rounds.`
       }, { status: 400 });
     }
 
@@ -310,7 +310,7 @@ export async function POST(request, { params }) {
     // Only increment after BOTH user and AI messages are saved
     await db
       .update(USER_CUSTOM_DEBATES)
-      .set({ 
+      .set({
         conversation_count: currentConversationRound, // This round is now complete
         updated_at: new Date()
       })
@@ -325,10 +325,10 @@ export async function POST(request, { params }) {
     // Check if debate should be completed (user has completed all their rounds)
     if (currentConversationRound >= debateData.max_conversations) {
       console.log(`Completing debate ${id}: User has completed ${currentConversationRound}/${debateData.max_conversations} rounds`);
-      
+
       await db
         .update(USER_CUSTOM_DEBATES)
-        .set({ 
+        .set({
           status: "completed",
           completed_at: new Date(),
           updated_at: new Date()

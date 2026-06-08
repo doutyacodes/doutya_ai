@@ -31,9 +31,9 @@ Keep it under 300 characters and be persuasive but respectful.`;
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 100,
+        max_completion_tokens: 100,
         temperature: 0.8,
       },
       {
@@ -89,9 +89,9 @@ async function generateDebateReport(debate, messages) {
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 1200,
+        max_completion_tokens: 1200,
         temperature: 0.7,
       },
       {
@@ -245,8 +245,8 @@ export async function POST(request) {
     } else {
       const lastResetDate = new Date(usage[0].last_reset_date);
       const isToday = lastResetDate.getFullYear() === now.getFullYear() &&
-                     lastResetDate.getMonth() === now.getMonth() &&
-                     lastResetDate.getDate() === now.getDate();
+        lastResetDate.getMonth() === now.getMonth() &&
+        lastResetDate.getDate() === now.getDate();
 
       // Uncomment this to enforce daily limits
       // if (isToday && usage[0].debates_created_today >= dailyLimit) {  

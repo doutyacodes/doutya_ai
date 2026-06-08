@@ -49,9 +49,9 @@ export async function POST(request) {
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 1200,
+        max_completion_tokens: 1200,
         temperature: 0.7,
       },
       {
@@ -101,7 +101,7 @@ export async function POST(request) {
 
   } catch (error) {
     console.error("Error generating test perspective:", error);
-    
+
     // Handle specific OpenAI API errors
     if (error.response?.status === 429) {
       return NextResponse.json(
@@ -109,7 +109,7 @@ export async function POST(request) {
         { status: 429 }
       );
     }
-    
+
     if (error.response?.status === 401) {
       return NextResponse.json(
         { error: "AI service configuration error. Please contact support." },
@@ -118,9 +118,9 @@ export async function POST(request) {
     }
 
     return NextResponse.json(
-      { 
-        error: "Failed to generate test perspective", 
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined 
+      {
+        error: "Failed to generate test perspective",
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
       },
       { status: 500 }
     );

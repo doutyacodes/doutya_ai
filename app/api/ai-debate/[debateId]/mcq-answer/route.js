@@ -16,7 +16,7 @@ async function generateMCQReport(debateRoom, questions, responses) {
   const userAnswers = responses.map((response, index) => {
     const question = questions.find(q => q.id === response.question_id);
     const selectedOption = question?.options?.find(opt => opt.id === response.selected_option_id);
-    
+
     return {
       question: question?.question_text || "",
       ai_answer: question?.ai_answer || "",
@@ -58,9 +58,9 @@ async function generateMCQReport(debateRoom, questions, responses) {
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini",
+        model: "gpt-5.4-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 1200,
+        max_completion_tokens: 1200,
         temperature: 0.7,
       },
       {
@@ -215,12 +215,12 @@ export async function POST(request, { params }) {
 
     // Update current question index
     const newQuestionIndex = room.current_question_index + 1;
-    
+
     await db
       .update(AI_DEBATE_ROOMS)
-      .set({ 
+      .set({
         current_question_index: newQuestionIndex,
-        conversation_count: newQuestionIndex 
+        conversation_count: newQuestionIndex
       })
       .where(eq(AI_DEBATE_ROOMS.id, debateId))
       .execute();
