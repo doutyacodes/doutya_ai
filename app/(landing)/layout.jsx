@@ -47,11 +47,10 @@ const Navbar = () => {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/80 backdrop-blur-2xl shadow-lg border-b border-white/20"
-          : "bg-transparent"
-      }`}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled
+        ? "bg-white/80 backdrop-blur-2xl shadow-lg border-b border-white/20"
+        : "bg-transparent"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
@@ -102,7 +101,7 @@ const Navbar = () => {
               className="ml-4"
             >
               <Link
-                href="/auth/signup"
+                href="/auth/login"
                 className="relative px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold overflow-hidden group shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30 transition-all duration-300 flex items-center"
               >
                 <span className="relative z-10 flex items-center">
@@ -158,7 +157,7 @@ const Navbar = () => {
                 className="pt-4"
               >
                 <Link
-                  href="/auth/signup"
+                  href="/auth/login"
                   className="block w-full px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white text-center rounded-xl font-semibold shadow-lg"
                 >
                   Get Started
